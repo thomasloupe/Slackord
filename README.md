@@ -22,10 +22,10 @@ Slackord 2 is the .NET version of the [Slackord 1.0](https://github.com/thomaslo
 1. Select a Slack JSON chat history file to import.
 1. Enter your bot's token.
 1. Connect the bot to your server.
-1. Visit the channel you wish to import Slack chat history to and type !slackord.
+1. Visit the channel you wish to import Slack chat history to and type **!slackord**.
 
 # Important: Please Read!
-1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain) open a new issue if it doesn't already exist..
+1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist..
 1. Slackord and Slackord 2 are free, and they will always be free. Please do not pay anyone for this application. However, if you found Slackord or Slackord 2 worth donating something, you can donate from within Slackord 2 by accessing "Donate" from the "Help" context menu or just [click here](https://paypal.me/thomasloupe).
 1. At this time, I have decided *not* to include the ability to import multiple JSON files. This may or may not change in the future.
 1. Slackord is something I created in my spare time to continue learning multiple programming languages. I would not consider myself an "expert" programmer, and should probably not be treated as such.
