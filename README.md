@@ -6,7 +6,7 @@ Slackord 2 is the .NET version of the [Slackord 1.0](https://github.com/thomaslo
 ![Slackord 2](https://i.imgur.com/iI9JHRj.gif)
 
 Getting Started:
-1. Download the [latest](https://github.com/thomasloupe/Slackord2.0/releases) Slackord 2 release and extract the contents.
+1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord 2 release and extract the contents.
 2. Create a Discord bot [here](https://discord.com/developers/applications), copy the bot's private token, and invite it to the desired server.
 3. Run Slackord.
 4. Select a Slack JSON chat history file to import.
