@@ -1,0 +1,4 @@
+C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Debug\Slackord2.Slackord.resources
+C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Debug\Slackord2.Properties.Resources.resources
+C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Debug\Slackord2.csproj.GenerateResource.cache
+C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Debug\Slackord2.csproj.CoreCompileInputs.cache
