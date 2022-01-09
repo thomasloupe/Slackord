@@ -1,0 +1,6 @@
+bin/
+obj/
+.vs/
+Slackord/bin/
+Slackord/obj/
+Slackord/.vs/
