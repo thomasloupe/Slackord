@@ -1,143 +1,48 @@
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Slackord 2.exe.config
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Slackord 2.exe
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Slackord 2.pdb
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Commands.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Core.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Rest.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Webhook.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.WebSocket.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Json.Net.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Newtonsoft.Json.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Octokit.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Buffers.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Collections.Immutable.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Interactive.Async.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Linq.Async.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Memory.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Numerics.Vectors.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Threading.Tasks.Extensions.dll
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Commands.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Core.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Rest.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Webhook.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Discord.Net.WebSocket.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Newtonsoft.Json.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\Octokit.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Buffers.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Collections.Immutable.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Interactive.Async.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Linq.Async.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Memory.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Numerics.Vectors.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\bin\Release\System.Threading.Tasks.Extensions.xml
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord.csprojAssemblyReference.cache
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord.Slackord.resources
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord.Properties.Resources.resources
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.GenerateResource.cache
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.CoreCompileInputs.cache
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.CopyComplete
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord 2.exe
-C:\Users\acid_rain\Desktop\Slackord\Slackord\Slackord\obj\Release\Slackord 2.pdb
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Slackord 2.exe.config
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Slackord 2.exe
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Slackord 2.pdb
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Commands.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Core.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Rest.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Webhook.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.WebSocket.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Json.Net.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Newtonsoft.Json.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Octokit.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Buffers.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Collections.Immutable.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Interactive.Async.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Linq.Async.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Memory.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Numerics.Vectors.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Threading.Tasks.Extensions.dll
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Commands.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Core.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Rest.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Webhook.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.WebSocket.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Newtonsoft.Json.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Octokit.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Buffers.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Collections.Immutable.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Interactive.Async.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Linq.Async.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Memory.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Numerics.Vectors.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Threading.Tasks.Extensions.xml
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csprojAssemblyReference.cache
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.Slackord.resources
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.Properties.Resources.resources
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.GenerateResource.cache
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.CoreCompileInputs.cache
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.CopyComplete
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord 2.exe
-C:\Users\acid_rain\Desktop\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord 2.pdb
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Slackord 2.exe.config
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Slackord 2.exe
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Slackord 2.pdb
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Commands.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Core.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Rest.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Webhook.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.WebSocket.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Json.Net.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Newtonsoft.Json.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Octokit.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Buffers.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Collections.Immutable.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Interactive.Async.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Linq.Async.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Memory.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Numerics.Vectors.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Threading.Tasks.Extensions.dll
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Commands.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Core.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Rest.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.Webhook.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Discord.Net.WebSocket.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Newtonsoft.Json.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\Octokit.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Buffers.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Collections.Immutable.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Interactive.Async.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Linq.Async.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Memory.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Numerics.Vectors.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\bin\Release\System.Threading.Tasks.Extensions.xml
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.Slackord.resources
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.Properties.Resources.resources
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.GenerateResource.cache
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.CoreCompileInputs.cache
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord.csproj.CopyComplete
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord 2.exe
-Y:\Dropbox\Backup\Z\Development\Slackord stuff\Slackord\Slackord\Slackord\obj\Release\Slackord 2.pdb
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Slackord 2.exe.config
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Slackord 2.exe
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Slackord 2.pdb
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Commands.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Core.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Rest.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Webhook.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.WebSocket.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Json.Net.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Newtonsoft.Json.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Octokit.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Buffers.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Collections.Immutable.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Interactive.Async.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Linq.Async.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Memory.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Numerics.Vectors.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Threading.Tasks.Extensions.dll
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Commands.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Core.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Rest.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.Webhook.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Discord.Net.WebSocket.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Newtonsoft.Json.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\Octokit.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Buffers.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Collections.Immutable.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Interactive.Async.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Linq.Async.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Memory.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Numerics.Vectors.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\bin\Release\System.Threading.Tasks.Extensions.xml
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord.csproj.SuggestedBindingRedirects.cache
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord.Slackord.resources
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord.Properties.Resources.resources
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord.csproj.GenerateResource.cache
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord.csproj.CoreCompileInputs.cache
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord.csproj.CopyComplete
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord 2.exe
+Z:\Development\Git Repositories\Slackord2\Slackord\obj\Release\Slackord 2.pdb

@@ -12,22 +12,22 @@ namespace Slackord
 {
     public partial class Slackord : Form
     {
-        private const string CurrentVersion = "v2.0.7";
-        private const string commandTrigger = "!slackord";
+        private const string CurrentVersion = "v2.1.0";
+        private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
         private octo.GitHubClient _octoClient;
-        private bool isFileParsed;
+        private bool _isFileParsed;
         private IServiceProvider _services;
-        private bool failOnMessagesOverCharLimit;
-        private int skippedMessages;
+        private bool _failOnMessagesOverCharLimit;
+        private int _skippedMessages;
 
         public Slackord()
         {
             InitializeComponent();
             SetWindowSizeAndLocation();
-            isFileParsed = false;
+            _isFileParsed = false;
             CheckForExistingBotToken();
         }
 
@@ -78,22 +78,34 @@ namespace Slackord
             {
                 var json = File.ReadAllText(_ofd.FileName);
                 var parsed = JArray.Parse(json);
-                bool parseFailed = false;
+                var parseFailed = false;
                 richTextBox1.Text += "Begin parsing JSON data..." + "\n";
                 richTextBox1.Text += "-----------------------------------------" + "\n";
                 foreach (JObject pair in parsed)
                 {
+                    var debugResponse = "";
+                    if (pair.ContainsKey("files"))
+                    {
+                        try
+                        {
+                            debugResponse = ("Parsed: " + pair["files"][0]["thumb_1024"].ToString());
+                        }
+                        catch (NullReferenceException)
+                        {
+                            debugResponse = ("Parsed: " + pair["files"][0]["url_private"].ToString());
+                        }
+                        richTextBox1.Text += debugResponse + "\n";
+                    }
                     if (pair.ContainsKey("user_profile") && pair.ContainsKey("text")) 
                     {
                         var rawTimeDate = pair["ts"];
                         var oldDateTime = (double)rawTimeDate;
                         var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime);
                         var newDateTime = convertDateTime.ToString();
-                        string slackUserName = pair["user_profile"]["display_name"].ToString();
+                        var slackUserName = pair["user_profile"]["display_name"].ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
                         var slackMessage = pair["text"];
-                        string debugResponse;
-                        skippedMessages = 0;
+                        _skippedMessages = 0;
                         if (String.IsNullOrEmpty(slackUserName))
                         {
                             debugResponse = "Parsed: " + newDateTime + " - " + slackRealName + ": " + slackMessage;
@@ -103,7 +115,7 @@ namespace Slackord
                             debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage;
                             if (debugResponse.Length >= 2000)
                             {
-                                if (failOnMessagesOverCharLimit)
+                                if (_failOnMessagesOverCharLimit)
                                 {
                                     parseFailed = true;
                                     richTextBox1.Text += "\n" + "PARSING FAILED!" + "\n" +
@@ -118,7 +130,7 @@ namespace Slackord
                                         "A message which contained more than 2000 characters was discovered. Discord does not allow messages over 2000 characters." +
                                         "Please edit your JSON file or posting to Discord will fail." + "\n" +
                                         "For your information, the message was: " + "\n" + "\n";
-                                    skippedMessages++;
+                                    _skippedMessages++;
                                 }
                             }
                             else
@@ -133,24 +145,24 @@ namespace Slackord
                 if (parseFailed)
                 {
                     richTextBox1.Text += "FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n";
-                    isFileParsed = false;
+                    _isFileParsed = false;
                     richTextBox1.ForeColor = Color.Red;
                 }
                 else
                 {
-                    if (skippedMessages > 0)
+                    if (_skippedMessages > 0)
                     {
-                        richTextBox1.Text += "Parsing completed, but there were " + skippedMessages + " skipped messages." + "\n";
+                        richTextBox1.Text += "Parsing completed, but there were " + _skippedMessages + " skipped messages." + "\n";
                     }
                     else
                     {
                         richTextBox1.Text += "Parsing completed successfully!" + "\n";
-                        isFileParsed = true;
+                        _isFileParsed = true;
                         richTextBox1.ForeColor = Color.DarkGreen;
                     }
 
                 }
-                skippedMessages = 0;
+                _skippedMessages = 0;
             }
         }
 
@@ -181,9 +193,9 @@ namespace Slackord
                 "Website: https://thomasloupe.com", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
+        private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
         {
-            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return origin.AddSeconds(timestamp);
         }
 
@@ -235,7 +247,7 @@ namespace Slackord
 
         private async Task MessageReceived(SocketMessage message)
         {
-            if (isFileParsed && message.Content.Equals(commandTrigger, StringComparison.OrdinalIgnoreCase))
+            if (_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
             {
                 var json = File.ReadAllText(_ofd.FileName);
                 var parsed = JArray.Parse(json);
@@ -246,11 +258,31 @@ namespace Slackord
                 }));
                 foreach (JObject pair in parsed)
                 {
+                    var slackordResponse = "";
+                    if (pair.ContainsKey("files"))
+                    {
+                        try
+                        {
+                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString();
+                        }
+                        catch (NullReferenceException)
+                        {
+                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString();
+                        }
+
+                        richTextBox1.Invoke(new Action(() =>
+                        {
+                            richTextBox1.Text += "POSTING: " + slackordResponse;
+                        }));
+                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                    }
                     if (!pair.ContainsKey("user_profile") && !pair.ContainsKey("text"))
                     {
                         richTextBox1.Invoke(new Action(() =>
                         {
+                            richTextBox1.ForeColor = Color.Red;
                             richTextBox1.Text += "A MESSAGE THAT COULDN'T BE SENT WAS SKIPPED HERE." + "\n";
+                            richTextBox1.ForeColor = Color.Green;
                         }));
                     }
                     else if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
@@ -260,10 +292,9 @@ namespace Slackord
                         var oldDateTime = (double)rawTimeDate;
                         var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime);
                         var newDateTime = convertDateTime.ToString();
-                        string slackUserName = pair["user_profile"]["display_name"].ToString();
+                        var slackUserName = pair["user_profile"]["display_name"].ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
                         var slackMessage = pair["text"];
-                        string slackordResponse = "";
                         if (String.IsNullOrEmpty(slackUserName))
                         {
                             slackordResponse = newDateTime + " - " + slackRealName + ": " + slackMessage + "\n";
@@ -276,7 +307,9 @@ namespace Slackord
                         {
                             richTextBox1.Invoke(new Action(() =>
                             {
+                                richTextBox1.ForeColor = Color.DarkOrange;
                                 richTextBox1.Text += "SKIPPING: " + slackordResponse;
+                                richTextBox1.ForeColor = Color.Green;
                             }));
                         }
                         else
@@ -295,7 +328,7 @@ namespace Slackord
                     "All messages sent to Discord successfully!" + "\n";
                 }));
             }
-            else if (!isFileParsed && message.Content.Equals(commandTrigger, StringComparison.OrdinalIgnoreCase))
+            else if (!_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
             {
                 await message.Channel.SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
                 richTextBox1.Invoke(new Action(() =>
@@ -409,16 +442,20 @@ namespace Slackord
                richTextBox1.SelectionStart = richTextBox1.Text.Length;
                richTextBox1.ScrollToCaret();
         }
+        private void Link_Clicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
+        }
 
         private void failOnCharacterLimitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (failOnCharacterLimitToolStripMenuItem.Checked)
             {
-                failOnMessagesOverCharLimit = false;
+                _failOnMessagesOverCharLimit = false;
             }
             else
             {
-                failOnMessagesOverCharLimit = true;
+                _failOnMessagesOverCharLimit = true;
             }
         }
     }
