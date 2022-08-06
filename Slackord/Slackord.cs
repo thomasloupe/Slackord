@@ -12,7 +12,7 @@ namespace Slackord
 {
     public partial class Slackord : Form
     {
-        private const string CurrentVersion = "v2.1.0";
+        private const string CurrentVersion = "v2.1.1";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
@@ -88,11 +88,11 @@ namespace Slackord
                     {
                         try
                         {
-                            debugResponse = ("Parsed: " + pair["files"][0]["thumb_1024"].ToString());
+                            debugResponse = ("Parsed: " + pair["files"][0]["thumb_1024"] + "\n".ToString());
                         }
                         catch (NullReferenceException)
                         {
-                            debugResponse = ("Parsed: " + pair["files"][0]["url_private"].ToString());
+                            debugResponse = ("Parsed: " + pair["files"][0]["url_private"] + "\n".ToString());
                         }
                         richTextBox1.Text += debugResponse + "\n";
                     }
@@ -263,11 +263,11 @@ namespace Slackord
                     {
                         try
                         {
-                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString();
+                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"] + "\n".ToString();
                         }
                         catch (NullReferenceException)
                         {
-                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString();
+                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"] + "\n".ToString();
                         }
 
                         richTextBox1.Invoke(new Action(() =>
