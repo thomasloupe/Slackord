@@ -12,7 +12,7 @@ namespace Slackord
 {
     public partial class Slackord : Form
     {
-        private const string CurrentVersion = "v2.1.1";
+        private const string CurrentVersion = "v2.1.2";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
@@ -88,11 +88,11 @@ namespace Slackord
                     {
                         try
                         {
-                            debugResponse = ("Parsed: " + pair["files"][0]["thumb_1024"] + "\n".ToString());
+                            debugResponse = ("Parsed: " + pair["files"][0]["thumb_1024"].ToString()) + "\n";
                         }
                         catch (NullReferenceException)
                         {
-                            debugResponse = ("Parsed: " + pair["files"][0]["url_private"] + "\n".ToString());
+                            debugResponse = ("Parsed: " + pair["files"][0]["url_private"].ToString()) + "\n";
                         }
                         richTextBox1.Text += debugResponse + "\n";
                     }
@@ -104,7 +104,29 @@ namespace Slackord
                         var newDateTime = convertDateTime.ToString();
                         var slackUserName = pair["user_profile"]["display_name"].ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
-                        var slackMessage = pair["text"];
+
+                        var slackMessage = "";
+                        if (pair["text"].ToString().Contains("|"))
+                        {
+                            string preSplit = pair["text"].ToString();
+                            string[] split = preSplit.Split(new char[] { '|' });
+                            string originalText = split[0];
+                            string splitText = split[1];
+
+                            if (originalText.Contains(splitText))
+                            {
+                                slackMessage = splitText + "\n";
+                            }
+                            else
+                            {
+                                slackMessage = originalText + "\n";
+                            }
+                        }
+                        else
+                        {
+                            slackMessage = pair["text"].ToString();
+                        }
+
                         _skippedMessages = 0;
                         if (String.IsNullOrEmpty(slackUserName))
                         {
@@ -135,7 +157,7 @@ namespace Slackord
                             }
                             else
                             {
-                                debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
                             }
                         }
                         richTextBox1.Text += debugResponse + "\n";
@@ -263,11 +285,11 @@ namespace Slackord
                     {
                         try
                         {
-                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"] + "\n".ToString();
+                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
                         }
                         catch (NullReferenceException)
                         {
-                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"] + "\n".ToString();
+                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
                         }
 
                         richTextBox1.Invoke(new Action(() =>
@@ -294,14 +316,36 @@ namespace Slackord
                         var newDateTime = convertDateTime.ToString();
                         var slackUserName = pair["user_profile"]["display_name"].ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
-                        var slackMessage = pair["text"];
-                        if (String.IsNullOrEmpty(slackUserName))
+                        var slackMessage = pair["text"] + "\n";
+
+                        if (pair["text"].ToString().Contains("|"))
                         {
-                            slackordResponse = newDateTime + " - " + slackRealName + ": " + slackMessage + "\n";
+                            string preSplit = pair["text"].ToString();
+                            string[] split = preSplit.Split(new char[] { '|' });
+                            string originalText = split[0];
+                            string splitText = split[1];
+
+                            if (originalText.Contains(splitText))
+                            {
+                                slackMessage = splitText + "\n";
+                            }
+                            else
+                            {
+                                slackMessage = originalText + "\n";
+                            }
                         }
                         else
                         {
-                            slackordResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + "\n";
+                            slackMessage = pair["text"].ToString();
+                        }
+
+                        if (String.IsNullOrEmpty(slackUserName))
+                        {
+                            slackordResponse = newDateTime + " - " + slackRealName + ": " + slackMessage + " " + "\n";
+                        }
+                        else
+                        {
+                            slackordResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
                         }
                         if (slackordResponse.Length >= 2000)
                         {
