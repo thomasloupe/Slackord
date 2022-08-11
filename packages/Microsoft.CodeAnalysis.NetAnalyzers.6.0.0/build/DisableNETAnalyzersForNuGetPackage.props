@@ -1,0 +1,10 @@
+<Project>
+  <!-- 
+    PropertyGroup to disable built-in analyzers from .NET SDK that have the identical CA rules to those implemented in this package.
+    This props file should only be present in the analyzer NuGet package, it should **not** be inserted into the .NET SDK.
+  -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <_NETAnalyzersNuGetAssemblyVersion>6.0.0</_NETAnalyzersNuGetAssemblyVersion>
+  </PropertyGroup>
+</Project>
