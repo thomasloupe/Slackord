@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Slackord</RootNamespace>
     <AssemblyName>Slackord 2</AssemblyName>
-    <TargetFrameworkVersion>6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
