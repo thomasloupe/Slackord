@@ -7,6 +7,7 @@ Slackord 2 is the .NET version of the [Slackord 1.0](https://github.com/thomaslo
 ![Slackord 2 Demo](https://i.imgur.com/iI9JHRj.gif)
 
 # Features
+1. Cross platform. Works on Windows(x86/x64), Mac(x64), and Linux(x64).
 1. Post messages, images, and attachments to any Discord channel or Direct Message conversation.
 1. Debug window. Unlike Slackord 0.5 and 1.0, Slackord 2 lets you know exactly what's happening in real-time. You'll know what messages are being posted, how they'll be formatted, and what the bot is doing before sending messages to their destinations.
 1. Automatic rate-limiting. Slackord 2 limits the messages it sends over time so it doesn't spam your target.
@@ -27,7 +28,7 @@ Slackord 2 is the .NET version of the [Slackord 1.0](https://github.com/thomaslo
 6. Messages will begin posting.
 
 # Important: Please Read!
-1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist..
+1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist.
 1. Slackord and Slackord 2 are free, and they will always be free. Please do not pay anyone for this application. However, if you found Slackord or Slackord 2 worth donating something, you can donate from within Slackord 2 by accessing "Donate" from the "Help" context menu or just [click here](https://paypal.me/thomasloupe).
 1. I have decided against importing multiple JSON files to disincentivise using Slackord maliciously. You can, however, merge multiple JSON files into one with [this tool](https://tools.knowledgewalls.com/onlinejsonmerger)  or many others that exist online which will achieve the same result as importing multiple JSON files.
 1. Slackord is something I created in my spare time to continue learning multiple programming languages. I would not consider myself an "expert" programmer, and should probably not be treated as such.
