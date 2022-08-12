@@ -18,7 +18,7 @@ Slackord 2 is the .NET6.0 version of the [Slackord 1.0](https://github.com/thoma
 
 # Getting Started
 1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord 2 release and extract the contents.
-1. Create a Discord bot [here](https://discord.com/developers/applications). Under OAuth2>URL Generator, set the bot's "SCOPES" to "bot". Underneath, in "BOT PERMISSIONS", set the bot's permissions to either "Administrator" or "Send Messages". Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired server. Visit the "Bot" link below OAuth2, generate and copy the bot's private token.
+1. Create a Discord bot [here](https://discord.com/developers/applications). Under OAuth2>URL Generator, set the bot's "SCOPES" to "bot". Underneath, in "BOT PERMISSIONS", set the bot's permissions to either "Administrator" or "Send Messages". Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired server.
 1. Visit the [Discord Developer Portal](https://discord.com/developers/applications), naviagate to the "Bot" page underneath "OAuth2". Upload an image for your bot if desired, click "Regenerate Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate".
 1. Run Slackord.
 2. Select Settings>Enter Bot Token and paste the copied token into the text field. Slackord will remember your token if you close it.
