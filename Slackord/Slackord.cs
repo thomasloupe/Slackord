@@ -50,7 +50,7 @@ namespace Slackord
             }
             else if (String.IsNullOrEmpty(_discordToken) || String.IsNullOrEmpty(Properties.Settings.Default.SlackordBotToken))
             {
-                richTextBox1.Text += "Slackord 2 tried to automatically load your last bot token but wasn't successful." + "\n" 
+                richTextBox1.Text += "Slackord 2 tried to automatically load your last bot token but wasn't successful." + "\n"
                     + "The token is not long enough or the token value is empty. Please enter a new token." + "\n";
             }
             else
@@ -96,7 +96,7 @@ namespace Slackord
                         }
                         richTextBox1.Text += debugResponse + "\n";
                     }
-                    if (pair.ContainsKey("user_profile") && pair.ContainsKey("text")) 
+                    if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                     {
                         var rawTimeDate = pair["ts"];
                         var oldDateTime = (double)rawTimeDate;
@@ -106,7 +106,7 @@ namespace Slackord
                         var slackRealName = pair["user_profile"]["real_name"];
 
                         var slackMessage = "";
-                        if (pair["text"].ToString().Contains("|"))
+                        if (pair["text"].Contains("|"))
                         {
                             string preSplit = pair["text"].ToString();
                             string[] split = preSplit.Split(new char[] { '|' });
@@ -168,7 +168,7 @@ namespace Slackord
                 {
                     richTextBox1.Text += "FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n";
                     _isFileParsed = false;
-                    richTextBox1.ForeColor = Color.Red;
+                    richTextBox1.ForeColor = System.Drawing.Color.Red;
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace Slackord
                     {
                         richTextBox1.Text += "Parsing completed successfully!" + "\n";
                         _isFileParsed = true;
-                        richTextBox1.ForeColor = Color.DarkGreen;
+                        richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
                     }
 
                 }
@@ -201,7 +201,7 @@ namespace Slackord
             }
             else
             {
-                MessageBox.Show("Couldn't connect to get updates. Github must be down, try checking again later?", 
+                MessageBox.Show("Couldn't connect to get updates. Github must be down, try checking again later?",
                     "Couldn't Connect!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -302,9 +302,9 @@ namespace Slackord
                     {
                         richTextBox1.Invoke(new Action(() =>
                         {
-                            richTextBox1.ForeColor = Color.Red;
+                            richTextBox1.ForeColor = System.Drawing.Color.Red;
                             richTextBox1.Text += "A MESSAGE THAT COULDN'T BE SENT WAS SKIPPED HERE." + "\n";
-                            richTextBox1.ForeColor = Color.Green;
+                            richTextBox1.ForeColor = System.Drawing.Color.Green;
                         }));
                     }
                     else if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
@@ -318,7 +318,7 @@ namespace Slackord
                         var slackRealName = pair["user_profile"]["real_name"];
                         var slackMessage = pair["text"] + "\n";
 
-                        if (pair["text"].ToString().Contains("|"))
+                        if (pair["text"].Contains("|"))
                         {
                             string preSplit = pair["text"].ToString();
                             string[] split = preSplit.Split(new char[] { '|' });
@@ -351,9 +351,9 @@ namespace Slackord
                         {
                             richTextBox1.Invoke(new Action(() =>
                             {
-                                richTextBox1.ForeColor = Color.DarkOrange;
+                                richTextBox1.ForeColor = System.Drawing.Color.DarkOrange;
                                 richTextBox1.Text += "SKIPPING: " + slackordResponse;
-                                richTextBox1.ForeColor = Color.Green;
+                                richTextBox1.ForeColor = System.Drawing.Color.Green;
                             }));
                         }
                         else
@@ -386,7 +386,7 @@ namespace Slackord
         {
             _discordToken = Prompt.ShowDialog("Enter bot token.", "Enter Bot Token");
             Properties.Settings.Default.SlackordBotToken = _discordToken;
-            if (_discordToken.Length >10 && String.IsNullOrEmpty(_discordToken).Equals(false))
+            if (_discordToken.Length > 10 && String.IsNullOrEmpty(_discordToken).Equals(false))
             {
                 EnableBotConnectionMenuItem();
             }
@@ -402,12 +402,12 @@ namespace Slackord
             Application.Exit();
         }
 
-        private void SaveSettingsEventHandler(object sender, FormClosingEventArgs e) 
+        private void SaveSettingsEventHandler(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.FormHeight = this.Height;
             Properties.Settings.Default.FormWidth = this.Width;
             Properties.Settings.Default.FormLocation = this.Location;
-            if (Properties.Settings.Default.FirstRun) 
+            if (Properties.Settings.Default.FirstRun)
             {
                 Properties.Settings.Default.FirstRun = false;
             }
@@ -444,28 +444,28 @@ namespace Slackord
             }
         }
 
-        private void EnableBotConnectionMenuItem() 
+        private void EnableBotConnectionMenuItem()
         {
             ConnectBotToolStripMenuItem.Enabled = true;
             DisconnectBotToolStripMenuItem.Enabled = false;
         }
 
-        private void EnableBotDisconnectionMenuItem() 
+        private void EnableBotDisconnectionMenuItem()
         {
             ConnectBotToolStripMenuItem.Enabled = false;
             DisconnectBotToolStripMenuItem.Enabled = true;
         }
-        private void DisableBothBotConnectionButtons() 
+        private void DisableBothBotConnectionButtons()
         {
             ConnectBotToolStripMenuItem.Enabled = false;
             DisconnectBotToolStripMenuItem.Enabled = false;
         }
 
-        private void DisableTokenChangeWhileConnected() 
+        private void DisableTokenChangeWhileConnected()
         {
             EnterBotTokenToolStripMenuItem.Enabled = false;
         }
-        private void EnableTokenChangeWhileConnected() 
+        private void EnableTokenChangeWhileConnected()
         {
             EnterBotTokenToolStripMenuItem.Enabled = true;
         }
@@ -481,17 +481,17 @@ namespace Slackord
             }
         }
 
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        private void RichTextBox1_TextChanged(object sender, EventArgs e)
         {
-               richTextBox1.SelectionStart = richTextBox1.Text.Length;
-               richTextBox1.ScrollToCaret();
+            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            richTextBox1.ScrollToCaret();
         }
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
-        private void failOnCharacterLimitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void FailOnCharacterLimitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (failOnCharacterLimitToolStripMenuItem.Checked)
             {
@@ -508,7 +508,7 @@ namespace Slackord
     {
         public static string ShowDialog(string text, string caption)
         {
-            var prompt = new Form(){Width = 500,Height = 150,FormBorderStyle = FormBorderStyle.FixedDialog,Text = caption,StartPosition = FormStartPosition.CenterScreen};
+            var prompt = new Form() { Width = 500, Height = 150, FormBorderStyle = FormBorderStyle.FixedDialog, Text = caption, StartPosition = FormStartPosition.CenterScreen };
             var textLabel = new Label() { Left = 50, Top = 20, Text = text };
             var textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
             var confirmation = new Button() { Text = "OK", Left = 225, Width = 50, Top = 75, DialogResult = DialogResult.OK };

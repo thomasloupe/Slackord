@@ -126,7 +126,7 @@
             this.DisconnectBotToolStripMenuItem.Text = "Disconnect";
             this.DisconnectBotToolStripMenuItem.Click += new System.EventHandler(this.DisconnectBotToolStripMenuItem_Click);
             // 
-            // failOnCharacterLimitToolStripMenuItem
+            // FailOnCharacterLimitToolStripMenuItem
             // 
             this.failOnCharacterLimitToolStripMenuItem.Checked = true;
             this.failOnCharacterLimitToolStripMenuItem.CheckOnClick = true;
@@ -136,7 +136,7 @@
             this.failOnCharacterLimitToolStripMenuItem.Text = "Ignore Char Limit Failures";
             this.failOnCharacterLimitToolStripMenuItem.ToolTipText = "Check if you want to skip parsing and sending messages that would exceed the Disc" +
     "ord character limit.";
-            this.failOnCharacterLimitToolStripMenuItem.Click += new System.EventHandler(this.failOnCharacterLimitToolStripMenuItem_Click);
+            this.failOnCharacterLimitToolStripMenuItem.Click += new System.EventHandler(this.FailOnCharacterLimitToolStripMenuItem_Click);
             // 
             // HelpToolStripMenuItem
             // 
@@ -180,7 +180,7 @@
             this.richTextBox1.Size = new System.Drawing.Size(800, 160);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
-            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
+            this.richTextBox1.TextChanged += new System.EventHandler(this.RichTextBox1_TextChanged);
             this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.Link_Clicked);
             // 
             // ToolStripButton1
