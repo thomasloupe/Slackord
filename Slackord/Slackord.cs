@@ -1,18 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.IO;
 using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
+using MaterialSkin;
+using MaterialSkin.Controls;
 
 namespace Slackord
 {
-    public partial class Slackord : Form
+    public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.1.2";
+        private const string CurrentVersion = "v2.2.0";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
@@ -27,6 +26,10 @@ namespace Slackord
         {
             InitializeComponent();
             SetWindowSizeAndLocation();
+            var materialSkinManager = MaterialSkinManager.Instance;
+            materialSkinManager.AddFormToManage(this);
+            materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
+            materialSkinManager.ColorScheme = new ColorScheme(Primary.Orange600, Primary.DeepOrange700, Primary.Amber500, Accent.Amber700, TextShade.BLACK);
             _isFileParsed = false;
             CheckForExistingBotToken();
         }
@@ -81,7 +84,7 @@ namespace Slackord
                 var parseFailed = false;
                 richTextBox1.Text += "Begin parsing JSON data..." + "\n";
                 richTextBox1.Text += "-----------------------------------------" + "\n";
-                foreach (JObject pair in parsed)
+                foreach (JObject pair in parsed.Cast<JObject>())
                 {
                     var debugResponse = "";
                     if (pair.ContainsKey("files"))
@@ -278,7 +281,7 @@ namespace Slackord
                     richTextBox1.Text += "Beginning transfer of Slack messages to Discord..." + "\n" +
                     "-----------------------------------------" + "\n";
                 }));
-                foreach (JObject pair in parsed)
+                foreach (JObject pair in parsed.Cast<JObject>())
                 {
                     var slackordResponse = "";
                     if (pair.ContainsKey("files"))
