@@ -1,6 +1,11 @@
 bin/
 obj/
 .vs/
-Slackord/bin/
-Slackord/obj/
-Slackord/.vs/
+Slackord_Win/Slackord/bin/
+Slackord_Win/Slackord/obj/
+Slackord_Win/Slackord/.vs/
+Slackord_Win/Slackord/publish/
+Slackord_Mac_Linux/Slackord/bin/
+Slackord_Mac_Linux/Slackord/obj/
+Slackord_Mac_Linux/Slackord/.vs/
+Slackord_Mac_Linux/Slackord/publish/
