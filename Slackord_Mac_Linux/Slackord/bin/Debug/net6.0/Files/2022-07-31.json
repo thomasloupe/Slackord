@@ -1,0 +1,251 @@
+[
+    {
+        "client_msg_id": "7a369f56-c62a-46d3-ae09-355e8efd87e9",
+        "type": "message",
+        "text": "wowweee",
+        "user": "U02T1PW6WP8",
+        "ts": "1659256839.295139",
+        "team": "T02T5GR2G05",
+        "user_team": "T02T5GR2G05",
+        "source_team": "T02T5GR2G05",
+        "user_profile": {
+            "avatar_hash": "9eae025fd965",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-01-09\/2939137590481_9eae025fd965ab926236_72.jpg",
+            "first_name": "Thomas",
+            "real_name": "Thomas Loupe",
+            "display_name": "",
+            "team": "T02T5GR2G05",
+            "name": "acidxrain",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "HA6h",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "wowweee"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "client_msg_id": "bf5ba691-1f8e-4f2a-a62d-10359e9a9097",
+        "type": "message",
+        "text": "Here is a second message!",
+        "user": "U02T1PW6WP8",
+        "ts": "1659256845.946349",
+        "team": "T02T5GR2G05",
+        "user_team": "T02T5GR2G05",
+        "source_team": "T02T5GR2G05",
+        "user_profile": {
+            "avatar_hash": "9eae025fd965",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-01-09\/2939137590481_9eae025fd965ab926236_72.jpg",
+            "first_name": "Thomas",
+            "real_name": "Thomas Loupe",
+            "display_name": "",
+            "team": "T02T5GR2G05",
+            "name": "acidxrain",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "bEem",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Here is a second message!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "text": "Here is a picture of a husky!",
+        "files": [
+            {
+                "id": "F03RQ9T07MG",
+                "created": 1659256867,
+                "timestamp": 1659256867,
+                "name": "photo-1617895153857-82fe79adfcd4.jpg",
+                "title": "photo-1617895153857-82fe79adfcd4.jpg",
+                "mimetype": "image\/jpeg",
+                "filetype": "jpg",
+                "pretty_type": "JPEG",
+                "user": "U02T1PW6WP8",
+                "editable": false,
+                "size": 154931,
+                "mode": "hosted",
+                "is_external": false,
+                "external_type": "",
+                "is_public": true,
+                "public_url_shared": false,
+                "display_as_bot": false,
+                "username": "",
+                "url_private": "https:\/\/files.slack.com\/files-pri\/T02T5GR2G05-F03RQ9T07MG\/photo-1617895153857-82fe79adfcd4.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "url_private_download": "https:\/\/files.slack.com\/files-pri\/T02T5GR2G05-F03RQ9T07MG\/download\/photo-1617895153857-82fe79adfcd4.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "media_display_type": "unknown",
+                "thumb_64": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_64.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_80": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_80.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_360": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_360.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_360_w": 240,
+                "thumb_360_h": 360,
+                "thumb_480": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_480.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_480_w": 320,
+                "thumb_480_h": 480,
+                "thumb_160": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_160.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_720": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_720.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_720_w": 480,
+                "thumb_720_h": 720,
+                "thumb_800": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_800.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_800_w": 800,
+                "thumb_800_h": 1200,
+                "thumb_960": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_960.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_960_w": 640,
+                "thumb_960_h": 960,
+                "thumb_1024": "https:\/\/files.slack.com\/files-tmb\/T02T5GR2G05-F03RQ9T07MG-00d1ca35b5\/photo-1617895153857-82fe79adfcd4_1024.jpg?t=xoxe-2923569084005-3985464253428-3983018713522-dd042c6d334ce4e3aac594b70542c2ea",
+                "thumb_1024_w": 683,
+                "thumb_1024_h": 1024,
+                "original_w": 1000,
+                "original_h": 1500,
+                "thumb_tiny": "AwAwACDQxUNyxSPj1qbOOtVbkmRMIOQaAHLOECjK+mM8035ZptjqDkenSokihNqSSRk8sRzmmxs0S7iCWHAPYik0MlildySxGB1OKYJQJMs3DHvUatmMj3pWh8zGRgHoaaESx3DPdGPAMWPSluXy4UdhUMVvICD5m0A9BRcja\/HQ9KTGRIzOVjUDr+dX3Iij+bsKrW7QxncW+bHA7Ckupg5KjlR096BDftRD8DirGRcxjsQMiqIGfp6VIrMpG0kAClcD\/9k=",
+                "permalink": "https:\/\/acidrainworkspace.slack.com\/files\/U02T1PW6WP8\/F03RQ9T07MG\/photo-1617895153857-82fe79adfcd4.jpg",
+                "permalink_public": "https:\/\/slack-files.com\/T02T5GR2G05-F03RQ9T07MG-e6b6feb290",
+                "is_starred": false,
+                "has_rich_preview": false
+            }
+        ],
+        "upload": false,
+        "user": "U02T1PW6WP8",
+        "display_as_bot": false,
+        "ts": "1659256871.629349",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "GSG",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Here is a picture of a husky!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "client_msg_id": "573ac1ef-28d9-466a-9327-d317f319b0ca"
+    },
+    {
+        "client_msg_id": "366108a5-0650-470e-8d5b-322f4721d22d",
+        "type": "message",
+        "text": "And here is a thread start.",
+        "user": "U02T1PW6WP8",
+        "ts": "1659256883.076399",
+        "team": "T02T5GR2G05",
+        "user_team": "T02T5GR2G05",
+        "source_team": "T02T5GR2G05",
+        "user_profile": {
+            "avatar_hash": "9eae025fd965",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-01-09\/2939137590481_9eae025fd965ab926236_72.jpg",
+            "first_name": "Thomas",
+            "real_name": "Thomas Loupe",
+            "display_name": "",
+            "team": "T02T5GR2G05",
+            "name": "acidxrain",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "k6BA",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "And here is a thread start."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1659256883.076399",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "latest_reply": "1659256892.651229",
+        "reply_users": [
+            "U02T1PW6WP8"
+        ],
+        "replies": [
+            {
+                "user": "U02T1PW6WP8",
+                "ts": "1659256892.651229"
+            }
+        ],
+        "is_locked": false,
+        "subscribed": true,
+        "last_read": "1659256892.651229"
+    },
+    {
+        "client_msg_id": "95defb85-b516-46ed-a8d7-386b211d6358",
+        "type": "message",
+        "text": "This is a thread reply.",
+        "user": "U02T1PW6WP8",
+        "ts": "1659256892.651229",
+        "team": "T02T5GR2G05",
+        "user_team": "T02T5GR2G05",
+        "source_team": "T02T5GR2G05",
+        "user_profile": {
+            "avatar_hash": "9eae025fd965",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-01-09\/2939137590481_9eae025fd965ab926236_72.jpg",
+            "first_name": "Thomas",
+            "real_name": "Thomas Loupe",
+            "display_name": "",
+            "team": "T02T5GR2G05",
+            "name": "acidxrain",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "A6jO9",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "This is a thread reply."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1659256883.076399",
+        "parent_user_id": "U02T1PW6WP8"
+    }
+]
