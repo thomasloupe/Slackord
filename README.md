@@ -16,16 +16,28 @@ Slackord 2 is the .NET6.0 version of the [Slackord 1.0](https://github.com/thoma
 1. Data safety. Your data is yours. Slackord 2 works completely off your local connection and machine. It doesn't connect to anything but the server and channels you tell it to.
 1. Update checks. Slackord 2 has the ability to check for updates in the "Help" context menu. Get the latest version with new features easily!
 
-# Getting Started
-1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord 2 release and extract the contents.
+# Getting Started for Windows
+1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord 2 release for Windows and extract the contents.
 1. Create a Discord bot [here](https://discord.com/developers/applications). Under OAuth2>URL Generator, set the bot's "SCOPES" to "bot". Underneath, in "BOT PERMISSIONS", set the bot's permissions to either "Administrator" or "Send Messages". Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired server.
 1. Visit the [Discord Developer Portal](https://discord.com/developers/applications), naviagate to the "Bot" page underneath "OAuth2". Upload an image for your bot if desired, click "Regenerate Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate".
 1. Run Slackord.
-2. Select Settings>Enter Bot Token and paste the copied token into the text field. Slackord will remember your token if you close it.
-3. Select File>Import JSON and select a Slack JSON chat history file to import.
-4. Select Settings>Bot Connection>Connect to connect the bot to your server.
-5. Visit the Discord channel or DM you wish to import Slack chat history to and type **!slackord** (case insensitive).
-6. Messages will begin posting.
+1. Select Settings>Enter Bot Token and paste the copied token into the text field. Slackord will remember your token if you close it.
+1. Select File>Import JSON and select a Slack JSON chat history file to import.
+1. Select Settings>Bot Connection>Connect to connect the bot to your server.
+1. Visit the Discord channel or DM you wish to import Slack chat history to and type **!slackord** (case insensitive).
+1. Messages will begin posting.
+
+# Getting Started for Mac/Linux
+1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord 2 release for Mac or Linux and extract the contents.
+1. Create a Discord bot [here](https://discord.com/developers/applications). Under OAuth2>URL Generator, set the bot's "SCOPES" to "bot". Underneath, in "BOT PERMISSIONS", set the bot's permissions to either "Administrator" or "Send Messages". Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired server.
+1. Visit the [Discord Developer Portal](https://discord.com/developers/applications), naviagate to the "Bot" page underneath "OAuth2". Upload an image for your bot if desired, click "Regenerate Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate".
+1. Copy your bot token into the `Token.txt` file in the root directory, or leave it blank and paste it into the CLI when prompted to do so. Slackord will remember your token.
+1. Place any Slack JSON files you wish to parse inside of the `Files` directory.
+1. Run Slackord.
+1. Slackord will ask you to pick one, from a numbered list of JSON files, to parse. Enter the numerical value for the JSON file you wish, parsing will begin and the bot will auto connect to your Discord server.
+1. Visit the Discord channel or DM you wish to import Slack chat history to and type **!slackord** (case insensitive).
+1. Messages will begin posting.
+1. Restart the Slackord app and repeat. (TODO: Don't require a restart to post a new file.)
 
 # Important: Please Read!
 1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist.
