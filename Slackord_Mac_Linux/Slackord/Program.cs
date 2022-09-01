@@ -8,15 +8,15 @@ namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.0";
+        private const string CurrentVersion = "v2.2.1";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
-        private octo.GitHubClient _octoClient;
         private bool _isFileParsed;
         private IServiceProvider _services;
         private int _skippedMessages;
         private string fileToRead = String.Empty;
+        private JArray parsed;
 
         static void Main(string[] args)
         {
@@ -68,7 +68,7 @@ namespace Slackord
             {
                 _discordToken = File.ReadAllText("Token.txt");
                 Console.WriteLine("Found existing token file.");
-                if (_discordToken.Length == 0 || String.IsNullOrEmpty(_discordToken))
+                if (_discordToken.Length == 0 || string.IsNullOrEmpty(_discordToken))
                 {
                     Console.WriteLine("No bot token found. Please enter your bot token: ");
                     _discordToken = Console.ReadLine();
@@ -84,14 +84,20 @@ namespace Slackord
             {
                 Console.WriteLine("No bot token found. Please enter your bot token:");
                 _discordToken = Console.ReadLine();
-                File.WriteAllText("Token.txt", _discordToken);
-                CheckForExistingBotToken();
+                if (_discordToken == null)
+                {
+                    CheckForExistingBotToken();
+                }
+                else
+                {
+                    File.WriteAllText("Token.txt", _discordToken);
+                }
             }
             
         }
 
         [STAThread]
-        private void SelectFileAndConvertJson()
+        private async void SelectFileAndConvertJson()
         {
             Console.WriteLine("Reading JSON files directory...");
             try
@@ -114,9 +120,8 @@ namespace Slackord
                 
                 // Read all files inside Files folder.
                 Console.WriteLine("Please select a file number you wish to parse and post to Discord: ");
-                var index = Int32.Parse(Console.ReadLine());
-
-                if (index > files.Length)
+                var index = int.Parse(Console.ReadLine());
+                if (index > files.Length || index < 0)
                 {
                     Console.WriteLine("That is not a valid selection, please try again...");
                     SelectFileAndConvertJson();
@@ -124,7 +129,7 @@ namespace Slackord
 
                 fileToRead = files[index];
                 var json = File.ReadAllText(fileToRead);
-                var parsed = JArray.Parse(json);
+                parsed = JArray.Parse(json);
                 var parseFailed = false;
                 Console.WriteLine("Begin parsing JSON data..." + "\n");
                 Console.WriteLine("-----------------------------------------" + "\n");
@@ -175,7 +180,7 @@ namespace Slackord
                         }
 
                         _skippedMessages = 0;
-                        if (String.IsNullOrEmpty(slackUserName))
+                        if (string.IsNullOrEmpty(slackUserName))
                         {
                             debugResponse = "Parsed: " + newDateTime + " - " + slackRealName + ": " + slackMessage;
                         }
@@ -204,6 +209,7 @@ namespace Slackord
                 {
                     Console.WriteLine("FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n");
                     _isFileParsed = false;
+                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else
                 {
@@ -214,6 +220,7 @@ namespace Slackord
                     else
                     {
                         Console.WriteLine("Parsing completed successfully!" + "\n");
+                        await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
                         _isFileParsed = true;
                     }
 
@@ -236,21 +243,27 @@ namespace Slackord
         public async Task MainAsync()
         {
             _discordClient = new DiscordSocketClient();
+            DiscordSocketConfig _config = new();
+            {
+                _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
+            }
+            _discordClient = new(_config);
             _services = new ServiceCollection()
             .AddSingleton(_discordClient)
             .BuildServiceProvider();
             _discordClient.Log += DiscordClient_Log;
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken).ConfigureAwait(false);
             await _discordClient.StartAsync().ConfigureAwait(false);
+            await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.MessageReceived += MessageReceived;
-            Console.WriteLine("Bot is ready to post messages to Discord. Press any key to stop the connection or posting of messages...");
+            await Task.Delay(-1).ConfigureAwait(false);
             Console.ReadLine();
         }
 
         private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
         {
-            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return origin.AddSeconds(timestamp);
+            var date = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return date.AddSeconds(timestamp);
         }
 
         private Task DiscordClient_Log(LogMessage arg)
@@ -268,13 +281,11 @@ namespace Slackord
                 {
                     if (fileToRead == file)
                     {
-                        var json = File.ReadAllText(fileToRead);
-                        var parsed = JArray.Parse(json);
                         Console.WriteLine("Beginning transfer of Slack messages to Discord..." + "\n" +
                             "-----------------------------------------" + "\n");
                         foreach (JObject pair in parsed.Cast<JObject>())
                         {
-                            var slackordResponse = String.Empty;
+                            string slackordResponse;
                             if (pair.ContainsKey("files"))
                             {
                                 try
@@ -325,7 +336,7 @@ namespace Slackord
                                     slackMessage = pair["text"].ToString();
                                 }
 
-                                if (String.IsNullOrEmpty(slackUserName))
+                                if (string.IsNullOrEmpty(slackUserName))
                                 {
                                     slackordResponse = newDateTime + " - " + slackRealName + ": " + slackMessage + " " + "\n";
                                 }
@@ -346,6 +357,7 @@ namespace Slackord
                         }
                         Console.WriteLine("-----------------------------------------" + "\n" +
                             "All messages sent to Discord successfully!" + "\n");
+                        await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                     }
                 }
             }

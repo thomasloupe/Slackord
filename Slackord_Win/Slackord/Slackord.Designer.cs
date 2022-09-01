@@ -61,6 +61,7 @@
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
             this.menuStrip1.Size = new System.Drawing.Size(925, 24);
+            this.menuStrip1.Stretch = false;
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -185,7 +186,7 @@
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(933, 380);
+            this.richTextBox1.Size = new System.Drawing.Size(933, 300);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.Link_Clicked);
@@ -231,7 +232,7 @@
             this.ToolStripButton1,
             this.ToolStripButton2});
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.toolStrip1.Location = new System.Drawing.Point(4, 488);
+            this.toolStrip1.Location = new System.Drawing.Point(4, 408);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(925, 28);
             this.toolStrip1.TabIndex = 4;
@@ -242,7 +243,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(933, 519);
+            this.ClientSize = new System.Drawing.Size(933, 439);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);

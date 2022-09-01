@@ -6,12 +6,15 @@ using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using MaterialSkin;
 using MaterialSkin.Controls;
+using System.Diagnostics;
+using Application = System.Windows.Forms.Application;
+using Label = System.Windows.Forms.Label;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.2.0";
+        private const string CurrentVersion = "v2.2.1";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
@@ -21,6 +24,7 @@ namespace Slackord
         private IServiceProvider _services;
         private bool _failOnMessagesOverCharLimit;
         private int _skippedMessages;
+        private JArray parsed;
 
         public Slackord()
         {
@@ -36,11 +40,11 @@ namespace Slackord
 
         private void SetWindowSizeAndLocation()
         {
-            this.Location = Properties.Settings.Default.FormLocation;
-            this.Height = Properties.Settings.Default.FormHeight;
-            this.Width = Properties.Settings.Default.FormWidth;
-            this.FormClosing += SaveSettingsEventHandler;
-            this.StartPosition = FormStartPosition.Manual;
+            Location = Properties.Settings.Default.FormLocation;
+            Height = Properties.Settings.Default.FormHeight;
+            Width = Properties.Settings.Default.FormWidth;
+            FormClosing += SaveSettingsEventHandler;
+            StartPosition = FormStartPosition.Manual;
         }
 
         private void CheckForExistingBotToken()
@@ -51,7 +55,7 @@ namespace Slackord
             {
                 richTextBox1.Text += "Welcome to Slackord 2!" + "\n";
             }
-            else if (String.IsNullOrEmpty(_discordToken) || String.IsNullOrEmpty(Properties.Settings.Default.SlackordBotToken))
+            else if (string.IsNullOrEmpty(_discordToken) || string.IsNullOrEmpty(Properties.Settings.Default.SlackordBotToken))
             {
                 richTextBox1.Text += "Slackord 2 tried to automatically load your last bot token but wasn't successful." + "\n"
                     + "The token is not long enough or the token value is empty. Please enter a new token." + "\n";
@@ -74,13 +78,13 @@ namespace Slackord
         }
 
         [STAThread]
-        private void SelectFileAndConvertJson()
+        private async void SelectFileAndConvertJson()
         {
             _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
             if (_ofd.ShowDialog() == DialogResult.OK)
             {
                 var json = File.ReadAllText(_ofd.FileName);
-                var parsed = JArray.Parse(json);
+                parsed = JArray.Parse(json);
                 var parseFailed = false;
                 richTextBox1.Text += "Begin parsing JSON data..." + "\n";
                 richTextBox1.Text += "-----------------------------------------" + "\n";
@@ -131,7 +135,7 @@ namespace Slackord
                         }
 
                         _skippedMessages = 0;
-                        if (String.IsNullOrEmpty(slackUserName))
+                        if (string.IsNullOrEmpty(slackUserName))
                         {
                             debugResponse = "Parsed: " + newDateTime + " - " + slackRealName + ": " + slackMessage;
                         }
@@ -172,6 +176,7 @@ namespace Slackord
                     richTextBox1.Text += "FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n";
                     _isFileParsed = false;
                     richTextBox1.ForeColor = System.Drawing.Color.Red;
+                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else
                 {
@@ -184,6 +189,7 @@ namespace Slackord
                         richTextBox1.Text += "Parsing completed successfully!" + "\n";
                         _isFileParsed = true;
                         richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
+                        await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
                     }
 
                 }
@@ -220,8 +226,8 @@ namespace Slackord
 
         private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
         {
-            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return origin.AddSeconds(timestamp);
+            var date = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return date.AddSeconds(timestamp);
         }
 
         private void ToolStripButton1_Click(object sender, EventArgs e)
@@ -242,6 +248,11 @@ namespace Slackord
         {
             richTextBox1.Text += "Starting Slackord bot..." + "\n";
             _discordClient = new DiscordSocketClient();
+            DiscordSocketConfig _config = new();
+            {
+                _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
+            }
+            _discordClient = new(_config);
             _services = new ServiceCollection()
             .AddSingleton(_discordClient)
             .BuildServiceProvider();
@@ -250,6 +261,7 @@ namespace Slackord
             DisableTokenChangeWhileConnected();
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken).ConfigureAwait(false);
             await _discordClient.StartAsync().ConfigureAwait(false);
+            await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.MessageReceived += MessageReceived;
             await Task.Delay(-1).ConfigureAwait(false);
         }
@@ -274,8 +286,6 @@ namespace Slackord
         {
             if (_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
             {
-                var json = File.ReadAllText(_ofd.FileName);
-                var parsed = JArray.Parse(json);
                 richTextBox1.Invoke(new Action(() =>
                 {
                     richTextBox1.Text += "Beginning transfer of Slack messages to Discord..." + "\n" +
@@ -342,7 +352,7 @@ namespace Slackord
                             slackMessage = pair["text"].ToString();
                         }
 
-                        if (String.IsNullOrEmpty(slackUserName))
+                        if (string.IsNullOrEmpty(slackUserName))
                         {
                             slackordResponse = newDateTime + " - " + slackRealName + ": " + slackMessage + " " + "\n";
                         }
@@ -374,6 +384,7 @@ namespace Slackord
                     richTextBox1.Text += "-----------------------------------------" + "\n" +
                     "All messages sent to Discord successfully!" + "\n";
                 }));
+                await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
             }
             else if (!_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
             {
@@ -399,17 +410,17 @@ namespace Slackord
             }
         }
 
-        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _discordClient.StopAsync();
+            await _discordClient.StopAsync();
             Application.Exit();
         }
 
         private void SaveSettingsEventHandler(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.FormHeight = this.Height;
-            Properties.Settings.Default.FormWidth = this.Width;
-            Properties.Settings.Default.FormLocation = this.Location;
+            Properties.Settings.Default.FormHeight = Height;
+            Properties.Settings.Default.FormWidth = Width;
+            Properties.Settings.Default.FormLocation = Location;
             if (Properties.Settings.Default.FirstRun)
             {
                 Properties.Settings.Default.FirstRun = false;
@@ -441,7 +452,7 @@ namespace Slackord
                     + "Would you like to visit the download page?", "Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
                 if (result == DialogResult.Yes)
                 {
-                    System.Diagnostics.Process.Start("https://github.com/thomasloupe/Slackord-2.0/releases/tag/" +
+                    Process.Start("https://github.com/thomasloupe/Slackord-2.0/releases/tag/" +
                                                      latest.TagName);
                 }
             }
@@ -480,7 +491,7 @@ namespace Slackord
                 + "Would you like to open the donation page now?", "Slackord is free, but beer is not!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             if (result == DialogResult.Yes)
             {
-                System.Diagnostics.Process.Start("https://paypal.me/thomasloupe");
+                Process.Start("https://paypal.me/thomasloupe");
             }
         }
 
@@ -491,7 +502,7 @@ namespace Slackord
         }
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.LinkText);
+            Process.Start(e.LinkText);
         }
 
         private void FailOnCharacterLimitToolStripMenuItem_Click(object sender, EventArgs e)
