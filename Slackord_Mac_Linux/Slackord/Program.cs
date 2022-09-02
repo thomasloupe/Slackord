@@ -209,7 +209,10 @@ namespace Slackord
                 {
                     Console.WriteLine("FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n");
                     _isFileParsed = false;
-                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    if (_discordClient != null)
+                    {
+                        await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    }
                 }
                 else
                 {
@@ -220,7 +223,10 @@ namespace Slackord
                     else
                     {
                         Console.WriteLine("Parsing completed successfully!" + "\n");
-                        await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
+                        if (_discordClient != null)
+                        {
+                            await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
+                        }
                         _isFileParsed = true;
                     }
 

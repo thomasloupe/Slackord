@@ -50,7 +50,7 @@ namespace Slackord
         private void CheckForExistingBotToken()
         {
             DisableBothBotConnectionButtons();
-            _discordToken = Properties.Settings.Default.SlackordBotToken;
+            _discordToken = Properties.Settings.Default.SlackordBotToken.Trim();
             if (Properties.Settings.Default.FirstRun)
             {
                 richTextBox1.Text += "Welcome to Slackord 2!" + "\n";
@@ -176,7 +176,10 @@ namespace Slackord
                     richTextBox1.Text += "FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n";
                     _isFileParsed = false;
                     richTextBox1.ForeColor = System.Drawing.Color.Red;
-                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    if (_discordClient != null)
+                    {
+                        await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    }
                 }
                 else
                 {
@@ -189,7 +192,10 @@ namespace Slackord
                         richTextBox1.Text += "Parsing completed successfully!" + "\n";
                         _isFileParsed = true;
                         richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
-                        await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
+                        if (_discordClient != null)
+                        {
+                            await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
+                        }
                     }
 
                 }
@@ -259,7 +265,7 @@ namespace Slackord
             _discordClient.Log += DiscordClient_Log;
             EnableBotDisconnectionMenuItem();
             DisableTokenChangeWhileConnected();
-            await _discordClient.LoginAsync(TokenType.Bot, _discordToken).ConfigureAwait(false);
+            await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim()).ConfigureAwait(false);
             await _discordClient.StartAsync().ConfigureAwait(false);
             await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.MessageReceived += MessageReceived;
@@ -399,8 +405,8 @@ namespace Slackord
         private void ShowEnterTokenDialog()
         {
             _discordToken = Prompt.ShowDialog("Enter bot token.", "Enter Bot Token");
-            Properties.Settings.Default.SlackordBotToken = _discordToken;
-            if (_discordToken.Length > 10 && String.IsNullOrEmpty(_discordToken).Equals(false))
+            Properties.Settings.Default.SlackordBotToken = _discordToken.Trim();
+            if (_discordToken.Length > 10 && string.IsNullOrEmpty(_discordToken).Equals(false))
             {
                 EnableBotConnectionMenuItem();
             }
@@ -425,7 +431,7 @@ namespace Slackord
             {
                 Properties.Settings.Default.FirstRun = false;
             }
-            Properties.Settings.Default.SlackordBotToken = _discordToken;
+            Properties.Settings.Default.SlackordBotToken = _discordToken.Trim();
             Properties.Settings.Default.Save();
         }
 
