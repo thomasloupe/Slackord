@@ -66,7 +66,7 @@ namespace Slackord
         {
             if (File.Exists("Token.txt"))
             {
-                _discordToken = File.ReadAllText("Token.txt");
+                _discordToken = File.ReadAllText("Token.txt").Trim();
                 Console.WriteLine("Found existing token file.");
                 if (_discordToken.Length == 0 || string.IsNullOrEmpty(_discordToken))
                 {
