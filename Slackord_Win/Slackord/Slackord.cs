@@ -9,6 +9,7 @@ using MaterialSkin.Controls;
 using System.Diagnostics;
 using Application = System.Windows.Forms.Application;
 using Label = System.Windows.Forms.Label;
+using System.Text.RegularExpressions;
 
 namespace Slackord
 {
@@ -22,8 +23,6 @@ namespace Slackord
         private octo.GitHubClient _octoClient;
         private bool _isFileParsed;
         private IServiceProvider _services;
-        private bool _failOnMessagesOverCharLimit;
-        private int _skippedMessages;
         private JArray parsed;
 
         public Slackord()
@@ -133,8 +132,6 @@ namespace Slackord
                         {
                             slackMessage = pair["text"].ToString();
                         }
-
-                        _skippedMessages = 0;
                         if (string.IsNullOrEmpty(slackUserName))
                         {
                             debugResponse = "Parsed: " + newDateTime + " - " + slackRealName + ": " + slackMessage;
@@ -144,23 +141,8 @@ namespace Slackord
                             debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage;
                             if (debugResponse.Length >= 2000)
                             {
-                                if (_failOnMessagesOverCharLimit)
-                                {
-                                    parseFailed = true;
-                                    richTextBox1.Text += "\n" + "PARSING FAILED!" + "\n" +
-                                        "A message which contained more than 2000 characters was discovered. Discord does not allow messages over 2000 characters." +
-                                        "Please edit your JSON file or posting to Discord will fail." + "\n" +
-                                        "For your information, the message was: " + "\n" + "\n";
-                                    break;
-                                }
-                                else
-                                {
-                                    richTextBox1.Text += "\n" + "PARSING FAILED ON MESSAGE! CONTINUING..." + "\n" +
-                                        "A message which contained more than 2000 characters was discovered. Discord does not allow messages over 2000 characters." +
-                                        "Please edit your JSON file or posting to Discord will fail." + "\n" +
-                                        "For your information, the message was: " + "\n" + "\n";
-                                    _skippedMessages++;
-                                }
+                                richTextBox1.Text += "The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. This message " +
+                                    "will be split into multiple posts. The message that will be split is:\n" + debugResponse;
                             }
                             else
                             {
@@ -171,35 +153,13 @@ namespace Slackord
                     }
                 }
                 richTextBox1.Text += "-----------------------------------------" + "\n";
-                if (parseFailed)
+                richTextBox1.Text += "Parsing completed successfully!" + "\n";
+                _isFileParsed = true;
+                richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
+                if (_discordClient != null)
                 {
-                    richTextBox1.Text += "FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n";
-                    _isFileParsed = false;
-                    richTextBox1.ForeColor = System.Drawing.Color.Red;
-                    if (_discordClient != null)
-                    {
-                        await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-                    }
+                    await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
                 }
-                else
-                {
-                    if (_skippedMessages > 0)
-                    {
-                        richTextBox1.Text += "Parsing completed, but there were " + _skippedMessages + " skipped messages." + "\n";
-                    }
-                    else
-                    {
-                        richTextBox1.Text += "Parsing completed successfully!" + "\n";
-                        _isFileParsed = true;
-                        richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
-                        if (_discordClient != null)
-                        {
-                            await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
-                        }
-                    }
-
-                }
-                _skippedMessages = 0;
             }
         }
 
@@ -368,12 +328,17 @@ namespace Slackord
                         }
                         if (slackordResponse.Length >= 2000)
                         {
+                            List<string> responses = (from Match m in Regex.Matches(slackordResponse, @"\d{1,2000}")select m.Value).ToList();
+
                             richTextBox1.Invoke(new Action(() =>
                             {
-                                richTextBox1.ForeColor = System.Drawing.Color.DarkOrange;
-                                richTextBox1.Text += "SKIPPING: " + slackordResponse;
-                                richTextBox1.ForeColor = System.Drawing.Color.Green;
+                                richTextBox1.Text += "SPLITTING AND POSTING: " + slackordResponse;
                             }));
+                            foreach (var response in responses)
+                            {
+                                slackordResponse = newDateTime + " - " + slackUserName + ": " + response + " " + "\n";
+                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            }
                         }
                         else
                         {
@@ -509,18 +474,6 @@ namespace Slackord
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
         {
             Process.Start(e.LinkText);
-        }
-
-        private void FailOnCharacterLimitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (failOnCharacterLimitToolStripMenuItem.Checked)
-            {
-                _failOnMessagesOverCharLimit = false;
-            }
-            else
-            {
-                _failOnMessagesOverCharLimit = true;
-            }
         }
     }
 

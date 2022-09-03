@@ -38,7 +38,6 @@
             this.ConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConnectBotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DisconnectBotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.failOnCharacterLimitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CheckForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,8 +94,7 @@
             this.settingsToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.EnterBotTokenToolStripMenuItem,
-            this.ConnectionToolStripMenuItem,
-            this.failOnCharacterLimitToolStripMenuItem});
+            this.ConnectionToolStripMenuItem});
             this.settingsToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -105,7 +103,7 @@
             // EnterBotTokenToolStripMenuItem
             // 
             this.EnterBotTokenToolStripMenuItem.Name = "EnterBotTokenToolStripMenuItem";
-            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.EnterBotTokenToolStripMenuItem.Text = "Enter Bot Token";
             this.EnterBotTokenToolStripMenuItem.Click += new System.EventHandler(this.EnterBotTokenToolStripMenuItem_Click);
             // 
@@ -115,7 +113,7 @@
             this.ConnectBotToolStripMenuItem,
             this.DisconnectBotToolStripMenuItem});
             this.ConnectionToolStripMenuItem.Name = "ConnectionToolStripMenuItem";
-            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ConnectionToolStripMenuItem.Text = "Bot Connection";
             // 
             // ConnectBotToolStripMenuItem
@@ -131,18 +129,6 @@
             this.DisconnectBotToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.DisconnectBotToolStripMenuItem.Text = "Disconnect";
             this.DisconnectBotToolStripMenuItem.Click += new System.EventHandler(this.DisconnectBotToolStripMenuItem_Click);
-            // 
-            // failOnCharacterLimitToolStripMenuItem
-            // 
-            this.failOnCharacterLimitToolStripMenuItem.Checked = true;
-            this.failOnCharacterLimitToolStripMenuItem.CheckOnClick = true;
-            this.failOnCharacterLimitToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.failOnCharacterLimitToolStripMenuItem.Name = "failOnCharacterLimitToolStripMenuItem";
-            this.failOnCharacterLimitToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.failOnCharacterLimitToolStripMenuItem.Text = "Ignore Char Limit Failures";
-            this.failOnCharacterLimitToolStripMenuItem.ToolTipText = "Check if you want to skip parsing and sending messages that would exceed the Disc" +
-    "ord character limit.";
-            this.failOnCharacterLimitToolStripMenuItem.Click += new System.EventHandler(this.FailOnCharacterLimitToolStripMenuItem_Click);
             // 
             // HelpToolStripMenuItem
             // 
@@ -277,12 +263,11 @@
         private System.Windows.Forms.ToolStripMenuItem ConnectBotToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem DisconnectBotToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem CheckForUpdatesToolStripMenuItem;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        public System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ToolStripButton ToolStripButton1;
         private System.Windows.Forms.ToolStripButton ToolStripButton2;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripMenuItem DonateToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem failOnCharacterLimitToolStripMenuItem;
     }
 }
 

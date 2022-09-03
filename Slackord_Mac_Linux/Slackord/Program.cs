@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 
 namespace Slackord
 {
@@ -14,7 +15,6 @@ namespace Slackord
         private string _discordToken;
         private bool _isFileParsed;
         private IServiceProvider _services;
-        private int _skippedMessages;
         private string fileToRead = String.Empty;
         private JArray parsed;
 
@@ -178,8 +178,6 @@ namespace Slackord
                         {
                             slackMessage = pair["text"].ToString();
                         }
-
-                        _skippedMessages = 0;
                         if (string.IsNullOrEmpty(slackUserName))
                         {
                             debugResponse = "Parsed: " + newDateTime + " - " + slackRealName + ": " + slackMessage;
@@ -189,12 +187,8 @@ namespace Slackord
                             debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage;
                             if (debugResponse.Length >= 2000)
                             {
-                                parseFailed = true;
-                                Console.WriteLine("\n" + "PARSING FAILED!" + "\n" +
-                                    "A message which contained more than 2000 characters was discovered. Discord does not allow messages over 2000 characters." +
-                                    "Please edit your JSON file or posting to Discord will fail." + "\n" +
-                                    "For your information, the message was: " + "\n" + "\n");
-                                break;
+                                Console.WriteLine("The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. This message " +
+                                    "will be split into multiple posts. The message that will be split is:\n" + debugResponse);
                             }
                             else
                             {
@@ -205,37 +199,16 @@ namespace Slackord
                     }
                 }
                 Console.WriteLine("-----------------------------------------" + "\n");
-                if (parseFailed)
+                Console.WriteLine("Parsing completed successfully!" + "\n");
+                if (_discordClient != null)
                 {
-                    Console.WriteLine("FAILED TO PARSE ONE OR MORE MESSAGES! PLEASE SEE THE LOG" + "\n");
-                    _isFileParsed = false;
-                    if (_discordClient != null)
-                    {
-                        await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-                    }
+                    await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
                 }
-                else
-                {
-                    if (_skippedMessages > 0)
-                    {
-                        Console.WriteLine("Parsing completed, but there were " + _skippedMessages + " skipped messages." + "\n");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Parsing completed successfully!" + "\n");
-                        if (_discordClient != null)
-                        {
-                            await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
-                        }
-                        _isFileParsed = true;
-                    }
-
-                }
-                _skippedMessages = 0;
+                _isFileParsed = true;
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error encountered in inpue " + e.Message);
+                Console.WriteLine("Error encountered in input " + e.Message);
             }
             Console.WriteLine("Bot will now attempt to connect to the Discord server...");
             ConnectBot();
@@ -352,7 +325,14 @@ namespace Slackord
                                 }
                                 if (slackordResponse.Length >= 2000)
                                 {
-                                    Console.WriteLine("SKIPPING: " + slackordResponse);
+                                    List<string> responses = (from Match m in Regex.Matches(slackordResponse, @"\d{1,2000}") select m.Value).ToList();
+
+                                    Console.WriteLine("SPLITTING AND POSTING: " + slackordResponse);
+                                    foreach (var response in responses)
+                                    {
+                                        slackordResponse = newDateTime + " - " + slackUserName + ": " + response + " " + "\n";
+                                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                    }
                                 }
                                 else
                                 {
