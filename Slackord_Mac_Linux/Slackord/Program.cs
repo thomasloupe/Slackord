@@ -156,6 +156,25 @@ namespace Slackord
                         }
                         Console.WriteLine(debugResponse + "\n");
                     }
+                    if (pair.ContainsKey("bot_profile"))
+                    {
+                        try
+                        {
+                            debugResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                        }
+                        catch (NullReferenceException)
+                        {
+                            try
+                            {
+                                debugResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                            }
+                            catch (NullReferenceException)
+                            {
+                                debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
+                            }
+                        }
+                        Console.WriteLine(debugResponse + "\n");
+                    }
                     if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                     {
                         var rawTimeDate = pair["ts"];
@@ -165,7 +184,7 @@ namespace Slackord
                         var slackUserName = pair["user_profile"]["display_name"]?.ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
 
-                        var slackMessage = "";
+                        string slackMessage = string.Empty;
                         if (pair["text"].Contains("|"))
                         {
                             string preSplit = pair["text"].ToString();
@@ -278,12 +297,16 @@ namespace Slackord
                                 try
                                 {
                                     slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
+                                    Console.WriteLine("POSTING: " + slackordResponse);
+                                    await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                 }
                                 catch (NullReferenceException)
                                 {
                                     try
                                     {
                                         slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                                        Console.WriteLine("POSTING: " + slackordResponse);
+                                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
                                     catch (NullReferenceException)
                                     {
@@ -291,8 +314,28 @@ namespace Slackord
                                         Console.WriteLine("Skipped a tombstoned file attachement.");
                                     }
                                 }
-                                Console.WriteLine("POSTING: " + slackordResponse);
-                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            }
+                            if (pair.ContainsKey("bot_profile"))
+                            {
+                                try
+                                {
+                                    slackordResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                                    Console.WriteLine("POSTING: " + slackordResponse);
+                                    await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    try
+                                    {
+                                        slackordResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                                        Console.WriteLine("POSTING: " + slackordResponse);
+                                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                    }
+                                    catch (NullReferenceException)
+                                    {
+                                        Console.WriteLine("A bot message was ignored. Please submit an issue on Github for this.");
+                                    }
+                                }
                             }
                             if (!pair.ContainsKey("user_profile") && !pair.ContainsKey("text"))
                             {

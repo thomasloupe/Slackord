@@ -109,6 +109,25 @@ namespace Slackord
                         }
                         richTextBox1.Text += debugResponse + "\n";
                     }
+                    if (pair.ContainsKey("bot_profile"))
+                    {
+                        try
+                        {
+                            debugResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                        }
+                        catch (NullReferenceException)
+                        {
+                            try
+                            {
+                                debugResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                            }
+                            catch (NullReferenceException)
+                            {
+                                debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
+                            }
+                        }
+                        richTextBox1.Text += debugResponse + "\n";
+                    }
                     if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                     {
                         var rawTimeDate = pair["ts"];
@@ -118,7 +137,7 @@ namespace Slackord
                         var slackUserName = pair["user_profile"]["display_name"].ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
 
-                        var slackMessage = "";
+                        string slackMessage = string.Empty;
                         if (pair["text"].Contains("|"))
                         {
                             string preSplit = pair["text"].ToString();
@@ -272,12 +291,22 @@ namespace Slackord
                         try
                         {
                             slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
+                            richTextBox1.Invoke(new Action(() =>
+                            {
+                                richTextBox1.Text += "POSTING: " + slackordResponse;
+                            }));
+                            await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                         }
                         catch (NullReferenceException)
                         {
                             try
                             {
                                 slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                                richTextBox1.Invoke(new Action(() =>
+                                {
+                                    richTextBox1.Text += "POSTING: " + slackordResponse;
+                                }));
+                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                             }
                             catch (NullReferenceException)
                             {
@@ -285,12 +314,37 @@ namespace Slackord
                                 richTextBox1.Text += "Skipped a tombstoned file attachement.";
                             }
                         }
-
-                        richTextBox1.Invoke(new Action(() =>
+                    }
+                    if (pair.ContainsKey("bot_profile"))
+                    {
+                        try
                         {
-                            richTextBox1.Text += "POSTING: " + slackordResponse;
-                        }));
-                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            slackordResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                            richTextBox1.Invoke(new Action(() =>
+                            {
+                                richTextBox1.Text += "POSTING: " + slackordResponse;
+                            }));
+                            await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                        }
+                        catch (NullReferenceException)
+                        {
+                            try
+                            {
+                                slackordResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                                richTextBox1.Invoke(new Action(() =>
+                                {
+                                    richTextBox1.Text += "POSTING: " + slackordResponse;
+                                }));
+                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            }
+                            catch (NullReferenceException)
+                            {
+                                richTextBox1.Invoke(new Action(() =>
+                                {
+                                    richTextBox1.Text += "A bot message was ignored. Please submit an issue on Github for this."; ;
+                                }));
+                            }
+                        }
                     }
                     if (!pair.ContainsKey("user_profile") && !pair.ContainsKey("text"))
                     {
