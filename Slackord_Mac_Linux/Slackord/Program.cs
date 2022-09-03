@@ -9,7 +9,7 @@ namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.1.1";
+        private const string CurrentVersion = "v2.2.2";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
@@ -140,11 +140,19 @@ namespace Slackord
                     {
                         try
                         {
-                            debugResponse = "Parsed: " + pair["files"][0]["thumb_1024"].ToString() + "\n";
+                            debugResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
                         }
                         catch (NullReferenceException)
                         {
-                            debugResponse = "Parsed: " + pair["files"][0]["url_private"].ToString() + "\n";
+                            try
+                            {
+                                debugResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                            }
+                            catch (NullReferenceException)
+                            {
+                                // Ignore posting this file to Discord.
+                                Console.WriteLine("Skipped a tombstoned file attachement.");
+                            }
                         }
                         Console.WriteLine(debugResponse + "\n");
                     }
@@ -273,9 +281,16 @@ namespace Slackord
                                 }
                                 catch (NullReferenceException)
                                 {
-                                    slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                                    try
+                                    {
+                                        slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                                    }
+                                    catch (NullReferenceException)
+                                    {
+                                        // Ignore posting this file to Discord.
+                                        Console.WriteLine("Skipped a tombstoned file attachement.");
+                                    }
                                 }
-
                                 Console.WriteLine("POSTING: " + slackordResponse);
                                 await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                             }

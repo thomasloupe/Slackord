@@ -15,7 +15,7 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.2.1.1";
+        private const string CurrentVersion = "v2.2.2";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
@@ -94,11 +94,18 @@ namespace Slackord
                     {
                         try
                         {
-                            debugResponse = ("Parsed: " + pair["files"][0]["thumb_1024"].ToString()) + "\n";
+                            debugResponse = "Parsed: " + pair["files"][0]["thumb_1024"].ToString() + "\n";
                         }
                         catch (NullReferenceException)
                         {
-                            debugResponse = ("Parsed: " + pair["files"][0]["url_private"].ToString()) + "\n";
+                            try
+                            {
+                                debugResponse = "Parsed: " + pair["files"][0]["url_private"].ToString() + "\n";
+                            }
+                            catch (NullReferenceException)
+                            {
+                                debugResponse = "A file was too old and was removed by slack. Ignoring this file.";
+                            }
                         }
                         richTextBox1.Text += debugResponse + "\n";
                     }
@@ -268,7 +275,15 @@ namespace Slackord
                         }
                         catch (NullReferenceException)
                         {
-                            slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                            try
+                            {
+                                slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                            }
+                            catch (NullReferenceException)
+                            {
+                                // Ignore posting this file to Discord.
+                                richTextBox1.Text += "Skipped a tombstoned file attachement.";
+                            }
                         }
 
                         richTextBox1.Invoke(new Action(() =>
