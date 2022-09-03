@@ -113,13 +113,13 @@ namespace Slackord
                     {
                         try
                         {
-                            debugResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                            debugResponse = "Parsed: " + pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
                         }
                         catch (NullReferenceException)
                         {
                             try
                             {
-                                debugResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                                debugResponse = "Parsed: " + pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                             }
                             catch (NullReferenceException)
                             {
@@ -319,7 +319,7 @@ namespace Slackord
                     {
                         try
                         {
-                            slackordResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                            slackordResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
                             richTextBox1.Invoke(new Action(() =>
                             {
                                 richTextBox1.Text += "POSTING: " + slackordResponse;
@@ -330,7 +330,7 @@ namespace Slackord
                         {
                             try
                             {
-                                slackordResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                                slackordResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                                 richTextBox1.Invoke(new Action(() =>
                                 {
                                     richTextBox1.Text += "POSTING: " + slackordResponse;

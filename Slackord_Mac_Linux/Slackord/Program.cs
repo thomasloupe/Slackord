@@ -160,13 +160,13 @@ namespace Slackord
                     {
                         try
                         {
-                            debugResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                            debugResponse = "Parsed: " + pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
                         }
                         catch (NullReferenceException)
                         {
                             try
                             {
-                                debugResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                                debugResponse = "Parsed: " + pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                             }
                             catch (NullReferenceException)
                             {
@@ -319,7 +319,7 @@ namespace Slackord
                             {
                                 try
                                 {
-                                    slackordResponse = "Parsed: " + pair["bot_profile"][0]["name"][0].ToString() + ": " + pair["text"] + "\n";
+                                    slackordResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
                                     Console.WriteLine("POSTING: " + slackordResponse);
                                     await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                 }
@@ -327,7 +327,7 @@ namespace Slackord
                                 {
                                     try
                                     {
-                                        slackordResponse = "Parsed: " + pair["bot_id"][0].ToString() + ": " + pair["text"] + "\n";
+                                        slackordResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                                         Console.WriteLine("POSTING: " + slackordResponse);
                                         await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
