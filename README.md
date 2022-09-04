@@ -49,5 +49,5 @@ Slackord2 is the .NET6.0 version of the [Slackord 1.x](https://github.com/thomas
 
 # Important: Please Read!
 1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist. Please ensure you specify which version of Slackord2 you are using, and the Operating System you're running Slackord2 on.
-1. I have decided against importing multiple JSON files to disincentivise using Slackord2 maliciously. You can, however, merge multiple JSON files into one with [this tool](https://tools.knowledgewalls.com/onlinejsonmerger) or many others that exist online which will achieve the same result.
+1. I have decided against importing multiple JSON files to disincentivise using Slackord2 maliciously. You can, however, merge multiple JSON files into one with [this tool](https://dashboard.data.gov/merge) or many others that exist online which will achieve the same result.
 1. Slackord2 is free, and it will always be free. However, if you found Slackord2 worth donating something, you can donate from within Slackord2 by accessing "Donate" from the "Help" context menu, you can sponsor Slackord2 at the top of this repository by clicking the heart (sponsor) button, or [click here](https://paypal.me/thomasloupe)(PayPal) to donate directly.
