@@ -3,13 +3,12 @@ using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.RegularExpressions;
 
 namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.2";
+        private const string CurrentVersion = "v2.2.3";
         private const string CommandTrigger = "!slackord";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
@@ -30,7 +29,7 @@ namespace Slackord
             CheckForExistingBotToken();
         }
 
-        public void AboutSlackord()
+        public static void AboutSlackord()
         {
             Console.WriteLine("Slackord " + CurrentVersion + ".\n" +
                 "Created by Thomas Loupe." + "\n" +
@@ -130,31 +129,31 @@ namespace Slackord
                 fileToRead = files[index];
                 var json = File.ReadAllText(fileToRead);
                 parsed = JArray.Parse(json);
-                var parseFailed = false;
                 Console.WriteLine("Begin parsing JSON data..." + "\n");
                 Console.WriteLine("-----------------------------------------" + "\n");
+                string debugResponse;
                 foreach (JObject pair in parsed.Cast<JObject>())
                 {
-                    var debugResponse = "";
                     if (pair.ContainsKey("files"))
                     {
                         try
                         {
                             debugResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
+                            Console.WriteLine(debugResponse + "\n");
                         }
                         catch (NullReferenceException)
                         {
                             try
                             {
                                 debugResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                                Console.WriteLine(debugResponse + "\n");
                             }
                             catch (NullReferenceException)
                             {
-                                // Ignore posting this file to Discord.
-                                Console.WriteLine("Skipped a tombstoned file attachement.");
+                                debugResponse = "Skipped a tombstoned file attachement." + "\n";
+                                Console.WriteLine(debugResponse);
                             }
                         }
-                        Console.WriteLine(debugResponse + "\n");
                     }
                     if (pair.ContainsKey("bot_profile"))
                     {
@@ -179,12 +178,12 @@ namespace Slackord
                     {
                         var rawTimeDate = pair["ts"];
                         var oldDateTime = (double)rawTimeDate;
-                        var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime);
+                        var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
                         var newDateTime = convertDateTime.ToString();
                         var slackUserName = pair["user_profile"]["display_name"]?.ToString();
                         var slackRealName = pair["user_profile"]["real_name"];
 
-                        string slackMessage = string.Empty;
+                        string slackMessage;
                         if (pair["text"].Contains("|"))
                         {
                             string preSplit = pair["text"].ToString();
@@ -269,7 +268,8 @@ namespace Slackord
         private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
         {
             var date = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return date.AddSeconds(timestamp);
+            var returnDate = date.AddSeconds(timestamp);
+            return returnDate;
         }
 
         private Task DiscordClient_Log(LogMessage arg)
@@ -294,9 +294,13 @@ namespace Slackord
                             string slackordResponse;
                             if (pair.ContainsKey("files"))
                             {
+                                var rawTimeDate = pair["ts"];
+                                var oldDateTime = (double)rawTimeDate;
+                                var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+                                var newDateTime = convertDateTime.ToString();
                                 try
                                 {
-                                    slackordResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
+                                    slackordResponse = newDateTime + ": " + pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
                                     Console.WriteLine("POSTING: " + slackordResponse);
                                     await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                 }
@@ -304,7 +308,7 @@ namespace Slackord
                                 {
                                     try
                                     {
-                                        slackordResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
+                                        slackordResponse = newDateTime + ": " + pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
                                         Console.WriteLine("POSTING: " + slackordResponse);
                                         await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
@@ -346,7 +350,7 @@ namespace Slackord
                                 // Can't pass a JToken as a value, so we have to convert it to a string.
                                 var rawTimeDate = pair["ts"];
                                 var oldDateTime = (double)rawTimeDate;
-                                var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime);
+                                var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
                                 var newDateTime = convertDateTime.ToString();
                                 var slackUserName = pair["user_profile"]["display_name"].ToString();
                                 var slackRealName = pair["user_profile"]["real_name"];
@@ -375,20 +379,20 @@ namespace Slackord
 
                                 if (string.IsNullOrEmpty(slackUserName))
                                 {
-                                    slackordResponse = newDateTime + " - " + slackRealName + ": " + slackMessage + " " + "\n";
+                                    slackordResponse = newDateTime + ": " + slackRealName + ": " + slackMessage + " " + "\n";
                                 }
                                 else
                                 {
-                                    slackordResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
+                                    slackordResponse = newDateTime + ": " + slackUserName + ": " + slackMessage + " " + "\n";
                                 }
                                 if (slackordResponse.Length >= 2000)
                                 {
-                                    List<string> responses = (from Match m in Regex.Matches(slackordResponse, @"\d{1,2000}") select m.Value).ToList();
+                                    var responses = slackordResponse.SplitInParts(1800);
 
                                     Console.WriteLine("SPLITTING AND POSTING: " + slackordResponse);
                                     foreach (var response in responses)
                                     {
-                                        slackordResponse = newDateTime + " - " + slackUserName + ": " + response + " " + "\n";
+                                        slackordResponse = response + " " + "\n";
                                         await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
                                 }
@@ -411,5 +415,20 @@ namespace Slackord
                 Console.WriteLine("Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n");
             }
         }
+    }
+    static class StringExtensions
+    {
+
+        public static IEnumerable<String> SplitInParts(this String s, Int32 partLength)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (partLength <= 0)
+                throw new ArgumentException("Invalid char length specified.", nameof(partLength));
+
+            for (var i = 0; i < s.Length; i += partLength)
+                yield return s.Substring(i, Math.Min(partLength, s.Length - i));
+        }
+
     }
 }
