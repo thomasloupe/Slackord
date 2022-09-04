@@ -3,13 +3,14 @@ using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
+using Discord.Net;
+using System.Threading;
 
 namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.3";
-        private const string CommandTrigger = "!slackord";
+        private const string CurrentVersion = "v2.2.4";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -106,8 +107,11 @@ namespace Slackord
                 {
                     Console.WriteLine("You haven't placed any JSON files in the Files folder.\n" +
                         "Please place your JSON files in the Files folder then press ENTER to continue.");
-                    Console.ReadLine();
-                    SelectFileAndConvertJson();
+                    ConsoleKeyInfo keyPressed = Console.ReadKey(true);
+                    if (keyPressed.Key != ConsoleKey.Enter)
+                    {
+                        SelectFileAndConvertJson();
+                    }
                 }
 
                 var count = 0;
@@ -117,16 +121,27 @@ namespace Slackord
                     count++;
                 }
                 
-                // Read all files inside Files folder.
                 Console.WriteLine("Please select a file number you wish to parse and post to Discord: ");
-                var index = int.Parse(Console.ReadLine());
-                if (index > files.Length || index < 0)
+                int index;
+                try
                 {
-                    Console.WriteLine("That is not a valid selection, please try again...");
+                    index = int.Parse(Console.ReadLine());
+                    if (index > files.Length || index < 0)
+                    {
+                        Console.WriteLine("That is not a valid selection, please try again...");
+                        SelectFileAndConvertJson();
+                    }
+                    else
+                    {
+                        fileToRead = files[index];
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                     SelectFileAndConvertJson();
                 }
 
-                fileToRead = files[index];
                 var json = File.ReadAllText(fileToRead);
                 parsed = JArray.Parse(json);
                 Console.WriteLine("Begin parsing JSON data..." + "\n");
@@ -237,16 +252,12 @@ namespace Slackord
                 Console.WriteLine("Error encountered in input " + e.Message);
             }
             Console.WriteLine("Bot will now attempt to connect to the Discord server...");
-            ConnectBot();
-        }
-
-        private async void ConnectBot()
-        {
             await MainAsync();
         }
 
         public async Task MainAsync()
         {
+            var thread = new Thread(() => { while (true) Thread.Sleep(5000); }); thread.Start();
             _discordClient = new DiscordSocketClient();
             DiscordSocketConfig _config = new();
             {
@@ -260,9 +271,46 @@ namespace Slackord
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken).ConfigureAwait(false);
             await _discordClient.StartAsync().ConfigureAwait(false);
             await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-            _discordClient.MessageReceived += MessageReceived;
+            _discordClient.Ready += ClientReady;
+            _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1).ConfigureAwait(false);
-            Console.ReadLine();
+        }
+
+        private async Task SlashCommandHandler(SocketSlashCommand command)
+        {
+            if (command.Data.Name.Equals("slackord"))
+            {
+                var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+                await command.RespondAsync($"Executed {command.Data.Name}");
+                var channel = _discordClient.GetChannel((ulong)command.ChannelId);
+                await PostMessages(channel, guildID);
+            }
+        }
+
+        private async Task ClientReady()
+        {
+            // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
+            var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+            var guild = _discordClient.GetGuild(guildID);
+
+            // Next, lets create our slash command builder. This is like the embed builder but for slash commands.
+            var guildCommand = new SlashCommandBuilder();
+
+            // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
+            guildCommand.WithName("slackord");
+
+            // Descriptions can have a max length of 100.
+            guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
+
+            try
+            {
+                // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
+                await guild.CreateApplicationCommandAsync(guildCommand.Build());
+            }
+            catch (HttpException Ex)
+            {
+                Console.WriteLine(Ex.Message);
+            }
         }
 
         private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
@@ -278,9 +326,9 @@ namespace Slackord
             return Task.CompletedTask;
         }
 
-        private async Task MessageReceived(SocketMessage message)
+        private async Task PostMessages(SocketChannel channel, ulong guildID)
         {
-            if (_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
+            if (_isFileParsed)
             {
                 var files = Directory.GetFiles("Files");
                 foreach (var file in files)
@@ -302,7 +350,7 @@ namespace Slackord
                                 {
                                     slackordResponse = newDateTime + ": " + pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
                                     Console.WriteLine("POSTING: " + slackordResponse);
-                                    await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                 }
                                 catch (NullReferenceException)
                                 {
@@ -310,7 +358,7 @@ namespace Slackord
                                     {
                                         slackordResponse = newDateTime + ": " + pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
                                         Console.WriteLine("POSTING: " + slackordResponse);
-                                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
                                     catch (NullReferenceException)
                                     {
@@ -325,7 +373,7 @@ namespace Slackord
                                 {
                                     slackordResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
                                     Console.WriteLine("POSTING: " + slackordResponse);
-                                    await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                 }
                                 catch (NullReferenceException)
                                 {
@@ -333,7 +381,7 @@ namespace Slackord
                                     {
                                         slackordResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                                         Console.WriteLine("POSTING: " + slackordResponse);
-                                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
                                     catch (NullReferenceException)
                                     {
@@ -393,13 +441,13 @@ namespace Slackord
                                     foreach (var response in responses)
                                     {
                                         slackordResponse = response + " " + "\n";
-                                        await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                     }
                                 }
                                 else
                                 {
                                     Console.WriteLine("POSTING: " + slackordResponse);
-                                    await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                                 }
                             }
                         }
@@ -409,9 +457,9 @@ namespace Slackord
                     }
                 }
             }
-            else if (!_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
+            else if (!_isFileParsed)
             {
-                await message.Channel.SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
+                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
                 Console.WriteLine("Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n");
             }
         }

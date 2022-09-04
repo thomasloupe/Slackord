@@ -9,13 +9,14 @@ using MaterialSkin.Controls;
 using System.Diagnostics;
 using Application = System.Windows.Forms.Application;
 using Label = System.Windows.Forms.Label;
+using Discord.Net;
+using Newtonsoft.Json;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.2.3";
-        private const string CommandTrigger = "!slackord";
+        private const string CurrentVersion = "v2.2.4";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -253,8 +254,46 @@ namespace Slackord
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim()).ConfigureAwait(false);
             await _discordClient.StartAsync().ConfigureAwait(false);
             await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-            _discordClient.MessageReceived += MessageReceived;
+            _discordClient.Ready += ClientReady;
+            _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1).ConfigureAwait(false);
+        }
+
+        private async Task SlashCommandHandler(SocketSlashCommand command)
+        {
+            if (command.Data.Name.Equals("slackord"))
+            {
+                var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+                await command.RespondAsync($"Executed {command.Data.Name}");
+                var channel = _discordClient.GetChannel((ulong)command.ChannelId);
+                await PostMessages(channel, guildID);
+            }
+        }
+        
+        private async Task ClientReady()
+        {
+            // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
+            var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+            var guild = _discordClient.GetGuild(guildID);
+
+            // Next, lets create our slash command builder. This is like the embed builder but for slash commands.
+            var guildCommand = new SlashCommandBuilder();
+
+            // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
+            guildCommand.WithName("slackord");
+
+            // Descriptions can have a max length of 100.
+            guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
+
+            try
+            {
+                // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
+                await guild.CreateApplicationCommandAsync(guildCommand.Build());
+            }
+            catch (HttpException Ex)
+            {
+                Console.WriteLine(Ex.Message);
+            }
         }
 
         private Task DiscordClient_Log(LogMessage arg)
@@ -272,10 +311,10 @@ namespace Slackord
         {
             _ = MainAsync();
         }
-
-        private async Task MessageReceived(SocketMessage message)
+        
+        private async Task PostMessages(SocketChannel channel, ulong guildID)
         {
-            if (_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
+            if (_isFileParsed)
             {
                 richTextBox1.Invoke(new Action(() =>
                 {
@@ -298,7 +337,7 @@ namespace Slackord
                             {
                                 richTextBox1.Text += "POSTING: " + slackordResponse;
                             }));
-                            await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                         }
                         catch (NullReferenceException)
                         {
@@ -309,7 +348,7 @@ namespace Slackord
                                 {
                                     richTextBox1.Text += "POSTING: " + slackordResponse;
                                 }));
-                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                             }
                             catch (NullReferenceException)
                             {
@@ -327,7 +366,7 @@ namespace Slackord
                             {
                                 richTextBox1.Text += "POSTING: " + slackordResponse;
                             }));
-                            await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                         }
                         catch (NullReferenceException)
                         {
@@ -338,7 +377,7 @@ namespace Slackord
                                 {
                                     richTextBox1.Text += "POSTING: " + slackordResponse;
                                 }));
-                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                             }
                             catch (NullReferenceException)
                             {
@@ -409,7 +448,7 @@ namespace Slackord
                             foreach (var response in responses)
                             {
                                 slackordResponse = response + " " + "\n";
-                                await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                             }
                         }
                         else
@@ -418,7 +457,7 @@ namespace Slackord
                             {
                                 richTextBox1.Text += "POSTING: " + slackordResponse;
                             }));
-                            await message.Channel.SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
                         }
                     }
                 }
@@ -429,9 +468,9 @@ namespace Slackord
                 }));
                 await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
             }
-            else if (!_isFileParsed && message.Content.Equals(CommandTrigger, StringComparison.OrdinalIgnoreCase))
+            else if (!_isFileParsed)
             {
-                await message.Channel.SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
+                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
                 richTextBox1.Invoke(new Action(() =>
                 {
                     richTextBox1.Text += "Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n";
