@@ -17,6 +17,7 @@ Slackord2 is the .NET6.0 version of the [Slackord 1.x](https://github.com/thomas
 1. `Update checks` - Slackord2 has the ability to check for updates in the `Help` context menu. Get the latest version with new features easily!
 
 # Getting Started
+Note: If you need to merge multiple JSON files into one, it is recommended to use [this tool](https://dashboard.data.gov/merge).
 1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord2 release for your OS and extract the contents.
 1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
 1. Name your bot "Slackord2", or any preferred custom name.
@@ -49,5 +50,4 @@ Slackord2 is the .NET6.0 version of the [Slackord 1.x](https://github.com/thomas
 
 # Important: Please Read!
 1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist. Please ensure you specify which version of Slackord2 you are using, and the Operating System you're running Slackord2 on.
-1. I have decided against importing multiple JSON files to disincentivise using Slackord2 maliciously. You can, however, merge multiple JSON files into one with [this tool](https://dashboard.data.gov/merge) or many others that exist online which will achieve the same result.
-1. Slackord2 is free, and it will always be free. However, if you found Slackord2 worth donating something, you can donate from within Slackord2 by accessing "Donate" from the "Help" context menu, you can sponsor Slackord2 at the top of this repository by clicking the heart (sponsor) button, or [click here](https://paypal.me/thomasloupe)(PayPal) to donate directly.
+1. Slackord2 is free, and it will always be free. However, if you found Slackord2 worth donating something, you can donate from within Slackord2 by accessing "Donate" from the "Help" context menu, you can sponsor Slackord2 at the top of this repository by clicking the heart (sponsor) button, or [click here](https://paypal.me/thomasloupe) (PayPal) to donate directly.
