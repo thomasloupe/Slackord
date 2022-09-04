@@ -4,7 +4,7 @@ Slackord2 is a cross-platform application that parses JSON chat history file exp
 Slackord2 is the .NET6.0 version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord) Python/Tkinter app with significant feature additions.
 
 # Demo
-![Slackord2 Demo](https://i.imgur.com/iI9JHRj.gif)
+https://user-images.githubusercontent.com/6563450/188318326-d57765ac-e692-4209-b26f-3c8bd0acba6d.mp4
 
 # Features
 1. `Cross platform` - Works on Windows(x86/x64), Mac(x64), and Linux(x64).
