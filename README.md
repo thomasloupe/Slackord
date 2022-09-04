@@ -4,7 +4,10 @@ Slackord2 is a cross-platform application that parses JSON chat history file exp
 Slackord2 is the .NET6.0 version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord) Python/Tkinter app with significant feature additions.
 
 # Demo
-https://user-images.githubusercontent.com/6563450/188318326-d57765ac-e692-4209-b26f-3c8bd0acba6d.mp4
+## Windows
+https://user-images.githubusercontent.com/6563450/188337355-41fdc913-2b9f-41c3-9824-87986bb4d792.mp4
+## Linux/Mac
+https://user-images.githubusercontent.com/6563450/188337369-10823d19-5bce-42d8-a2b0-0fd8b8f5a8bc.mp4
 
 # Features
 1. `Cross platform` - Works on Windows(x86/x64), Mac(x64), and Linux(x64).
@@ -36,7 +39,7 @@ Note: If you need to merge multiple JSON files into one, it is recommended to us
 1. Select `Settings>Enter Bot Token` and paste the copied token into the text field. Slackord2 will remember your token if you close it.
 1. Select `File>Import JSON` and select a Slack JSON chat history file to import.
 1. Select `Settings>Bot Connection>Connect` to connect the bot to your server.
-1. Visit the Discord channel or DM you wish to import Slack chat history to and type `!slackord` (case insensitive).
+1. Visit the Discord channel or DM you wish to import Slack chat history to and type `/slackord`.
 1. Messages will begin posting.
 
 # Running Slackord2 for Mac/Linux
@@ -44,7 +47,7 @@ Note: If you need to merge multiple JSON files into one, it is recommended to us
 1. Place any Slack JSON files you wish to parse inside of the `Files` directory.
 1. Run Slackord2.
 1. Slackord2 will ask you to pick from a numbered list of JSON files to parse. Enter the numerical value for the JSON file you wish to parse. Parsing will begin and the bot will connect to your Discord server.
-1. Visit the Discord channel or DM you wish to import Slack chat history to and type `!slackord` (case insensitive).
+1. Visit the Discord channel or DM you wish to import Slack chat history to and type `/slackord` (case insensitive).
 1. Messages will begin posting.
 1. Restart the Slackord2 app and repeat. (TODO: Don't require a restart to post a new file.)
 
