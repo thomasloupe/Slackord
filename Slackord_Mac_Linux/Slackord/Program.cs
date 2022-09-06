@@ -9,12 +9,12 @@ namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.4";
+        private const string CurrentVersion = "v2.2.5";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
         private IServiceProvider _services;
-        private string fileToRead = String.Empty;
+        private string fileToRead = string.Empty;
         private JArray parsed;
 
         static void Main()
