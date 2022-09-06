@@ -10,7 +10,6 @@ using System.Diagnostics;
 using Application = System.Windows.Forms.Application;
 using Label = System.Windows.Forms.Label;
 using Discord.Net;
-using Newtonsoft.Json;
 
 namespace Slackord
 {
@@ -251,12 +250,12 @@ namespace Slackord
             _discordClient.Log += DiscordClient_Log;
             EnableBotDisconnectionMenuItem();
             DisableTokenChangeWhileConnected();
-            await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim()).ConfigureAwait(false);
-            await _discordClient.StartAsync().ConfigureAwait(false);
+            await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
+            await _discordClient.StartAsync();
             await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.Ready += ClientReady;
             _discordClient.SlashCommandExecuted += SlashCommandHandler;
-            await Task.Delay(-1).ConfigureAwait(false);
+            await Task.Delay(-1);
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)

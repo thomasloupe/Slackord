@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
-using System.Threading;
 
 namespace Slackord
 {
@@ -18,19 +17,23 @@ namespace Slackord
         private string fileToRead = String.Empty;
         private JArray parsed;
 
-        static void Main(string[] args)
+        static void Main()
         {
-            new Slackord();
+            new Slackord().Start();
         }
 
         public Slackord()
         {
             _isFileParsed = false;
+        }
+
+        public void Start()
+        {
             AboutSlackord();
             CheckForExistingBotToken();
         }
 
-        public static void AboutSlackord()
+        public static async void AboutSlackord()
         {
             Console.WriteLine("Slackord " + CurrentVersion + ".\n" +
                 "Created by Thomas Loupe." + "\n" +
@@ -41,10 +44,10 @@ namespace Slackord
             Console.WriteLine("Slackord will always be free!\n"
                 + "If you'd like to buy me a beer anyway, I won't tell you not to!\n"
                 + "You can donate at https://www.paypal.me/thomasloupe\n" + "\n");;
-            CheckForUpdates();
+           await CheckForUpdates();
         }
 
-        private static async void CheckForUpdates()
+        private static async Task CheckForUpdates()
         {
             var updateCheck = new octo.GitHubClient(new octo.ProductHeaderValue("Slackord2"));
             var releases = await updateCheck.Repository.Release.GetAll("thomasloupe", "Slackord2");
@@ -257,23 +260,29 @@ namespace Slackord
 
         public async Task MainAsync()
         {
-            var thread = new Thread(() => { while (true) Thread.Sleep(5000); }); thread.Start();
-            _discordClient = new DiscordSocketClient();
-            DiscordSocketConfig _config = new();
+            try
             {
-                _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
+                var thread = new Thread(() => { while (true) Thread.Sleep(5000); }); thread.Start();
+                _discordClient = new DiscordSocketClient();
+                DiscordSocketConfig _config = new();
+                {
+                    _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
+                }
+                _discordClient = new(_config);
+                _services = new ServiceCollection()
+                .AddSingleton(_discordClient)
+                .BuildServiceProvider();
+                _discordClient.Log += DiscordClient_Log;
+                await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
+                await _discordClient.StartAsync();
+                await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                _discordClient.Ready += ClientReady;
+                _discordClient.SlashCommandExecuted += SlashCommandHandler;
             }
-            _discordClient = new(_config);
-            _services = new ServiceCollection()
-            .AddSingleton(_discordClient)
-            .BuildServiceProvider();
-            _discordClient.Log += DiscordClient_Log;
-            await _discordClient.LoginAsync(TokenType.Bot, _discordToken).ConfigureAwait(false);
-            await _discordClient.StartAsync().ConfigureAwait(false);
-            await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-            _discordClient.Ready += ClientReady;
-            _discordClient.SlashCommandExecuted += SlashCommandHandler;
-            await Task.Delay(-1).ConfigureAwait(false);
+            catch (Exception ex)
+            {
+                Console.WriteLine("Discord bot task failed with: " + ex.Message);
+            }
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
