@@ -263,7 +263,6 @@ namespace Slackord
             if (command.Data.Name.Equals("slackord"))
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                await command.RespondAsync($"Executed {command.Data.Name}");
                 var channel = _discordClient.GetChannel((ulong)command.ChannelId);
                 await PostMessages(channel, guildID);
             }

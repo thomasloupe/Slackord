@@ -9,7 +9,7 @@ namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.5";
+        private const string CurrentVersion = "v2.2.5.1";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -290,7 +290,6 @@ namespace Slackord
             if (command.Data.Name.Equals("slackord"))
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                await command.RespondAsync($"Executed {command.Data.Name}");
                 var channel = _discordClient.GetChannel((ulong)command.ChannelId);
                 await PostMessages(channel, guildID);
             }
