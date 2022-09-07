@@ -15,7 +15,7 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.2.5";
+        private const string CurrentVersion = "v2.2.5.1";
         private DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
