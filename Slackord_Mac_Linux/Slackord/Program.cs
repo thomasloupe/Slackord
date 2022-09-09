@@ -9,7 +9,7 @@ namespace Slackord
 {
     internal class Slackord 
     {
-        private const string CurrentVersion = "v2.2.5.1";
+        private const string CurrentVersion = "v2.2.5.2";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
