@@ -20,7 +20,8 @@ https://user-images.githubusercontent.com/6563450/188337369-10823d19-5bce-42d8-a
 1. `Update checks` - Slackord2 has the ability to check for updates in the `Help` context menu. Get the latest version with new features easily!
 
 # Getting Started
-Note: If you need to merge multiple JSON files into one, it is recommended to use [this tool](https://dashboard.data.gov/merge).
+Note: If you need to merge multiple JSON files into one, it is recommended to use [this tool](https://dashboard.data.gov/merge).</br>
+If you are on the free plan of Slack or need a reliable tool for exporting both private/public Slack JSON files compatible with Slackord2, check out [Slackdump](https://github.com/rusq/slackdump)!
 1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord2 release for your OS and extract the contents.
 1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
 1. Name your bot "Slackord2", or any preferred custom name.
