@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using octo = Octokit;
@@ -7,9 +8,9 @@ using Discord.Net;
 
 namespace Slackord
 {
-    internal class Slackord 
+    internal class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.2.5.2";
+        private const string CurrentVersion = "v2.2.5.3";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -334,8 +335,11 @@ namespace Slackord
             return Task.CompletedTask;
         }
 
+        [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         private async Task PostMessages(SocketChannel channel, ulong guildID)
         {
+            await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
+            await DeferAsync();
             if (_isFileParsed)
             {
                 var files = Directory.GetFiles("Files");
@@ -470,6 +474,7 @@ namespace Slackord
                 await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
                 Console.WriteLine("Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n");
             }
+            await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
         }
     }
     static class StringExtensions

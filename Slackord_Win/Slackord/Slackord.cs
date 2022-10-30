@@ -15,14 +15,16 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.2.5.2";
-        private DiscordSocketClient _discordClient;
+        private const string CurrentVersion = "v2.3";
+        public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
         private octo.GitHubClient _octoClient;
-        private bool _isFileParsed;
-        private IServiceProvider _services;
-        private JArray parsed;
+        public bool _isFileParsed;
+        public IServiceProvider _services;
+        public JArray parsed;
+        private readonly List<string> Responses = new();
+        private readonly List<string> ListOfFilesToParse = new();
 
         public Slackord()
         {
@@ -70,120 +72,134 @@ namespace Slackord
 
         }
 
-        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SelectFileAndConvertJson();
-        }
-
         [STAThread]
         private async void SelectFileAndConvertJson()
         {
-            _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
-            if (_ofd.ShowDialog() == DialogResult.OK)
+            richTextBox1.Text += "Begin parsing JSON data..." + "\n";
+            richTextBox1.Text += "-----------------------------------------" + "\n";
+
+            foreach (var file in ListOfFilesToParse)
             {
-                var json = File.ReadAllText(_ofd.FileName);
-                parsed = JArray.Parse(json);
-                richTextBox1.Text += "Begin parsing JSON data..." + "\n";
-                richTextBox1.Text += "-----------------------------------------" + "\n";
-                string debugResponse;
-                foreach (JObject pair in parsed.Cast<JObject>())
+                try
                 {
-                    if (pair.ContainsKey("files"))
+                    var json = File.ReadAllText(file);
+                    parsed = JArray.Parse(json);
+                    string debugResponse;
+                    foreach (JObject pair in parsed.Cast<JObject>())
                     {
-                        try
-                        {
-                            debugResponse = "Parsed: " + pair["files"][0]["thumb_1024"].ToString() + "\n";
-                        }
-                        catch (NullReferenceException)
+                        if (pair.ContainsKey("files"))
                         {
                             try
                             {
-                                debugResponse = "Parsed: " + pair["files"][0]["url_private"].ToString() + "\n";
+                                debugResponse = pair["files"][0]["thumb_1024"].ToString() + "\n";
+                                Responses.Add(debugResponse);
                             }
                             catch (NullReferenceException)
                             {
-                                debugResponse = "Skipped a tombstoned file attachement.";
+                                try
+                                {
+                                    debugResponse = pair["files"][0]["url_private"].ToString() + "\n";
+                                    Responses.Add(debugResponse);
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    debugResponse = "Skipped a tombstoned file attachement.";
+                                    Responses.Add(debugResponse);
+                                }
                             }
+                            richTextBox1.Text += debugResponse + "\n";
                         }
-                        richTextBox1.Text += debugResponse + "\n";
-                    }
-                    if (pair.ContainsKey("bot_profile"))
-                    {
-                        try
-                        {
-                            debugResponse = "Parsed: " + pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
-                        }
-                        catch (NullReferenceException)
+                        if (pair.ContainsKey("bot_profile"))
                         {
                             try
                             {
-                                debugResponse = "Parsed: " + pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
+                                debugResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
+                                Responses.Add(debugResponse);
                             }
                             catch (NullReferenceException)
                             {
-                                debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
+                                try
+                                {
+                                    debugResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
+                                    Responses.Add(debugResponse);
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
+                                    Responses.Add(debugResponse);
+                                }
                             }
+                            richTextBox1.Text += debugResponse + "\n";
                         }
-                        richTextBox1.Text += debugResponse + "\n";
-                    }
-                    if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
-                    {
-                        var rawTimeDate = pair["ts"];
-                        var oldDateTime = (double)rawTimeDate;
-                        var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                        var newDateTime = convertDateTime.ToString();
-                        var slackUserName = pair["user_profile"]["display_name"].ToString();
-                        var slackRealName = pair["user_profile"]["real_name"];
-
-                        string slackMessage;
-                        if (pair["text"].Contains("|"))
+                        if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                         {
-                            string preSplit = pair["text"].ToString();
-                            string[] split = preSplit.Split(new char[] { '|' });
-                            string originalText = split[0];
-                            string splitText = split[1];
+                            var rawTimeDate = pair["ts"];
+                            var oldDateTime = (double)rawTimeDate;
+                            var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+                            var newDateTime = convertDateTime.ToString();
+                            var slackUserName = pair["user_profile"]["display_name"].ToString();
+                            var slackRealName = pair["user_profile"]["real_name"];
 
-                            if (originalText.Contains(splitText))
+                            string slackMessage;
+                            if (pair["text"].Contains("|"))
                             {
-                                slackMessage = splitText + "\n";
+                                string preSplit = pair["text"].ToString();
+                                string[] split = preSplit.Split(new char[] { '|' });
+                                string originalText = split[0];
+                                string splitText = split[1];
+
+                                if (originalText.Contains(splitText))
+                                {
+                                    slackMessage = splitText + "\n";
+                                }
+                                else
+                                {
+                                    slackMessage = originalText + "\n";
+                                }
                             }
                             else
                             {
-                                slackMessage = originalText + "\n";
+                                slackMessage = pair["text"].ToString();
                             }
-                        }
-                        else
-                        {
-                            slackMessage = pair["text"].ToString();
-                        }
-                        if (string.IsNullOrEmpty(slackUserName))
-                        {
-                            debugResponse = "Parsed: " + newDateTime + " - " + slackRealName + ": " + slackMessage;
-                        }
-                        else
-                        {
-                            debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage;
-                            if (debugResponse.Length >= 2000)
+                            if (string.IsNullOrEmpty(slackUserName))
                             {
-                                richTextBox1.Text += "The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. This message " +
-                                    "will be split into multiple posts. The message that will be split is:\n" + debugResponse;
+                                debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
+                                Responses.Add(debugResponse);
                             }
                             else
                             {
-                                debugResponse = "Parsed: " + newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
+                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                if (debugResponse.Length >= 2000)
+                                {
+                                    richTextBox1.Text += "The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. This message " +
+                                        "will be split into multiple posts. The message that will be split is:\n" + debugResponse;
+                                }
+                                else
+                                {
+                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
+                                    Responses.Add(debugResponse);
+                                }
                             }
+                            richTextBox1.Text += debugResponse + "\n";
                         }
-                        richTextBox1.Text += debugResponse + "\n";
                     }
+                    richTextBox1.Text += "\n";
+                    richTextBox1.Text += "-----------------------------------------" + "\n";
+                    richTextBox1.Text += "Parsing of " + file + " completed successfully!" + "\n";
+                    richTextBox1.Text += "-----------------------------------------" + "\n";
+                    richTextBox1.Text += "\n";
+                    _isFileParsed = true;
+                    richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
                 }
-                richTextBox1.Text += "-----------------------------------------" + "\n";
-                richTextBox1.Text += "Parsing completed successfully!" + "\n";
-                _isFileParsed = true;
-                richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
                 if (_discordClient != null)
                 {
                     await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
                 }
+
             }
         }
 
@@ -214,7 +230,7 @@ namespace Slackord
                 "Website: https://thomasloupe.com", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
+        public static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
         {
             var date = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             var returnDate = date.AddSeconds(timestamp);
@@ -264,7 +280,7 @@ namespace Slackord
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
                 var channel = _discordClient.GetChannel((ulong)command.ChannelId);
-                await PostMessages(channel, guildID);
+                await PostMessagesToDiscord(channel, guildID);
             }
         }
         
@@ -273,19 +289,12 @@ namespace Slackord
             // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
             var guildID = _discordClient.Guilds.FirstOrDefault().Id;
             var guild = _discordClient.GetGuild(guildID);
-
-            // Next, lets create our slash command builder. This is like the embed builder but for slash commands.
             var guildCommand = new SlashCommandBuilder();
-
-            // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
             guildCommand.WithName("slackord");
-
-            // Descriptions can have a max length of 100.
             guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
 
             try
             {
-                // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
                 await guild.CreateApplicationCommandAsync(guildCommand.Build());
             }
             catch (HttpException Ex)
@@ -294,169 +303,65 @@ namespace Slackord
             }
         }
 
-        private Task DiscordClient_Log(LogMessage arg)
+        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID)
         {
-            richTextBox1.Invoke(new Action(() => { richTextBox1.Text += arg.ToString() + "\n"; }));
-            return Task.CompletedTask;
-        }
+            await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
 
-        private void EnterBotTokenToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowEnterTokenDialog();
-        }
-
-        private void ConnectBotToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            _ = MainAsync();
-        }
-        
-        private async Task PostMessages(SocketChannel channel, ulong guildID)
-        {
             if (_isFileParsed)
             {
                 richTextBox1.Invoke(new Action(() =>
                 {
+                    richTextBox1.Text += "\n";
                     richTextBox1.Text += "Beginning transfer of Slack messages to Discord..." + "\n" +
                     "-----------------------------------------" + "\n";
                 }));
-                foreach (JObject pair in parsed.Cast<JObject>())
+                foreach (string message in Responses)
                 {
-                    string slackordResponse;
-                    if (pair.ContainsKey("files"))
+                    string messageToSend = message;
+                    bool wasSplit = false;
+
+                    if (messageToSend.Contains("|"))
                     {
-                        var rawTimeDate = pair["ts"];
-                        var oldDateTime = (double)rawTimeDate;
-                        var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                        var newDateTime = convertDateTime.ToString();
-                        try
+                        string preSplit = message;
+                        string[] split = preSplit.Split(new char[] { '|' });
+                        string originalText = split[0];
+                        string splitText = split[1];
+
+                        if (originalText.Contains(splitText))
                         {
-                            slackordResponse = newDateTime + ": " + pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
-                            richTextBox1.Invoke(new Action(() =>
-                            {
-                                richTextBox1.Text += "POSTING: " + slackordResponse;
-                            }));
-                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
+                            messageToSend = splitText + "\n";
                         }
-                        catch (NullReferenceException)
+                        else
                         {
-                            try
-                            {
-                                slackordResponse = newDateTime + ": " + pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
-                                richTextBox1.Invoke(new Action(() =>
-                                {
-                                    richTextBox1.Text += "POSTING: " + slackordResponse;
-                                }));
-                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
-                            }
-                            catch (NullReferenceException)
-                            {
-                                // Ignore posting this file to Discord.
-                                richTextBox1.Text += "Skipped a tombstoned file attachement.";
-                            }
+                            messageToSend = originalText + "\n";
                         }
                     }
-                    if (pair.ContainsKey("bot_profile"))
+                    
+                    if (message.Length >= 2000)
                     {
-                        try
+                        var responses = messageToSend.SplitInParts(1800);
+
+                        richTextBox1.Invoke(new Action(() =>
                         {
-                            slackordResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
-                            richTextBox1.Invoke(new Action(() =>
-                            {
-                                richTextBox1.Text += "POSTING: " + slackordResponse;
-                            }));
-                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
-                        }
-                        catch (NullReferenceException)
+                            richTextBox1.Text += "SPLITTING AND POSTING: " + messageToSend;
+                        }));
+                        foreach (var response in responses)
                         {
-                            try
-                            {
-                                slackordResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
-                                richTextBox1.Invoke(new Action(() =>
-                                {
-                                    richTextBox1.Text += "POSTING: " + slackordResponse;
-                                }));
-                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
-                            }
-                            catch (NullReferenceException)
-                            {
-                                richTextBox1.Invoke(new Action(() =>
-                                {
-                                    richTextBox1.Text += "A bot message was ignored. Please submit an issue on Github for this."; ;
-                                }));
-                            }
+                            messageToSend = response + " " + "\n";
+                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
                         }
+                        wasSplit = true;
                     }
-                    if (!pair.ContainsKey("user_profile") && !pair.ContainsKey("text"))
+                    else
                     {
                         richTextBox1.Invoke(new Action(() =>
                         {
-                            richTextBox1.ForeColor = System.Drawing.Color.Red;
-                            richTextBox1.Text += "A MESSAGE THAT COULDN'T BE SENT WAS SKIPPED HERE." + "\n";
-                            richTextBox1.ForeColor = System.Drawing.Color.Green;
+                            richTextBox1.Text += "POSTING: " + message;
                         }));
                     }
-                    else if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
+                    if (!wasSplit)
                     {
-                        // Can't pass a JToken as a value, so we have to convert it to a string.
-                        var rawTimeDate = pair["ts"];
-                        var oldDateTime = (double)rawTimeDate;
-                        var convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                        var newDateTime = convertDateTime.ToString();
-                        var slackUserName = pair["user_profile"]["display_name"].ToString();
-                        var slackRealName = pair["user_profile"]["real_name"];
-                        var slackMessage = pair["text"] + "\n";
-
-                        if (pair["text"].Contains("|"))
-                        {
-                            string preSplit = pair["text"].ToString();
-                            string[] split = preSplit.Split(new char[] { '|' });
-                            string originalText = split[0];
-                            string splitText = split[1];
-
-                            if (originalText.Contains(splitText))
-                            {
-                                slackMessage = splitText + "\n";
-                            }
-                            else
-                            {
-                                slackMessage = originalText + "\n";
-                            }
-                        }
-                        else
-                        {
-                            slackMessage = pair["text"].ToString();
-                        }
-
-                        if (string.IsNullOrEmpty(slackUserName))
-                        {
-                            slackordResponse = newDateTime + ": " + slackRealName + ": " + slackMessage + " " + "\n";
-                        }
-                        else
-                        {
-                            slackordResponse = newDateTime + ": " + slackUserName + ": " + slackMessage + " " + "\n";
-                        }
-                        if (slackordResponse.Length >= 2000)
-                        {
-                            var responses = slackordResponse.SplitInParts(1800);
-
-                            richTextBox1.Invoke(new Action(() =>
-                            {
-                                richTextBox1.Text += "SPLITTING AND POSTING: " + slackordResponse;
-                            }));
-                            foreach (var response in responses)
-                            {
-                                slackordResponse = response + " " + "\n";
-                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
-                            }
-                        }
-                        else
-                        {
-                            richTextBox1.Invoke(new Action(() =>
-                            {
-                                richTextBox1.Text += "POSTING: " + slackordResponse;
-                            }));
-                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(slackordResponse).ConfigureAwait(false);
-                        }
+                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
                     }
                 }
                 richTextBox1.Invoke(new Action(() =>
@@ -474,6 +379,24 @@ namespace Slackord
                     richTextBox1.Text += "Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n";
                 }));
             }
+            await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
+            Responses.Clear();
+        }
+
+        private Task DiscordClient_Log(LogMessage arg)
+        {
+            richTextBox1.Invoke(new Action(() => { richTextBox1.Text += arg.ToString() + "\n"; }));
+            return Task.CompletedTask;
+        }
+
+        private void EnterBotTokenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowEnterTokenDialog();
+        }
+
+        private void ConnectBotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _ = MainAsync();
         }
 
         private void ShowEnterTokenDialog()
@@ -583,6 +506,35 @@ namespace Slackord
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
         {
             Process.Start(e.LinkText);
+        }
+
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListOfFilesToParse.Clear();
+            _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
+            if (_ofd.ShowDialog() == DialogResult.OK)
+                ListOfFilesToParse.Add(_ofd.FileName);
+            SelectFileAndConvertJson();
+        }
+
+        private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListOfFilesToParse.Clear();
+            using var fbd = new FolderBrowserDialog();
+            DialogResult result = fbd.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+            {
+                var files = Directory.EnumerateFiles(fbd.SelectedPath, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
+                
+                foreach (var file in files)
+                {
+                    ListOfFilesToParse.Add(file);
+                }
+                MessageBox.Show("Files found: " + files.Count(), "Message");
+                SelectFileAndConvertJson();
+            }
         }
     }
 

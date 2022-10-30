@@ -46,6 +46,7 @@
             this.ToolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.ToolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.importJSONFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -69,6 +70,7 @@
             this.FileToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
             this.FileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenToolStripMenuItem,
+            this.importJSONFolderToolStripMenuItem,
             this.ExitToolStripMenuItem});
             this.FileToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
@@ -78,14 +80,14 @@
             // OpenToolStripMenuItem
             // 
             this.OpenToolStripMenuItem.Name = "OpenToolStripMenuItem";
-            this.OpenToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.OpenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.OpenToolStripMenuItem.Text = "Import JSON";
             this.OpenToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // ExitToolStripMenuItem
             // 
             this.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
-            this.ExitToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.ExitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ExitToolStripMenuItem.Text = "Exit";
             this.ExitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -103,7 +105,7 @@
             // EnterBotTokenToolStripMenuItem
             // 
             this.EnterBotTokenToolStripMenuItem.Name = "EnterBotTokenToolStripMenuItem";
-            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.EnterBotTokenToolStripMenuItem.Text = "Enter Bot Token";
             this.EnterBotTokenToolStripMenuItem.Click += new System.EventHandler(this.EnterBotTokenToolStripMenuItem_Click);
             // 
@@ -113,7 +115,7 @@
             this.ConnectBotToolStripMenuItem,
             this.DisconnectBotToolStripMenuItem});
             this.ConnectionToolStripMenuItem.Name = "ConnectionToolStripMenuItem";
-            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.ConnectionToolStripMenuItem.Text = "Bot Connection";
             // 
             // ConnectBotToolStripMenuItem
@@ -224,6 +226,13 @@
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // importJSONFolderToolStripMenuItem
+            // 
+            this.importJSONFolderToolStripMenuItem.Name = "importJSONFolderToolStripMenuItem";
+            this.importJSONFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importJSONFolderToolStripMenuItem.Text = "Import JSON Folder";
+            this.importJSONFolderToolStripMenuItem.Click += new System.EventHandler(this.ImportJSONFolderToolStripMenuItem_Click);
+            // 
             // Slackord
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -268,6 +277,7 @@
         private System.Windows.Forms.ToolStripButton ToolStripButton2;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripMenuItem DonateToolStripMenuItem;
+        private ToolStripMenuItem importJSONFolderToolStripMenuItem;
     }
 }
 
