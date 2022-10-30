@@ -320,7 +320,7 @@ namespace Slackord
                     string messageToSend = message;
                     bool wasSplit = false;
 
-                    if (messageToSend.Contains("|"))
+                    if (messageToSend.Contains('|'))
                     {
                         string preSplit = message;
                         string[] split = preSplit.Split(new char[] { '|' });
