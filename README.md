@@ -1,7 +1,7 @@
 # Slackord2 ![Slackord2 Logo](https://i.imgur.com/PyVjqzL.png)
 
-Slackord2 is a cross-platform application that parses JSON chat history file exports from Slack and imports them into Discord instantly.
-Slackord2 is the .NET6.0 version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord) Python/Tkinter app with significant feature additions.
+Slackord2 is a cross-platform application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
+Slackord2 is the .NET6 version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord) Python/Tkinter app with significant feature additions and improvements.
 
 # Demo
 ## Windows
@@ -10,17 +10,17 @@ https://user-images.githubusercontent.com/6563450/188337355-41fdc913-2b9f-41c3-9
 https://user-images.githubusercontent.com/6563450/188337369-10823d19-5bce-42d8-a2b0-0fd8b8f5a8bc.mp4
 
 # Features
-1. `Cross platform` - Works on Windows(x86/x64), Mac(x64), and Linux(x64).
+1. `Cross platform` - Works on Windows(x64), Mac(x64), and Linux(x64).
 1. `Post everything` - Post messages, images, and attachments to any Discord channel or Direct Message conversation.
+1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord2 can read all JSON files within a directory and parse/post them to Discord.
 1. `Robust Debug window` - Slackord2 lets you know exactly what's happening in real-time. You'll know what messages are being posted, how they'll be formatted, and what the bot is doing before sending messages to their destination channels.
-1. `Automatic rate-limiting` - Slackord2 limits the messages it sends over time so it doesn't spam your target.
+1. `Rate Limit Detection` - Slackord2 limits the messages it sends over time so it doesn't spam or get itself squelched for posting too often.
 1. `Ease-of-use` - Slackord2 only needs to be set up once, and it'll remember your bot's token, making future imports easy.
 1. `Privacy first` - Slackord2 checks if user messages have a display name and will attempt to keep real names private unless there isn't one.
 1. `Data safety` - Your data is yours. Slackord2 works completely off your local connection and machine.
 1. `Update checks` - Slackord2 has the ability to check for updates in the `Help` context menu. Get the latest version with new features easily!
 
 # Getting Started
-Note: If you need to merge multiple JSON files into one, it is recommended to use [this tool](https://dashboard.data.gov/merge).</br>
 If you are on the free plan of Slack or need a reliable tool for exporting both private/public Slack JSON files compatible with Slackord2, check out [Slackdump](https://github.com/rusq/slackdump)!
 1. Download the [latest](https://github.com/thomasloupe/Slackord2/releases) Slackord2 release for your OS and extract the contents.
 1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
@@ -50,7 +50,6 @@ If you are on the free plan of Slack or need a reliable tool for exporting both 
 1. Slackord2 will ask you to pick from a numbered list of JSON files to parse. Enter the numerical value for the JSON file you wish to parse. Parsing will begin and the bot will connect to your Discord server.
 1. Visit the Discord channel or DM you wish to import Slack chat history to and type `/slackord` (case insensitive).
 1. Messages will begin posting.
-1. Restart the Slackord2 app and repeat. (TODO: Don't require a restart to post a new file.)
 
 # Important: Please Read!
 1. If you need help, please feel free to get in touch with me on [Twitter](https://twitter.com/acid_rain), or open a new issue if it doesn't already exist. Please ensure you specify which version of Slackord2 you are using, and the Operating System you're running Slackord2 on.
