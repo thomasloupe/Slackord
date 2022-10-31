@@ -73,7 +73,7 @@ namespace Slackord
         }
 
         [STAThread]
-        private async void SelectFileAndConvertJson()
+        private async void ParseJsonFiles()
         {
             richTextBox1.Text += "Begin parsing JSON data..." + "\n";
             richTextBox1.Text += "-----------------------------------------" + "\n";
@@ -126,7 +126,6 @@ namespace Slackord
                                 catch (NullReferenceException)
                                 {
                                     debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
-                                    Responses.Add(debugResponse);
                                 }
                             }
                             richTextBox1.Text += debugResponse + "\n";
@@ -141,7 +140,7 @@ namespace Slackord
                             var slackRealName = pair["user_profile"]["real_name"];
 
                             string slackMessage;
-                            if (pair["text"].Contains("|"))
+                            if (pair["text"].Contains('|'))
                             {
                                 string preSplit = pair["text"].ToString();
                                 string[] split = preSplit.Split(new char[] { '|' });
@@ -514,7 +513,7 @@ namespace Slackord
             _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
             if (_ofd.ShowDialog() == DialogResult.OK)
                 ListOfFilesToParse.Add(_ofd.FileName);
-            SelectFileAndConvertJson();
+            ParseJsonFiles();
         }
 
         private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -533,7 +532,7 @@ namespace Slackord
                     ListOfFilesToParse.Add(file);
                 }
                 MessageBox.Show("Files found: " + files.Count(), "Message");
-                SelectFileAndConvertJson();
+                ParseJsonFiles();
             }
         }
     }
