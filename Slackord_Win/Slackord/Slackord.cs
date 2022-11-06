@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿// Slackord2 - Written by Thomas Loupe
+// https://github.com/thomasloupe/Slackord2
+// https://thomasloupe.com
+
+using System.IO;
 using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
@@ -10,12 +14,14 @@ using System.Diagnostics;
 using Application = System.Windows.Forms.Application;
 using Label = System.Windows.Forms.Label;
 using Discord.Net;
+using Octokit;
+using Discord.Rest;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.3";
+        private const string CurrentVersion = "v2.4";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -25,6 +31,8 @@ namespace Slackord
         public JArray parsed;
         private readonly List<string> Responses = new();
         private readonly List<string> ListOfFilesToParse = new();
+        private readonly List<bool> isThreadMessages = new();
+        private readonly List<bool> isThreadStart = new();
 
         public Slackord()
         {
@@ -87,6 +95,22 @@ namespace Slackord
                     string debugResponse;
                     foreach (JObject pair in parsed.Cast<JObject>())
                     {
+                        if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
+                        {
+                            isThreadStart.Add(true);
+                            isThreadMessages.Add(false);
+                        }
+                        else if (pair.ContainsKey("thread_ts"))
+                        {
+                            isThreadStart.Add(false);
+                            isThreadMessages.Add(true);
+                        }
+                        else
+                        {
+                            isThreadStart.Add(false);
+                            isThreadMessages.Add(false);
+                        }
+
                         if (pair.ContainsKey("files"))
                         {
                             try
@@ -202,6 +226,145 @@ namespace Slackord
             }
         }
 
+        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID)
+        {
+            try
+            {
+                await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
+                int messageCount = 0;
+
+                // TODO: Fix Application did not respond in time error.
+                // await DeferAsync();
+                if (_isFileParsed)
+                {
+                    richTextBox1.Invoke(new Action(() =>
+                    {
+                        richTextBox1.Text += "\n";
+                        richTextBox1.Text += "Beginning transfer of Slack messages to Discord..." + "\n" +
+                        "-----------------------------------------" + "\n";
+                    }));
+
+                    SocketThreadChannel threadID = null;
+                    foreach (string message in Responses)
+                    {
+                        bool sendAsThread = false;
+                        bool sendAsThreadReply = false;
+                        bool sendAsNormalMessage = false;
+
+                        string messageToSend = message;
+                        bool wasSplit = false;
+
+                        if (isThreadStart[messageCount] == true)
+                        {
+                            sendAsThread = true;
+                        }
+                        else if (isThreadStart[messageCount] == false && isThreadMessages[messageCount] == true)
+                        {
+                            sendAsThreadReply = true;
+                        }
+                        else
+                        {
+                            sendAsNormalMessage = true;
+                        }
+                        messageCount += 1;
+
+                        if (messageToSend.Contains('|'))
+                        {
+                            string preSplit = message;
+                            string[] split = preSplit.Split(new char[] { '|' });
+                            string originalText = split[0];
+                            string splitText = split[1];
+
+                            if (originalText.Contains(splitText))
+                            {
+                                messageToSend = splitText + "\n";
+                            }
+                            else
+                            {
+                                messageToSend = originalText + "\n";
+                            }
+                        }
+
+                        if (message.Length >= 2000)
+                        {
+                            var responses = messageToSend.SplitInParts(1800);
+
+                            richTextBox1.Invoke(new Action(() =>
+                            {
+                                richTextBox1.Text += "SPLITTING AND POSTING: " + messageToSend;
+                            }));
+                            foreach (var response in responses)
+                            {
+                                messageToSend = response + " " + "\n";
+                                if (sendAsThread)
+                                {
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    var messages = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).GetMessagesAsync(1).FlattenAsync();
+                                    threadID = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, messages.First());
+                                }
+                                else if (sendAsThreadReply)
+                                {
+                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                }
+                                else if (sendAsNormalMessage)
+                                {
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                }
+                            }
+                            wasSplit = true;
+                        }
+                        else
+                        {
+                            richTextBox1.Invoke(new Action(() =>
+                            {
+                                richTextBox1.Text += "POSTING: " + message;
+                            }));
+
+                            if (!wasSplit)
+                            {
+                                if (sendAsThread)
+                                {
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    var messages = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).GetMessagesAsync(1).FlattenAsync();
+                                    threadID = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, messages.First());
+                                }
+                                else if (sendAsThreadReply)
+                                {
+                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                }
+                                else if (sendAsNormalMessage)
+                                {
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                }
+                            }
+                        }
+                    }
+                    richTextBox1.Invoke(new Action(() =>
+                    {
+                        richTextBox1.Text += "-----------------------------------------" + "\n" +
+                        "All messages sent to Discord successfully!" + "\n";
+                    }));
+                    // TODO: Fix Application did not respond in time error.
+                    // await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
+                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                }
+                else if (!_isFileParsed)
+                {
+                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
+                    richTextBox1.Invoke(new Action(() =>
+                    {
+                        richTextBox1.Text += "Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n";
+                    }));
+                }
+                await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
+                Responses.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         private void CheckForUpdatesToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             if (_octoClient == null)
@@ -285,7 +448,6 @@ namespace Slackord
         
         private async Task ClientReady()
         {
-            // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
             var guildID = _discordClient.Guilds.FirstOrDefault().Id;
             var guild = _discordClient.GetGuild(guildID);
             var guildCommand = new SlashCommandBuilder();
@@ -300,86 +462,6 @@ namespace Slackord
             {
                 Console.WriteLine(Ex.Message);
             }
-        }
-
-        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID)
-        {
-            await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
-
-            if (_isFileParsed)
-            {
-                richTextBox1.Invoke(new Action(() =>
-                {
-                    richTextBox1.Text += "\n";
-                    richTextBox1.Text += "Beginning transfer of Slack messages to Discord..." + "\n" +
-                    "-----------------------------------------" + "\n";
-                }));
-                foreach (string message in Responses)
-                {
-                    string messageToSend = message;
-                    bool wasSplit = false;
-
-                    if (messageToSend.Contains('|'))
-                    {
-                        string preSplit = message;
-                        string[] split = preSplit.Split(new char[] { '|' });
-                        string originalText = split[0];
-                        string splitText = split[1];
-
-                        if (originalText.Contains(splitText))
-                        {
-                            messageToSend = splitText + "\n";
-                        }
-                        else
-                        {
-                            messageToSend = originalText + "\n";
-                        }
-                    }
-                    
-                    if (message.Length >= 2000)
-                    {
-                        var responses = messageToSend.SplitInParts(1800);
-
-                        richTextBox1.Invoke(new Action(() =>
-                        {
-                            richTextBox1.Text += "SPLITTING AND POSTING: " + messageToSend;
-                        }));
-                        foreach (var response in responses)
-                        {
-                            messageToSend = response + " " + "\n";
-                            await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                        }
-                        wasSplit = true;
-                    }
-                    else
-                    {
-                        richTextBox1.Invoke(new Action(() =>
-                        {
-                            richTextBox1.Text += "POSTING: " + message;
-                        }));
-                    }
-                    if (!wasSplit)
-                    {
-                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                    }
-                }
-                richTextBox1.Invoke(new Action(() =>
-                {
-                    richTextBox1.Text += "-----------------------------------------" + "\n" +
-                    "All messages sent to Discord successfully!" + "\n";
-                }));
-                await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-            }
-            else if (!_isFileParsed)
-            {
-                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
-                richTextBox1.Invoke(new Action(() =>
-                {
-                    richTextBox1.Text += "Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n";
-                }));
-            }
-            await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
-            Responses.Clear();
         }
 
         private Task DiscordClient_Log(LogMessage arg)
