@@ -1,7 +1,7 @@
 # Slackord2 ![Slackord2 Logo](https://i.imgur.com/PyVjqzL.png)
 
 Slackord2 is a cross-platform application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
-Slackord2 is the .NET6 version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord) Python/Tkinter app with significant feature additions and improvements.
+Slackord2 is the .NET7 version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord) Python/Tkinter app with significant feature additions and improvements.
 
 # Demo
 ## Windows
