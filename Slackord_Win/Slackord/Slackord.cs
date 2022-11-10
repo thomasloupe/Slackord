@@ -6,7 +6,7 @@ using System.IO;
 using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
-using octo = Octokit;
+using Octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using MaterialSkin;
 using MaterialSkin.Controls;
@@ -15,17 +15,16 @@ using Application = System.Windows.Forms.Application;
 using Label = System.Windows.Forms.Label;
 using Discord.Net;
 using Octokit;
-using Discord.Rest;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4";
+        private const string CurrentVersion = "v2.4.1";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
-        private octo.GitHubClient _octoClient;
+        private Octo.GitHubClient _octoClient;
         public bool _isFileParsed;
         public IServiceProvider _services;
         public JArray parsed;
@@ -65,8 +64,10 @@ namespace Slackord
             }
             else if (string.IsNullOrEmpty(_discordToken) || string.IsNullOrEmpty(Properties.Settings.Default.SlackordBotToken))
             {
-                richTextBox1.Text += "Slackord 2 tried to automatically load your last bot token but wasn't successful." + "\n"
-                    + "The token is not long enough or the token value is empty. Please enter a new token." + "\n";
+                richTextBox1.Text += """
+                Slackord 2 tried to automatically load your last bot token but wasn't successful.
+                The token is not long enough or the token value is empty. Please enter a new token.
+                """;
             }
             else
             {
@@ -83,8 +84,11 @@ namespace Slackord
         [STAThread]
         private async void ParseJsonFiles()
         {
-            richTextBox1.Text += "Begin parsing JSON data..." + "\n";
-            richTextBox1.Text += "-----------------------------------------" + "\n";
+            richTextBox1.Text += """
+            Begin parsing JSON data...
+            -----------------------------------------
+
+            """;
 
             foreach (var file in ListOfFilesToParse)
             {
@@ -194,8 +198,10 @@ namespace Slackord
                                 debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                 if (debugResponse.Length >= 2000)
                                 {
-                                    richTextBox1.Text += "The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. This message " +
-                                        "will be split into multiple posts. The message that will be split is:\n" + debugResponse;
+                                    richTextBox1.Text += $"""
+                                    The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                    This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                    """;
                                 }
                                 else
                                 {
@@ -206,11 +212,12 @@ namespace Slackord
                             richTextBox1.Text += debugResponse + "\n";
                         }
                     }
-                    richTextBox1.Text += "\n";
-                    richTextBox1.Text += "-----------------------------------------" + "\n";
-                    richTextBox1.Text += "Parsing of " + file + " completed successfully!" + "\n";
-                    richTextBox1.Text += "-----------------------------------------" + "\n";
-                    richTextBox1.Text += "\n";
+                    richTextBox1.Text += $"""
+                    -----------------------------------------
+                    Parsing of {file} completed successfully!
+                    -----------------------------------------
+                    
+                    """;
                     _isFileParsed = true;
                     richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
                 }
@@ -239,9 +246,10 @@ namespace Slackord
                 {
                     richTextBox1.Invoke(new Action(() =>
                     {
-                        richTextBox1.Text += "\n";
-                        richTextBox1.Text += "Beginning transfer of Slack messages to Discord..." + "\n" +
-                        "-----------------------------------------" + "\n";
+                        richTextBox1.Text += """
+                        Beginning transfer of Slack messages to Discord...
+                        -----------------------------------------
+                        """;
                     }));
 
                     SocketThreadChannel threadID = null;
@@ -317,7 +325,10 @@ namespace Slackord
                         {
                             richTextBox1.Invoke(new Action(() =>
                             {
-                                richTextBox1.Text += "POSTING: " + message;
+                                richTextBox1.Text += $"""
+                                POSTING: {message}
+                                
+                                """;
                             }));
 
                             if (!wasSplit)
@@ -341,8 +352,10 @@ namespace Slackord
                     }
                     richTextBox1.Invoke(new Action(() =>
                     {
-                        richTextBox1.Text += "-----------------------------------------" + "\n" +
-                        "All messages sent to Discord successfully!" + "\n";
+                        richTextBox1.Text += """
+                        -----------------------------------------
+                        All messages sent to Discord successfully!
+                        """;
                     }));
                     // TODO: Fix Application did not respond in time error.
                     // await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
@@ -369,7 +382,7 @@ namespace Slackord
         {
             if (_octoClient == null)
             {
-                _octoClient = new octo.GitHubClient(new octo.ProductHeaderValue("Slackord2"));
+                _octoClient = new GitHubClient(new ProductHeaderValue("Slackord2"));
                 CheckForUpdates();
             }
             else if (_octoClient != null)
@@ -385,11 +398,13 @@ namespace Slackord
 
         private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Slackord " + CurrentVersion + ".\n" +
-                "Created by Thomas Loupe." + "\n" +
-                "Github: https://github.com/thomasloupe" + "\n" +
-                "Twitter: https://twitter.com/acid_rain" + "\n" +
-                "Website: https://thomasloupe.com", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"""
+                Slackord {CurrentVersion}.
+                Created by Thomas Loupe.
+                Github: https://github.com/thomasloupe
+                Twitter: https://twitter.com/acid_rain
+                Website: https://thomasloupe.com
+                """, "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
@@ -530,10 +545,12 @@ namespace Slackord
             }
             else if (CurrentVersion != latest.TagName)
             {
-                var result = MessageBox.Show("A new version of Slackord is available!\n"
-                    + "Current version: " + CurrentVersion + "\n"
-                    + "Latest version: " + latest.TagName + "\n"
-                    + "Would you like to visit the download page?", "Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                var result = MessageBox.Show($"""
+                    A new version of Slackord is available!
+                    Current version: {CurrentVersion}
+                    Latest version: {latest.TagName}
+                    Would you like to visit the download page?
+                    """, "Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
                 if (result == DialogResult.Yes)
                 {
                     Process.Start("https://github.com/thomasloupe/Slackord-2.0/releases/tag/" +
@@ -570,9 +587,11 @@ namespace Slackord
 
         private void DonateToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var result = MessageBox.Show("Slackord will always be free!\n"
-                + "If you'd like to buy me a beer anyway, I won't tell you no!\n"
-                + "Would you like to open the donation page now?", "Slackord is free, but beer is not!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+            var result = MessageBox.Show("""
+                Slackord will always be free!
+                If you'd like to buy me a beer anyway, I won't tell you no!
+                Would you like to open the donation page now?
+                """, "Slackord is free, but beer is not!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             if (result == DialogResult.Yes)
             {
                 Process.Start("https://paypal.me/thomasloupe");

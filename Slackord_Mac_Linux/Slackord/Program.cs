@@ -10,13 +10,12 @@ using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
 using Octokit;
-using System.Threading;
 
 namespace Slackord
 {
     internal class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4";
+        private const string CurrentVersion = "v2.4.1";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -39,9 +38,9 @@ namespace Slackord
 
         public async void Start()
         {
-            AboutSlackord();
-            CheckForExistingBotToken();
-            CheckForFilesFolder();
+            await AboutSlackord();
+            await CheckForExistingBotToken();
+            await CheckForFilesFolder();
         }
 
         private static Task CheckForFilesFolder()
@@ -55,15 +54,19 @@ namespace Slackord
 
         public static async Task AboutSlackord()
         {
-            Console.WriteLine("Slackord " + CurrentVersion + ".\n" +
-                "Created by Thomas Loupe." + "\n" +
-                "Github: https://github.com/thomasloupe" + "\n" +
-                "Twitter: https://twitter.com/acid_rain" + "\n" +
-                "Website: https://thomasloupe.com" + "\n");
+            Console.WriteLine($"""
+                Slackord {CurrentVersion}
+                Created by Thomas Loupe.
+                Github: https://github.com/thomasloupe
+                Twitter: https://twitter.com/acid_rain
+                Website: https://thomasloupe.com
+                """);
 
-            Console.WriteLine("Slackord will always be free!\n"
-                + "If you'd like to buy me a beer anyway, I won't tell you not to!\n"
-                + "You can donate at https://www.paypal.me/thomasloupe\n" + "\n"); ;
+            Console.WriteLine("""
+                Slackord will always be free!
+                If you'd like to buy me a beer anyway, I won't tell you not to!
+                "You can donate at https://www.paypal.me/thomasloupe
+                """);
             await CheckForUpdates();
         }
 
@@ -78,14 +81,16 @@ namespace Slackord
             }
             else if (CurrentVersion != latest.TagName)
             {
-                Console.WriteLine("A new version of Slackord is available!\n"
-                    + "Current version: " + CurrentVersion + "\n"
-                    + "Latest version: " + latest.TagName + "\n"
-                    + "You can get the latest version from the GitHub repository at https://github.com/thomasloupe/Slackord2");
+                Console.WriteLine($"""
+                    A new version of Slackord is available!
+                    Current version: {CurrentVersion}
+                    Latest version: {latest.TagName}
+                    You can get the latest version from the GitHub repository at https://github.com/thomasloupe/Slackord2
+                    """);
             }
         }
 
-        private void CheckForExistingBotToken()
+        private async Task CheckForExistingBotToken()
         {
             if (File.Exists("Token.txt"))
             {
@@ -96,11 +101,11 @@ namespace Slackord
                     Console.WriteLine("No bot token found. Please enter your bot token: ");
                     _discordToken = Console.ReadLine();
                     File.WriteAllText("Token.txt", _discordToken);
-                    CheckForExistingBotToken();
+                    await CheckForExistingBotToken();
                 }
                 else
                 {
-                    ParseJsonFiles();
+                    await ParseJsonFiles();
                 }
             }
             else
@@ -109,7 +114,7 @@ namespace Slackord
                 _discordToken = Console.ReadLine();
                 if (_discordToken == null)
                 {
-                    CheckForExistingBotToken();
+                    await CheckForExistingBotToken();
                 }
                 else
                 {
@@ -128,12 +133,14 @@ namespace Slackord
                 var files = Directory.GetFiles("Files");
                 if (files.Length == 0)
                 {
-                    Console.WriteLine("You haven't placed any JSON files in the Files folder.\n" +
-                        "Please place your JSON files in the Files folder then press ENTER to continue.");
+                    Console.WriteLine("""
+                        You haven't placed any JSON files in the Files folder.
+                        "Please place your JSON files in the Files folder then press ENTER to continue.
+                        """);
                     ConsoleKeyInfo keyPressed = Console.ReadKey(true);
                     if (keyPressed.Key != ConsoleKey.Enter)
                     {
-                        ParseJsonFiles();
+                        await ParseJsonFiles();
                     }
                 }
                 else
@@ -151,8 +158,10 @@ namespace Slackord
                     {
                         var json = File.ReadAllText(file);
                         parsed = JArray.Parse(json);
-                        Console.WriteLine("Begin parsing JSON data..." + "\n");
-                        Console.WriteLine("-----------------------------------------" + "\n");
+                        Console.WriteLine("""
+                        Begin parsing JSON data...);
+                        -----------------------------------------
+                        """);
                         string debugResponse;
                         foreach (JObject pair in parsed.Cast<JObject>())
                         {
@@ -257,8 +266,10 @@ namespace Slackord
                                     debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                     if (debugResponse.Length >= 2000)
                                     {
-                                        Console.WriteLine("The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. This message " +
-                                            "will be split into multiple posts. The message that will be split is:\n" + debugResponse);
+                                        Console.WriteLine($"""
+                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters. 
+                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                        """);
                                     }
                                     else
                                     {
@@ -269,11 +280,11 @@ namespace Slackord
                                 Console.WriteLine(debugResponse + "\n");
                             }
                         }
-                        Console.WriteLine("\n");
-                        Console.WriteLine("-----------------------------------------" + "\n");
-                        Console.WriteLine("Parsing of " + file + " completed successfully!" + "\n");
-                        Console.WriteLine("-----------------------------------------" + "\n");
-                        Console.WriteLine("\n");
+                        Console.WriteLine("""
+                        -----------------------------------------
+                        Parsing of {{file}} completed successfully!
+                        -----------------------------------------
+                        """);
                         if (_discordClient != null)
                         {
                             await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
@@ -284,7 +295,7 @@ namespace Slackord
                     {
                         Console.WriteLine(ex.Message);
                         Console.WriteLine("An error occured while parsing the JSON file. Please try again.");
-                        ParseJsonFiles();
+                        await ParseJsonFiles();
                     }
                 }
             }
@@ -308,9 +319,10 @@ namespace Slackord
                 // await DeferAsync();
                 if (_isFileParsed)
                 {
-                    Console.WriteLine("\n");
-                    Console.WriteLine("Beginning transfer of Slack messages to Discord..." + "\n" +
-                    "-----------------------------------------" + "\n");
+                    Console.WriteLine("""
+                    Beginning transfer of Slack messages to Discord...
+                    -----------------------------------------
+                    """);
 
                     SocketThreadChannel threadID = null;
                     foreach (string message in Responses)
@@ -398,8 +410,10 @@ namespace Slackord
                             }
                         }
                     }
-                    Console.WriteLine("-----------------------------------------" + "\n" +
-                        "All messages sent to Discord successfully!" + "\n");
+                    Console.WriteLine("""
+                    -----------------------------------------
+                    All messages sent to Discord successfully!
+                    """);
                     // TODO: Fix Application did not respond in time error.
                     // await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
                     await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
@@ -481,7 +495,7 @@ namespace Slackord
 
         private async Task DiscordClient_Log(LogMessage arg)
         {
-            Console.WriteLine(arg.ToString() + "\n");
+            Console.WriteLine(arg.ToString() + ".\n");
             await Task.CompletedTask;
         }
     }

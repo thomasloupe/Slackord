@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>Slackord.Slackord</StartupObject>
@@ -17,7 +17,7 @@
     <PackageReference Include="Discord.Net.Core" Version="3.8.1" />
     <PackageReference Include="Discord.Net.Interactions" Version="3.8.1" />
     <PackageReference Include="Discord.Net.WebSocket" Version="3.8.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Octokit" Version="4.0.1" />
   </ItemGroup>
 
