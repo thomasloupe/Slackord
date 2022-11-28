@@ -10,15 +10,18 @@ using octo = Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
 using Octokit;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace Slackord
 {
     internal class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.1";
+        private const string CurrentVersion = "v2.4.2.1";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
+        private bool _isParsingNow;
         private IServiceProvider _services;
         private JArray parsed;
         private readonly List<string> Responses = new();
@@ -38,9 +41,9 @@ namespace Slackord
 
         public async void Start()
         {
-            await AboutSlackord();
-            await CheckForExistingBotToken();
             await CheckForFilesFolder();
+            await AboutUpdate();
+            await CheckForExistingBotToken();
         }
 
         private static Task CheckForFilesFolder()
@@ -52,7 +55,7 @@ namespace Slackord
             return Task.CompletedTask;
         }
 
-        public static async Task AboutSlackord()
+        public static async Task AboutUpdate()
         {
             Console.WriteLine($"""
                 Slackord {CurrentVersion}
@@ -60,33 +63,33 @@ namespace Slackord
                 Github: https://github.com/thomasloupe
                 Twitter: https://twitter.com/acid_rain
                 Website: https://thomasloupe.com
+                
                 """);
 
             Console.WriteLine("""
                 Slackord will always be free!
                 If you'd like to buy me a beer anyway, I won't tell you not to!
-                "You can donate at https://www.paypal.me/thomasloupe
+                You can donate at https://www.paypal.me/thomasloupe
                 """);
-            await CheckForUpdates();
-        }
 
-        private static async Task CheckForUpdates()
-        {
-            var updateCheck = new GitHubClient(new ProductHeaderValue("Slackord2"));
-            var releases = await updateCheck.Repository.Release.GetAll("thomasloupe", "Slackord2");
-            var latest = releases[0];
-            if (CurrentVersion == latest.TagName)
+            var client = new GitHubClient(new ProductHeaderValue("Slackord2"));
+            var releases = client.Repository.Release.GetAll("thomasloupe", "Slackord2");
+            var latest = releases;
+            var latestVersion = latest.Result[0].TagName;
+
+            if (CurrentVersion == latestVersion)
             {
                 Console.WriteLine("You have the latest version, " + CurrentVersion + "!");
             }
-            else if (CurrentVersion != latest.TagName)
+            else if (CurrentVersion != latestVersion)
             {
-                Console.WriteLine($"""
-                    A new version of Slackord is available!
-                    Current version: {CurrentVersion}
-                    Latest version: {latest.TagName}
-                    You can get the latest version from the GitHub repository at https://github.com/thomasloupe/Slackord2
-                    """);
+                Console.WriteLine("""
+                                  You are running an outdated version of Slackord!
+                                  Current Version: {0}
+                                  Latest Version: {1}
+                                  You can download the latest version at https://github.com/thomasloupe/Slackord2/releases/tag/{1}
+                                  
+                                  """, CurrentVersion, latestVersion);
             }
         }
 
@@ -127,6 +130,8 @@ namespace Slackord
         [STAThread]
         private async Task ParseJsonFiles()
         {
+            _isParsingNow = true;
+            
             Console.WriteLine("Reading JSON files directory...");
             try
             {
@@ -304,12 +309,19 @@ namespace Slackord
                 Console.WriteLine("Error encountered in input " + e.Message);
             }
             Console.WriteLine("Bot will now attempt to connect to the Discord server...");
+            _isParsingNow = false;
             await MainAsync();
         }
 
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         private async Task PostMessages(SocketChannel channel, ulong guildID)
         {
+            if (_isParsingNow)
+            {
+                Console.WriteLine("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
+                return;
+            }
+
             try
             {
                 await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
@@ -348,22 +360,29 @@ namespace Slackord
                         }
                         messageCount += 1;
 
-                        if (messageToSend.Contains('|'))
+                        Regex rx = new(@"(&lt;).*\|{1}[^|\n]+(&gt;)", RegexOptions.Compiled | RegexOptions.Singleline);
+                        MatchCollection matches = rx.Matches(messageToSend);
+                        if (matches.Count > 0)
                         {
-                            string preSplit = message;
-                            string[] split = preSplit.Split(new char[] { '|' });
-                            string originalText = split[0];
-                            string splitText = split[1];
+                            foreach (Match match in matches.Cast<Match>())
+                            {
+                                string matchValue = match.Value;
+                                string preSplit = matchValue;
+                                string[] split = preSplit.Split(new char[] { '|' });
+                                string originalText = split[0];
+                                string splitText = split[1];
 
-                            if (originalText.Contains(splitText))
-                            {
-                                messageToSend = splitText + "\n";
-                            }
-                            else
-                            {
-                                messageToSend = originalText + "\n";
+                                if (originalText.Contains(splitText))
+                                {
+                                    messageToSend = splitText + "\n";
+                                }
+                                else
+                                {
+                                    messageToSend = originalText + "\n";
+                                }
                             }
                         }
+                        
                         if (message.Length >= 2000)
                         {
                             var responses = messageToSend.SplitInParts(1800);
