@@ -15,17 +15,20 @@ using Application = System.Windows.Forms.Application;
 using Label = System.Windows.Forms.Label;
 using Discord.Net;
 using Octokit;
+using System.Text.RegularExpressions;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.1";
+        private const string CurrentVersion = "v2.4.3";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
         private Octo.GitHubClient _octoClient;
         public bool _isFileParsed;
+        private bool _isParsingNow;
+        public bool _showDebugOutput;
         public IServiceProvider _services;
         public JArray parsed;
         private readonly List<string> Responses = new();
@@ -84,6 +87,8 @@ namespace Slackord
         [STAThread]
         private async void ParseJsonFiles()
         {
+            _isParsingNow = true;
+
             richTextBox1.Text += """
             Begin parsing JSON data...
             -----------------------------------------
@@ -117,25 +122,31 @@ namespace Slackord
 
                         if (pair.ContainsKey("files"))
                         {
-                            try
-                            {
-                                debugResponse = pair["files"][0]["thumb_1024"].ToString() + "\n";
-                                Responses.Add(debugResponse);
-                            }
-                            catch (NullReferenceException)
+                            var firstFile = pair["files"][0];
+                            List<string> fileKeys = new() { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "permalink_public", "permalink", "url_private" };
+                            var fileLink = "";
+                            foreach (var key in fileKeys)
                             {
                                 try
                                 {
-                                    debugResponse = pair["files"][0]["url_private"].ToString() + "\n";
-                                    Responses.Add(debugResponse);
+                                    fileLink = firstFile[key].ToString();
+                                    if (fileLink.Length > 0)
+                                    {
+                                        Responses.Add(fileLink + " \n");
+                                        break;
+                                    }
                                 }
-                                catch (NullReferenceException)
+                                catch (Exception e)
                                 {
-                                    debugResponse = "Skipped a tombstoned file attachement.";
-                                    Responses.Add(debugResponse);
+                                    Debug.WriteLine(e);
+                                    continue;
                                 }
                             }
-                            richTextBox1.Text += debugResponse + "\n";
+                            debugResponse = fileLink;
+                            if (_showDebugOutput)
+                            {
+                                richTextBox1.Text += debugResponse + "\n";
+                            }
                         }
                         if (pair.ContainsKey("bot_profile"))
                         {
@@ -156,7 +167,10 @@ namespace Slackord
                                     debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
                                 }
                             }
-                            richTextBox1.Text += debugResponse + "\n";
+                            if (_showDebugOutput)
+                            {
+                                richTextBox1.Text += debugResponse + "\n";
+                            }
                         }
                         if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                         {
@@ -198,10 +212,13 @@ namespace Slackord
                                 debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                 if (debugResponse.Length >= 2000)
                                 {
-                                    richTextBox1.Text += $"""
-                                    The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                    This message will be split into multiple posts. The message that will be split is: {debugResponse}
-                                    """;
+                                    if (_showDebugOutput)
+                                    {
+                                        richTextBox1.Text += $"""
+                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                        """;
+                                    }
                                 }
                                 else
                                 {
@@ -209,7 +226,10 @@ namespace Slackord
                                     Responses.Add(debugResponse);
                                 }
                             }
-                            richTextBox1.Text += debugResponse + "\n";
+                            if (_showDebugOutput)
+                            {
+                                richTextBox1.Text += debugResponse + "\n";
+                            }
                         }
                     }
                     richTextBox1.Text += $"""
@@ -231,10 +251,17 @@ namespace Slackord
                 }
 
             }
+            _isParsingNow = false;
         }
 
         public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID)
         {
+            if (_isParsingNow)
+            {
+                MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
+                return;
+            }
+
             try
             {
                 await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
@@ -276,20 +303,26 @@ namespace Slackord
                         }
                         messageCount += 1;
 
-                        if (messageToSend.Contains('|'))
+                        Regex rx = NewRegex();
+                        MatchCollection matches = rx.Matches(messageToSend);
+                        if (matches.Count > 0)
                         {
-                            string preSplit = message;
-                            string[] split = preSplit.Split(new char[] { '|' });
-                            string originalText = split[0];
-                            string splitText = split[1];
+                            foreach (Match match in matches.Cast<Match>())
+                            {
+                                string matchValue = match.Value;
+                                string preSplit = matchValue;
+                                string[] split = preSplit.Split(new char[] { '|' });
+                                string originalText = split[0];
+                                string splitText = split[1];
 
-                            if (originalText.Contains(splitText))
-                            {
-                                messageToSend = splitText + "\n";
-                            }
-                            else
-                            {
-                                messageToSend = originalText + "\n";
+                                if (originalText.Contains(splitText))
+                                {
+                                    messageToSend = splitText + "\n";
+                                }
+                                else
+                                {
+                                    messageToSend = originalText + "\n";
+                                }
                             }
                         }
 
@@ -374,7 +407,16 @@ namespace Slackord
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var exception = ex.GetType().ToString();
+                if (exception.Equals("Discord.Net.HttpException"))
+                {
+                    switch (ex.Message)
+                    {
+                        case "The server responded with error 50006: Cannot send an empty message":
+                            MessageBox.Show("The server responded with error 50006: Cannot send an empty message");
+                            break;
+                    }
+                }
             }
         }
 
@@ -445,7 +487,7 @@ namespace Slackord
             DisableTokenChangeWhileConnected();
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
             await _discordClient.StartAsync();
-            await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+            await _discordClient.SetActivityAsync(new Game("and awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.Ready += ClientReady;
             _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1);
@@ -460,7 +502,7 @@ namespace Slackord
                 await PostMessagesToDiscord(channel, guildID);
             }
         }
-        
+
         private async Task ClientReady()
         {
             var guildID = _discordClient.Guilds.FirstOrDefault().Id;
@@ -627,7 +669,7 @@ namespace Slackord
             {
                 var files = Directory.EnumerateFiles(fbd.SelectedPath, "*.*", SearchOption.TopDirectoryOnly)
                     .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
-                
+
                 foreach (var file in files)
                 {
                     ListOfFilesToParse.Add(file);
@@ -636,12 +678,101 @@ namespace Slackord
                 ParseJsonFiles();
             }
         }
-    }
 
+        private void DisableDebugOutputToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (disableDebugOutputToolStripMenuItem.Checked)
+            {
+                disableDebugOutputToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                disableDebugOutputToolStripMenuItem.Checked = true;
+            }
+        }
+
+        [GeneratedRegex("(&lt;).*\\|{1}[^|\\n]+(&gt;)", RegexOptions.Compiled | RegexOptions.Singleline)]
+        private static partial Regex NewRegex();
+
+        private void CreateChannelsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_discordClient == null || _discordClient.ConnectionState == ConnectionState.Disconnected || _discordClient.ConnectionState == ConnectionState.Disconnecting)
+            {
+                MessageBox.Show("You must be connected to Discord to create channels!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
+            if (_ofd.ShowDialog() == DialogResult.OK)
+            {
+                var json = File.ReadAllText(_ofd.FileName);
+                parsed = JArray.Parse(json);
+            }
+
+            var result = MessageBox.Show($"""
+                    It is assumed that you have not created any channels with the names of the channels in the JSON file yet. If you have, you will more than likely see duplicate channels.
+                    Now is a good time to remove any channels you do not want to create duplicates of. When ready, press "Yes" to continue.
+                    """, "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+            if (result == DialogResult.Yes)
+            {
+                List<string> ChannelsToCreate = new();
+
+                foreach (JObject pair in parsed.Cast<JObject>())
+                {
+                    if (pair.ContainsKey("name"))
+                    {
+                        ChannelsToCreate.Add(pair["name"].ToString());
+                    }
+                }
+                CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
+            }
+        }
+
+        public async Task CreateChannelsAsync(List<string> _channelsToCreate)
+        {
+            var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+
+            foreach (var channel in _channelsToCreate)
+            {
+                try
+                {
+                    await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channel.ToLower());
+                    await Task.Delay(3000);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+            }
+            MessageBox.Show($"""
+                            Channel import completed!
+                            The following channels were created:
+
+                            {string.Join(Environment.NewLine, _channelsToCreate)}
+                            """, "Channel Import Complete!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public static class Prompt
+        {
+            public static string ShowDialog(string text, string caption)
+            {
+                var prompt = new Form() { Width = 500, Height = 150, FormBorderStyle = FormBorderStyle.FixedDialog, Text = caption, StartPosition = FormStartPosition.CenterScreen };
+                var textLabel = new Label() { Left = 50, Top = 20, Text = text };
+                var textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
+                var confirmation = new Button() { Text = "OK", Left = 225, Width = 50, Top = 75, DialogResult = DialogResult.OK };
+                confirmation.Click += (sender, e) => { prompt.Close(); };
+                prompt.Controls.Add(textBox);
+                prompt.Controls.Add(confirmation);
+                prompt.Controls.Add(textLabel);
+                prompt.AcceptButton = confirmation;
+                return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
+            }
+        }
+    }
     static class StringExtensions
     {
-
-        public static IEnumerable<String> SplitInParts(this String s, Int32 partLength)
+        public static IEnumerable<string> SplitInParts(this string s, Int32 partLength)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -650,24 +781,6 @@ namespace Slackord
 
             for (var i = 0; i < s.Length; i += partLength)
                 yield return s.Substring(i, Math.Min(partLength, s.Length - i));
-        }
-
-    }
-
-    public static class Prompt
-    {
-        public static string ShowDialog(string text, string caption)
-        {
-            var prompt = new Form() { Width = 500, Height = 150, FormBorderStyle = FormBorderStyle.FixedDialog, Text = caption, StartPosition = FormStartPosition.CenterScreen };
-            var textLabel = new Label() { Left = 50, Top = 20, Text = text };
-            var textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
-            var confirmation = new Button() { Text = "OK", Left = 225, Width = 50, Top = 75, DialogResult = DialogResult.OK };
-            confirmation.Click += (sender, e) => { prompt.Close(); };
-            prompt.Controls.Add(textBox);
-            prompt.Controls.Add(confirmation);
-            prompt.Controls.Add(textLabel);
-            prompt.AcceptButton = confirmation;
-            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
     }
 }

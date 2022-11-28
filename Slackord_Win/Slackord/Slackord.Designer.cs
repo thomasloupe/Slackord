@@ -32,12 +32,15 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importJSONFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnterBotTokenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConnectBotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DisconnectBotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disableDebugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CheckForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,7 +49,6 @@
             this.ToolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.ToolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.importJSONFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -69,6 +71,7 @@
             // 
             this.FileToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
             this.FileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createChannelsToolStripMenuItem,
             this.OpenToolStripMenuItem,
             this.importJSONFolderToolStripMenuItem,
             this.ExitToolStripMenuItem});
@@ -84,6 +87,20 @@
             this.OpenToolStripMenuItem.Text = "Import JSON";
             this.OpenToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
+            // importJSONFolderToolStripMenuItem
+            // 
+            this.importJSONFolderToolStripMenuItem.Name = "importJSONFolderToolStripMenuItem";
+            this.importJSONFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importJSONFolderToolStripMenuItem.Text = "Import JSON Folder";
+            this.importJSONFolderToolStripMenuItem.Click += new System.EventHandler(this.ImportJSONFolderToolStripMenuItem_Click);
+            // 
+            // createChannelsToolStripMenuItem
+            // 
+            this.createChannelsToolStripMenuItem.Name = "createChannelsToolStripMenuItem";
+            this.createChannelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createChannelsToolStripMenuItem.Text = "Import Channels";
+            this.createChannelsToolStripMenuItem.Click += new System.EventHandler(this.CreateChannelsToolStripMenuItem_Click);
+            // 
             // ExitToolStripMenuItem
             // 
             this.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
@@ -96,7 +113,8 @@
             this.settingsToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.EnterBotTokenToolStripMenuItem,
-            this.ConnectionToolStripMenuItem});
+            this.ConnectionToolStripMenuItem,
+            this.disableDebugOutputToolStripMenuItem});
             this.settingsToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -105,7 +123,7 @@
             // EnterBotTokenToolStripMenuItem
             // 
             this.EnterBotTokenToolStripMenuItem.Name = "EnterBotTokenToolStripMenuItem";
-            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.EnterBotTokenToolStripMenuItem.Text = "Enter Bot Token";
             this.EnterBotTokenToolStripMenuItem.Click += new System.EventHandler(this.EnterBotTokenToolStripMenuItem_Click);
             // 
@@ -115,7 +133,7 @@
             this.ConnectBotToolStripMenuItem,
             this.DisconnectBotToolStripMenuItem});
             this.ConnectionToolStripMenuItem.Name = "ConnectionToolStripMenuItem";
-            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.ConnectionToolStripMenuItem.Text = "Bot Connection";
             // 
             // ConnectBotToolStripMenuItem
@@ -131,6 +149,15 @@
             this.DisconnectBotToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.DisconnectBotToolStripMenuItem.Text = "Disconnect";
             this.DisconnectBotToolStripMenuItem.Click += new System.EventHandler(this.DisconnectBotToolStripMenuItem_Click);
+            // 
+            // disableDebugOutputToolStripMenuItem
+            // 
+            this.disableDebugOutputToolStripMenuItem.Name = "disableDebugOutputToolStripMenuItem";
+            this.disableDebugOutputToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.disableDebugOutputToolStripMenuItem.Text = "Disable Debug Output";
+            this.disableDebugOutputToolStripMenuItem.ToolTipText = "Speeds up parsing of JSON files significantly by disabling output to the debug wi" +
+    "ndow. Failures will still be shown.";
+            this.disableDebugOutputToolStripMenuItem.Click += new System.EventHandler(this.DisableDebugOutputToolStripMenuItem_Click);
             // 
             // HelpToolStripMenuItem
             // 
@@ -226,13 +253,6 @@
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // importJSONFolderToolStripMenuItem
-            // 
-            this.importJSONFolderToolStripMenuItem.Name = "importJSONFolderToolStripMenuItem";
-            this.importJSONFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.importJSONFolderToolStripMenuItem.Text = "Import JSON Folder";
-            this.importJSONFolderToolStripMenuItem.Click += new System.EventHandler(this.ImportJSONFolderToolStripMenuItem_Click);
-            // 
             // Slackord
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -278,6 +298,8 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripMenuItem DonateToolStripMenuItem;
         private ToolStripMenuItem importJSONFolderToolStripMenuItem;
+        private ToolStripMenuItem disableDebugOutputToolStripMenuItem;
+        private ToolStripMenuItem createChannelsToolStripMenuItem;
     }
 }
 
