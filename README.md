@@ -11,6 +11,7 @@ https://user-images.githubusercontent.com/6563450/188337369-10823d19-5bce-42d8-a
 
 # Features
 1. `Cross platform` - Works on Windows(x64), Mac(x64), and Linux(x64).
+1. `Import channels` - Select your channels.json file and let Slackord2 recreate all your Slack channels on Discord.
 1. `Post everything` - Post messages, images, and attachments to any Discord channel or Direct Message conversation.
 1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord2 can read all JSON files within a directory and parse/post them to Discord.
 1. `Robust Debug window` - Slackord2 lets you know exactly what's happening in real-time. You'll know what messages are being posted, how they'll be formatted, and what the bot is doing before sending messages to their destination channels.
