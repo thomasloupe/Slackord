@@ -14,7 +14,7 @@ https://user-images.githubusercontent.com/6563450/188337369-10823d19-5bce-42d8-a
 1. `Import channels` - Select your channels.json file and let Slackord2 recreate all your Slack channels on Discord.
 1. `Post everything` - Post messages, images, and attachments to any Discord channel or Direct Message conversation.
 1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord2 can read all JSON files within a directory and parse/post them to Discord.
-1. `Robust Debug window` - Slackord2 lets you know exactly what's happening in real-time. You'll know what messages are being posted, how they'll be formatted, and what the bot is doing before sending messages to their destination channels.
+1. `Action window` - Slackord2 lets you know exactly what's happening in real-time. You'll know what messages are being posted, how they'll be formatted, and what the bot is doing before sending messages to their destination channels.
 1. `Rate limit detection` - Slackord2 limits the messages it sends over time so it doesn't spam or get itself squelched for posting too often.
 1. `Ease-of-use` - Slackord2 only needs to be set up once, and it'll remember your bot's token, making future imports easy.
 1. `Privacy first` - Slackord2 checks if user messages have a display name and will attempt to keep real names private unless there isn't one.
