@@ -6,18 +6,17 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
-using octo = Octokit;
+using Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
-using Octokit;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
 namespace Slackord
 {
-    internal class Slackord : InteractionModuleBase<SocketInteractionContext>
+    internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.2.1";
+        private const string CurrentVersion = "v2.4.3";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -108,7 +107,7 @@ namespace Slackord
                 }
                 else
                 {
-                    await ParseJsonFiles();
+                    await SelectMenu();
                 }
             }
             else
@@ -124,9 +123,93 @@ namespace Slackord
                     File.WriteAllText("Token.txt", _discordToken);
                 }
             }
-
         }
-        
+
+        [STAThread]
+        private async Task SelectMenu()
+        {
+            Console.WriteLine("Please select an option:");
+            Console.WriteLine("""
+                              1. Import Slack channels to Discord.
+                              2. Import Slack messages.
+                              """);
+            var option = Console.ReadLine();
+            switch (option)
+            {
+                case "1":
+                    await ImportChannels();
+                    break;
+                case "2":
+                    await ParseJsonFiles();
+                    break;
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    await SelectMenu();
+                    break;
+            }
+        }
+
+        private async Task ImportChannels()
+        {
+            if (_discordClient == null || _discordClient.ConnectionState == ConnectionState.Disconnected || _discordClient.ConnectionState == ConnectionState.Disconnecting)
+            {
+                Console.WriteLine("You must be connected to Discord to create channels!");
+                await SelectMenu();
+            }
+
+            try
+            {
+                var json = File.ReadAllText("channels.json");
+                var channels = JObject.Parse(json);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("No channels.json file found. Please import a Slack export first.");
+                await SelectMenu();
+            }
+
+            Console.WriteLine($"""
+                              It is assumed that you have not created any channels with the names of the channels in the JSON file yet. If you have, you will more than likely see duplicate channels.
+                              Now is a good time to remove any channels you do not want to create duplicates of. When ready, press "Enter" to continue.
+                              """);
+            List<string> ChannelsToCreate = new();
+
+            foreach (JObject pair in parsed.Cast<JObject>())
+            {
+                if (pair.ContainsKey("name"))
+                {
+                    ChannelsToCreate.Add(pair["name"].ToString());
+                }
+                await CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
+            }
+        }
+
+        public async Task CreateChannelsAsync(List<string> _channelsToCreate)
+        {
+            var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+
+            foreach (var channel in _channelsToCreate)
+            {
+                try
+                {
+                    await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channel.ToLower());
+                    await Task.Delay(3000);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    await SelectMenu();
+                }
+            }
+            Console.WriteLine($"""
+                              Channel import completed!
+                              The following channels were created:
+
+                              {string.Join(Environment.NewLine, _channelsToCreate)}
+                              """);
+            await SelectMenu();
+        }
+
         [STAThread]
         private async Task ParseJsonFiles()
         {
@@ -188,27 +271,28 @@ namespace Slackord
                             
                             if (pair.ContainsKey("files"))
                             {
-                                try
-                                {
-                                    debugResponse = pair["text"] + "\n" + pair["files"][0]["thumb_1024"].ToString() + "\n";
-                                    Responses.Add(debugResponse);
-                                    Console.WriteLine(debugResponse + "\n");
-                                }
-                                catch (NullReferenceException)
+                                var firstFile = pair["files"][0];
+                                List<string> fileKeys = new() { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "permalink_public", "permalink", "url_private" };
+                                var fileLink = "";
+                                foreach (var key in fileKeys)
                                 {
                                     try
                                     {
-                                        debugResponse = pair["text"] + "\n" + pair["files"][0]["url_private"].ToString() + "\n";
-                                        Responses.Add(debugResponse);
-                                        Console.WriteLine(debugResponse + "\n");
+                                        fileLink = firstFile[key].ToString();
+                                        if (fileLink.Length > 0)
+                                        {
+                                            Responses.Add(fileLink + " \n");
+                                            break;
+                                        }
                                     }
-                                    catch (NullReferenceException)
+                                    catch (Exception ex)
                                     {
-                                        debugResponse = "Skipped a tombstoned file attachement." + "\n";
-                                        Responses.Add(debugResponse);
-                                        Console.WriteLine(debugResponse);
+                                        Console.WriteLine(ex.Message);
+                                        continue;
                                     }
                                 }
+                                debugResponse = fileLink;
+                                Console.WriteLine(debugResponse + "\n");
                             }
                             if (pair.ContainsKey("bot_profile"))
                             {
@@ -360,7 +444,7 @@ namespace Slackord
                         }
                         messageCount += 1;
 
-                        Regex rx = new(@"(&lt;).*\|{1}[^|\n]+(&gt;)", RegexOptions.Compiled | RegexOptions.Singleline);
+                        Regex rx = NewRegex();
                         MatchCollection matches = rx.Matches(messageToSend);
                         if (matches.Count > 0)
                         {
@@ -517,6 +601,9 @@ namespace Slackord
             Console.WriteLine(arg.ToString() + ".\n");
             await Task.CompletedTask;
         }
+
+        [GeneratedRegex("(&lt;).*\\|{1}[^|\\n]+(&gt;)", RegexOptions.Compiled | RegexOptions.Singleline)]
+        private static partial Regex NewRegex();
     }
     static class StringExtensions
     {

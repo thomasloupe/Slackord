@@ -136,9 +136,9 @@ namespace Slackord
                                         break;
                                     }
                                 }
-                                catch (Exception e)
+                                catch (Exception ex)
                                 {
-                                    Debug.WriteLine(e);
+                                    Debug.WriteLine(ex.Message);
                                     continue;
                                 }
                             }
