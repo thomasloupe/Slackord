@@ -16,7 +16,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.3.1";
+        private const string CurrentVersion = "v2.4.3.2";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -370,7 +370,7 @@ namespace Slackord
                                 Console.WriteLine(debugResponse + "\n");
                             }
                         }
-                        Console.WriteLine("""
+                        Console.WriteLine($$"""
                         -----------------------------------------
                         Parsing of {{file}} completed successfully!
                         -----------------------------------------
@@ -560,6 +560,7 @@ namespace Slackord
             catch (Exception ex)
             {
                 Console.WriteLine("Discord bot task failed with: " + ex.Message);
+                await _discordClient.StopAsync();
             }
         }
 
@@ -575,18 +576,32 @@ namespace Slackord
 
         private async Task ClientReady()
         {
-            var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-            var guild = _discordClient.GetGuild(guildID);
-            var guildCommand = new SlashCommandBuilder();
-            guildCommand.WithName("slackord");
-            guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
             try
             {
-                await guild.CreateApplicationCommandAsync(guildCommand.Build());
+                if (_discordClient.Guilds.Count > 0)
+                {
+                    var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+                    var guild = _discordClient.GetGuild(guildID);
+                    var guildCommand = new SlashCommandBuilder();
+                    guildCommand.WithName("slackord");
+                    guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
+                    try
+                    {
+                        await guild.CreateApplicationCommandAsync(guildCommand.Build());
+                    }
+                    catch (HttpException Ex)
+                    {
+                        Console.WriteLine("Error creating slash command: " + Ex.Message);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Slackord was unable to find any guilds to create a slash command in.");
+                }
             }
-            catch (HttpException Ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(Ex.Message);
+                Console.WriteLine("Error encountered while creating slash command: " + ex.Message);
             }
         }
 
