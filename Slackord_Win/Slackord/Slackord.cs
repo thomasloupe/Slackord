@@ -109,7 +109,7 @@ namespace Slackord
                             isThreadStart.Add(true);
                             isThreadMessages.Add(false);
                         }
-                        else if (pair.ContainsKey("thread_ts"))
+                        else if (pair.ContainsKey("thread_ts") && !pair.ContainsKey("reply_count"))
                         {
                             isThreadStart.Add(false);
                             isThreadMessages.Add(true);
