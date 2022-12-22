@@ -219,6 +219,7 @@ namespace Slackord
             try
             {
                 var files = Directory.GetFiles("Files");
+                Array.Sort(files);
                 if (files.Length == 0)
                 {
                     Console.WriteLine("""
