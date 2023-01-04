@@ -10,21 +10,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Files\temp.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Files\temp.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Slackord-Desktop-Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net.Core" Version="3.9.0" />
-    <PackageReference Include="Discord.Net.Interactions" Version="3.9.0" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="3.9.0" />
+    <PackageReference Include="Discord.Net.Core" Version="3.8.1" />
+    <PackageReference Include="Discord.Net.Interactions" Version="3.8.1" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.8.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Octokit" Version="4.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Files\place_json_files_here.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="rem /s /q &quot;$(TargetDir)\temp.txt&quot;" />
+  </Target>
 
 </Project>

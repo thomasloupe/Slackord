@@ -16,7 +16,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.3.2";
+        private const string CurrentVersion = "v2.4.3.3";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -40,18 +40,8 @@ namespace Slackord
 
         public async void Start()
         {
-            await CheckForFilesFolder();
             await AboutUpdate();
             await CheckForExistingBotToken();
-        }
-
-        private static Task CheckForFilesFolder()
-        {
-            if (!Directory.Exists("Files"))
-            {
-                Directory.CreateDirectory("Files");
-            }
-            return Task.CompletedTask;
         }
 
         public static async Task AboutUpdate()
