@@ -10,13 +10,12 @@ using Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.3.3";
+        private const string CurrentVersion = "v2.4.3.4";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -473,7 +472,17 @@ namespace Slackord
                                 }
                                 else if (sendAsThreadReply)
                                 {
-                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    if (threadID is not null)
+                                    {
+                                        await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
+                                        // We should let the user know and post the message as a normal message, because that's what it is.
+                                        Console.WriteLine("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
                                 }
                                 else if (sendAsNormalMessage)
                                 {
@@ -496,7 +505,17 @@ namespace Slackord
                             }
                             else if (sendAsThreadReply)
                             {
-                                await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                if (threadID is not null)
+                                {
+                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
+                                    // We should let the user know and post the message as a normal message, because that's what it is.
+                                    Console.WriteLine("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                }
                             }
                             else if (sendAsNormalMessage)
                             {

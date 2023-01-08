@@ -21,14 +21,14 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.3.3";
+        private const string CurrentVersion = "v2.4.3.4";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
         private Octo.GitHubClient _octoClient;
         public bool _isFileParsed;
         private bool _isParsingNow;
-        public bool _showDebugOutput;
+        public bool _showDebugOutput = false;
         public IServiceProvider _services;
         public JArray parsed;
         private readonly List<string> Responses = new();
@@ -143,7 +143,7 @@ namespace Slackord
                                 }
                             }
                             debugResponse = fileLink;
-                            if (_showDebugOutput)
+                            if (!disableDebugOutputToolStripMenuItem.Checked)
                             {
                                 richTextBox1.Text += debugResponse + "\n";
                             }
@@ -167,7 +167,7 @@ namespace Slackord
                                     debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
                                 }
                             }
-                            if (_showDebugOutput)
+                            if (!disableDebugOutputToolStripMenuItem.Checked)
                             {
                                 richTextBox1.Text += debugResponse + "\n";
                             }
@@ -212,7 +212,7 @@ namespace Slackord
                                 debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                 if (debugResponse.Length >= 2000)
                                 {
-                                    if (_showDebugOutput)
+                                    if (!disableDebugOutputToolStripMenuItem.Checked)
                                     {
                                         richTextBox1.Text += $"""
                                         The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
@@ -226,7 +226,7 @@ namespace Slackord
                                     Responses.Add(debugResponse);
                                 }
                             }
-                            if (_showDebugOutput)
+                            if (!disableDebugOutputToolStripMenuItem.Checked)
                             {
                                 richTextBox1.Text += debugResponse + "\n";
                             }
@@ -345,7 +345,20 @@ namespace Slackord
                                 }
                                 else if (sendAsThreadReply)
                                 {
-                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    if (threadID is not null)
+                                    {
+                                        await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
+                                        // We should let the user know and post the message as a normal message, because that's what it is.
+                                        richTextBox1.Invoke(new MethodInvoker(delegate ()
+                                        {
+                                            richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
+                                        }));
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
                                 }
                                 else if (sendAsNormalMessage)
                                 {
@@ -374,7 +387,21 @@ namespace Slackord
                                 }
                                 else if (sendAsThreadReply)
                                 {
-                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+
+                                    if (threadID is not null)
+                                    {
+                                        await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
+                                        // We should let the user know and post the message as a normal message, because that's what it is.
+                                        richTextBox1.Invoke(new MethodInvoker(delegate()
+                                        {
+                                            richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
+                                        }));
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
                                 }
                                 else if (sendAsNormalMessage)
                                 {
