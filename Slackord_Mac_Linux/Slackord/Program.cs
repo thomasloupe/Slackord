@@ -15,7 +15,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.3.4";
+        private const string CurrentVersion = "v2.4.3.5";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -126,6 +126,15 @@ namespace Slackord
             switch (option)
             {
                 case "1":
+                    if (_discordClient.ConnectionState == ConnectionState.Connected)
+                    {
+                        Console.WriteLine("Using previous Discord client instance...");
+                    }
+                    else
+                    {
+                        await MainAsync();
+                        Thread.Sleep(3000);
+                    }
                     await ImportChannels();
                     break;
                 case "2":
@@ -142,6 +151,7 @@ namespace Slackord
         {
             if (_discordClient == null || _discordClient.ConnectionState == ConnectionState.Disconnected || _discordClient.ConnectionState == ConnectionState.Disconnecting)
             {
+
                 Console.WriteLine("You must be connected to Discord to create channels!");
                 await SelectMenu();
             }
