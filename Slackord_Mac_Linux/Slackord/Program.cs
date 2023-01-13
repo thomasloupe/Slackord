@@ -151,7 +151,6 @@ namespace Slackord
         {
             if (_discordClient == null || _discordClient.ConnectionState == ConnectionState.Disconnected || _discordClient.ConnectionState == ConnectionState.Disconnecting)
             {
-
                 Console.WriteLine("You must be connected to Discord to create channels!");
                 await SelectMenu();
             }
