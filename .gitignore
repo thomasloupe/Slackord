@@ -5,11 +5,11 @@ vs/
 .user/
 Slackord_Win/Slackord/[Bb]in/
 Slackord_Win/Slackord/[Oo]bj/
-Slackord_Win/Slackord/.vs/
+Slackord_Win/Slackord/.vs/Slackord
 Slackord_Win/Slackord/[Pp]ublish/
 Slackord_Mac_Linux/Slackord/[Bb]in/
 Slackord_Mac_Linux/Slackord/[Oo]bj/
-Slackord_Mac_Linux/Slackord/.vs/*
+Slackord_Mac_Linux/Slackord/.vs/Slackord
 Slackord_Mac_Linux/Slackord/[Pp]ublish/
 *.1
 *.v2

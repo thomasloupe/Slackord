@@ -15,7 +15,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.3.5";
+        private const string CurrentVersion = "v2.4.3.6";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -473,6 +473,7 @@ namespace Slackord
                             Console.WriteLine("SPLITTING AND POSTING: " + messageToSend);
                             foreach (var response in responses)
                             {
+                                messageToSend = response + " " + "\n";
                                 if (sendAsThread)
                                 {
                                     await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
