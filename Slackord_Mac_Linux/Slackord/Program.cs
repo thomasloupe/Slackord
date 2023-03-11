@@ -15,7 +15,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.3.6";
+        private const string CurrentVersion = "v2.4.4";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
