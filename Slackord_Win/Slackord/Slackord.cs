@@ -16,12 +16,13 @@ using Label = System.Windows.Forms.Label;
 using Discord.Net;
 using Octokit;
 using System.Text.RegularExpressions;
+using Discord.Interactions;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.3.6";
+        private const string CurrentVersion = "v2.4.4";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -254,8 +255,10 @@ namespace Slackord
             _isParsingNow = false;
         }
 
-        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID)
+        [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
+        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID, SocketInteraction interaction)
         {
+            await interaction.DeferAsync();
             if (_isParsingNow)
             {
                 MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
@@ -267,8 +270,6 @@ namespace Slackord
                 await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
                 int messageCount = 0;
 
-                // TODO: Fix Application did not respond in time error.
-                // await DeferAsync();
                 if (_isFileParsed)
                 {
                     richTextBox1.Invoke(new Action(() =>
@@ -418,7 +419,7 @@ namespace Slackord
                         """;
                     }));
                     // TODO: Fix Application did not respond in time error.
-                    // await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
+                    await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
                     await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else if (!_isFileParsed)
@@ -526,7 +527,7 @@ namespace Slackord
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
                 var channel = _discordClient.GetChannel((ulong)command.ChannelId);
-                await PostMessagesToDiscord(channel, guildID);
+                await PostMessagesToDiscord(channel, guildID, command);
             }
         }
 
