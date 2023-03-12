@@ -182,27 +182,8 @@ namespace Slackord
                             var slackUserName = pair["user_profile"]["display_name"].ToString();
                             var slackRealName = pair["user_profile"]["real_name"];
 
-                            string slackMessage;
-                            if (pair["text"].Contains('|'))
-                            {
-                                string preSplit = pair["text"].ToString();
-                                string[] split = preSplit.Split(new char[] { '|' });
-                                string originalText = split[0];
-                                string splitText = split[1];
+                            string slackMessage = pair["text"].ToString();
 
-                                if (originalText.Contains(splitText))
-                                {
-                                    slackMessage = splitText + "\n";
-                                }
-                                else
-                                {
-                                    slackMessage = originalText + "\n";
-                                }
-                            }
-                            else
-                            {
-                                slackMessage = pair["text"].ToString();
-                            }
                             if (string.IsNullOrEmpty(slackUserName))
                             {
                                 debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
@@ -304,29 +285,6 @@ namespace Slackord
                         }
                         messageCount += 1;
 
-                        Regex rx = NewRegex();
-                        MatchCollection matches = rx.Matches(messageToSend);
-                        if (matches.Count > 0)
-                        {
-                            foreach (Match match in matches.Cast<Match>())
-                            {
-                                string matchValue = match.Value;
-                                string preSplit = matchValue;
-                                string[] split = preSplit.Split(new char[] { '|' });
-                                string originalText = split[0];
-                                string splitText = split[1];
-
-                                if (originalText.Contains(splitText))
-                                {
-                                    messageToSend = splitText + "\n";
-                                }
-                                else
-                                {
-                                    messageToSend = originalText + "\n";
-                                }
-                            }
-                        }
-
                         if (message.Length >= 2000)
                         {
                             var responses = messageToSend.SplitInParts(1800);
@@ -391,7 +349,7 @@ namespace Slackord
 
                                     if (threadID is not null)
                                     {
-                                        await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        await threadID.SendMessageAsync(messageToSend);
                                     }
                                     else
                                     {
@@ -401,7 +359,7 @@ namespace Slackord
                                         {
                                             richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
                                         }));
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend);
                                     }
                                 }
                                 else if (sendAsNormalMessage)
@@ -731,9 +689,6 @@ namespace Slackord
                 disableDebugOutputToolStripMenuItem.Checked = true;
             }
         }
-
-        [GeneratedRegex("(&lt;).*\\|{1}[^|\\n]+(&gt;)", RegexOptions.Compiled | RegexOptions.Singleline)]
-        private static partial Regex NewRegex();
 
         private void CreateChannelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
