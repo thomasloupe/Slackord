@@ -16,12 +16,13 @@ using Label = System.Windows.Forms.Label;
 using Discord.Net;
 using Octokit;
 using Discord.Interactions;
+using System.Globalization;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.5";
+        private const string CurrentVersion = "v2.4.6";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -31,8 +32,8 @@ namespace Slackord
         public bool _showDebugOutput = false;
         public IServiceProvider _services;
         public JArray parsed;
+        private List<string> ListOfFilesToParse = new();
         private readonly List<string> Responses = new();
-        private readonly List<string> ListOfFilesToParse = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
 
@@ -94,6 +95,8 @@ namespace Slackord
             -----------------------------------------
 
             """;
+
+            ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
 
             foreach (var file in ListOfFilesToParse)
             {

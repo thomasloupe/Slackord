@@ -11,20 +11,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.5";
+        private const string CurrentVersion = "v2.4.6";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
         private bool _isParsingNow;
         private IServiceProvider _services;
         private JArray parsed;
+        private List<string> ListOfFilesToParse = new();
         private readonly List<string> Responses = new();
-        private readonly List<string> ListOfFilesToParse = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
 
@@ -220,6 +221,8 @@ namespace Slackord
                     -----------------------------------------
 
                     """);
+
+                ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
 
                 foreach (var file in ListOfFilesToParse)
                 {
