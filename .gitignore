@@ -18,3 +18,5 @@ Slackord_Mac_Linux/.vs/Slackord/v17/.suo
 Slackord_Mac_Linux/Slackord/Properties/PublishProfiles/Linux x64.pubxml.user
 Slackord_Mac_Linux/Slackord/Properties/PublishProfiles/Mac OSx x64.pubxml.user
 Slackord_Win/Slackord/Properties/PublishProfiles/Windows x64.pubxml.user
+*.user
+*.v2
