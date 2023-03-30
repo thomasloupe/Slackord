@@ -16,7 +16,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.7";
+        private const string CurrentVersion = "v2.4.8";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -405,8 +405,10 @@ namespace Slackord
         }
 
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
-        private async Task PostMessages(SocketChannel channel, ulong guildID)
+        private async Task PostMessages(SocketInteraction interaction, SocketChannel channel, ulong guildID)
         {
+            await interaction.DeferAsync();
+
             if (_isParsingNow)
             {
                 Console.WriteLine("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
@@ -543,7 +545,7 @@ namespace Slackord
                     -----------------------------------------
                     All messages sent to Discord successfully!
                     """);
-                    await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
+                    await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
                     await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else if (!_isFileParsed)
@@ -594,7 +596,11 @@ namespace Slackord
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
                 var channel = _discordClient.GetChannel((ulong)command.ChannelId);
-                await PostMessages(channel, guildID);
+
+                // Create a new SocketSlashCommand instance from the SocketSlashCommandInteraction instance
+                var interaction = command;
+
+                await PostMessages(interaction, channel, guildID);
             }
         }
 
