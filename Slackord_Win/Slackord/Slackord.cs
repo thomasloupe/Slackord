@@ -22,7 +22,7 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.6";
+        private const string CurrentVersion = "v2.4.7";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -95,8 +95,11 @@ namespace Slackord
             -----------------------------------------
 
             """;
-
-            ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
+            
+            var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files"); // combine app's directory path with "Files" folder name
+            var ListOfFilesToParse = Directory.GetFiles(directoryPath, "*.json")
+                                 .OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture))
+                                 .ToList();
 
             foreach (var file in ListOfFilesToParse)
             {
@@ -126,7 +129,16 @@ namespace Slackord
                         if (pair.ContainsKey("files"))
                         {
                             var firstFile = pair["files"][0];
-                            List<string> fileKeys = new() { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "permalink_public", "permalink", "url_private" };
+                            List<string> fileKeys = new();
+                            string fileType = firstFile["filetype"].ToString();
+                            if (fileType == "mp4")
+                            {
+                                fileKeys = new List<string> { "permalink" };
+                            }
+                            else
+                            {
+                                fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
+                            }
                             var fileLink = "";
                             foreach (var key in fileKeys)
                             {
@@ -141,7 +153,7 @@ namespace Slackord
                                 }
                                 catch (Exception ex)
                                 {
-                                    Debug.WriteLine(ex.Message);
+                                    Console.WriteLine(ex.Message);
                                     continue;
                                 }
                             }
@@ -691,13 +703,13 @@ namespace Slackord
             Process.Start(e.LinkText);
         }
 
-        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ListOfFilesToParse.Clear();
             _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
             if (_ofd.ShowDialog() == DialogResult.OK)
                 ListOfFilesToParse.Add(_ofd.FileName);
-            ParseJsonFiles();
+            await ParseJsonFiles();
         }
 
         private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1,0 +1,256 @@
+[
+{
+    "id": "C193PMM9P",
+    "name": "general",
+    "created": 1463362518,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": true,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "pins": [
+        {
+            "id": "1613176322.036800",
+            "type": "C",
+            "created": 1613176336,
+            "user": "U1946R7HP",
+            "owner": "U1946R7HP"
+        }
+    ],
+    "topic": {
+        "value": "Company-wide announcements and work-based matters",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "This channel is for team-wide communication and announcements. All team members are in this channel.",
+        "creator": "",
+        "last_set": 0
+    }
+},
+{
+    "id": "C193VE0RG",
+    "name": "fucking-generic",
+    "created": 1463362518,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "pins": [
+        {
+            "id": "1607394475.000200",
+            "type": "C",
+            "created": 1607394492,
+            "user": "U1946R7HP",
+            "owner": "U193JMM4M"
+        }
+    ],
+    "topic": {
+        "value": "fucking-generic",
+        "creator": "U1946R7HP",
+        "last_set": 1463853183
+    },
+    "purpose": {
+        "value": "A place for non-work-related flimflam, faffing, hodge-podge or jibber-jabber you'd prefer to keep out of more focused work-related channels.",
+        "creator": "",
+        "last_set": 0
+    }
+},
+{
+    "id": "C1NFF3YCV",
+    "name": "astrolabe-arena",
+    "created": 1467587980,
+    "creator": "U1946R7HP",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "Tools, softwares, and links for anything from a NAS to Navigation",
+        "creator": "U1946R7HP",
+        "last_set": 1467587981
+    }
+},
+{
+    "id": "C29QAC2JY",
+    "name": "events",
+    "created": 1473381491,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    }
+},
+{
+    "id": "C2C8JAR0B",
+    "name": "eclipses",
+    "created": 1473987988,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "pins": [
+        {
+            "id": "1503423789.000195",
+            "type": "C",
+            "created": 1503436308,
+            "user": "U193JMM4M",
+            "owner": "U193JMM4M"
+        },
+        {
+            "id": "1503884594.000179",
+            "type": "C",
+            "created": 1504906604,
+            "user": "U193JMM4M",
+            "owner": "U193JMM4M"
+        }
+    ],
+    "topic": {
+        "value": "PLANETARY ALIGNMENTS AND DARKNESS AND TENNESSEE",
+        "creator": "U1946R7HP",
+        "last_set": 1497485444
+    },
+    "purpose": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    }
+},
+{
+    "id": "C2JSP5RGU",
+    "name": "product-development",
+    "created": 1475543196,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "Alliteration",
+        "creator": "U193JMM4M",
+        "last_set": 1475543196
+    }
+},
+{
+    "id": "C785NA50D",
+    "name": "prototyping",
+    "created": 1506296466,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "3D printing and other fabrication",
+        "creator": "U193JMM4M",
+        "last_set": 1506296466
+    }
+},
+{
+    "id": "CJHJZNKEX",
+    "name": "wax-alert",
+    "created": 1558389060,
+    "creator": "U193JMM4M",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "engaging the eclectic ear",
+        "creator": "U193JMM4M",
+        "last_set": 1558389061
+    }
+},
+{
+    "id": "C03D8D9AA48",
+    "name": "word-game-wins",
+    "created": 1650629643,
+    "creator": "U1946R7HP",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "brag about how good at wordle \/ waffle you are",
+        "creator": "U1946R7HP",
+        "last_set": 1650629644
+    }
+},
+{
+    "id": "C03UC53RZ9A",
+    "name": "ai-electric-sheep",
+    "created": 1660864492,
+    "creator": "U1946R7HP",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U193JMM4M",
+        "U1946R7HP"
+    ],
+    "topic": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "",
+        "creator": "",
+        "last_set": 0
+    }
+}
+]

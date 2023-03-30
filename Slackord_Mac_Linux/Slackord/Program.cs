@@ -10,14 +10,13 @@ using Octokit;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Net;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.6";
+        private const string CurrentVersion = "v2.4.7";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -81,6 +80,7 @@ namespace Slackord
                                   
                                   """, CurrentVersion, latestVersion);
             }
+            await Task.CompletedTask;
         }
 
         private async Task CheckForExistingBotToken()
@@ -88,22 +88,37 @@ namespace Slackord
             if (File.Exists("Token.txt"))
             {
                 _discordToken = File.ReadAllText("Token.txt").Trim();
-                Console.WriteLine("Found existing token file.");
+                Console.WriteLine("""
+
+                                 Found an existing bot token.
+
+                                 """);
                 if (_discordToken.Length == 0 || string.IsNullOrEmpty(_discordToken))
                 {
-                    Console.WriteLine("No bot token found. Please enter your bot token: ");
+                    Console.WriteLine("""
+
+                                 No bot token found. Please enter your token:
+
+                                 """);
                     _discordToken = Console.ReadLine();
                     File.WriteAllText("Token.txt", _discordToken);
                     await CheckForExistingBotToken();
                 }
                 else
                 {
-                    await SelectMenu();
+                    _discordClient = new DiscordSocketClient();
+                    await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
+                    await _discordClient.StartAsync();
+                    await SelectMenu(_discordClient);
                 }
             }
             else
             {
-                Console.WriteLine("No bot token found. Please enter your bot token:");
+                Console.WriteLine("""
+
+                                 No bot token found. Please enter your token:
+
+                                 """);
                 _discordToken = Console.ReadLine();
                 if (string.IsNullOrEmpty(_discordToken))
                 {
@@ -112,12 +127,16 @@ namespace Slackord
                 else
                 {
                     File.WriteAllText("Token.txt", _discordToken);
+                    _discordClient = new DiscordSocketClient();
+                    await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
+                    await _discordClient.StartAsync();
+                    await SelectMenu(_discordClient);
                 }
             }
         }
 
         [STAThread]
-        private async Task SelectMenu()
+        private async Task SelectMenu(DiscordSocketClient _discordClient)
         {
             Console.WriteLine("Please select an option:");
             Console.WriteLine("""
@@ -144,7 +163,7 @@ namespace Slackord
                     break;
                 default:
                     Console.WriteLine("Invalid option. Please try again.");
-                    await SelectMenu();
+                    await SelectMenu(_discordClient);
                     break;
             }
         }
@@ -154,35 +173,38 @@ namespace Slackord
             if (_discordClient == null || _discordClient.ConnectionState == ConnectionState.Disconnected || _discordClient.ConnectionState == ConnectionState.Disconnecting)
             {
                 Console.WriteLine("You must be connected to Discord to create channels!");
-                await SelectMenu();
+                await SelectMenu(_discordClient);
             }
 
             try
             {
                 var json = File.ReadAllText("channels.json");
-                var channels = JObject.Parse(json);
+                var channels = JArray.Parse(json);
+                List<string> ChannelsToCreate = new();
+                foreach (JObject obj in channels.Cast<JObject>())
+                {
+                    if (obj.ContainsKey("name"))
+                    {
+                        ChannelsToCreate.Add(obj["name"].ToString());
+                    }
+                }
+                Console.WriteLine($@"
+                It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
+                If you have, you will more than likely see duplicate channels.
+                Now is a good time to remove any channels you do not want to create duplicates of.
+                Please assign the administrator role to your bot at this time so it can create the channels.
+                When ready, press ""Enter"" to continue.
+                ");
+                Console.ReadLine();
+                await CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                Console.WriteLine("No channels.json file found. Please import a Slack export first.");
-                await SelectMenu();
-            }
-
-            Console.WriteLine($"""
-                              It is assumed that you have not created any channels with the names of the channels in the JSON file yet. If you have, you will more than likely see duplicate channels.
-                              Now is a good time to remove any channels you do not want to create duplicates of. When ready, press "Enter" to continue.
-                              """);
-            List<string> ChannelsToCreate = new();
-
-            foreach (JObject pair in parsed.Cast<JObject>())
-            {
-                if (pair.ContainsKey("name"))
-                {
-                    ChannelsToCreate.Add(pair["name"].ToString());
-                }
-                await CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
+                Console.WriteLine(e.Message);
+                await SelectMenu(_discordClient);
             }
         }
+
 
         public async Task CreateChannelsAsync(List<string> _channelsToCreate)
         {
@@ -193,12 +215,12 @@ namespace Slackord
                 try
                 {
                     await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channel.ToLower());
-                    await Task.Delay(3000);
+                    await Task.Delay(1000);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    await SelectMenu();
+                    await SelectMenu(_discordClient);
                 }
             }
             Console.WriteLine($"""
@@ -206,159 +228,147 @@ namespace Slackord
                               The following channels were created:
 
                               {string.Join(Environment.NewLine, _channelsToCreate)}
+
                               """);
-            await SelectMenu();
+            await SelectMenu(_discordClient);
         }
 
         private async Task ParseJsonFiles()
         {
+            _isParsingNow = true;
+
+            Console.WriteLine
+                ("""
+                Begin parsing JSON data...
+                -----------------------------------------
+
+                """);
+
+            var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
+            ListOfFilesToParse = Directory.GetFiles(directoryPath, "*.json")
+                                 .OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture))
+                                 .ToList();
+
+
+            foreach (var file in ListOfFilesToParse)
             {
-                _isParsingNow = true;
-
-                Console.WriteLine
-                    ("""
-                    Begin parsing JSON data...
-                    -----------------------------------------
-
-                    """);
-
-                ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
-
-                foreach (var file in ListOfFilesToParse)
+                try
                 {
-                    try
+                    var json = File.ReadAllText(file);
+                    parsed = JArray.Parse(json);
+                    string debugResponse;
+                    foreach (JObject pair in parsed.Cast<JObject>())
                     {
-                        var json = File.ReadAllText(file);
-                        parsed = JArray.Parse(json);
-                        string debugResponse;
-                        foreach (JObject pair in parsed.Cast<JObject>())
+                        if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
                         {
-                            if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
+                            isThreadStart.Add(true);
+                            isThreadMessages.Add(false);
+                        }
+                        else if (pair.ContainsKey("thread_ts") && !pair.ContainsKey("reply_count"))
+                        {
+                            isThreadStart.Add(false);
+                            isThreadMessages.Add(true);
+                        }
+                        else
+                        {
+                            isThreadStart.Add(false);
+                            isThreadMessages.Add(false);
+                        }
+
+                        if (pair.ContainsKey("files"))
+                        {
+                            var firstFile = pair["files"][0];
+                            List<string> fileKeys = new();
+                            string fileType = firstFile["filetype"].ToString();
+                            if (fileType == "mp4")
                             {
-                                isThreadStart.Add(true);
-                                isThreadMessages.Add(false);
-                            }
-                            else if (pair.ContainsKey("thread_ts") && !pair.ContainsKey("reply_count"))
-                            {
-                                isThreadStart.Add(false);
-                                isThreadMessages.Add(true);
+                                fileKeys = new List<string> { "permalink" };
                             }
                             else
                             {
-                                isThreadStart.Add(false);
-                                isThreadMessages.Add(false);
+                                fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
                             }
-
-                            if (pair.ContainsKey("files"))
-                            {
-                                var firstFile = pair["files"][0];
-                                List<string> fileKeys = new() { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "permalink_public", "permalink", "url_private" };
-                                var fileLink = "";
-                                foreach (var key in fileKeys)
-                                {
-                                    try
-                                    {
-                                        fileLink = firstFile[key].ToString();
-                                        if (fileLink.Length > 0)
-                                        {
-                                            Responses.Add(fileLink + " \n");
-                                            break;
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Debug.WriteLine(ex.Message);
-                                        continue;
-                                    }
-                                }
-                                debugResponse = fileLink;
-                                Console.WriteLine(debugResponse + "\n");
-                            }
-                            if (pair.ContainsKey("bot_profile"))
+                            var fileLink = "";
+                            foreach (var key in fileKeys)
                             {
                                 try
                                 {
-                                    debugResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
-                                    Responses.Add(debugResponse);
+                                    fileLink = firstFile[key].ToString();
+                                    if (fileLink.Length > 0)
+                                    {
+                                        Responses.Add(fileLink + " \n");
+                                        break;
+                                    }
                                 }
-                                catch (NullReferenceException)
+                                catch (Exception ex)
                                 {
-                                    try
-                                    {
-                                        debugResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
-                                        Responses.Add(debugResponse);
-                                    }
-                                    catch (NullReferenceException)
-                                    {
-                                        debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
-                                    }
+                                    Console.WriteLine(ex.Message);
+                                    continue;
                                 }
-                                Console.WriteLine(debugResponse + "\n");
                             }
-                            if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
+                            debugResponse = fileLink;
+                            Console.WriteLine(debugResponse + "\n");
+                        }
+                        if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
+                        {
+                            var rawTimeDate = pair["ts"];
+                            double oldDateTime = (double)rawTimeDate;
+                            string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+                            string newDateTime = convertDateTime.ToString();
+                            string slackUserName = pair["user_profile"]["display_name"].ToString();
+                            string slackRealName = pair["user_profile"]["real_name"].ToString();
+                            string slackMessage = pair["text"].ToString();
+
+                            // Dedupe URLs.
+                            int firstPipeIndex = slackMessage.IndexOf('|');
+                            int lastPipeIndex = slackMessage.LastIndexOf('|');
+                            if (firstPipeIndex != -1 && firstPipeIndex == lastPipeIndex)
                             {
-                                var rawTimeDate = pair["ts"];
-                                double oldDateTime = (double)rawTimeDate;
-                                string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                                string newDateTime = convertDateTime.ToString();
-                                string slackUserName = pair["user_profile"]["display_name"].ToString();
-                                string slackRealName = pair["user_profile"]["real_name"].ToString();
-                                string slackMessage = pair["text"].ToString();
+                                slackMessage = await DeDupeURLs(slackMessage);
+                            }
 
-                                // Dedupe URLs.
-                                int firstPipeIndex = slackMessage.IndexOf('|');
-                                int lastPipeIndex = slackMessage.LastIndexOf('|');
-                                if (firstPipeIndex != -1 && firstPipeIndex == lastPipeIndex)
+                            if (string.IsNullOrEmpty(slackUserName))
+                            {
+                                debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
+                                Responses.Add(debugResponse);
+                            }
+                            else
+                            {
+                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                if (debugResponse.Length >= 2000)
                                 {
-                                    slackMessage = await DeDupeURLs(slackMessage);
-                                }
-
-                                if (string.IsNullOrEmpty(slackUserName))
-                                {
-                                    debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
-                                    Responses.Add(debugResponse);
+                                    Console.WriteLine 
+                                    ($"""
+                                    The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                    This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                    """);
                                 }
                                 else
                                 {
-                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
-                                    if (debugResponse.Length >= 2000)
-                                    {
-                                        Console.WriteLine 
-                                        ($"""
-                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
-                                        """);
-                                    }
-                                    else
-                                    {
-                                        debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
-                                        Responses.Add(debugResponse);
-                                    }
+                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
+                                    Responses.Add(debugResponse);
                                 }
-                                Console.WriteLine(debugResponse + "\n");
                             }
+                            Console.WriteLine(debugResponse + "\n");
                         }
-                        Console.WriteLine
-                            ($"""
-                            -----------------------------------------
-                                Parsing of {file} completed successfully!
-                            -----------------------------------------
+                    }
+                    Console.WriteLine
+                        ($"""
+                        -----------------------------------------
+                            Parsing of {file} completed successfully!
+                        -----------------------------------------
                     
-                            """);
-                        _isFileParsed = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                    if (_discordClient != null)
-                    {
-                        await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
-                    }
-
+                        """);
+                    _isFileParsed = true;
                 }
-                _isParsingNow = false;
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
+            _isParsingNow = false;
+            await MainAsync();
+            await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
         }
 
         static async Task<string> DeDupeURLs(string input)
@@ -408,8 +418,6 @@ namespace Slackord
                 await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
                 int messageCount = 0;
                 
-                // TODO: Fix Application did not respond in time error.
-                // await DeferAsync();
                 if (_isFileParsed)
                 {
                     Console.WriteLine("""
@@ -535,8 +543,7 @@ namespace Slackord
                     -----------------------------------------
                     All messages sent to Discord successfully!
                     """);
-                    // TODO: Fix Application did not respond in time error.
-                    // await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
+                    await FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
                     await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else if (!_isFileParsed)

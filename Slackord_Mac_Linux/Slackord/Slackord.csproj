@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net.Core" Version="3.9.0" />
-    <PackageReference Include="Discord.Net.Interactions" Version="3.9.0" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="3.9.0" />
+    <PackageReference Include="Discord.Net.Core" Version="3.10.0" />
+    <PackageReference Include="Discord.Net.Interactions" Version="3.10.0" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.10.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Octokit" Version="5.0.2" />
   </ItemGroup>
