@@ -22,3 +22,4 @@ Slackord_Win/Slackord/Properties/PublishProfiles/Windows x64.pubxml.user
 *.v2
 Slackord_Mac_Linux/Slackord/Token.txt
 Slackord_Win/Slackord/Properties/PublishProfiles/Windows x64.pubxml.user
+*.user
