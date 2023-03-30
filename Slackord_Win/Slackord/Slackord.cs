@@ -682,16 +682,19 @@ namespace Slackord
 
         private void DonateToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var result = MessageBox.Show("""
-                Slackord will always be free!
-                If you'd like to buy me a beer anyway, I won't tell you no!
-                Would you like to open the donation page now?
-                """, "Slackord is free, but beer is not!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+            var url = "https://paypal.me/thomasloupe";
+            var message = @"
+        Slackord will always be free!
+        If you'd like to buy me a beer anyway, I won't tell you no!
+        Would you like to open the donation page now?
+        ";
+            var result = MessageBox.Show(message, "Slackord is free, but beer is not!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             if (result == DialogResult.Yes)
             {
-                Process.Start("https://paypal.me/thomasloupe");
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
         }
+
 
         private void RichTextBox1_TextChanged(object sender, EventArgs e)
         {
