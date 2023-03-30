@@ -17,6 +17,7 @@ using Discord.Net;
 using Octokit;
 using Discord.Interactions;
 using System.Globalization;
+using System.Security.Policy;
 
 namespace Slackord
 {
@@ -97,7 +98,7 @@ namespace Slackord
             """;
             
             var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files"); // combine app's directory path with "Files" folder name
-            var ListOfFilesToParse = Directory.GetFiles(directoryPath, "*.json")
+            ListOfFilesToParse = Directory.GetFiles(directoryPath, "*.json")
                                  .OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture))
                                  .ToList();
 
@@ -702,7 +703,8 @@ namespace Slackord
         }
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
         {
-            Process.Start(e.LinkText);
+            var url = e.LinkText;
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
         private async void OpenToolStripMenuItem_Click(object sender, EventArgs e)
