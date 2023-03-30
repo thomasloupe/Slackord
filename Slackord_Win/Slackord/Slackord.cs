@@ -695,7 +695,6 @@ namespace Slackord
             }
         }
 
-
         private void RichTextBox1_TextChanged(object sender, EventArgs e)
         {
             richTextBox1.SelectionStart = richTextBox1.Text.Length;
