@@ -97,11 +97,6 @@ namespace Slackord
 
             """;
             
-            var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files"); // combine app's directory path with "Files" folder name
-            ListOfFilesToParse = Directory.GetFiles(directoryPath, "*.json")
-                                 .OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture))
-                                 .ToList();
-
             foreach (var file in ListOfFilesToParse)
             {
                 try
@@ -131,39 +126,58 @@ namespace Slackord
                         {
                             var firstFile = pair["files"][0];
                             List<string> fileKeys = new();
-                            string fileType = firstFile["filetype"].ToString();
-                            if (fileType == "mp4")
+
+                            var fileTypeToken = firstFile.SelectToken("filetype");
+                            if (fileTypeToken != null)
                             {
-                                fileKeys = new List<string> { "permalink" };
+                                string fileType = fileTypeToken.ToString();
+                                if (fileType == "mp4")
+                                {
+                                    fileKeys = new List<string> { "permalink" };
+                                }
+                                else
+                                {
+                                    fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
+                                }
                             }
                             else
                             {
-                                fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
+                                continue;
                             }
+
                             var fileLink = "";
+                            bool foundValidKey = false;
                             foreach (var key in fileKeys)
                             {
                                 try
                                 {
                                     fileLink = firstFile[key].ToString();
-                                    if (fileLink.Length > 0)
+                                    if (!string.IsNullOrEmpty(fileLink))
                                     {
                                         Responses.Add(fileLink + " \n");
+                                        foundValidKey = true;
                                         break;
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    Console.WriteLine("Exception: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
                                     continue;
                                 }
                             }
+
+                            if (!foundValidKey)
+                            {
+                                continue;
+                            }
+
                             debugResponse = fileLink;
                             if (!disableDebugOutputToolStripMenuItem.Checked)
                             {
                                 richTextBox1.Text += debugResponse + "\n";
                             }
                         }
+
                         if (pair.ContainsKey("bot_profile"))
                         {
                             try
@@ -713,6 +727,9 @@ namespace Slackord
             _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
             if (_ofd.ShowDialog() == DialogResult.OK)
                 ListOfFilesToParse.Add(_ofd.FileName);
+
+            ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
+
             await ParseJsonFiles();
         }
 
