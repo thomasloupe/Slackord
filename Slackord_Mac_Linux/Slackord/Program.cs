@@ -16,7 +16,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.8";
+        private const string CurrentVersion = "v2.4.8.2";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -27,6 +27,7 @@ namespace Slackord
         private readonly List<string> Responses = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
+        private TaskCompletionSource<bool> _botReadyTcs = new();
 
         static void Main()
         {
@@ -100,16 +101,9 @@ namespace Slackord
                                  No bot token found. Please enter your token:
 
                                  """);
-                    _discordToken = Console.ReadLine();
+                    _discordToken = Console.ReadLine().Trim();
                     File.WriteAllText("Token.txt", _discordToken);
                     await CheckForExistingBotToken();
-                }
-                else
-                {
-                    _discordClient = new DiscordSocketClient();
-                    await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
-                    await _discordClient.StartAsync();
-                    await SelectMenu(_discordClient);
                 }
             }
             else
@@ -127,44 +121,36 @@ namespace Slackord
                 else
                 {
                     File.WriteAllText("Token.txt", _discordToken);
-                    _discordClient = new DiscordSocketClient();
-                    await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
-                    await _discordClient.StartAsync();
-                    await SelectMenu(_discordClient);
                 }
             }
+            await MainAsync();
         }
 
         [STAThread]
         private async Task SelectMenu(DiscordSocketClient _discordClient)
         {
-            Console.WriteLine("Please select an option:");
+            Console.WriteLine("\nPlease select an option:");
             Console.WriteLine("""
                               1. Import Slack channels to Discord.
                               2. Import Slack messages.
                               """);
-            var option = Console.ReadLine();
-            switch (option)
+            string input = Console.ReadLine();
+            try
             {
-                case "1":
-                    if (_discordClient.ConnectionState == ConnectionState.Connected)
-                    {
-                        Console.WriteLine("Using previous Discord client instance...");
-                    }
-                    else
-                    {
-                        await MainAsync();
-                        Thread.Sleep(3000);
-                    }
+                int option = int.Parse(input);
+                if (option == 1)
+                {
                     await ImportChannels();
-                    break;
-                case "2":
+                }
+                if (option == 2)
+                {
                     await ParseJsonFiles();
-                    break;
-                default:
-                    Console.WriteLine("Invalid option. Please try again.");
-                    await SelectMenu(_discordClient);
-                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Not a valid option...\n" + ex.Message);
+                await SelectMenu(_discordClient);
             }
         }
 
@@ -189,13 +175,13 @@ namespace Slackord
                     }
                 }
                 Console.WriteLine($@"
-                It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
-                If you have, you will more than likely see duplicate channels.
-                Now is a good time to remove any channels you do not want to create duplicates of.
-                Please assign the administrator role to your bot at this time so it can create the channels.
-                When ready, press ""Enter"" to continue.
-                ");
-                Console.ReadLine();
+        It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
+        If you have, you will more than likely see duplicate channels.
+        Now is a good time to remove any channels you do not want to create duplicates of.
+        Please assign the administrator role to your bot at this time so it can create the channels.
+        When ready, press any key to continue.
+        ");
+                Console.ReadKey(true);
                 await CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -205,7 +191,6 @@ namespace Slackord
             }
         }
 
-
         public async Task CreateChannelsAsync(List<string> _channelsToCreate)
         {
             var guildID = _discordClient.Guilds.FirstOrDefault().Id;
@@ -214,23 +199,17 @@ namespace Slackord
             {
                 try
                 {
+                    Console.Write($"Creating channel '{channel.ToLower()}'...");
                     await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channel.ToLower());
-                    await Task.Delay(1000);
+                    Console.WriteLine("Success!");
+                    await Task.Delay(5000);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine($"Error creating channel '{channel.ToLower()}': {ex.Message}");
                     await SelectMenu(_discordClient);
                 }
             }
-            Console.WriteLine($"""
-                              Channel import completed!
-                              The following channels were created:
-
-                              {string.Join(Environment.NewLine, _channelsToCreate)}
-
-                              """);
-            await SelectMenu(_discordClient);
         }
 
         private async Task ParseJsonFiles()
@@ -588,23 +567,39 @@ namespace Slackord
                 DiscordSocketConfig _config = new();
                 {
                     _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
+                    _config.LogLevel = LogSeverity.Verbose;
                 }
                 _discordClient = new(_config);
                 _services = new ServiceCollection()
                 .AddSingleton(_discordClient)
                 .BuildServiceProvider();
-                _discordClient.Log += DiscordClient_Log;
+                _discordClient.Log += SlackordDiscordClient_Log;
                 await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
                 await _discordClient.StartAsync();
+
+                _discordClient.Ready += () =>
+                {
+                    _botReadyTcs.SetResult(true);
+                    return Task.CompletedTask;
+                };
+
+                await _botReadyTcs.Task;
+
                 await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
-                _discordClient.Ready += ClientReady;
                 _discordClient.SlashCommandExecuted += SlashCommandHandler;
+                await SelectMenu(_discordClient);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Discord bot task failed with: " + ex.Message);
+                Console.WriteLine("Discord bot task failed with: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
                 await _discordClient.StopAsync();
             }
+            await Task.CompletedTask;
+        }
+        private Task DiscordClient_Log(LogMessage logMessage)
+        {
+            Console.WriteLine($"[{logMessage.Severity}] {logMessage.Source}: {logMessage.Message}");
+            return Task.CompletedTask;
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
@@ -621,37 +616,6 @@ namespace Slackord
             }
         }
 
-        private async Task ClientReady()
-        {
-            try
-            {
-                if (_discordClient.Guilds.Count > 0)
-                {
-                    var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                    var guild = _discordClient.GetGuild(guildID);
-                    var guildCommand = new SlashCommandBuilder();
-                    guildCommand.WithName("slackord");
-                    guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
-                    try
-                    {
-                        await guild.CreateApplicationCommandAsync(guildCommand.Build());
-                    }
-                    catch (HttpException Ex)
-                    {
-                        Console.WriteLine("Error creating slash command: " + Ex.Message);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Slackord was unable to find any guilds to create a slash command in.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error encountered while creating slash command: " + ex.Message);
-            }
-        }
-
         private static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
         {
             var date = new DateTime(1970, 1, 1, 0, 0, 0, 0);
@@ -659,9 +623,9 @@ namespace Slackord
             return returnDate;
         }
 
-        private async Task DiscordClient_Log(LogMessage arg)
+        private async Task SlackordDiscordClient_Log(LogMessage arg)
         {
-            Console.WriteLine(arg.ToString() + ".\n");
+            Console.WriteLine(arg.ToString());
             await Task.CompletedTask;
         }
 

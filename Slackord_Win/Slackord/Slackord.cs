@@ -17,13 +17,12 @@ using Discord.Net;
 using Octokit;
 using Discord.Interactions;
 using System.Globalization;
-using System.Security.Policy;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.8";
+        private const string CurrentVersion = "v2.4.8.2";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -161,7 +160,7 @@ namespace Slackord
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine("Exception: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
+                                    MessageBox.Show("Exception: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
                                     continue;
                                 }
                             }
