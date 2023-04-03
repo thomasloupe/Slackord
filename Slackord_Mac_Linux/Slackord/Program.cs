@@ -315,13 +315,7 @@ namespace Slackord
                             string slackRealName = pair["user_profile"]["real_name"].ToString();
                             string slackMessage = pair["text"].ToString();
 
-                            // Dedupe URLs.
-                            int firstPipeIndex = slackMessage.IndexOf('|');
-                            int lastPipeIndex = slackMessage.LastIndexOf('|');
-                            if (firstPipeIndex != -1 && firstPipeIndex == lastPipeIndex)
-                            {
-                                slackMessage = await DeDupeURLs(slackMessage);
-                            }
+                            slackMessage = DeDupeURLs(slackMessage);
 
                             if (string.IsNullOrEmpty(slackUserName))
                             {
@@ -367,36 +361,25 @@ namespace Slackord
             await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
         }
 
-        static async Task<string> DeDupeURLs(string input)
+        private static string DeDupeURLs(string input)
         {
+            input = input.Replace("<", "").Replace(">", "");
             string[] parts = input.Split('|');
 
-            // Check if the input string contains a pipe character and there are exactly two parts
             if (parts.Length == 2)
             {
-                // Try to create URIs from both parts
                 if (Uri.TryCreate(parts[0], UriKind.Absolute, out Uri uri1) &&
                     Uri.TryCreate(parts[1], UriKind.Absolute, out Uri uri2))
                 {
-                    // Check if the left parts of both URIs are the same
                     if (uri1.GetLeftPart(UriPartial.Path) == uri2.GetLeftPart(UriPartial.Path))
                     {
-                        // If the left parts are the same, remove the second URL and the pipe character
                         input = input.Replace(parts[1] + "|", "");
                     }
                 }
             }
+            string[] parts2 = input.Split('|').Distinct().ToArray();
+            input = string.Join("|", parts2);
 
-            // Check if the input string contains a pipe character
-            int pipeIndex = input.IndexOf('|');
-            if (pipeIndex != -1)
-            {
-                // Split the input string by the pipe character and remove the second part
-                string[] parts2 = input.Split('|');
-                input = parts2[0] + "|" + parts2[1].Split('|')[0];
-            }
-
-            // Return the input string with duplicate URLs removed
             return input;
         }
 

@@ -17,6 +17,8 @@ using Discord.Net;
 using Octokit;
 using Discord.Interactions;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace Slackord
 {
@@ -105,6 +107,11 @@ namespace Slackord
                     string debugResponse;
                     foreach (JObject pair in parsed.Cast<JObject>())
                     {
+                        var rawTimeDate = pair["ts"];
+                        double oldDateTime = (double)rawTimeDate;
+                        string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+                        string newDateTime = convertDateTime.ToString();
+
                         if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
                         {
                             isThreadStart.Add(true);
@@ -203,21 +210,11 @@ namespace Slackord
                         }
                         if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                         {
-                            var rawTimeDate = pair["ts"];
-                            double oldDateTime = (double)rawTimeDate;
-                            string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                            string newDateTime = convertDateTime.ToString();
                             string slackUserName = pair["user_profile"]["display_name"].ToString();
                             string slackRealName = pair["user_profile"]["real_name"].ToString();
                             string slackMessage = pair["text"].ToString();
 
-                            // Dedupe URLs.
-                            int firstPipeIndex = slackMessage.IndexOf('|');
-                            int lastPipeIndex = slackMessage.LastIndexOf('|');
-                            if (firstPipeIndex != -1 && firstPipeIndex == lastPipeIndex)
-                            {
-                                slackMessage = await DeDupeURLs(slackMessage);
-                            }
+                            slackMessage = DeDupeURLs(slackMessage);
 
                             if (string.IsNullOrEmpty(slackUserName))
                             {
@@ -271,36 +268,27 @@ namespace Slackord
             _isParsingNow = false;
         }
 
-        static async Task<string> DeDupeURLs(string input)
+        private static string DeDupeURLs(string input)
         {
+            input = input.Replace("<", "").Replace(">", "");
+
             string[] parts = input.Split('|');
 
-            // Check if the input string contains a pipe character and there are exactly two parts
             if (parts.Length == 2)
             {
-                // Try to create URIs from both parts
                 if (Uri.TryCreate(parts[0], UriKind.Absolute, out Uri uri1) &&
                     Uri.TryCreate(parts[1], UriKind.Absolute, out Uri uri2))
                 {
-                    // Check if the left parts of both URIs are the same
                     if (uri1.GetLeftPart(UriPartial.Path) == uri2.GetLeftPart(UriPartial.Path))
                     {
-                        // If the left parts are the same, remove the second URL and the pipe character
                         input = input.Replace(parts[1] + "|", "");
                     }
                 }
             }
 
-            // Check if the input string contains a pipe character
-            int pipeIndex = input.IndexOf('|');
-            if (pipeIndex != -1)
-            {
-                // Split the input string by the pipe character and remove the second part
-                string[] parts2 = input.Split('|');
-                input = parts2[0] + "|" + parts2[1].Split('|')[0];
-            }
+            string[] parts2 = input.Split('|').Distinct().ToArray();
+            input = string.Join("|", parts2);
 
-            // Return the input string with duplicate URLs removed
             return input;
         }
 
