@@ -3,13 +3,12 @@
 // https://thomasloupe.com
 
 using Discord;
+using Discord.Net;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using Octokit;
 using Microsoft.Extensions.DependencyInjection;
-using Discord.Net;
-using System.Text.RegularExpressions;
 using System.Globalization;
 
 namespace Slackord
@@ -21,7 +20,7 @@ namespace Slackord
         private string _discordToken;
         private bool _isFileParsed;
         private bool _isParsingNow;
-        private IServiceProvider _services;
+        public IServiceProvider _services;
         private JArray parsed;
         private List<string> ListOfFilesToParse = new();
         private readonly List<string> Responses = new();
@@ -406,10 +405,9 @@ namespace Slackord
         }
 
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
-        private async Task PostMessages(SocketInteraction interaction, SocketChannel channel, ulong guildID)
+        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID, SocketInteraction interaction)
         {
             await interaction.DeferAsync();
-
             if (_isParsingNow)
             {
                 Console.WriteLine("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
@@ -420,7 +418,7 @@ namespace Slackord
             {
                 await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
                 int messageCount = 0;
-                
+
                 if (_isFileParsed)
                 {
                     Console.WriteLine("""
@@ -452,34 +450,12 @@ namespace Slackord
                         }
                         messageCount += 1;
 
-                        Regex rx = NewRegex();
-                        MatchCollection matches = rx.Matches(messageToSend);
-                        if (matches.Count > 0)
-                        {
-                            foreach (Match match in matches.Cast<Match>())
-                            {
-                                string matchValue = match.Value;
-                                string preSplit = matchValue;
-                                string[] split = preSplit.Split(new char[] { '|' });
-                                string originalText = split[0];
-                                string splitText = split[1];
-
-                                if (originalText.Contains(splitText))
-                                {
-                                    messageToSend = splitText + "\n";
-                                }
-                                else
-                                {
-                                    messageToSend = originalText + "\n";
-                                }
-                            }
-                        }
-                        
                         if (message.Length >= 2000)
                         {
                             var responses = messageToSend.SplitInParts(1800);
 
                             Console.WriteLine("SPLITTING AND POSTING: " + messageToSend);
+
                             foreach (var response in responses)
                             {
                                 messageToSend = response + " " + "\n";
@@ -493,59 +469,71 @@ namespace Slackord
                                 {
                                     if (threadID is not null)
                                     {
-                                        await threadID.SendMessageAsync(messageToSend);
+                                        await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
                                     }
                                     else
                                     {
                                         // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
                                         // We should let the user know and post the message as a normal message, because that's what it is.
-                                        Console.WriteLine("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend);
+                                        Console.WriteLine("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted." +
+                                                         "Sending as a normal message...");
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                     }
                                 }
                                 else if (sendAsNormalMessage)
                                 {
-                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend);
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                 }
                             }
                             wasSplit = true;
                         }
                         else
                         {
-                            Console.WriteLine("POSTING: " + message);
-                        }
-                        if (!wasSplit)
-                        {
-                            if (sendAsThread)
+                            Console.WriteLine($"""
+                            POSTING: {message}
+                            """);
+
+                            if (!wasSplit)
                             {
-                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                var messages = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).GetMessagesAsync(1).FlattenAsync();
-                                threadID = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, messages.First());
-                            }
-                            else if (sendAsThreadReply)
-                            {
-                                if (threadID is not null)
+                                if (sendAsThread)
                                 {
-                                    await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    var messages = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).GetMessagesAsync(1).FlattenAsync();
+                                    threadID = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, messages.First());
                                 }
-                                else
+                                else if (sendAsThreadReply)
                                 {
-                                    // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
-                                    // We should let the user know and post the message as a normal message, because that's what it is.
-                                    Console.WriteLine("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
+
+                                    if (threadID is not null)
+                                    {
+                                        await threadID.SendMessageAsync(messageToSend);
+                                    }
+                                    else
+                                    {
+                                        // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
+                                        // We should let the user know and post the message as a normal message, because that's what it is.
+                                        Console.WriteLine("""
+                                            Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted.
+                                            Sending as a normal message...");
+                                            """);
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend);
+                                    }
+                                }
+                                else if (sendAsNormalMessage)
+                                {
                                     await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                 }
                             }
-                            else if (sendAsNormalMessage)
-                            {
-                                await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                            }
                         }
                     }
-                    Console.WriteLine("""
-                    -----------------------------------------
-                    All messages sent to Discord successfully!
-                    """);
+                    Console.WriteLine(new Action(() =>
+                    {
+                        Console.WriteLine("""
+                        -----------------------------------------
+                        All messages sent to Discord successfully!
+                        """);
+                    }));
+                    // TODO: Fix Application did not respond in time error.
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
                     await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
                 }
@@ -559,7 +547,16 @@ namespace Slackord
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error encountered posting messages: " + ex.Message);
+                var exception = ex.GetType().ToString();
+                if (exception.Equals("Discord.Net.HttpException"))
+                {
+                    switch (ex.Message)
+                    {
+                        case "The server responded with error 50006: Cannot send an empty message":
+                            Console.WriteLine("The server responded with error 50006: Cannot send an empty message");
+                            break;
+                    }
+                }
             }
         }
 
@@ -602,7 +599,7 @@ namespace Slackord
             await Task.CompletedTask;
         }
 
-        private static Task DiscordClient_Log(LogMessage logMessage)
+        private static Task SlackordDiscordClient_Log(LogMessage logMessage)
         {
             Console.WriteLine($"[{logMessage.Severity}] {logMessage.Source}: {logMessage.Message}");
             return Task.CompletedTask;
@@ -614,11 +611,8 @@ namespace Slackord
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
                 var channel = _discordClient.GetChannel((ulong)command.ChannelId);
-
-                // Create a new SocketSlashCommand instance from the SocketSlashCommandInteraction instance
                 var interaction = command;
-
-                await PostMessages(interaction, channel, guildID);
+                await PostMessagesToDiscord(channel, guildID, interaction);
             }
         }
 
@@ -628,16 +622,8 @@ namespace Slackord
             var returnDate = date.AddSeconds(timestamp);
             return returnDate;
         }
-
-        private async Task SlackordDiscordClient_Log(LogMessage arg)
-        {
-            Console.WriteLine(arg.ToString());
-            await Task.CompletedTask;
-        }
-
-        [GeneratedRegex("(&lt;).*\\|{1}[^|\\n]+(&gt;)", RegexOptions.Compiled | RegexOptions.Singleline)]
-        private static partial Regex NewRegex();
     }
+
     static class StringExtensions
     {
         public static IEnumerable<string> SplitInParts(this string s, int partLength)
