@@ -1,22 +1,23 @@
 ﻿// Slackord2 - Written by Thomas Loupe
-// https://github.com/thomasloupe/Slackord2
-// https://thomasloupe.com
+// Repo   : https://github.com/thomasloupe/Slackord2
+// Website: https://thomasloupe.com
+// Twitter: https://twitter.com/acid_rain
+// PayPal : https://paypal.me/thomasloupe
 
-using System.IO;
+using Application = System.Windows.Forms.Application;
 using Discord;
+using Discord.Interactions;
+using Discord.Net;
 using Discord.WebSocket;
-using Newtonsoft.Json.Linq;
-using Octo = Octokit;
+using Label = System.Windows.Forms.Label;
 using Microsoft.Extensions.DependencyInjection;
 using MaterialSkin;
 using MaterialSkin.Controls;
-using System.Diagnostics;
-using Application = System.Windows.Forms.Application;
-using Label = System.Windows.Forms.Label;
-using Discord.Net;
+using Newtonsoft.Json.Linq;
 using Octokit;
-using Discord.Interactions;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 
 namespace Slackord
 {
@@ -26,7 +27,7 @@ namespace Slackord
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
-        private Octo.GitHubClient _octoClient;
+        private GitHubClient _octoClient;
         public bool _isFileParsed;
         private bool _isParsingNow;
         public bool _showDebugOutput = false;

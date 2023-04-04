@@ -1,14 +1,15 @@
 ﻿// Slackord2 - Written by Thomas Loupe
-// https://github.com/thomasloupe/Slackord2
-// https://thomasloupe.com
+// Repo   : https://github.com/thomasloupe/Slackord2
+// Website: https://thomasloupe.com
+// Twitter: https://twitter.com/acid_rain
+// PayPal : https://paypal.me/thomasloupe
 
 using Discord;
-using Discord.Net;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Octokit;
-using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 
 namespace Slackord
