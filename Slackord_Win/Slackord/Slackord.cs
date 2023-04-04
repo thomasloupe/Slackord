@@ -1,32 +1,33 @@
 ﻿// Slackord2 - Written by Thomas Loupe
-// https://github.com/thomasloupe/Slackord2
-// https://thomasloupe.com
+// Repo   : https://github.com/thomasloupe/Slackord2
+// Website: https://thomasloupe.com
+// Twitter: https://twitter.com/acid_rain
+// PayPal : https://paypal.me/thomasloupe
 
-using System.IO;
+using Application = System.Windows.Forms.Application;
 using Discord;
+using Discord.Interactions;
+using Discord.Net;
 using Discord.WebSocket;
-using Newtonsoft.Json.Linq;
-using Octo = Octokit;
+using Label = System.Windows.Forms.Label;
 using Microsoft.Extensions.DependencyInjection;
 using MaterialSkin;
 using MaterialSkin.Controls;
-using System.Diagnostics;
-using Application = System.Windows.Forms.Application;
-using Label = System.Windows.Forms.Label;
-using Discord.Net;
+using Newtonsoft.Json.Linq;
 using Octokit;
-using Discord.Interactions;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.8.2";
+        private const string CurrentVersion = "v2.4.9";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
-        private Octo.GitHubClient _octoClient;
+        private GitHubClient _octoClient;
         public bool _isFileParsed;
         private bool _isParsingNow;
         public bool _showDebugOutput = false;
@@ -85,19 +86,17 @@ namespace Slackord
 
         }
 
-        [STAThread]
-        private async Task ParseJsonFiles()
+        private void ParseJsonFiles(List<string> ListOfFilesToParse)
         {
             _isParsingNow = true;
-
-            richTextBox1.Text += """
-            Begin parsing JSON data...
-            -----------------------------------------
-
-            """;
             
             foreach (var file in ListOfFilesToParse)
             {
+                richTextBox1.Text += $"""
+                                     Begin parsing JSON data for {file}...
+                                     -----------------------------------------
+                                     
+                                     """;
                 try
                 {
                     var json = File.ReadAllText(file);
@@ -105,6 +104,12 @@ namespace Slackord
                     string debugResponse;
                     foreach (JObject pair in parsed.Cast<JObject>())
                     {
+                        var rawTimeDate = pair["ts"];
+                        double oldDateTime = (double)rawTimeDate;
+                        string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+                        string newDateTime = convertDateTime.ToString();
+
+                        // JSON message thread handling.
                         if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
                         {
                             isThreadStart.Add(true);
@@ -121,27 +126,84 @@ namespace Slackord
                             isThreadMessages.Add(false);
                         }
 
+                        // JSON message parsing.
+                        if (pair.ContainsKey("text") && !pair.ContainsKey("bot_profile"))
+                        {
+                            string slackUserName = "";
+                            string slackRealName = "";
+
+                            if (pair.ContainsKey("user_profile"))
+                            {
+                                slackUserName = pair["user_profile"]["display_name"].ToString();
+                                slackRealName = pair["user_profile"]["real_name"].ToString();
+                            }
+
+                            string slackMessage = pair["text"].ToString();
+
+                            slackMessage = DeDupeURLs(slackMessage);
+
+                            if (string.IsNullOrEmpty(slackUserName))
+                            {
+                                if (string.IsNullOrEmpty(slackRealName))
+                                {
+                                    debugResponse = newDateTime + " - " + slackMessage;
+                                    Responses.Add(debugResponse);
+                                }
+                                else
+                                {
+                                    debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
+                                    Responses.Add(debugResponse);
+                                }
+                            }
+                            else
+                            {
+                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                if (debugResponse.Length >= 2000)
+                                {
+                                    if (!disableDebugOutputToolStripMenuItem.Checked)
+                                    {
+                                        richTextBox1.Text += $"""
+                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                        """;
+                                    }
+                                }
+                                else
+                                {
+                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                    Responses.Add(debugResponse);
+                                }
+                            }
+                            if (!disableDebugOutputToolStripMenuItem.Checked)
+                            {
+                                richTextBox1.Text += debugResponse + "\n";
+                            }
+                        }
+
                         if (pair.ContainsKey("files"))
                         {
                             var firstFile = pair["files"][0];
                             List<string> fileKeys = new();
 
                             var fileTypeToken = firstFile.SelectToken("filetype");
-                            if (fileTypeToken != null)
+                            try
                             {
-                                string fileType = fileTypeToken.ToString();
-                                if (fileType == "mp4")
+                                if (fileTypeToken != null)
                                 {
-                                    fileKeys = new List<string> { "permalink" };
-                                }
-                                else
-                                {
-                                    fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
+                                    string fileType = fileTypeToken.ToString();
+                                    if (fileType == "mp4")
+                                    {
+                                        fileKeys = new List<string> { "permalink" };
+                                    }
+                                    else
+                                    {
+                                        fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
+                                    }
                                 }
                             }
-                            else
+                            catch(Exception ex)
                             {
-                                continue;
+                                MessageBox.Show(ex.Message);
                             }
 
                             var fileLink = "";
@@ -201,53 +263,6 @@ namespace Slackord
                                 richTextBox1.Text += debugResponse + "\n";
                             }
                         }
-                        if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
-                        {
-                            var rawTimeDate = pair["ts"];
-                            double oldDateTime = (double)rawTimeDate;
-                            string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                            string newDateTime = convertDateTime.ToString();
-                            string slackUserName = pair["user_profile"]["display_name"].ToString();
-                            string slackRealName = pair["user_profile"]["real_name"].ToString();
-                            string slackMessage = pair["text"].ToString();
-
-                            // Dedupe URLs.
-                            int firstPipeIndex = slackMessage.IndexOf('|');
-                            int lastPipeIndex = slackMessage.LastIndexOf('|');
-                            if (firstPipeIndex != -1 && firstPipeIndex == lastPipeIndex)
-                            {
-                                slackMessage = await DeDupeURLs(slackMessage);
-                            }
-
-                            if (string.IsNullOrEmpty(slackUserName))
-                            {
-                                debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
-                                Responses.Add(debugResponse);
-                            }
-                            else
-                            {
-                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
-                                if (debugResponse.Length >= 2000)
-                                {
-                                    if (!disableDebugOutputToolStripMenuItem.Checked)
-                                    {
-                                        richTextBox1.Text += $"""
-                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
-                                        """;
-                                    }
-                                }
-                                else
-                                {
-                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
-                                    Responses.Add(debugResponse);
-                                }
-                            }
-                            if (!disableDebugOutputToolStripMenuItem.Checked)
-                            {
-                                richTextBox1.Text += debugResponse + "\n";
-                            }
-                        }
                     }
                     richTextBox1.Text += $"""
                     -----------------------------------------
@@ -262,45 +277,32 @@ namespace Slackord
                 {
                     MessageBox.Show(ex.Message);
                 }
-                if (_discordClient != null)
-                {
-                    await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
-                }
-
+                _discordClient?.SetActivityAsync(new Game("- awaiting command to import messages...", ActivityType.Watching));
             }
             _isParsingNow = false;
         }
 
-        static async Task<string> DeDupeURLs(string input)
+        private static string DeDupeURLs(string input)
         {
+            input = input.Replace("<", "").Replace(">", "");
+
             string[] parts = input.Split('|');
 
-            // Check if the input string contains a pipe character and there are exactly two parts
             if (parts.Length == 2)
             {
-                // Try to create URIs from both parts
                 if (Uri.TryCreate(parts[0], UriKind.Absolute, out Uri uri1) &&
                     Uri.TryCreate(parts[1], UriKind.Absolute, out Uri uri2))
                 {
-                    // Check if the left parts of both URIs are the same
                     if (uri1.GetLeftPart(UriPartial.Path) == uri2.GetLeftPart(UriPartial.Path))
                     {
-                        // If the left parts are the same, remove the second URL and the pipe character
                         input = input.Replace(parts[1] + "|", "");
                     }
                 }
             }
 
-            // Check if the input string contains a pipe character
-            int pipeIndex = input.IndexOf('|');
-            if (pipeIndex != -1)
-            {
-                // Split the input string by the pipe character and remove the second part
-                string[] parts2 = input.Split('|');
-                input = parts2[0] + "|" + parts2[1].Split('|')[0];
-            }
+            string[] parts2 = input.Split('|').Distinct().ToArray();
+            input = string.Join("|", parts2);
 
-            // Return the input string with duplicate URLs removed
             return input;
         }
 
@@ -316,7 +318,7 @@ namespace Slackord
 
             try
             {
-                await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
+                await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
                 int messageCount = 0;
 
                 if (_isFileParsed)
@@ -324,8 +326,10 @@ namespace Slackord
                     richTextBox1.Invoke(new Action(() =>
                     {
                         richTextBox1.Text += """
+
                         Beginning transfer of Slack messages to Discord...
                         -----------------------------------------
+                        
                         """;
                     }));
 
@@ -380,7 +384,7 @@ namespace Slackord
                                     {
                                         // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
                                         // We should let the user know and post the message as a normal message, because that's what it is.
-                                        richTextBox1.Invoke(new MethodInvoker(delegate ()
+                                        richTextBox1.Invoke(new MethodInvoker(delegate()
                                         {
                                             richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
                                         }));
@@ -423,7 +427,7 @@ namespace Slackord
                                     {
                                         // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
                                         // We should let the user know and post the message as a normal message, because that's what it is.
-                                        richTextBox1.Invoke(new MethodInvoker(delegate()
+                                        richTextBox1.Invoke(new MethodInvoker(delegate ()
                                         {
                                             richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
                                         }));
@@ -444,11 +448,10 @@ namespace Slackord
                         All messages sent to Discord successfully!
                         """;
                     }));
-                    // TODO: Fix Application did not respond in time error.
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching)); 
                 }
-                else if (!_isFileParsed)
+                else
                 {
                     await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
                     richTextBox1.Invoke(new Action(() =>
@@ -456,8 +459,8 @@ namespace Slackord
                         richTextBox1.Text += "Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n";
                     }));
                 }
-                await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
                 Responses.Clear();
+                await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
             }
             catch (Exception ex)
             {
@@ -541,7 +544,7 @@ namespace Slackord
             DisableTokenChangeWhileConnected();
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
             await _discordClient.StartAsync();
-            await _discordClient.SetActivityAsync(new Game("and awaiting parsing of messages.", ActivityType.Watching));
+            await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.Ready += ClientReady;
             _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1);
@@ -697,11 +700,11 @@ namespace Slackord
         private void DonateToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             var url = "https://paypal.me/thomasloupe";
-            var message = @"
-        Slackord will always be free!
-        If you'd like to buy me a beer anyway, I won't tell you no!
-        Would you like to open the donation page now?
-        ";
+            var message = """
+                Slackord will always be free!
+                If you'd like to buy me a beer anyway, I won't tell you no!
+                Would you like to open the donation page now?
+                """;
             var result = MessageBox.Show(message, "Slackord is free, but beer is not!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             if (result == DialogResult.Yes)
             {
@@ -720,16 +723,21 @@ namespace Slackord
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
-        private async void OpenToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ListOfFilesToParse.Clear();
             _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
             if (_ofd.ShowDialog() == DialogResult.OK)
                 ListOfFilesToParse.Add(_ofd.FileName);
 
-            ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
+            ListOfFilesToParse = ListOfFilesToParse
+                .OrderBy(file => DateTime.ParseExact(
+                    Path.GetFileNameWithoutExtension(file),
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture))
+                .ToList();
 
-            await ParseJsonFiles();
+            ParseJsonFiles(ListOfFilesToParse);
         }
 
         private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -747,8 +755,16 @@ namespace Slackord
                 {
                     ListOfFilesToParse.Add(file);
                 }
+                
+                ListOfFilesToParse = ListOfFilesToParse
+                    .OrderBy(file => DateTime.ParseExact(
+                        Path.GetFileNameWithoutExtension(file),
+                        "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture))
+                    .ToList();
+
                 MessageBox.Show("Files found: " + files.Count(), "Message");
-                ParseJsonFiles();
+                ParseJsonFiles(ListOfFilesToParse);
             }
         }
 
@@ -816,11 +832,11 @@ namespace Slackord
                 }
             }
             MessageBox.Show($"""
-                            Channel import completed!
-                            The following channels were created:
+                Channel import completed!
+                The following channels were created:
 
-                            {string.Join(Environment.NewLine, _channelsToCreate)}
-                            """, "Channel Import Complete!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                {string.Join(Environment.NewLine, _channelsToCreate)}
+                """, "Channel Import Complete!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static class Prompt
@@ -840,6 +856,7 @@ namespace Slackord
             }
         }
     }
+
     static class StringExtensions
     {
         public static IEnumerable<string> SplitInParts(this string s, Int32 partLength)
