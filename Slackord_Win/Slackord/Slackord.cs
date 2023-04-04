@@ -255,7 +255,7 @@ namespace Slackord
                 {
                     MessageBox.Show(ex.Message);
                 }
-                _discordClient?.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
+                _discordClient?.SetActivityAsync(new Game("- awaiting command to import messages...", ActivityType.Watching));
             }
             _isParsingNow = false;
         }
@@ -296,7 +296,7 @@ namespace Slackord
 
             try
             {
-                await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
+                await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
                 int messageCount = 0;
 
                 if (_isFileParsed)
@@ -426,7 +426,7 @@ namespace Slackord
                     }));
                     // TODO: Fix Application did not respond in time error.
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else if (!_isFileParsed)
                 {
@@ -521,7 +521,7 @@ namespace Slackord
             DisableTokenChangeWhileConnected();
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
             await _discordClient.StartAsync();
-            await _discordClient.SetActivityAsync(new Game("and awaiting parsing of messages.", ActivityType.Watching));
+            await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
             _discordClient.Ready += ClientReady;
             _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1);
@@ -833,6 +833,7 @@ namespace Slackord
             }
         }
     }
+
     static class StringExtensions
     {
         public static IEnumerable<string> SplitInParts(this string s, Int32 partLength)

@@ -472,7 +472,7 @@ namespace Slackord
                     Console.WriteLine("Discord client is null.");
                     return;
                 }
-                await _discordClient.SetActivityAsync(new Game("- posting messages...", ActivityType.Watching));
+                await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
                 int messageCount = 0;
 
                 if (_isFileParsed)
