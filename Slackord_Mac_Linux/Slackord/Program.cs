@@ -426,7 +426,7 @@ namespace Slackord
                 {
                     Console.WriteLine(ex.Message);
                 }
-                _discordClient?.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
+                _discordClient?.SetActivityAsync(new Game("- awaiting command to import messages...", ActivityType.Watching));
             }
             _isParsingNow = false;
         }
@@ -472,7 +472,7 @@ namespace Slackord
                     Console.WriteLine("Discord client is null.");
                     return;
                 }
-                await _discordClient.SetActivityAsync(new Game("posting messages...", ActivityType.Watching));
+                await _discordClient.SetActivityAsync(new Game("- posting messages...", ActivityType.Watching));
                 int messageCount = 0;
 
                 if (_isFileParsed)
@@ -590,7 +590,7 @@ namespace Slackord
                         """);
                     }));
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-                    await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                    await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else if (!_isFileParsed)
                 {
@@ -642,7 +642,7 @@ namespace Slackord
 
                 await _botReadyTcs.Task;
 
-                await _discordClient.SetActivityAsync(new Game("awaiting parsing of messages.", ActivityType.Watching));
+                await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
                 _discordClient.SlashCommandExecuted += SlashCommandHandler;
                 await SelectMenu(_discordClient);
             }
