@@ -298,7 +298,6 @@ namespace Slackord
                         string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
                         string newDateTime = convertDateTime.ToString();
 
-                        // JSON message thread handling.
                         if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
                         {
                             isThreadStart.Add(true);
@@ -315,7 +314,6 @@ namespace Slackord
                             isThreadMessages.Add(false);
                         }
 
-                        // JSON message parsing.
                         if (pair.ContainsKey("text") && !pair.ContainsKey("bot_profile"))
                         {
                             string slackUserName = "";
@@ -323,11 +321,12 @@ namespace Slackord
 
                             if (pair.ContainsKey("user_profile"))
                             {
-                                slackUserName = pair["user_profile"]["display_name"].ToString();
-                                slackRealName = pair["user_profile"]["real_name"].ToString();
+                                var userProfile = pair["user_profile"];
+                                slackUserName = userProfile?["display_name"]?.ToString() ?? "";
+                                slackRealName = userProfile?["real_name"]?.ToString() ?? "";
                             }
 
-                            string slackMessage = pair["text"].ToString();
+                            string slackMessage = pair.ContainsKey("text") ? pair["text"]?.ToString() ?? "" : "";
 
                             slackMessage = DeDupeURLs(slackMessage);
 
