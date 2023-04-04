@@ -71,12 +71,12 @@ namespace Slackord
             else if (CurrentVersion != latestVersion)
             {
                 Console.WriteLine("""
-                                  You are running an outdated version of Slackord!
-                                  Current Version: {0}
-                                  Latest Version: {1}
-                                  You can download the latest version at https://github.com/thomasloupe/Slackord2/releases/tag/{1}
+                    You are running an outdated version of Slackord!
+                    Current Version: {0}
+                    Latest Version: {1}
+                    You can download the latest version at https://github.com/thomasloupe/Slackord2/releases/tag/{1}
                                   
-                                  """, CurrentVersion, latestVersion);
+                    """, CurrentVersion, latestVersion);
             }
             await Task.CompletedTask;
         }
@@ -95,9 +95,9 @@ namespace Slackord
                 {
                     Console.WriteLine("""
 
-                                 No bot token found. Please enter your token:
+                        No bot token found. Please enter your token:
 
-                                 """);
+                        """);
                     _discordToken = Console.ReadLine()?.Trim();
                     File.WriteAllText("Token.txt", _discordToken);
                     await CheckForExistingBotToken();
@@ -107,9 +107,9 @@ namespace Slackord
             {
                 Console.WriteLine("""
 
-                                 No bot token found. Please enter your token:
+                    No bot token found. Please enter your token:
 
-                                 """);
+                    """);
                 _discordToken = Console.ReadLine();
                 if (string.IsNullOrEmpty(_discordToken))
                 {
@@ -163,12 +163,12 @@ namespace Slackord
                 }
 
                 Console.WriteLine($@"
-                 It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
-                 If you have, you will more than likely see duplicate channels.
-                 Now is a good time to remove any channels you do not want to create duplicates of.
-                 Please assign the administrator role to your bot at this time so it can create the channels.
-                 When ready, press any key to continue.
-                 ");
+                    It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
+                    If you have, you will more than likely see duplicate channels.
+                    Now is a good time to remove any channels you do not want to create duplicates of.
+                    Please assign the administrator role to your bot at this time so it can create the channels.
+                    When ready, press any key to continue.
+                    ");
                 Console.ReadKey(true);
                 await CreateChannelsAsync(ChannelsToCreate, _discordClient).ConfigureAwait(false);
             }
@@ -255,11 +255,19 @@ namespace Slackord
             }
         }
 
+        [STAThread]
         private void ParseJsonFiles()
         {
             _isParsingNow = true;
 
-            var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
+            var files = Directory.EnumerateFiles(".\\Files", "*.*", SearchOption.TopDirectoryOnly)
+                .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
+
+            foreach (var file in files)
+            {
+                ListOfFilesToParse.Add(file);
+            }
+
             ListOfFilesToParse = ListOfFilesToParse
                 .OrderBy(file => DateTime.ParseExact(
                     Path.GetFileNameWithoutExtension(file),
@@ -269,11 +277,13 @@ namespace Slackord
 
             foreach (var file in ListOfFilesToParse)
             {
-                Console.WriteLine($@"
+                Console.WriteLine($"""
+
+                    -----------------------------------------
                     Begin parsing JSON data for {file}...
                     -----------------------------------------
                     
-                    ");
+                    """);
 
                 try
                 {
@@ -288,6 +298,7 @@ namespace Slackord
                         string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
                         string newDateTime = convertDateTime.ToString();
 
+                        // JSON message thread handling.
                         if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
                         {
                             isThreadStart.Add(true);
@@ -302,6 +313,54 @@ namespace Slackord
                         {
                             isThreadStart.Add(false);
                             isThreadMessages.Add(false);
+                        }
+
+                        // JSON message parsing.
+                        if (pair.ContainsKey("text") && !pair.ContainsKey("bot_profile"))
+                        {
+                            string slackUserName = "";
+                            string slackRealName = "";
+
+                            if (pair.ContainsKey("user_profile"))
+                            {
+                                slackUserName = pair["user_profile"]["display_name"].ToString();
+                                slackRealName = pair["user_profile"]["real_name"].ToString();
+                            }
+
+                            string slackMessage = pair["text"].ToString();
+
+                            slackMessage = DeDupeURLs(slackMessage);
+
+                            if (string.IsNullOrEmpty(slackUserName))
+                            {
+                                if (string.IsNullOrEmpty(slackRealName))
+                                {
+                                    debugResponse = newDateTime + " - " + slackMessage;
+                                    Responses.Add(debugResponse);
+                                }
+                                else
+                                {
+                                    debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
+                                    Responses.Add(debugResponse);
+                                }
+                            }
+                            else
+                            {
+                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                if (debugResponse.Length >= 2000)
+                                {
+                                    Console.WriteLine($"""
+                                    The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                    This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                    """);
+                                }
+                                else
+                                {
+                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                    Responses.Add(debugResponse);
+                                }
+                            }
+                            Console.WriteLine(debugResponse + "\n");
                         }
 
                         if (pair.ContainsKey("files"))
@@ -377,51 +436,14 @@ namespace Slackord
                             }
                             Console.WriteLine(debugResponse + "\n");
                         }
-
-                        if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
-                        {
-                            var userProfileToken = pair["user_profile"];
-                            var displayNameToken = userProfileToken?["display_name"];
-                            var realNameToken = userProfileToken?["real_name"];
-
-                            string slackUserName = displayNameToken?.ToString() ?? "";
-                            string slackRealName = realNameToken?.ToString() ?? "";
-                            string slackMessage = pair["text"]?.ToString() ?? "";
-
-                            slackMessage = DeDupeURLs(slackMessage);
-
-                            if (string.IsNullOrEmpty(slackUserName))
-                            {
-                                debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
-                                Responses.Add(debugResponse);
-                            }
-                            else
-                            {
-                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
-                                if (debugResponse.Length >= 2000)
-                                {
-                                    Console.WriteLine($@"
-                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
-                                        ");
-                                }
-                                else
-                                {
-                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage + " " + "\n";
-                                    Responses.Add(debugResponse);
-                                }
-                            }
-                            Console.WriteLine(debugResponse + "\n");
-
-                            Console.WriteLine($"""
-                            -----------------------------------------
-                            Parsing of {file} completed successfully!
-                            -----------------------------------------
-                    
-                            """);
-                            _isFileParsed = true;
-                        }
                     }
+                    Console.WriteLine($"""
+                        -----------------------------------------
+                        Parsing of {file} completed successfully!
+                        -----------------------------------------
+
+                        """);
+                    _isFileParsed = true;
                 }
                 catch (Exception ex)
                 {
@@ -479,9 +501,11 @@ namespace Slackord
                 if (_isFileParsed)
                 {
                     Console.WriteLine("""
-                    Beginning transfer of Slack messages to Discord...
-                    -----------------------------------------
-                    """);
+
+                        Beginning transfer of Slack messages to Discord...
+                        -----------------------------------------
+                        
+                        """);
 
                     SocketThreadChannel? threadID = null;
                     foreach (string message in Responses)
@@ -593,13 +617,13 @@ namespace Slackord
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
                     await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
                 }
-                else if (!_isFileParsed)
+                else
                 {
                     await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
                     Console.WriteLine("Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n");
                 }
-                await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
                 Responses.Clear();
+                await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
             }
             catch (Exception ex)
             {
