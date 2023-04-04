@@ -12,7 +12,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <EnableSecurityDebugging>false</EnableSecurityDebugging>
-    <_LastSelectedProfileId>Z:\Development\Git Repositories\Slackord2\Slackord_Win\Slackord\Properties\PublishProfiles\Windows x86.pubxml</_LastSelectedProfileId>
+    <_LastSelectedProfileId>Z:\Development\Git Repositories\Slackord2\Slackord_Win\Slackord\Properties\PublishProfiles\Windows x64.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="Slackord.cs">
