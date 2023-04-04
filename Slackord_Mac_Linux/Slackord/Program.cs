@@ -16,7 +16,7 @@ namespace Slackord
 {
     internal partial class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.8.2";
+        private const string CurrentVersion = "v2.4.9";
         private DiscordSocketClient _discordClient;
         private string _discordToken;
         private bool _isFileParsed;
@@ -27,7 +27,7 @@ namespace Slackord
         private readonly List<string> Responses = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
-        private TaskCompletionSource<bool> _botReadyTcs = new();
+        private readonly TaskCompletionSource<bool> _botReadyTcs = new();
 
         static void Main()
         {
@@ -126,7 +126,6 @@ namespace Slackord
             await MainAsync();
         }
 
-        [STAThread]
         private async Task SelectMenu(DiscordSocketClient _discordClient)
         {
             Console.WriteLine("\nPlease select an option:");
@@ -144,7 +143,7 @@ namespace Slackord
                 }
                 if (option == 2)
                 {
-                    await ParseJsonFiles();
+                    ParseJsonFiles();
                 }
             }
             catch (Exception ex)
@@ -175,12 +174,12 @@ namespace Slackord
                     }
                 }
                 Console.WriteLine($@"
-        It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
-        If you have, you will more than likely see duplicate channels.
-        Now is a good time to remove any channels you do not want to create duplicates of.
-        Please assign the administrator role to your bot at this time so it can create the channels.
-        When ready, press any key to continue.
-        ");
+                                 It is assumed that you have not created any channels with the names of the channels in the JSON file yet. 
+                                 If you have, you will more than likely see duplicate channels.
+                                 Now is a good time to remove any channels you do not want to create duplicates of.
+                                 Please assign the administrator role to your bot at this time so it can create the channels.
+                                 When ready, press any key to continue.
+                                 ");
                 Console.ReadKey(true);
                 await CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
             }
@@ -212,24 +211,26 @@ namespace Slackord
             }
         }
 
-        private async Task ParseJsonFiles()
+        private void ParseJsonFiles()
         {
             _isParsingNow = true;
 
-            Console.WriteLine
-                ("""
-                Begin parsing JSON data...
-                -----------------------------------------
-
-                """);
-
             var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
-            ListOfFilesToParse = Directory.GetFiles(directoryPath, "*.json")
-                                 .OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture))
-                                 .ToList();
+            ListOfFilesToParse = ListOfFilesToParse
+                .OrderBy(file => DateTime.ParseExact(
+                    Path.GetFileNameWithoutExtension(file),
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture))
+                .ToList();
 
             foreach (var file in ListOfFilesToParse)
             {
+                Console.WriteLine($"""
+                Begin parsing JSON data for {file}...
+                -----------------------------------------
+                
+                """);
+
                 try
                 {
                     var json = File.ReadAllText(file);
@@ -237,6 +238,11 @@ namespace Slackord
                     string debugResponse;
                     foreach (JObject pair in parsed.Cast<JObject>())
                     {
+                        var rawTimeDate = pair["ts"];
+                        double oldDateTime = (double)rawTimeDate;
+                        string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+                        string newDateTime = convertDateTime.ToString();
+
                         if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
                         {
                             isThreadStart.Add(true);
@@ -305,12 +311,30 @@ namespace Slackord
                             debugResponse = fileLink;
                             Console.WriteLine(debugResponse + "\n");
                         }
+
+                        if (pair.ContainsKey("bot_profile"))
+                        {
+                            try
+                            {
+                                debugResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
+                                Responses.Add(debugResponse);
+                            }
+                            catch (NullReferenceException)
+                            {
+                                try
+                                {
+                                    debugResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
+                                    Responses.Add(debugResponse);
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
+                                }
+                            }
+                            Console.WriteLine(debugResponse + "\n");
+                        }
                         if (pair.ContainsKey("user_profile") && pair.ContainsKey("text"))
                         {
-                            var rawTimeDate = pair["ts"];
-                            double oldDateTime = (double)rawTimeDate;
-                            string convertDateTime = ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                            string newDateTime = convertDateTime.ToString();
                             string slackUserName = pair["user_profile"]["display_name"].ToString();
                             string slackRealName = pair["user_profile"]["real_name"].ToString();
                             string slackMessage = pair["text"].ToString();
@@ -327,8 +351,7 @@ namespace Slackord
                                 debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                 if (debugResponse.Length >= 2000)
                                 {
-                                    Console.WriteLine 
-                                    ($"""
+                                    Console.WriteLine($"""
                                     The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
                                     This message will be split into multiple posts. The message that will be split is: {debugResponse}
                                     """);
@@ -339,31 +362,29 @@ namespace Slackord
                                     Responses.Add(debugResponse);
                                 }
                             }
-                            Console.WriteLine(debugResponse + "\n");
                         }
                     }
-                    Console.WriteLine
-                        ($"""
-                        -----------------------------------------
-                            Parsing of {file} completed successfully!
-                        -----------------------------------------
+                    Console.WriteLine($"""
+                    -----------------------------------------
+                    Parsing of {file} completed successfully!
+                    -----------------------------------------
                     
-                        """);
+                    """);
                     _isFileParsed = true;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
+                _discordClient?.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
             }
             _isParsingNow = false;
-            await MainAsync();
-            await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
         }
 
         private static string DeDupeURLs(string input)
         {
             input = input.Replace("<", "").Replace(">", "");
+
             string[] parts = input.Split('|');
 
             if (parts.Length == 2)
@@ -377,6 +398,7 @@ namespace Slackord
                     }
                 }
             }
+
             string[] parts2 = input.Split('|').Distinct().ToArray();
             input = string.Join("|", parts2);
 
@@ -579,7 +601,8 @@ namespace Slackord
             }
             await Task.CompletedTask;
         }
-        private Task DiscordClient_Log(LogMessage logMessage)
+
+        private static Task DiscordClient_Log(LogMessage logMessage)
         {
             Console.WriteLine($"[{logMessage.Severity}] {logMessage.Source}: {logMessage.Message}");
             return Task.CompletedTask;

@@ -17,14 +17,12 @@ using Discord.Net;
 using Octokit;
 using Discord.Interactions;
 using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Text;
 
 namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.8.2";
+        private const string CurrentVersion = "v2.4.9";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -87,19 +85,17 @@ namespace Slackord
 
         }
 
-        [STAThread]
-        private async Task ParseJsonFiles()
+        private void ParseJsonFiles(List<string> ListOfFilesToParse)
         {
             _isParsingNow = true;
-
-            richTextBox1.Text += """
-            Begin parsing JSON data...
-            -----------------------------------------
-
-            """;
             
             foreach (var file in ListOfFilesToParse)
             {
+                richTextBox1.Text += $"""
+                                     Begin parsing JSON data for {file}...
+                                     -----------------------------------------
+                                     
+                                     """;
                 try
                 {
                     var json = File.ReadAllText(file);
@@ -259,11 +255,7 @@ namespace Slackord
                 {
                     MessageBox.Show(ex.Message);
                 }
-                if (_discordClient != null)
-                {
-                    await _discordClient.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
-                }
-
+                _discordClient?.SetActivityAsync(new Game("awaiting command to import messages...", ActivityType.Watching));
             }
             _isParsingNow = false;
         }
@@ -708,16 +700,21 @@ namespace Slackord
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
-        private async void OpenToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ListOfFilesToParse.Clear();
             _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
             if (_ofd.ShowDialog() == DialogResult.OK)
                 ListOfFilesToParse.Add(_ofd.FileName);
 
-            ListOfFilesToParse = ListOfFilesToParse.OrderBy(file => DateTime.ParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd", CultureInfo.InvariantCulture)).ToList();
+            ListOfFilesToParse = ListOfFilesToParse
+                .OrderBy(file => DateTime.ParseExact(
+                    Path.GetFileNameWithoutExtension(file),
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture))
+                .ToList();
 
-            await ParseJsonFiles();
+            ParseJsonFiles(ListOfFilesToParse);
         }
 
         private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -735,8 +732,16 @@ namespace Slackord
                 {
                     ListOfFilesToParse.Add(file);
                 }
+                
+                ListOfFilesToParse = ListOfFilesToParse
+                    .OrderBy(file => DateTime.ParseExact(
+                        Path.GetFileNameWithoutExtension(file),
+                        "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture))
+                    .ToList();
+
                 MessageBox.Show("Files found: " + files.Count(), "Message");
-                ParseJsonFiles();
+                ParseJsonFiles(ListOfFilesToParse);
             }
         }
 
