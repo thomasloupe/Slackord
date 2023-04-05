@@ -261,7 +261,7 @@ namespace Slackord
             _isParsingNow = true;
 
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var files = Directory.EnumerateFiles(appDirectory + "/Files", "*.*", SearchOption.TopDirectoryOnly)
+            var files = Directory.EnumerateFiles(appDirectory + "Files", "*.*", SearchOption.TopDirectoryOnly)
                         .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
 
             foreach (var file in files)
