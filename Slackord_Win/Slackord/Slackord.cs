@@ -23,7 +23,7 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.9";
+        private const string CurrentVersion = "v2.4.9.1";
         public DiscordSocketClient _discordClient;
         private OpenFileDialog _ofd;
         private string _discordToken;
@@ -180,62 +180,17 @@ namespace Slackord
                             }
                         }
 
-                        if (pair.ContainsKey("files"))
+                        if (pair.ContainsKey("files") && pair["files"] is JArray files && files.Count > 0)
                         {
-                            var firstFile = pair["files"][0];
-                            List<string> fileKeys = new();
+                            var fileLink = files[0]["url_private"]?.ToString();
 
-                            var fileTypeToken = firstFile.SelectToken("filetype");
-                            try
+                            if (!string.IsNullOrEmpty(fileLink))
                             {
-                                if (fileTypeToken != null)
+                                debugResponse = fileLink;
+                                if (!disableDebugOutputToolStripMenuItem.Checked)
                                 {
-                                    string fileType = fileTypeToken.ToString();
-                                    if (fileType == "mp4")
-                                    {
-                                        fileKeys = new List<string> { "permalink" };
-                                    }
-                                    else
-                                    {
-                                        fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
-                                    }
+                                    richTextBox1.Text += debugResponse + "\n";
                                 }
-                            }
-                            catch(Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
-                            }
-
-                            var fileLink = "";
-                            bool foundValidKey = false;
-                            foreach (var key in fileKeys)
-                            {
-                                try
-                                {
-                                    fileLink = firstFile[key].ToString();
-                                    if (!string.IsNullOrEmpty(fileLink))
-                                    {
-                                        Responses.Add(fileLink + " \n");
-                                        foundValidKey = true;
-                                        break;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    MessageBox.Show("Exception: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
-                                    continue;
-                                }
-                            }
-
-                            if (!foundValidKey)
-                            {
-                                continue;
-                            }
-
-                            debugResponse = fileLink;
-                            if (!disableDebugOutputToolStripMenuItem.Checked)
-                            {
-                                richTextBox1.Text += debugResponse + "\n";
                             }
                         }
 

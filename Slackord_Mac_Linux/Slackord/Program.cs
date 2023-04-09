@@ -16,7 +16,7 @@ namespace Slackord
 {
     internal class Slackord : InteractionModuleBase<SocketInteractionContext>
     {
-        private const string CurrentVersion = "v2.4.9";
+        private const string CurrentVersion = "v2.4.9.1";
         private DiscordSocketClient? _discordClient;
         private string? _discordToken;
         private bool _isFileParsed;
@@ -261,10 +261,10 @@ namespace Slackord
             _isParsingNow = true;
 
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var files = Directory.EnumerateFiles(appDirectory + "Files", "*.*", SearchOption.TopDirectoryOnly)
+            var jsonFiles = Directory.EnumerateFiles(appDirectory + "Files", "*.*", SearchOption.TopDirectoryOnly)
                         .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
 
-            foreach (var file in files)
+            foreach (var file in jsonFiles)
             {
                 ListOfFilesToParse.Add(file);
             }
@@ -363,62 +363,15 @@ namespace Slackord
                             Console.WriteLine(debugResponse + "\n");
                         }
 
-                        if (pair.ContainsKey("files"))
+                        if (pair.ContainsKey("files") && pair["files"] is JArray files && files.Count > 0)
                         {
-                            var filesArray = pair["files"];
-                            if (filesArray == null) continue;
-                            var firstFile = filesArray[0];
-                            if (firstFile == null) continue;
-                            List<string> fileKeys = new();
+                            var fileLink = files[0]["url_private"]?.ToString();
 
-                            var fileTypeToken = firstFile.SelectToken("filetype");
-                            if (fileTypeToken != null)
+                            if (!string.IsNullOrEmpty(fileLink))
                             {
-                                string fileType = fileTypeToken.ToString();
-                                if (fileType == "mp4")
-                                {
-                                    fileKeys = new List<string> { "permalink" };
-                                }
-                                else
-                                {
-                                    fileKeys = new List<string> { "thumb_1024", "thumb_960", "thumb_720", "thumb_480", "thumb_360", "thumb_160", "thumb_80", "thumb_64", "thumb_video", "permalink_public", "permalink", "url_private" };
-                                }
+                                debugResponse = fileLink;
+                                Console.WriteLine(debugResponse + "\n");
                             }
-                            else
-                            {
-                                continue;
-                            }
-
-                            var fileLink = "";
-                            bool foundValidKey = false;
-                            foreach (var key in fileKeys)
-                            {
-                                try
-                                {
-                                    var keyValue = firstFile[key];
-                                    if (keyValue == null) continue;
-                                    fileLink = keyValue.ToString();
-                                    if (!string.IsNullOrEmpty(fileLink))
-                                    {
-                                        Responses.Add(fileLink + " \n");
-                                        foundValidKey = true;
-                                        break;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("Exception: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
-                                    continue;
-                                }
-                            }
-
-                            if (!foundValidKey)
-                            {
-                                continue;
-                            }
-
-                            debugResponse = fileLink;
-                            Console.WriteLine(debugResponse + "\n");
                         }
 
                         if (pair.ContainsKey("bot_profile"))
