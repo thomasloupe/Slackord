@@ -89,7 +89,7 @@ namespace Slackord
         private void ParseJsonFiles(List<string> ListOfFilesToParse)
         {
             _isParsingNow = true;
-            
+
             foreach (var file in ListOfFilesToParse)
             {
                 richTextBox1.Text += $"""
@@ -339,7 +339,7 @@ namespace Slackord
                                     {
                                         // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
                                         // We should let the user know and post the message as a normal message, because that's what it is.
-                                        richTextBox1.Invoke(new MethodInvoker(delegate()
+                                        richTextBox1.Invoke(new MethodInvoker(delegate ()
                                         {
                                             richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
                                         }));
@@ -404,7 +404,7 @@ namespace Slackord
                         """;
                     }));
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-                    await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching)); 
+                    await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
                 }
                 else
                 {
@@ -519,10 +519,8 @@ namespace Slackord
         {
             try
             {
-                if (_discordClient.Guilds.Count > 0)
+                foreach (var guild in _discordClient.Guilds)
                 {
-                    var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                    var guild = _discordClient.GetGuild(guildID);
                     var guildCommand = new SlashCommandBuilder();
                     guildCommand.WithName("slackord");
                     guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
@@ -530,19 +528,15 @@ namespace Slackord
                     {
                         await guild.CreateApplicationCommandAsync(guildCommand.Build());
                     }
-                    catch (HttpException Ex)
+                    catch (HttpException ex)
                     {
-                        Console.WriteLine("Error creating slash command: " + Ex.Message);
+                        Console.WriteLine($"Error creating slash command in guild {guild.Name}: {ex.Message}");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Slackord was unable to find any guilds to create a slash command in.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error encountered while creating slash command: " + ex.Message);
+                Console.WriteLine($"Error encountered while creating slash command: {ex.Message}");
             }
         }
 
@@ -710,7 +704,7 @@ namespace Slackord
                 {
                     ListOfFilesToParse.Add(file);
                 }
-                
+
                 ListOfFilesToParse = ListOfFilesToParse
                     .OrderBy(file => DateTime.ParseExact(
                         Path.GetFileNameWithoutExtension(file),

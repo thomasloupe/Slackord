@@ -612,24 +612,31 @@ namespace Slackord
                 await _discordClient.LoginAsync(TokenType.Bot, _discordToken);
                 await _discordClient.StartAsync();
 
-                _discordClient.Ready += () =>
+                _discordClient.Ready += async () =>
                 {
-                    _botReadyTcs.SetResult(true);
-                    return Task.CompletedTask;
+                    try
+                    {
+                        var command = new SlashCommandBuilder()
+                            .WithName("slackord")
+                            .WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
+                        await _discordClient.Rest.CreateGlobalCommand(command.Build());
+                        await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
+                        _discordClient.SlashCommandExecuted += SlashCommandHandler;
+                        await SelectMenu(_discordClient);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error encountered while creating global slash command: " + ex.Message);
+                    }
                 };
 
-                await _botReadyTcs.Task;
-
-                await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
-                _discordClient.SlashCommandExecuted += SlashCommandHandler;
-                await SelectMenu(_discordClient);
+                await Task.Delay(-1);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Discord bot task failed with: " + ex.Source + "\n\n" + ex.Message + "\n\n" + ex.StackTrace);
                 _discordClient?.StopAsync();
             }
-            await Task.CompletedTask;
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
