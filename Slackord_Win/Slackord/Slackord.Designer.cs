@@ -29,253 +29,233 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Slackord));
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.OpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importJSONFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.EnterBotTokenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ConnectBotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DisconnectBotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.disableDebugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.HelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.CheckForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DonateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.ToolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.ToolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.menuStrip1.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
-            this.SuspendLayout();
+            menuStrip1 = new MenuStrip();
+            FileToolStripMenuItem = new ToolStripMenuItem();
+            createChannelsToolStripMenuItem = new ToolStripMenuItem();
+            OpenToolStripMenuItem = new ToolStripMenuItem();
+            importJSONFolderToolStripMenuItem = new ToolStripMenuItem();
+            ExitToolStripMenuItem = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
+            EnterBotTokenToolStripMenuItem = new ToolStripMenuItem();
+            ConnectionToolStripMenuItem = new ToolStripMenuItem();
+            ConnectBotToolStripMenuItem = new ToolStripMenuItem();
+            DisconnectBotToolStripMenuItem = new ToolStripMenuItem();
+            disableDebugOutputToolStripMenuItem = new ToolStripMenuItem();
+            HelpToolStripMenuItem = new ToolStripMenuItem();
+            CheckForUpdatesToolStripMenuItem = new ToolStripMenuItem();
+            AboutToolStripMenuItem = new ToolStripMenuItem();
+            DonateToolStripMenuItem = new ToolStripMenuItem();
+            richTextBox1 = new RichTextBox();
+            ToolStripButton1 = new ToolStripButton();
+            ToolStripButton2 = new ToolStripButton();
+            toolStrip1 = new ToolStrip();
+            menuStrip1.SuspendLayout();
+            toolStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FileToolStripMenuItem,
-            this.settingsToolStripMenuItem,
-            this.HelpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(4, 74);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(925, 24);
-            this.menuStrip1.Stretch = false;
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.Items.AddRange(new ToolStripItem[] { FileToolStripMenuItem, settingsToolStripMenuItem, HelpToolStripMenuItem });
+            menuStrip1.Location = new Point(4, 74);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Padding = new Padding(7, 2, 0, 2);
+            menuStrip1.Size = new Size(925, 24);
+            menuStrip1.Stretch = false;
+            menuStrip1.TabIndex = 0;
+            menuStrip1.Text = "menuStrip1";
             // 
             // FileToolStripMenuItem
             // 
-            this.FileToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
-            this.FileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createChannelsToolStripMenuItem,
-            this.OpenToolStripMenuItem,
-            this.importJSONFolderToolStripMenuItem,
-            this.ExitToolStripMenuItem});
-            this.FileToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
-            this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
-            this.FileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.FileToolStripMenuItem.Text = "File";
-            // 
-            // OpenToolStripMenuItem
-            // 
-            this.OpenToolStripMenuItem.Name = "OpenToolStripMenuItem";
-            this.OpenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.OpenToolStripMenuItem.Text = "Import JSON";
-            this.OpenToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
-            // 
-            // importJSONFolderToolStripMenuItem
-            // 
-            this.importJSONFolderToolStripMenuItem.Name = "importJSONFolderToolStripMenuItem";
-            this.importJSONFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.importJSONFolderToolStripMenuItem.Text = "Import JSON Folder";
-            this.importJSONFolderToolStripMenuItem.Click += new System.EventHandler(this.ImportJSONFolderToolStripMenuItem_Click);
+            FileToolStripMenuItem.BackColor = Color.Silver;
+            FileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createChannelsToolStripMenuItem, OpenToolStripMenuItem, importJSONFolderToolStripMenuItem, ExitToolStripMenuItem });
+            FileToolStripMenuItem.ForeColor = Color.Black;
+            FileToolStripMenuItem.Name = "FileToolStripMenuItem";
+            FileToolStripMenuItem.Size = new Size(37, 20);
+            FileToolStripMenuItem.Text = "File";
             // 
             // createChannelsToolStripMenuItem
             // 
-            this.createChannelsToolStripMenuItem.Name = "createChannelsToolStripMenuItem";
-            this.createChannelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.createChannelsToolStripMenuItem.Text = "Import Channels";
-            this.createChannelsToolStripMenuItem.Click += new System.EventHandler(this.CreateChannelsToolStripMenuItem_Click);
+            createChannelsToolStripMenuItem.Name = "createChannelsToolStripMenuItem";
+            createChannelsToolStripMenuItem.Size = new Size(177, 22);
+            createChannelsToolStripMenuItem.Text = "Import Channels";
+            createChannelsToolStripMenuItem.Click += CreateChannelsToolStripMenuItem_Click;
+            // 
+            // OpenToolStripMenuItem
+            // 
+            OpenToolStripMenuItem.Name = "OpenToolStripMenuItem";
+            OpenToolStripMenuItem.Size = new Size(177, 22);
+            OpenToolStripMenuItem.Text = "Import JSON";
+            OpenToolStripMenuItem.Click += OpenToolStripMenuItem_Click;
+            // 
+            // importJSONFolderToolStripMenuItem
+            // 
+            importJSONFolderToolStripMenuItem.Name = "importJSONFolderToolStripMenuItem";
+            importJSONFolderToolStripMenuItem.Size = new Size(177, 22);
+            importJSONFolderToolStripMenuItem.Text = "Import JSON Folder";
+            importJSONFolderToolStripMenuItem.Click += ImportJSONFolderToolStripMenuItem_Click;
             // 
             // ExitToolStripMenuItem
             // 
-            this.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
-            this.ExitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.ExitToolStripMenuItem.Text = "Exit";
-            this.ExitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
+            ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
+            ExitToolStripMenuItem.Size = new Size(177, 22);
+            ExitToolStripMenuItem.Text = "Exit";
+            ExitToolStripMenuItem.Click += ExitToolStripMenuItem_Click;
             // 
             // settingsToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
-            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.EnterBotTokenToolStripMenuItem,
-            this.ConnectionToolStripMenuItem,
-            this.disableDebugOutputToolStripMenuItem});
-            this.settingsToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
+            settingsToolStripMenuItem.BackColor = Color.Silver;
+            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { EnterBotTokenToolStripMenuItem, ConnectionToolStripMenuItem, disableDebugOutputToolStripMenuItem });
+            settingsToolStripMenuItem.ForeColor = Color.Black;
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(61, 20);
+            settingsToolStripMenuItem.Text = "Settings";
             // 
             // EnterBotTokenToolStripMenuItem
             // 
-            this.EnterBotTokenToolStripMenuItem.Name = "EnterBotTokenToolStripMenuItem";
-            this.EnterBotTokenToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.EnterBotTokenToolStripMenuItem.Text = "Enter Bot Token";
-            this.EnterBotTokenToolStripMenuItem.Click += new System.EventHandler(this.EnterBotTokenToolStripMenuItem_Click);
+            EnterBotTokenToolStripMenuItem.Name = "EnterBotTokenToolStripMenuItem";
+            EnterBotTokenToolStripMenuItem.Size = new Size(191, 22);
+            EnterBotTokenToolStripMenuItem.Text = "Enter Bot Token";
+            EnterBotTokenToolStripMenuItem.Click += EnterBotTokenToolStripMenuItem_Click;
             // 
             // ConnectionToolStripMenuItem
             // 
-            this.ConnectionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ConnectBotToolStripMenuItem,
-            this.DisconnectBotToolStripMenuItem});
-            this.ConnectionToolStripMenuItem.Name = "ConnectionToolStripMenuItem";
-            this.ConnectionToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.ConnectionToolStripMenuItem.Text = "Bot Connection";
+            ConnectionToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ConnectBotToolStripMenuItem, DisconnectBotToolStripMenuItem });
+            ConnectionToolStripMenuItem.Name = "ConnectionToolStripMenuItem";
+            ConnectionToolStripMenuItem.Size = new Size(191, 22);
+            ConnectionToolStripMenuItem.Text = "Bot Connection";
             // 
             // ConnectBotToolStripMenuItem
             // 
-            this.ConnectBotToolStripMenuItem.Name = "ConnectBotToolStripMenuItem";
-            this.ConnectBotToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.ConnectBotToolStripMenuItem.Text = "Connect";
-            this.ConnectBotToolStripMenuItem.Click += new System.EventHandler(this.ConnectBotToolStripMenuItem_Click);
+            ConnectBotToolStripMenuItem.Name = "ConnectBotToolStripMenuItem";
+            ConnectBotToolStripMenuItem.Size = new Size(133, 22);
+            ConnectBotToolStripMenuItem.Text = "Connect";
+            ConnectBotToolStripMenuItem.Click += ConnectBotToolStripMenuItem_Click;
             // 
             // DisconnectBotToolStripMenuItem
             // 
-            this.DisconnectBotToolStripMenuItem.Name = "DisconnectBotToolStripMenuItem";
-            this.DisconnectBotToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.DisconnectBotToolStripMenuItem.Text = "Disconnect";
-            this.DisconnectBotToolStripMenuItem.Click += new System.EventHandler(this.DisconnectBotToolStripMenuItem_Click);
+            DisconnectBotToolStripMenuItem.Name = "DisconnectBotToolStripMenuItem";
+            DisconnectBotToolStripMenuItem.Size = new Size(133, 22);
+            DisconnectBotToolStripMenuItem.Text = "Disconnect";
+            DisconnectBotToolStripMenuItem.Click += DisconnectBotToolStripMenuItem_Click;
             // 
             // disableDebugOutputToolStripMenuItem
             // 
-            this.disableDebugOutputToolStripMenuItem.Name = "disableDebugOutputToolStripMenuItem";
-            this.disableDebugOutputToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.disableDebugOutputToolStripMenuItem.Text = "Disable Debug Output";
-            this.disableDebugOutputToolStripMenuItem.ToolTipText = "Speeds up parsing of JSON files significantly by disabling output to the debug wi" +
-    "ndow. Failures will still be shown.";
-            this.disableDebugOutputToolStripMenuItem.Click += new System.EventHandler(this.DisableDebugOutputToolStripMenuItem_Click);
+            disableDebugOutputToolStripMenuItem.Name = "disableDebugOutputToolStripMenuItem";
+            disableDebugOutputToolStripMenuItem.Size = new Size(191, 22);
+            disableDebugOutputToolStripMenuItem.Text = "Disable Debug Output";
+            disableDebugOutputToolStripMenuItem.ToolTipText = "Speeds up parsing of JSON files significantly by disabling output to the debug window. Failures will still be shown.";
+            disableDebugOutputToolStripMenuItem.Click += DisableDebugOutputToolStripMenuItem_Click;
             // 
             // HelpToolStripMenuItem
             // 
-            this.HelpToolStripMenuItem.BackColor = System.Drawing.Color.Silver;
-            this.HelpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CheckForUpdatesToolStripMenuItem,
-            this.AboutToolStripMenuItem,
-            this.DonateToolStripMenuItem});
-            this.HelpToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
-            this.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem";
-            this.HelpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.HelpToolStripMenuItem.Text = "Help";
+            HelpToolStripMenuItem.BackColor = Color.Silver;
+            HelpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { CheckForUpdatesToolStripMenuItem, AboutToolStripMenuItem, DonateToolStripMenuItem });
+            HelpToolStripMenuItem.ForeColor = Color.Black;
+            HelpToolStripMenuItem.Name = "HelpToolStripMenuItem";
+            HelpToolStripMenuItem.Size = new Size(44, 20);
+            HelpToolStripMenuItem.Text = "Help";
             // 
             // CheckForUpdatesToolStripMenuItem
             // 
-            this.CheckForUpdatesToolStripMenuItem.Name = "CheckForUpdatesToolStripMenuItem";
-            this.CheckForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.CheckForUpdatesToolStripMenuItem.Text = "Check For Updates";
-            this.CheckForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.CheckForUpdatesToolStripMenuItem_Click_1);
+            CheckForUpdatesToolStripMenuItem.Name = "CheckForUpdatesToolStripMenuItem";
+            CheckForUpdatesToolStripMenuItem.Size = new Size(173, 22);
+            CheckForUpdatesToolStripMenuItem.Text = "Check For Updates";
+            CheckForUpdatesToolStripMenuItem.Click += CheckForUpdatesToolStripMenuItem_Click_1;
             // 
             // AboutToolStripMenuItem
             // 
-            this.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
-            this.AboutToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.AboutToolStripMenuItem.Text = "About";
-            this.AboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
+            AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
+            AboutToolStripMenuItem.Size = new Size(173, 22);
+            AboutToolStripMenuItem.Text = "About";
+            AboutToolStripMenuItem.Click += AboutToolStripMenuItem_Click;
             // 
             // DonateToolStripMenuItem
             // 
-            this.DonateToolStripMenuItem.Name = "DonateToolStripMenuItem";
-            this.DonateToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.DonateToolStripMenuItem.Text = "Donate";
-            this.DonateToolStripMenuItem.Click += new System.EventHandler(this.DonateToolStripMenuItem_Click_1);
+            DonateToolStripMenuItem.Name = "DonateToolStripMenuItem";
+            DonateToolStripMenuItem.Size = new Size(173, 22);
+            DonateToolStripMenuItem.Text = "Donate";
+            DonateToolStripMenuItem.Click += DonateToolStripMenuItem_Click_1;
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.BackColor = System.Drawing.Color.LightGray;
-            this.richTextBox1.Location = new System.Drawing.Point(0, 105);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(933, 300);
-            this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = "";
-            this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.Link_Clicked);
-            this.richTextBox1.TextChanged += new System.EventHandler(this.RichTextBox1_TextChanged);
+            richTextBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            richTextBox1.BackColor = Color.LightGray;
+            richTextBox1.Location = new Point(0, 105);
+            richTextBox1.Margin = new Padding(4, 3, 4, 3);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.ReadOnly = true;
+            richTextBox1.Size = new Size(933, 300);
+            richTextBox1.TabIndex = 1;
+            richTextBox1.Text = "";
+            richTextBox1.LinkClicked += Link_Clicked;
+            richTextBox1.TextChanged += RichTextBox1_TextChanged;
             // 
             // ToolStripButton1
             // 
-            this.ToolStripButton1.BackColor = System.Drawing.Color.Silver;
-            this.ToolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("ToolStripButton1.Image")));
-            this.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolStripButton1.Name = "ToolStripButton1";
-            this.ToolStripButton1.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.ToolStripButton1.Padding = new System.Windows.Forms.Padding(0, 5, 20, 0);
-            this.ToolStripButton1.Size = new System.Drawing.Size(40, 25);
-            this.ToolStripButton1.Text = "toolStripButton1";
-            this.ToolStripButton1.ToolTipText = "copy selected/all text";
-            this.ToolStripButton1.Click += new System.EventHandler(this.ToolStripButton1_Click);
+            ToolStripButton1.BackColor = Color.Silver;
+            ToolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            ToolStripButton1.Image = (Image)resources.GetObject("ToolStripButton1.Image");
+            ToolStripButton1.ImageTransparentColor = Color.Magenta;
+            ToolStripButton1.Name = "ToolStripButton1";
+            ToolStripButton1.Overflow = ToolStripItemOverflow.Never;
+            ToolStripButton1.Padding = new Padding(0, 5, 20, 0);
+            ToolStripButton1.Size = new Size(40, 25);
+            ToolStripButton1.Text = "toolStripButton1";
+            ToolStripButton1.ToolTipText = "copy selected/all text";
+            ToolStripButton1.Click += ToolStripButton1_Click;
             // 
             // ToolStripButton2
             // 
-            this.ToolStripButton2.BackColor = System.Drawing.Color.Silver;
-            this.ToolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("ToolStripButton2.Image")));
-            this.ToolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolStripButton2.Name = "ToolStripButton2";
-            this.ToolStripButton2.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.ToolStripButton2.Padding = new System.Windows.Forms.Padding(20, 5, 0, 0);
-            this.ToolStripButton2.Size = new System.Drawing.Size(40, 25);
-            this.ToolStripButton2.Text = "toolStripButton2";
-            this.ToolStripButton2.ToolTipText = "clear the entire log window";
-            this.ToolStripButton2.Click += new System.EventHandler(this.ToolStripButton2_Click);
+            ToolStripButton2.BackColor = Color.Silver;
+            ToolStripButton2.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            ToolStripButton2.Image = (Image)resources.GetObject("ToolStripButton2.Image");
+            ToolStripButton2.ImageTransparentColor = Color.Magenta;
+            ToolStripButton2.Name = "ToolStripButton2";
+            ToolStripButton2.Overflow = ToolStripItemOverflow.Never;
+            ToolStripButton2.Padding = new Padding(20, 5, 0, 0);
+            ToolStripButton2.Size = new Size(40, 25);
+            ToolStripButton2.Text = "toolStripButton2";
+            ToolStripButton2.ToolTipText = "clear the entire log window";
+            ToolStripButton2.Click += ToolStripButton2_Click;
             // 
             // toolStrip1
             // 
-            this.toolStrip1.AllowMerge = false;
-            this.toolStrip1.AutoSize = false;
-            this.toolStrip1.BackColor = System.Drawing.Color.White;
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.toolStrip1.GripMargin = new System.Windows.Forms.Padding(0);
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolStripButton1,
-            this.ToolStripButton2});
-            this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.toolStrip1.Location = new System.Drawing.Point(4, 408);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(925, 28);
-            this.toolStrip1.TabIndex = 4;
-            this.toolStrip1.Text = "toolStrip1";
+            toolStrip1.AllowMerge = false;
+            toolStrip1.AutoSize = false;
+            toolStrip1.BackColor = Color.White;
+            toolStrip1.Dock = DockStyle.Bottom;
+            toolStrip1.GripMargin = new Padding(0);
+            toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
+            toolStrip1.Items.AddRange(new ToolStripItem[] { ToolStripButton1, ToolStripButton2 });
+            toolStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            toolStrip1.Location = new Point(4, 408);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(925, 28);
+            toolStrip1.TabIndex = 4;
+            toolStrip1.Text = "toolStrip1";
             // 
             // Slackord
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(933, 439);
-            this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "Slackord";
-            this.Padding = new System.Windows.Forms.Padding(4, 74, 4, 3);
-            this.Text = "Slackord 2";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            ClientSize = new Size(933, 439);
+            Controls.Add(richTextBox1);
+            Controls.Add(toolStrip1);
+            Controls.Add(menuStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStrip1;
+            Margin = new Padding(4, 3, 4, 3);
+            Name = "Slackord";
+            Padding = new Padding(4, 74, 4, 3);
+            Text = "Slackord 2";
+            Load += Form1_Load;
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
