@@ -44,7 +44,7 @@ If you are on the free plan of Slack or need a reliable tool for exporting both 
 1. Select `Settings>Bot Connection>Connect` to connect the bot to your server.
 1. If you're importing channels, select `File>Import Channels` and select your `channels.json` file. Follow the popup instructions and select `OK` when ready. Channels will begin importing.
 1. If you're importing messages, select `File>Import JSON` or `File>Import JSON Folder` and select a Slack JSON chat history file or folder to import.
-1. Visit the Discord channel or DM you wish to import Slack chat history to and type `/slackord`. Messages will begin importing.
+1. Visit the Discord channel or DM you wish to import Slack chat history to and type `/slackord` (case insensitive). Messages will begin posting.
 
 # Running Slackord2 for Mac/Linux
 1. Run Slackord2 and paste your bot's token into the CLI when prompted to do so. Slackord2 will remember your token if you close it.
