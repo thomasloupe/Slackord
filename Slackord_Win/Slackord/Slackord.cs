@@ -268,9 +268,8 @@ namespace Slackord
             if (_isParsingNow)
             {
                 MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
-                return;
+                await Task.CompletedTask;
             }
-
             try
             {
                 await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
@@ -401,6 +400,7 @@ namespace Slackord
                         richTextBox1.Text += """
                         -----------------------------------------
                         All messages sent to Discord successfully!
+
                         """;
                     }));
                     await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
@@ -430,6 +430,7 @@ namespace Slackord
                     }
                 }
             }
+            Task.CompletedTask.Wait();
         }
 
         private void CheckForUpdatesToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -663,7 +664,8 @@ namespace Slackord
 
         private void RichTextBox1_TextChanged(object sender, EventArgs e)
         {
-            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            richTextBox1.SelectionStart = richTextBox1.Text.Length - 1;
+            richTextBox1.SelectionLength = 0;
             richTextBox1.ScrollToCaret();
         }
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
