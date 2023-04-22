@@ -1,4 +1,4 @@
-# Slackord2 ![Slackord2 Logo](https://i.imgur.com/PyVjqzL.png)
+# ![Slackord2 Logo](https://i.imgur.com/PyVjqzL.png)Slackord2
 ![Discord Shield](https://discordapp.com/api/guilds/1095636526873972766/widget.png?style=shield)    
 [Join the Slackord Discord!](https://discord.gg/yccMweYPN8)
 
