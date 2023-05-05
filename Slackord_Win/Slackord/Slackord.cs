@@ -23,9 +23,8 @@ namespace Slackord
 {
     public partial class Slackord : MaterialForm
     {
-        private const string CurrentVersion = "v2.4.10";
+        private const string CurrentVersion = "v2.5";
         public DiscordSocketClient _discordClient;
-        private OpenFileDialog _ofd;
         private string _discordToken;
         private GitHubClient _octoClient;
         public bool _isFileParsed;
@@ -33,10 +32,12 @@ namespace Slackord
         public bool _showDebugOutput = false;
         public IServiceProvider _services;
         public JArray parsed;
-        private List<string> ListOfFilesToParse = new();
+        public Dictionary<string, List<string>> JsonFilesDict { get; private set; } = new Dictionary<string, List<string>>();
         private readonly List<string> Responses = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
+        int totalMessageCount = 0;
+        int currentMessageCount = 0;
 
         public Slackord()
         {
@@ -47,6 +48,7 @@ namespace Slackord
             materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
             materialSkinManager.ColorScheme = new ColorScheme(Primary.Orange600, Primary.DeepOrange700, Primary.Amber500, Accent.Amber700, TextShade.BLACK);
             _isFileParsed = false;
+            progressBar1.Enabled = false;
             CheckForExistingBotToken();
         }
 
@@ -65,43 +67,88 @@ namespace Slackord
             _discordToken = Properties.Settings.Default.SlackordBotToken.Trim();
             if (Properties.Settings.Default.FirstRun)
             {
-                richTextBox1.Text += "Welcome to Slackord 2!" + "\n";
+                richTextBox1.AppendText("Welcome to Slackord 2!" + "\n");
             }
             else if (string.IsNullOrEmpty(_discordToken) || string.IsNullOrEmpty(Properties.Settings.Default.SlackordBotToken))
             {
-                richTextBox1.Text += """
+                richTextBox1.AppendText("""
                 Slackord 2 tried to automatically load your last bot token but wasn't successful.
                 The token is not long enough or the token value is empty. Please enter a new token.
-                """;
+                """);
             }
             else
             {
-                richTextBox1.Text += "Slackord 2 found a previously entered bot token and automatically applied it! Bot connection is now enabled." + "\n";
+                richTextBox1.AppendText("Slackord 2 found a previously entered bot token and automatically applied it! Bot connection is now enabled." + "\n");
                 EnableBotConnectionMenuItem();
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            using var fbd = new FolderBrowserDialog();
+            DialogResult result = fbd.ShowDialog();
 
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+            {
+                Responses.Clear();
+                JsonFilesDict.Clear();
+
+                totalMessageCount = 0;
+                currentMessageCount = 0;
+                progressBar1.Enabled = false;
+
+                var subDirectories = Directory.GetDirectories(fbd.SelectedPath);
+                int folderCount = subDirectories.Length;
+                int fileCount = 0;
+
+                foreach (var subDir in subDirectories)
+                {
+                    var folderName = Path.GetFileName(subDir);
+                    var files = Directory.EnumerateFiles(subDir, "*.*", SearchOption.TopDirectoryOnly)
+                        .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
+
+                    List<string> fileList = new();
+                    foreach (var file in files)
+                    {
+                        string fileName = Path.GetFileNameWithoutExtension(file);
+                        if (DateTime.TryParseExact(fileName, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fileDate))
+                        {
+                            fileList.Add(file);
+                            fileCount++;
+                        }
+                    }
+                    if (fileList.Count > 0)
+                    {
+                        JsonFilesDict[folderName] = fileList;
+                    }
+                }
+
+                MessageBox.Show($"Found {fileCount} JSON files in {folderCount} folders.", "Message");
+
+                foreach (var folder in JsonFilesDict.Keys)
+                {
+                    ParseJsonFiles(JsonFilesDict[folder], folder);
+                }
+            }
         }
 
-        private void ParseJsonFiles(List<string> ListOfFilesToParse)
+        private void ParseJsonFiles(List<string> files, string channelName)
         {
             _isParsingNow = true;
+            richTextBox1.AppendText($"""
+            Begin parsing JSON data for {channelName}...
+            -----------------------------------------
 
-            foreach (var file in ListOfFilesToParse)
+            """);
+            try
             {
-                richTextBox1.Text += $"""
-                                     Begin parsing JSON data for {file}...
-                                     -----------------------------------------
-                                     
-                                     """;
-                try
+                string debugResponse;
+                string currentFile = "";
+                foreach (string file in files)
                 {
+                    currentFile = Path.GetFileNameWithoutExtension(file);
                     var json = File.ReadAllText(file);
                     parsed = JArray.Parse(json);
-                    string debugResponse;
                     foreach (JObject pair in parsed.Cast<JObject>())
                     {
                         var rawTimeDate = pair["ts"];
@@ -148,11 +195,13 @@ namespace Slackord
                                 {
                                     debugResponse = newDateTime + " - " + slackMessage;
                                     Responses.Add(debugResponse);
+                                    totalMessageCount++;
                                 }
                                 else
                                 {
                                     debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
                                     Responses.Add(debugResponse);
+                                    totalMessageCount++;
                                 }
                             }
                             else
@@ -160,37 +209,29 @@ namespace Slackord
                                 debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                 if (debugResponse.Length >= 2000)
                                 {
-                                    if (!disableDebugOutputToolStripMenuItem.Checked)
-                                    {
-                                        richTextBox1.Text += $"""
-                                        The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                        This message will be split into multiple posts. The message that will be split is: {debugResponse}
-                                        """;
-                                    }
+                                    richTextBox1.AppendText($@"
+                                    The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                    This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                    ");
                                 }
                                 else
                                 {
                                     debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                     Responses.Add(debugResponse);
+                                    totalMessageCount++;
                                 }
                             }
-                            if (!disableDebugOutputToolStripMenuItem.Checked)
-                            {
-                                richTextBox1.Text += debugResponse + "\n";
-                            }
+                            richTextBox1.AppendText(debugResponse + "\n");
                         }
 
-                        if (pair.ContainsKey("files") && pair["files"] is JArray files && files.Count > 0)
+                        if (pair.ContainsKey("files") && pair["files"] is JArray filesArray && filesArray.Count > 0)
                         {
-                            var fileLink = files[0]["url_private"]?.ToString();
+                            var fileLink = filesArray[0]["url_private"]?.ToString();
 
                             if (!string.IsNullOrEmpty(fileLink))
                             {
                                 debugResponse = fileLink;
-                                if (!disableDebugOutputToolStripMenuItem.Checked)
-                                {
-                                    richTextBox1.Text += debugResponse + "\n";
-                                }
+                                richTextBox1.AppendText(debugResponse + "\n");
                             }
                         }
 
@@ -200,6 +241,7 @@ namespace Slackord
                             {
                                 debugResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
                                 Responses.Add(debugResponse);
+                                totalMessageCount++;
                             }
                             catch (NullReferenceException)
                             {
@@ -207,34 +249,280 @@ namespace Slackord
                                 {
                                     debugResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                                     Responses.Add(debugResponse);
+                                    totalMessageCount++;
                                 }
                                 catch (NullReferenceException)
                                 {
                                     debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
                                 }
                             }
-                            if (!disableDebugOutputToolStripMenuItem.Checked)
+                            richTextBox1.AppendText(debugResponse + "\n");
+                        }
+                        UpdateDebugWindowView();
+                    }
+                }
+                richTextBox1.AppendText($"""
+                -----------------------------------------
+                Parsing of {currentFile} completed successfully!
+                -----------------------------------------
+
+                """);
+
+                _isFileParsed = true;
+                richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            _discordClient?.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Watching));
+            _isParsingNow = false;
+        }
+
+        [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
+        public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
+        {
+            if (_isParsingNow)
+            {
+                MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
+                await Task.CompletedTask;
+            }
+
+            progressBar1.Invoke(() =>
+            {
+                progressBar1.Enabled = true;
+                progressBar1.Maximum = totalMessageCount;
+                progressBar1.Value = 0;
+            });
+
+            await interaction.DeferAsync();
+
+            foreach (var channelName in JsonFilesDict.Keys)
+            {
+                var createdChannel = await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channelName);
+                var createdChannelId = createdChannel.Id;
+
+                MessageBox.Show($"{channelName}: {createdChannelId}");
+
+                richTextBox1.Invoke(new Action(() =>
+                {
+                    richTextBox1.AppendText($"Created {channelName} on Discord with ID: {createdChannelId}.\n");
+                }));
+
+                try
+                {
+                    await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
+
+                    int messageCount = 0;
+
+                    if (JsonFilesDict.TryGetValue(channelName, out var messages))
+                    {
+                        richTextBox1.Invoke(new Action(() =>
+                        {
+                            richTextBox1.AppendText($@"
+                            Beginning transfer of Slack messages to Discord for {channelName}...
+                            -----------------------------------------
+                            
+                            ");
+                        }));
+
+                        SocketThreadChannel threadID = null;
+
+                        foreach (string message in messages)
+                        {
+                            bool sendAsThread = false;
+                            bool sendAsThreadReply = false;
+                            bool sendAsNormalMessage = false;
+
+                            string messageToSend = message;
+                            bool wasSplit = false;
+
+                            if (isThreadStart[messageCount] == true)
                             {
-                                richTextBox1.Text += debugResponse + "\n";
+                                sendAsThread = true;
+                            }
+                            else if (isThreadStart[messageCount] == false && isThreadMessages[messageCount] == true)
+                            {
+                                sendAsThreadReply = true;
+                            }
+                            else
+                            {
+                                sendAsNormalMessage = true;
+                            }
+
+                            messageCount += 1;
+
+                            if (message.Length >= 2000)
+                            {
+                                var responses = messageToSend.SplitInParts(1800);
+
+                                richTextBox1.Invoke(new Action(() =>
+                                {
+                                    richTextBox1.AppendText("SPLITTING AND POSTING: " + messageToSend);
+                                }));
+
+                                foreach (var response in responses)
+                                {
+                                    messageToSend = response + " " + "\n";
+
+                                    if (sendAsThread)
+                                    {
+                                        if (_discordClient.GetChannel(createdChannelId) is SocketTextChannel textChannel)
+                                        {
+                                            await textChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                            var latestMessages = await textChannel.GetMessagesAsync(1).FlattenAsync();
+                                            threadID = await textChannel.CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, latestMessages.First());
+                                        }
+                                    }
+                                    else if (sendAsThreadReply)
+                                    {
+                                        if (threadID is not null)
+                                        {
+                                            await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        }
+                                        else
+                                        {
+                                            richTextBox1.Invoke(new MethodInvoker(delegate ()
+                                            {
+                                                richTextBox1.AppendText("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
+                                            }));
+                                            await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        }
+                                    }
+                                    else if (sendAsNormalMessage)
+                                    {
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
+                                    UpdateProgressBar();
+                                }
+                                wasSplit = true;
+                            }
+                            else
+                            {
+                                richTextBox1.Invoke(new Action(() =>
+                                {
+                                    richTextBox1.AppendText($"""
+                                    POSTING: {message}
+                                
+                                    """);
+                                }));
+
+                                if (!wasSplit)
+                                {
+                                    if (sendAsThread)
+                                    {
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        var threadMessages = await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).GetMessagesAsync(1).FlattenAsync();
+                                        threadID = await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
+                                    }
+                                    else if (sendAsThreadReply)
+                                    {
+                                        if (threadID is not null)
+                                        {
+                                            await threadID.SendMessageAsync(messageToSend);
+                                        }
+                                        else
+                                        {
+                                            // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
+                                            // We should let the user know and post the message as a normal message, because that's what it is.
+                                            richTextBox1.Invoke(new MethodInvoker(delegate ()
+                                            {
+                                                richTextBox1.AppendText("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
+                                            }));
+                                            await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend);
+                                        }
+                                    }
+                                    else if (sendAsNormalMessage)
+                                    {
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                    }
+                                }
+                                UpdateProgressBar();
                             }
                         }
                     }
-                    richTextBox1.Text += $"""
-                    -----------------------------------------
-                    Parsing of {file} completed successfully!
-                    -----------------------------------------
-                    
-                    """;
-                    _isFileParsed = true;
-                    richTextBox1.ForeColor = System.Drawing.Color.DarkGreen;
+                    await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.ToString());
                 }
-                _discordClient?.SetActivityAsync(new Game("- awaiting command to import messages...", ActivityType.Watching));
             }
-            _isParsingNow = false;
+            richTextBox1.Invoke(new Action(() =>
+            {
+                richTextBox1.AppendText("""
+                 -----------------------------------------
+                All messages sent to Discord successfully!
+
+                """);
+            }));
+            await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
+            await _discordClient.SetActivityAsync(new Game("messages parse.", ActivityType.Watching));
+            await Task.CompletedTask;
+        }
+
+        public async Task MainAsync()
+        {
+            richTextBox1.AppendText("Starting Slackord bot..." + "\n");
+            _discordClient = new DiscordSocketClient();
+            DiscordSocketConfig _config = new();
+            {
+                _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
+            }
+            _discordClient = new(_config);
+            _services = new ServiceCollection()
+            .AddSingleton(_discordClient)
+            .BuildServiceProvider();
+            _discordClient.Log += DiscordClient_Log;
+            EnableBotDisconnectionMenuItem();
+            DisableTokenChangeWhileConnected();
+            await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
+            await _discordClient.StartAsync();
+            await _discordClient.SetActivityAsync(new Game("for messages to begin parsing.", ActivityType.Watching));
+            _discordClient.Ready += ClientReady;
+            _discordClient.SlashCommandExecuted += SlashCommandHandler;
+            await Task.Delay(-1);
+        }
+
+        private async Task SlashCommandHandler(SocketSlashCommand command)
+        {
+            if (command.Data.Name.Equals("slackord"))
+            {
+                var guildID = _discordClient.Guilds.FirstOrDefault().Id;
+                await PostMessagesToDiscord(guildID, command);
+            }
+        }
+
+        private async Task ClientReady()
+        {
+            try
+            {
+                foreach (var guild in _discordClient.Guilds)
+                {
+                    var guildCommand = new SlashCommandBuilder();
+                    guildCommand.WithName("slackord");
+                    guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
+                    try
+                    {
+                        await guild.CreateApplicationCommandAsync(guildCommand.Build());
+                    }
+                    catch (HttpException ex)
+                    {
+                        Console.WriteLine($"Error creating slash command in guild {guild.Name}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error encountered while creating slash command: {ex.Message}");
+            }
+        }
+
+        private Task DiscordClient_Log(LogMessage arg)
+        {
+            richTextBox1.Invoke(new Action(() => { richTextBox1.AppendText(arg.ToString() + "\n"); }));
+            return Task.CompletedTask;
         }
 
         private static string DeDupeURLs(string input)
@@ -261,176 +549,30 @@ namespace Slackord
             return input;
         }
 
-        [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
-        public async Task PostMessagesToDiscord(SocketChannel channel, ulong guildID, SocketInteraction interaction)
+        private void UpdateProgressBar(int value = 1)
         {
-            await interaction.DeferAsync();
-            if (_isParsingNow)
+            currentMessageCount += value;
+            if (progressBar1.InvokeRequired)
             {
-                MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
-                await Task.CompletedTask;
+                progressBar1.Invoke(new Action<int>(UpdateProgressBar), value);
             }
-            try
+            else
             {
-                await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
-                int messageCount = 0;
+                progressBar1.Value = currentMessageCount;
+                progressBar1.Maximum = totalMessageCount;
+                progressBar1.Style = ProgressBarStyle.Continuous;
 
-                if (_isFileParsed)
-                {
-                    richTextBox1.Invoke(new Action(() =>
-                    {
-                        richTextBox1.Text += """
+                var textSize = 16;
+                var textFont = new Font("Arial", textSize, FontStyle.Bold);
+                var textBrush = Brushes.Black;
+                var textX = (progressBar1.Width / 2) - (textSize * 2);
+                var textY = (progressBar1.Height / 2) - (textSize / 2);
 
-                        Beginning transfer of Slack messages to Discord...
-                        -----------------------------------------
-                        
-                        """;
-                    }));
-
-                    SocketThreadChannel threadID = null;
-                    foreach (string message in Responses)
-                    {
-                        bool sendAsThread = false;
-                        bool sendAsThreadReply = false;
-                        bool sendAsNormalMessage = false;
-
-                        string messageToSend = message;
-                        bool wasSplit = false;
-
-                        if (isThreadStart[messageCount] == true)
-                        {
-                            sendAsThread = true;
-                        }
-                        else if (isThreadStart[messageCount] == false && isThreadMessages[messageCount] == true)
-                        {
-                            sendAsThreadReply = true;
-                        }
-                        else
-                        {
-                            sendAsNormalMessage = true;
-                        }
-                        messageCount += 1;
-
-                        if (message.Length >= 2000)
-                        {
-                            var responses = messageToSend.SplitInParts(1800);
-
-                            richTextBox1.Invoke(new Action(() =>
-                            {
-                                richTextBox1.Text += "SPLITTING AND POSTING: " + messageToSend;
-                            }));
-                            foreach (var response in responses)
-                            {
-                                messageToSend = response + " " + "\n";
-                                if (sendAsThread)
-                                {
-                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                    var messages = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).GetMessagesAsync(1).FlattenAsync();
-                                    threadID = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, messages.First());
-                                }
-                                else if (sendAsThreadReply)
-                                {
-                                    if (threadID is not null)
-                                    {
-                                        await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                    }
-                                    else
-                                    {
-                                        // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
-                                        // We should let the user know and post the message as a normal message, because that's what it is.
-                                        richTextBox1.Invoke(new MethodInvoker(delegate ()
-                                        {
-                                            richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
-                                        }));
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                    }
-                                }
-                                else if (sendAsNormalMessage)
-                                {
-                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                }
-                            }
-                            wasSplit = true;
-                        }
-                        else
-                        {
-                            richTextBox1.Invoke(new Action(() =>
-                            {
-                                richTextBox1.Text += $"""
-                                POSTING: {message}
-                                
-                                """;
-                            }));
-
-                            if (!wasSplit)
-                            {
-                                if (sendAsThread)
-                                {
-                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                    var messages = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).GetMessagesAsync(1).FlattenAsync();
-                                    threadID = await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, messages.First());
-                                }
-                                else if (sendAsThreadReply)
-                                {
-
-                                    if (threadID is not null)
-                                    {
-                                        await threadID.SendMessageAsync(messageToSend);
-                                    }
-                                    else
-                                    {
-                                        // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
-                                        // We should let the user know and post the message as a normal message, because that's what it is.
-                                        richTextBox1.Invoke(new MethodInvoker(delegate ()
-                                        {
-                                            richTextBox1.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
-                                        }));
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend);
-                                    }
-                                }
-                                else if (sendAsNormalMessage)
-                                {
-                                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                }
-                            }
-                        }
-                    }
-                    richTextBox1.Invoke(new Action(() =>
-                    {
-                        richTextBox1.Text += """
-                        -----------------------------------------
-                        All messages sent to Discord successfully!
-
-                        """;
-                    }));
-                    await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-                    await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
-                }
-                else
-                {
-                    await _discordClient.GetGuild(guildID).GetTextChannel(channel.Id).SendMessageAsync("Sorry, there's nothing to post because no JSON file was parsed prior to sending this command.").ConfigureAwait(false);
-                    richTextBox1.Invoke(new Action(() =>
-                    {
-                        richTextBox1.Text += "Received a command to post messages to Discord, but no JSON file was parsed prior to receiving the command." + "\n";
-                    }));
-                }
-                Responses.Clear();
-                await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
+                progressBar1.CreateGraphics().DrawString(currentMessageCount.ToString() + " / " + totalMessageCount.ToString(),
+                    textFont,
+                    textBrush,
+                    new PointF(textX, textY));
             }
-            catch (Exception ex)
-            {
-                var exception = ex.GetType().ToString();
-                if (exception.Equals("Discord.Net.HttpException"))
-                {
-                    switch (ex.Message)
-                    {
-                        case "The server responded with error 50006: Cannot send an empty message":
-                            MessageBox.Show("The server responded with error 50006: Cannot send an empty message");
-                            break;
-                    }
-                }
-            }
-            Task.CompletedTask.Wait();
         }
 
         private void CheckForUpdatesToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -467,84 +609,6 @@ namespace Slackord
             var date = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             var returnDate = date.AddSeconds(timestamp);
             return returnDate;
-        }
-
-        private void ToolStripButton1_Click(object sender, EventArgs e)
-        {
-            if (richTextBox1.SelectionLength == 0)
-            {
-                richTextBox1.SelectAll();
-                richTextBox1.Copy();
-            }
-        }
-
-        private void ToolStripButton2_Click(object sender, EventArgs e)
-        {
-            richTextBox1.Text = "";
-        }
-
-        public async Task MainAsync()
-        {
-            richTextBox1.Text += "Starting Slackord bot..." + "\n";
-            _discordClient = new DiscordSocketClient();
-            DiscordSocketConfig _config = new();
-            {
-                _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
-            }
-            _discordClient = new(_config);
-            _services = new ServiceCollection()
-            .AddSingleton(_discordClient)
-            .BuildServiceProvider();
-            _discordClient.Log += DiscordClient_Log;
-            EnableBotDisconnectionMenuItem();
-            DisableTokenChangeWhileConnected();
-            await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
-            await _discordClient.StartAsync();
-            await _discordClient.SetActivityAsync(new Game("- awaiting parsing of messages.", ActivityType.Watching));
-            _discordClient.Ready += ClientReady;
-            _discordClient.SlashCommandExecuted += SlashCommandHandler;
-            await Task.Delay(-1);
-        }
-
-        private async Task SlashCommandHandler(SocketSlashCommand command)
-        {
-            if (command.Data.Name.Equals("slackord"))
-            {
-                var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                var channel = _discordClient.GetChannel((ulong)command.ChannelId);
-                await PostMessagesToDiscord(channel, guildID, command);
-            }
-        }
-
-        private async Task ClientReady()
-        {
-            try
-            {
-                foreach (var guild in _discordClient.Guilds)
-                {
-                    var guildCommand = new SlashCommandBuilder();
-                    guildCommand.WithName("slackord");
-                    guildCommand.WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
-                    try
-                    {
-                        await guild.CreateApplicationCommandAsync(guildCommand.Build());
-                    }
-                    catch (HttpException ex)
-                    {
-                        Console.WriteLine($"Error creating slash command in guild {guild.Name}: {ex.Message}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error encountered while creating slash command: {ex.Message}");
-            }
-        }
-
-        private Task DiscordClient_Log(LogMessage arg)
-        {
-            richTextBox1.Invoke(new Action(() => { richTextBox1.Text += arg.ToString() + "\n"; }));
-            return Task.CompletedTask;
         }
 
         private void EnterBotTokenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -608,17 +672,31 @@ namespace Slackord
             else if (CurrentVersion != latest.TagName)
             {
                 var result = MessageBox.Show($"""
-                    A new version of Slackord is available!
-                    Current version: {CurrentVersion}
-                    Latest version: {latest.TagName}
-                    Would you like to visit the download page?
-                    """, "Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                A new version of Slackord is available!
+                Current version: {CurrentVersion}
+                Latest version: {latest.TagName}
+                Would you like to visit the download page?
+                """, "Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
                 if (result == DialogResult.Yes)
                 {
                     Process.Start("https://github.com/thomasloupe/Slackord-2.0/releases/tag/" +
                                                      latest.TagName);
                 }
             }
+        }
+
+        private void ToolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (richTextBox1.SelectionLength == 0)
+            {
+                richTextBox1.SelectAll();
+                richTextBox1.Copy();
+            }
+        }
+
+        private void ToolStripButton2_Click(object sender, EventArgs e)
+        {
+            richTextBox1.Text = "";
         }
 
         private void EnableBotConnectionMenuItem()
@@ -662,132 +740,17 @@ namespace Slackord
             }
         }
 
-        private void RichTextBox1_TextChanged(object sender, EventArgs e)
+        private void UpdateDebugWindowView()
         {
             richTextBox1.SelectionStart = richTextBox1.Text.Length - 1;
             richTextBox1.SelectionLength = 0;
             richTextBox1.ScrollToCaret();
         }
+
         private void Link_Clicked(object sender, LinkClickedEventArgs e)
         {
             var url = e.LinkText;
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-        }
-
-        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ListOfFilesToParse.Clear();
-            _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
-            if (_ofd.ShowDialog() == DialogResult.OK)
-                ListOfFilesToParse.Add(_ofd.FileName);
-
-            ListOfFilesToParse = ListOfFilesToParse
-                .OrderBy(file => DateTime.ParseExact(
-                    Path.GetFileNameWithoutExtension(file),
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture))
-                .ToList();
-
-            ParseJsonFiles(ListOfFilesToParse);
-        }
-
-        private void ImportJSONFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ListOfFilesToParse.Clear();
-            using var fbd = new FolderBrowserDialog();
-            DialogResult result = fbd.ShowDialog();
-
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-            {
-                var files = Directory.EnumerateFiles(fbd.SelectedPath, "*.*", SearchOption.TopDirectoryOnly)
-                    .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
-
-                foreach (var file in files)
-                {
-                    ListOfFilesToParse.Add(file);
-                }
-
-                ListOfFilesToParse = ListOfFilesToParse
-                    .OrderBy(file => DateTime.ParseExact(
-                        Path.GetFileNameWithoutExtension(file),
-                        "yyyy-MM-dd",
-                        CultureInfo.InvariantCulture))
-                    .ToList();
-
-                MessageBox.Show("Files found: " + files.Count(), "Message");
-                ParseJsonFiles(ListOfFilesToParse);
-            }
-        }
-
-        private void DisableDebugOutputToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (disableDebugOutputToolStripMenuItem.Checked)
-            {
-                disableDebugOutputToolStripMenuItem.Checked = false;
-            }
-            else
-            {
-                disableDebugOutputToolStripMenuItem.Checked = true;
-            }
-        }
-
-        private void CreateChannelsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (_discordClient == null || _discordClient.ConnectionState == ConnectionState.Disconnected || _discordClient.ConnectionState == ConnectionState.Disconnecting)
-            {
-                MessageBox.Show("You must be connected to Discord to create channels!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            _ofd = new OpenFileDialog { Filter = "JSON File|*.json", Title = "Import a JSON file for parsing" };
-            if (_ofd.ShowDialog() == DialogResult.OK)
-            {
-                var json = File.ReadAllText(_ofd.FileName);
-                parsed = JArray.Parse(json);
-            }
-
-            var result = MessageBox.Show($"""
-                    It is assumed that you have not created any channels with the names of the channels in the JSON file yet. If you have, you will more than likely see duplicate channels.
-                    Now is a good time to remove any channels you do not want to create duplicates of. When ready, press "Yes" to continue.
-                    """, "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-            if (result == DialogResult.Yes)
-            {
-                List<string> ChannelsToCreate = new();
-
-                foreach (JObject pair in parsed.Cast<JObject>())
-                {
-                    if (pair.ContainsKey("name"))
-                    {
-                        ChannelsToCreate.Add(pair["name"].ToString());
-                    }
-                }
-                CreateChannelsAsync(ChannelsToCreate).ConfigureAwait(false);
-            }
-        }
-
-        public async Task CreateChannelsAsync(List<string> _channelsToCreate)
-        {
-            var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-
-            foreach (var channel in _channelsToCreate)
-            {
-                try
-                {
-                    await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channel.ToLower());
-                    await Task.Delay(3000);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    return;
-                }
-            }
-            MessageBox.Show($"""
-                Channel import completed!
-                The following channels were created:
-
-                {string.Join(Environment.NewLine, _channelsToCreate)}
-                """, "Channel Import Complete!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static class Prompt
@@ -806,11 +769,14 @@ namespace Slackord
                 return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
             }
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
     }
 
     static class StringExtensions
     {
-        public static IEnumerable<string> SplitInParts(this string s, Int32 partLength)
+        public static IEnumerable<string> SplitInParts(this string s, int partLength)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));

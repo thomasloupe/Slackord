@@ -31,8 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Slackord));
             menuStrip1 = new MenuStrip();
             FileToolStripMenuItem = new ToolStripMenuItem();
-            createChannelsToolStripMenuItem = new ToolStripMenuItem();
-            OpenToolStripMenuItem = new ToolStripMenuItem();
             importJSONFolderToolStripMenuItem = new ToolStripMenuItem();
             ExitToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
@@ -40,7 +38,6 @@
             ConnectionToolStripMenuItem = new ToolStripMenuItem();
             ConnectBotToolStripMenuItem = new ToolStripMenuItem();
             DisconnectBotToolStripMenuItem = new ToolStripMenuItem();
-            disableDebugOutputToolStripMenuItem = new ToolStripMenuItem();
             HelpToolStripMenuItem = new ToolStripMenuItem();
             CheckForUpdatesToolStripMenuItem = new ToolStripMenuItem();
             AboutToolStripMenuItem = new ToolStripMenuItem();
@@ -49,6 +46,7 @@
             ToolStripButton1 = new ToolStripButton();
             ToolStripButton2 = new ToolStripButton();
             toolStrip1 = new ToolStrip();
+            progressBar1 = new ProgressBar();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             SuspendLayout();
@@ -67,25 +65,11 @@
             // FileToolStripMenuItem
             // 
             FileToolStripMenuItem.BackColor = Color.Silver;
-            FileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createChannelsToolStripMenuItem, OpenToolStripMenuItem, importJSONFolderToolStripMenuItem, ExitToolStripMenuItem });
+            FileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { importJSONFolderToolStripMenuItem, ExitToolStripMenuItem });
             FileToolStripMenuItem.ForeColor = Color.Black;
             FileToolStripMenuItem.Name = "FileToolStripMenuItem";
             FileToolStripMenuItem.Size = new Size(37, 20);
             FileToolStripMenuItem.Text = "File";
-            // 
-            // createChannelsToolStripMenuItem
-            // 
-            createChannelsToolStripMenuItem.Name = "createChannelsToolStripMenuItem";
-            createChannelsToolStripMenuItem.Size = new Size(177, 22);
-            createChannelsToolStripMenuItem.Text = "Import Channels";
-            createChannelsToolStripMenuItem.Click += CreateChannelsToolStripMenuItem_Click;
-            // 
-            // OpenToolStripMenuItem
-            // 
-            OpenToolStripMenuItem.Name = "OpenToolStripMenuItem";
-            OpenToolStripMenuItem.Size = new Size(177, 22);
-            OpenToolStripMenuItem.Text = "Import JSON";
-            OpenToolStripMenuItem.Click += OpenToolStripMenuItem_Click;
             // 
             // importJSONFolderToolStripMenuItem
             // 
@@ -104,7 +88,7 @@
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.BackColor = Color.Silver;
-            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { EnterBotTokenToolStripMenuItem, ConnectionToolStripMenuItem, disableDebugOutputToolStripMenuItem });
+            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { EnterBotTokenToolStripMenuItem, ConnectionToolStripMenuItem });
             settingsToolStripMenuItem.ForeColor = Color.Black;
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             settingsToolStripMenuItem.Size = new Size(61, 20);
@@ -113,7 +97,7 @@
             // EnterBotTokenToolStripMenuItem
             // 
             EnterBotTokenToolStripMenuItem.Name = "EnterBotTokenToolStripMenuItem";
-            EnterBotTokenToolStripMenuItem.Size = new Size(191, 22);
+            EnterBotTokenToolStripMenuItem.Size = new Size(157, 22);
             EnterBotTokenToolStripMenuItem.Text = "Enter Bot Token";
             EnterBotTokenToolStripMenuItem.Click += EnterBotTokenToolStripMenuItem_Click;
             // 
@@ -121,7 +105,7 @@
             // 
             ConnectionToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ConnectBotToolStripMenuItem, DisconnectBotToolStripMenuItem });
             ConnectionToolStripMenuItem.Name = "ConnectionToolStripMenuItem";
-            ConnectionToolStripMenuItem.Size = new Size(191, 22);
+            ConnectionToolStripMenuItem.Size = new Size(157, 22);
             ConnectionToolStripMenuItem.Text = "Bot Connection";
             // 
             // ConnectBotToolStripMenuItem
@@ -137,14 +121,6 @@
             DisconnectBotToolStripMenuItem.Size = new Size(133, 22);
             DisconnectBotToolStripMenuItem.Text = "Disconnect";
             DisconnectBotToolStripMenuItem.Click += DisconnectBotToolStripMenuItem_Click;
-            // 
-            // disableDebugOutputToolStripMenuItem
-            // 
-            disableDebugOutputToolStripMenuItem.Name = "disableDebugOutputToolStripMenuItem";
-            disableDebugOutputToolStripMenuItem.Size = new Size(191, 22);
-            disableDebugOutputToolStripMenuItem.Text = "Disable Debug Output";
-            disableDebugOutputToolStripMenuItem.ToolTipText = "Speeds up parsing of JSON files significantly by disabling output to the debug window. Failures will still be shown.";
-            disableDebugOutputToolStripMenuItem.Click += DisableDebugOutputToolStripMenuItem_Click;
             // 
             // HelpToolStripMenuItem
             // 
@@ -178,17 +154,16 @@
             // 
             // richTextBox1
             // 
-            richTextBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             richTextBox1.BackColor = Color.LightGray;
-            richTextBox1.Location = new Point(0, 105);
+            richTextBox1.Dock = DockStyle.Top;
+            richTextBox1.Location = new Point(4, 98);
             richTextBox1.Margin = new Padding(4, 3, 4, 3);
             richTextBox1.Name = "richTextBox1";
             richTextBox1.ReadOnly = true;
-            richTextBox1.Size = new Size(933, 300);
+            richTextBox1.Size = new Size(925, 283);
             richTextBox1.TabIndex = 1;
             richTextBox1.Text = "";
             richTextBox1.LinkClicked += Link_Clicked;
-            richTextBox1.TextChanged += RichTextBox1_TextChanged;
             // 
             // ToolStripButton1
             // 
@@ -234,12 +209,23 @@
             toolStrip1.TabIndex = 4;
             toolStrip1.Text = "toolStrip1";
             // 
+            // progressBar1
+            // 
+            progressBar1.Dock = DockStyle.Bottom;
+            progressBar1.Location = new Point(4, 381);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(925, 27);
+            progressBar1.Step = 1;
+            progressBar1.Style = ProgressBarStyle.Continuous;
+            progressBar1.TabIndex = 5;
+            // 
             // Slackord
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(933, 439);
+            Controls.Add(progressBar1);
             Controls.Add(richTextBox1);
             Controls.Add(toolStrip1);
             Controls.Add(menuStrip1);
@@ -266,7 +252,6 @@
         private System.Windows.Forms.ToolStripMenuItem HelpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem AboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EnterBotTokenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem OpenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ExitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ConnectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ConnectBotToolStripMenuItem;
@@ -278,8 +263,7 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripMenuItem DonateToolStripMenuItem;
         private ToolStripMenuItem importJSONFolderToolStripMenuItem;
-        private ToolStripMenuItem disableDebugOutputToolStripMenuItem;
-        private ToolStripMenuItem createChannelsToolStripMenuItem;
+        private ProgressBar progressBar1;
     }
 }
 
