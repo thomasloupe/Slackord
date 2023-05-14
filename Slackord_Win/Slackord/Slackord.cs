@@ -417,7 +417,7 @@ namespace Slackord
                                 {
                                     if (sendAsThread)
                                     {
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        await createdChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
                                         var threadMessages = await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).GetMessagesAsync(1).FlattenAsync();
                                         threadID = await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
                                     }
