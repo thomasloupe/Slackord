@@ -435,12 +435,12 @@ namespace Slackord
                                             {
                                                 richTextBox1.AppendText("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
                                             }));
-                                            await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend);
+                                            await createdChannel.SendMessageAsync(messageToSend);
                                         }
                                     }
                                     else if (sendAsNormalMessage)
                                     {
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        await createdChannel.SendMessageAsync(messageToSend);
                                     }
                                 }
                                 UpdateProgressBar();
