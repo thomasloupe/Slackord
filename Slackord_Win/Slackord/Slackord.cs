@@ -32,8 +32,7 @@ namespace Slackord
         public bool _showDebugOutput = false;
         public IServiceProvider _services;
         public JArray parsed;
-        public Dictionary<string, List<string>> JsonFilesDict { get; private set; } = new Dictionary<string, List<string>>();
-        private readonly List<string> Responses = new();
+        private Dictionary<string, List<string>> channels = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
         int totalMessageCount = 0;
@@ -90,16 +89,12 @@ namespace Slackord
 
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
-                Responses.Clear();
-                JsonFilesDict.Clear();
+                channels.Clear();
 
-                totalMessageCount = 0;
-                currentMessageCount = 0;
-                progressBar1.Enabled = false;
+                int fileCount = 0;
 
                 var subDirectories = Directory.GetDirectories(fbd.SelectedPath);
                 int folderCount = subDirectories.Length;
-                int fileCount = 0;
 
                 foreach (var subDir in subDirectories)
                 {
@@ -107,7 +102,9 @@ namespace Slackord
                     var files = Directory.EnumerateFiles(subDir, "*.*", SearchOption.TopDirectoryOnly)
                         .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
 
-                    List<string> fileList = new();
+                    // Create a list to store the files for the channel
+                    List<string> fileList = new List<string>();
+
                     foreach (var file in files)
                     {
                         string fileName = Path.GetFileNameWithoutExtension(file);
@@ -117,22 +114,22 @@ namespace Slackord
                             fileCount++;
                         }
                     }
+
                     if (fileList.Count > 0)
                     {
-                        JsonFilesDict[folderName] = fileList;
+                        // Add the channel and its file list to the channels dictionary
+                        channels[folderName] = fileList;
+
+                        // Parse JSON files for the channel
+                        ParseJsonFiles(fileList, folderName, channels);
                     }
                 }
 
                 MessageBox.Show($"Found {fileCount} JSON files in {folderCount} folders.", "Message");
-
-                foreach (var folder in JsonFilesDict.Keys)
-                {
-                    ParseJsonFiles(JsonFilesDict[folder], folder);
-                }
             }
         }
 
-        private void ParseJsonFiles(List<string> files, string channelName)
+        private void ParseJsonFiles(List<string> files, string channelName, Dictionary<string, List<string>> channels)
         {
             _isParsingNow = true;
             richTextBox1.AppendText($"""
@@ -142,7 +139,10 @@ namespace Slackord
             """);
             try
             {
-                string debugResponse;
+                // Create a list for parsed messages for the current channel
+                List<string> parsedMessages = new();
+
+                string currentMessageParsing;
                 string currentFile = "";
                 foreach (string file in files)
                 {
@@ -193,35 +193,35 @@ namespace Slackord
                             {
                                 if (string.IsNullOrEmpty(slackRealName))
                                 {
-                                    debugResponse = newDateTime + " - " + slackMessage;
-                                    Responses.Add(debugResponse);
+                                    currentMessageParsing = newDateTime + " - " + slackMessage;
+                                    parsedMessages.Add(currentMessageParsing);
                                     totalMessageCount++;
                                 }
                                 else
                                 {
-                                    debugResponse = newDateTime + " - " + slackRealName + ": " + slackMessage;
-                                    Responses.Add(debugResponse);
+                                    currentMessageParsing = newDateTime + " - " + slackRealName + ": " + slackMessage;
+                                    parsedMessages.Add(currentMessageParsing);
                                     totalMessageCount++;
                                 }
                             }
                             else
                             {
-                                debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
-                                if (debugResponse.Length >= 2000)
+                                currentMessageParsing = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                if (currentMessageParsing.Length >= 2000)
                                 {
                                     richTextBox1.AppendText($@"
                                     The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                    This message will be split into multiple posts. The message that will be split is: {debugResponse}
+                                    This message will be split into multiple posts. The message that will be split is: {currentMessageParsing}
                                     ");
                                 }
                                 else
                                 {
-                                    debugResponse = newDateTime + " - " + slackUserName + ": " + slackMessage;
-                                    Responses.Add(debugResponse);
+                                    currentMessageParsing = newDateTime + " - " + slackUserName + ": " + slackMessage;
+                                    parsedMessages.Add(currentMessageParsing);
                                     totalMessageCount++;
                                 }
                             }
-                            richTextBox1.AppendText(debugResponse + "\n");
+                            richTextBox1.AppendText(currentMessageParsing + "\n");
                         }
 
                         if (pair.ContainsKey("files") && pair["files"] is JArray filesArray && filesArray.Count > 0)
@@ -230,8 +230,8 @@ namespace Slackord
 
                             if (!string.IsNullOrEmpty(fileLink))
                             {
-                                debugResponse = fileLink;
-                                richTextBox1.AppendText(debugResponse + "\n");
+                                currentMessageParsing = fileLink;
+                                richTextBox1.AppendText(currentMessageParsing + "\n");
                             }
                         }
 
@@ -239,28 +239,29 @@ namespace Slackord
                         {
                             try
                             {
-                                debugResponse = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
-                                Responses.Add(debugResponse);
+                                currentMessageParsing = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
+                                parsedMessages.Add(currentMessageParsing);
                                 totalMessageCount++;
                             }
                             catch (NullReferenceException)
                             {
                                 try
                                 {
-                                    debugResponse = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
-                                    Responses.Add(debugResponse);
+                                    currentMessageParsing = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
+                                    parsedMessages.Add(currentMessageParsing);
                                     totalMessageCount++;
                                 }
                                 catch (NullReferenceException)
                                 {
-                                    debugResponse = "A bot message was ignored. Please submit an issue on Github for this.";
+                                    currentMessageParsing = "A bot message was ignored. Please submit an issue on Github for this.";
                                 }
                             }
-                            richTextBox1.AppendText(debugResponse + "\n");
+                            richTextBox1.AppendText(currentMessageParsing + "\n");
                         }
                         UpdateDebugWindowView();
                     }
                 }
+                channels[channelName] = parsedMessages;
                 richTextBox1.AppendText($"""
                 -----------------------------------------
                 Parsing of {currentFile} completed successfully!
@@ -275,8 +276,6 @@ namespace Slackord
             {
                 MessageBox.Show(ex.Message);
             }
-
-            _discordClient?.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Watching));
             _isParsingNow = false;
         }
 
@@ -285,7 +284,7 @@ namespace Slackord
         {
             if (_isParsingNow)
             {
-                MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished until attempting to post messages.");
+                MessageBox.Show("Slackord is currently parsing one or more JSON files. Please wait until parsing has finished before attempting to post messages.");
                 await Task.CompletedTask;
             }
 
@@ -298,7 +297,7 @@ namespace Slackord
 
             await interaction.DeferAsync();
 
-            foreach (var channelName in JsonFilesDict.Keys)
+            foreach (var channelName in channels.Keys)
             {
                 var createdChannel = await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channelName);
                 var createdChannelId = createdChannel.Id;
@@ -316,15 +315,15 @@ namespace Slackord
 
                     int messageCount = 0;
 
-                    if (JsonFilesDict.TryGetValue(channelName, out var messages))
+                    if (channels.TryGetValue(channelName, out var messages))
                     {
                         richTextBox1.Invoke(new Action(() =>
                         {
                             richTextBox1.AppendText($@"
-                            Beginning transfer of Slack messages to Discord for {channelName}...
-                            -----------------------------------------
-                            
-                            ");
+                    Beginning transfer of Slack messages to Discord for {channelName}...
+                    -----------------------------------------
+                    
+                    ");
                         }));
 
                         SocketThreadChannel threadID = null;
@@ -449,14 +448,15 @@ namespace Slackord
                     MessageBox.Show(ex.ToString());
                 }
             }
+
             richTextBox1.Invoke(new Action(() =>
             {
-                richTextBox1.AppendText("""
-                 -----------------------------------------
-                All messages sent to Discord successfully!
-
-                """);
+                richTextBox1.AppendText($@"
+         -----------------------------------------
+        All messages sent to Discord successfully!
+        ");
             }));
+
             await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
             await _discordClient.SetActivityAsync(new Game("messages parse.", ActivityType.Watching));
             await Task.CompletedTask;
@@ -479,7 +479,7 @@ namespace Slackord
             DisableTokenChangeWhileConnected();
             await _discordClient.LoginAsync(TokenType.Bot, _discordToken.Trim());
             await _discordClient.StartAsync();
-            await _discordClient.SetActivityAsync(new Game("for messages to begin parsing.", ActivityType.Watching));
+            await _discordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
             _discordClient.Ready += ClientReady;
             _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1);
