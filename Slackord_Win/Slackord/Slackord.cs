@@ -1,4 +1,4 @@
-﻿// Slackord2 - Written by Thomas Loupe
+﻿// Slackord - Written by Thomas Loupe
 // Repo   : https://github.com/thomasloupe/Slackord2
 // Website: https://thomasloupe.com
 // Twitter: https://twitter.com/acid_rain
@@ -32,7 +32,7 @@ namespace Slackord
         public bool _showDebugOutput = false;
         public IServiceProvider _services;
         public JArray parsed;
-        private Dictionary<string, List<string>> channels = new();
+        private readonly Dictionary<string, List<string>> channels = new();
         private readonly List<bool> isThreadMessages = new();
         private readonly List<bool> isThreadStart = new();
         int totalMessageCount = 0;
@@ -103,7 +103,7 @@ namespace Slackord
                         .Where(s => s.EndsWith(".JSON") || s.EndsWith(".json"));
 
                     // Create a list to store the files for the channel
-                    List<string> fileList = new List<string>();
+                    List<string> fileList = new();
 
                     foreach (var file in files)
                     {
@@ -139,7 +139,6 @@ namespace Slackord
             """);
             try
             {
-                // Create a list for parsed messages for the current channel
                 List<string> parsedMessages = new();
 
                 string currentMessageParsing;
@@ -297,12 +296,19 @@ namespace Slackord
 
             await interaction.DeferAsync();
 
+            SocketGuild guild = _discordClient.GetGuild(guildID);
+            string categoryName = "Slackord Import";
+            var slackordCategory = await guild.CreateCategoryChannelAsync(categoryName);
+            ulong slackordCategoryId = slackordCategory.Id;
+
             foreach (var channelName in channels.Keys)
             {
-                var createdChannel = await _discordClient.GetGuild(guildID).CreateTextChannelAsync(channelName);
-                var createdChannelId = createdChannel.Id;
+                var createdChannel = await guild.CreateTextChannelAsync(channelName, properties =>
+                {
+                    properties.CategoryId = slackordCategoryId;
+                });
 
-                MessageBox.Show($"{channelName}: {createdChannelId}");
+                ulong createdChannelId = createdChannel.Id;
 
                 richTextBox1.Invoke(new Action(() =>
                 {
@@ -434,7 +440,7 @@ namespace Slackord
                                     }
                                     else if (sendAsNormalMessage)
                                     {
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannel.Id).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                     }
                                 }
                                 UpdateProgressBar();

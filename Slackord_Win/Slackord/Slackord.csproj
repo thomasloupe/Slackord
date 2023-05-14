@@ -8,18 +8,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>True</UseWPF>
     <ApplicationIcon>Slackord-Desktop-Icon.ico</ApplicationIcon>
-    <Description>Slackord2 is a cross-platform application that allows you to migrate Slack messages into a Discord server.</Description>
+    <Description>Slackord is an application that allows you to migrate Slack messages into a Discord server.</Description>
     <PackageProjectUrl>https://thomasloupe.com/</PackageProjectUrl>
     <PackageIcon>Slackord-App-Icon.ico</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/thomasloupe/Slackord2</RepositoryUrl>
+    <RepositoryUrl>https://github.com/thomasloupe/Slackord</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>slack; bot; discord; discord-bot; migration; dotnet6</PackageTags>
-    <PackageReleaseNotes>Rebuilt in .NET6 with cross-platform compatibility.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Thomas Loupe</Copyright>
-    <Title>Slackord2</Title>
+    <Title>Slackord</Title>
     <StartupObject>Slackord.Program</StartupObject>
+    <SignAssembly>False</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,7 +52,7 @@
     <PackageReference Include="Discord.Net.WebSocket" Version="3.10.0" />
     <PackageReference Include="MaterialSkin.2" Version="2.3.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Octokit" Version="5.0.4" />
+    <PackageReference Include="Octokit" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
