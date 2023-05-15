@@ -21,11 +21,11 @@ jobs:
       with:
         dotnet-version: 7.0.x
     - name: Restore dependencies
-      run: dotnet restore Slackord_Win/Slackord/Slackord/Slackord.csproj
-      working-directory: Slackord_Win/Slackord/Slackord
+      run: dotnet restore Slackord/Slackord_Win/Slackord/Slackord.csproj
+      working-directory: Slackord/Slackord_Win/Slackord
     - name: Build
-      run: dotnet build Slackord_Win/Slackord/Slackord/Slackord.csproj --no-restore --configuration Release
-      working-directory: Slackord_Win/Slackord/Slackord
+      run: dotnet build Slackord/Slackord_Win/Slackord/Slackord.csproj --no-restore --configuration Release
+      working-directory: Slackord/Slackord_Win/Slackord
     - name: Test
-      run: dotnet test Slackord_Win/Slackord/Slackord/Slackord.Tests/Slackord.Tests.csproj --no-build --verbosity normal --configuration Release
-      working-directory: Slackord_Win/Slackord/Slackord/Slackord.Tests
+      run: dotnet test Slackord/Slackord_Win/Slackord/Slackord.Tests/Slackord.Tests.csproj --no-build --verbosity normal --configuration Release
+      working-directory: Slackord/Slackord_Win/Slackord/Slackord.Tests
