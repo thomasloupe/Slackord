@@ -22,7 +22,10 @@ jobs:
         dotnet-version: 7.0.x
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: Slackord/Slackord_Win/Slackord/
     - name: Build
       run: dotnet build --no-restore
+      working-directory: Slackord/Slackord_Win/Slackord/
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      working-directory: Slackord/Slackord_Win/Slackord/
