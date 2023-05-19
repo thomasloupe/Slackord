@@ -1,0 +1,56 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+    <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MenuApp"
+             x:Class="MenuApp.MainPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!--  -->
+        
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ImportJson" Text="Import JSON" Clicked="ImportJson_Clicked" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
+            <Button x:Name="EnterBotToken" Grid.Column="1" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontAttributes="Bold" FontSize="Micro" BackgroundColor="OrangeRed" TextColor="White" />
+            <Button x:Name="BotConnectionButton" Grid.Column="2" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontAttributes="Bold" FontSize="Micro" BackgroundColor="OrangeRed" TextColor="White" />
+            <Button x:Name="CheckForUpdates" Grid.Column="4" Text="Update Check" Clicked="CheckForUpdates_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" />
+            <Button x:Name="About" Grid.Column="5" Text="About" Clicked="About_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" />
+            <Button x:Name="Donate" Grid.Column="6" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" />
+        </Grid>
+
+        <Button x:Name="Exit" Grid.Column="1" Text="Exit" Clicked="Exit_Clicked" WidthRequest="150" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" Padding="14,10,14,10"/>
+
+        <!-- Debug Window -->
+        <Editor x:Name="DebugWindow" Grid.Row="1" HeightRequest="500" Margin="0,0,0,0" HorizontalOptions="FillAndExpand" Grid.ColumnSpan="2" />
+        
+        <!-- Debug Window Buttons -->
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="2" Grid.Column="0" Margin="0,10,0,0">
+            <Button x:Name="CopyLog" Text="Copy Log" Clicked="CopyLog_Clicked" BorderWidth="3" CornerRadius="20" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
+            <Button x:Name="ClearLog" Text="Clear Log" Clicked="ClearLog_Clicked" BorderWidth="3" CornerRadius="20" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
+        </StackLayout>
+
+        <!-- Progress Bar -->
+        <StackLayout Grid.Row="2" Grid.Column="0" Orientation="Vertical" VerticalOptions="CenterAndExpand" Margin="400,0,0,0">
+            <Label Text="50 of 100 Mesages Sent" HorizontalOptions="Center" FontAttributes="Bold" FontFamily="Roboto"/>
+            <ProgressBar x:Name="ProgressBar" HeightRequest="10" HorizontalOptions="FillAndExpand" ProgressColor="OrangeRed" Progress="0.50"/>
+        </StackLayout>
+
+    </Grid>
+</ContentPage>
