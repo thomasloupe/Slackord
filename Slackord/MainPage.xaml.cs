@@ -107,11 +107,11 @@ Website: https://thomasloupe.com
         private async Task CreateDonateAlert()
         {
             var url = "https://paypal.me/thomasloupe";
-            var message = @"
+            var message = """
             Slackord will always be free!
-            If you'd like to buy me a beer anyway, I won't tell you no!
+            If you'd like to buy me a beer anyway, I won't tell you not to!
             Would you like to open the donation page now?
-            ";
+            """;
 
             var result = await DisplayAlert("Slackord is free, but beer is not!", message, "Yes", "No");
 
@@ -165,18 +165,19 @@ Website: https://thomasloupe.com
 
         private async Task CreateBotTokenPrompt()
         {
-            string discordToken = await DisplayPromptAsync("Enter Bot Token", "Please enter your bot's token:", "OK", "Cancel", maxLength: 120);
+            string discordToken = await DisplayPromptAsync("Enter Bot Token", "Please enter your bot's token:", "OK", "Cancel", maxLength: 90);
 
             if (!string.IsNullOrEmpty(discordToken))
             {
                 // OK button was clicked and a token was entered
-                if (discordToken.Length > 10)
+                if (discordToken.Length > 60)
                 {
                     DiscordToken = discordToken;
                     Preferences.Set("SlackordBotToken", discordToken);
                 }
                 else
                 {
+                    DebugWindow.Text += "Your token wasn't long enough or valid, please re-enter a valid token.\n";
                     Preferences.Set("SlackordBotToken", string.Empty);
                     return;
                 }
