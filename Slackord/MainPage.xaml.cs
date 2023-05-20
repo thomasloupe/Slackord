@@ -1,5 +1,4 @@
 ﻿using Slackord;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MenuApp
 {
@@ -7,6 +6,7 @@ namespace MenuApp
     {
         public static MainPage Current { get; private set; }
         public static Editor DebugWindowInstance { get; private set; }
+        private CancellationTokenSource cancellationTokenSource;
         public static ProgressBar ProgressBarInstance { get; private set; }
         public string DiscordToken;
         private int totalMessageCount;
@@ -34,7 +34,14 @@ namespace MenuApp
 
         private void ImportJson_Clicked(object sender, EventArgs e)
         {
-            _ = Slackord.ImportJson.ImportJsonFolder();
+            cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+            _ = Slackord.ImportJson.ImportJsonFolder(cancellationToken);
+        }
+
+        private void CancelImport_Clicked(object sender, EventArgs e)
+        {
+            cancellationTokenSource?.Cancel();
         }
 
         private void EnterBotToken_Clicked(object sender, EventArgs e)
@@ -139,7 +146,7 @@ Website: https://thomasloupe.com
                 }
                 else if (operatingSystem == DevicePlatform.WinUI)
                 {
-                   Microsoft.Maui.Controls.Application.Current.Quit();
+                   Application.Current.Quit();
                 }
             }
         }
@@ -182,6 +189,17 @@ Website: https://thomasloupe.com
                     return;
                 }
             }
+        }
+
+        public static async Task WriteToDebugWindow(string text)
+        {
+            DebugWindowInstance.Text += text;
+            await Task.CompletedTask;
+        }
+
+        private void DebugWindow_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            DebugWindow.CursorPosition = DebugWindow.Text.Length;
         }
 
         public int TotalMessageCount

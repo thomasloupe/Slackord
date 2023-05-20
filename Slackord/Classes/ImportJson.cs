@@ -1,5 +1,9 @@
 ﻿using MenuApp;
 using System.Globalization;
+using CommunityToolkit.Maui.Storage;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using System.Threading;
 
 namespace Slackord
 {
@@ -7,15 +11,23 @@ namespace Slackord
     {
         public static readonly Dictionary<string, List<string>> Channels = new();
 
-        public static async Task ImportJsonFolder()
+        public static async Task ImportJsonFolder(CancellationToken cancellationToken)
         {
             string selectedFolder = null;
             List<string> subDirectories = new();
 
-            //var result = await FolderPicker.PickAsync(default);
+            var result = await FolderPicker.Default.PickAsync(cancellationToken);
+            if (result.IsSuccessful)
+            {
+                await Toast.Make($"The folder was picked: Name - {result.Folder.Name}, Path - {result.Folder.Path}", ToastDuration.Long).Show(cancellationToken);
+            }
+            else
+            {
+                await Toast.Make($"The folder was not picked with error: {result.Exception.Message}").Show(cancellationToken);
+            }
 
-            //if (result != null)
-            //selectedFolder = result.Folder.Path;
+            if (result != null)
+                selectedFolder = result.Folder.Path;
             subDirectories = Directory.GetDirectories(selectedFolder).ToList();
 
             int fileCount = 0;
@@ -46,8 +58,7 @@ namespace Slackord
                     Channels[folderName] = fileList;
 
                     // Parse JSON files for the channel
-                    Editor debugWindow = MainPage.DebugWindowInstance;
-                    Parser parser = new(debugWindow);
+                    var parser = new Parser();
                     await parser.ParseJsonFiles(fileList, folderName, Channels);
                 }
             }
