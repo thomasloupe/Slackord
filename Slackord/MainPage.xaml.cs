@@ -5,9 +5,10 @@ namespace MenuApp
     public partial class MainPage : ContentPage
     {
         public static MainPage Current { get; private set; }
-        public static Editor DebugWindowInstance { get; private set; }
+        public static Editor DebugWindowInstance { get; set; }
         private CancellationTokenSource cancellationTokenSource;
-        public static ProgressBar ProgressBarInstance { get; private set; }
+        public static ProgressBar ProgressBarInstance { get; set; }
+        public static Button EnterBotTokenButtonInstance { get; set; }
         public string DiscordToken;
         private int totalMessageCount;
         private DiscordBot discordBot;
@@ -19,6 +20,7 @@ namespace MenuApp
             InitializeComponent();
             DebugWindowInstance = DebugWindow;
             ProgressBarInstance = ProgressBar;
+            EnterBotTokenButtonInstance = EnterBotToken;
             Current = this;
             discordBot = new DiscordBot();
             hasBotKey = Preferences.Default.ContainsKey("SlackordBotToken");
@@ -68,19 +70,19 @@ namespace MenuApp
             if (discordBot._discordClient == null)
             {
                 discordBot = new DiscordBot();
-                await ChangeBotConnectionText("Connecting");
+                await ChangeBotConnectionButton("Connecting");
                 await discordBot.MainAsync(DiscordToken);
             }
             else if (discordBot._discordClient != null && discordBot._discordClient.ConnectionState == Discord.ConnectionState.Disconnected)
             {
-                await ChangeBotConnectionText("Connecting");
+                await ChangeBotConnectionButton("Connecting");
                 await discordBot.MainAsync(DiscordToken);
             }
             else if (discordBot._discordClient.ConnectionState == Discord.ConnectionState.Connected)
             {
-                await ChangeBotConnectionText("Disconnecting");
+                await ChangeBotConnectionButton("Disconnecting");
                 await discordBot._discordClient.LogoutAsync();
-                await ChangeBotConnectionText("Disconnected");
+                await ChangeBotConnectionButton("Disconnected");
             }
         }
         private void CheckForUpdates_Clicked(object sender, EventArgs e)
@@ -115,10 +117,10 @@ Website: https://thomasloupe.com
         {
             var url = "https://paypal.me/thomasloupe";
             var message = """
-            Slackord will always be free!
-            If you'd like to buy me a beer anyway, I won't tell you not to!
-            Would you like to open the donation page now?
-            """;
+Slackord will always be free!
+If you'd like to buy me a beer anyway, I won't tell you not to!
+Would you like to open the donation page now?
+""";
 
             var result = await DisplayAlert("Slackord is free, but beer is not!", message, "Yes", "No");
 
@@ -177,7 +179,7 @@ Website: https://thomasloupe.com
             if (!string.IsNullOrEmpty(discordToken))
             {
                 // OK button was clicked and a token was entered
-                if (discordToken.Length > 60)
+                if (discordToken.Length > 30)
                 {
                     DiscordToken = discordToken;
                     Preferences.Set("SlackordBotToken", discordToken);
@@ -193,13 +195,19 @@ Website: https://thomasloupe.com
 
         public static async Task WriteToDebugWindow(string text)
         {
-            DebugWindowInstance.Text += text;
+            MainThread.BeginInvokeOnMainThread(() => 
+            {
+                DebugWindowInstance.Text += text;
+            });
             await Task.CompletedTask;
         }
 
         private void DebugWindow_TextChanged(object sender, TextChangedEventArgs e)
         {
-            DebugWindow.CursorPosition = DebugWindow.Text.Length;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                DebugWindow.CursorPosition = DebugWindow.Text.Length;
+            });
         }
 
         public int TotalMessageCount
@@ -232,24 +240,37 @@ The token is not long enough or the token value is empty. Please enter a new tok
             }
         }
 
-        public static async Task ChangeBotConnectionText(string state)
+        public static async Task ChangeBotConnectionButton(string state)
         {
             Page currentPage = Current;
 
             if (currentPage is MainPage mainPage)
             {
-                await mainPage.Dispatcher.DispatchAsync(() =>
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Button button = mainPage.FindByName<Button>("BotConnectionButton");
+                    Button button = mainPage.BotConnectionButton;
+                    if (state == "Disabled")
+                    {
+                        button.BackgroundColor = new Color(128, 128, 128);
+                    }
+                    else
+                    {
+                        button.BackgroundColor = new Color(255, 69, 0);
+                    }
                     button.Text = state;
                 });
             }
             await Task.CompletedTask;
         }
 
-        public static void DisableTokenChangeWhileConnected()
+        public static async Task ToggleBotTokenEnable(bool isEnabled, Color color)
         {
-
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                EnterBotTokenButtonInstance.BackgroundColor = color;
+                EnterBotTokenButtonInstance.IsEnabled = isEnabled;
+            });
+            await Task.CompletedTask;
         }
     }
 }

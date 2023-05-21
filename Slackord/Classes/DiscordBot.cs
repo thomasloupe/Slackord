@@ -32,6 +32,7 @@ namespace Slackord
             await _discordClient.StartAsync();
             await _discordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
             _discordClient.Ready += ClientReady;
+            _discordClient.LoggedOut += OnClientDisconnect;
             _discordClient.SlashCommandExecuted += SlashCommandHandler;
             await Task.Delay(-1);
         }
@@ -49,7 +50,8 @@ namespace Slackord
         {
             try
             {
-                await MainPage.ChangeBotConnectionText("Connected");
+                await MainPage.ChangeBotConnectionButton("Connected");
+                await MainPage.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
 
                 foreach (var guild in _discordClient.Guilds)
                 {
@@ -88,10 +90,17 @@ namespace Slackord
             return Task.CompletedTask;
         }
 
-        public Task DisconectClient()
+        public async Task DisconectClient()
         {
-            _discordClient.StopAsync();
-            return Task.CompletedTask;
+            await _discordClient.StopAsync();
+            await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+            await Task.CompletedTask;
+        }
+
+        private async Task OnClientDisconnect()
+        {
+            await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+            await Task.CompletedTask;
         }
 
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
