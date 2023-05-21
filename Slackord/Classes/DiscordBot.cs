@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.Net;
+using Discord.Rest;
 using Discord.WebSocket;
 using MenuApp;
 
@@ -16,7 +17,7 @@ namespace Slackord
             Editor debugWindow = new();
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                MainPage.DebugWindowInstance.Text += "Starting Slackord Bot..."+ "\n";
+                MainPage.DebugWindowInstance.Text += "Starting Slackord Bot..." + "\n";
             });
             _discordClient = new DiscordSocketClient();
             DiscordSocketConfig _config = new();
@@ -25,8 +26,8 @@ namespace Slackord
             }
             _discordClient = new(_config);
             _services = new ServiceCollection()
-            .AddSingleton(_discordClient)
-            .BuildServiceProvider();
+                .AddSingleton(_discordClient)
+                .BuildServiceProvider();
             _discordClient.Log += DiscordClient_Log;
             await _discordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
             await _discordClient.StartAsync();
@@ -42,7 +43,10 @@ namespace Slackord
             if (command.Data.Name.Equals("slackord"))
             {
                 var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                await PostMessagesToDiscord(guildID, command);
+                await MainPage.Current.Dispatcher.DispatchAsync(async () =>
+                {
+                    await PostMessagesToDiscord(guildID, command);
+                });
             }
         }
 
@@ -107,11 +111,11 @@ namespace Slackord
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
             var totalMessageCount = Parser.TotalMessageCount;
+            float progress = 0;
 
-            MainThread.BeginInvokeOnMainThread(() =>
+            MainThread.BeginInvokeOnMainThread(async() =>
             {
-                MainPage.ProgressBarInstance.Progress = 0;
-                MainPage.ProgressBarInstance.Progress = 1 * totalMessageCount;
+                await MainPage.CommitProgress(progress, totalMessageCount);
             });
 
             await interaction.DeferAsync();
@@ -147,10 +151,10 @@ namespace Slackord
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
                             MainPage.DebugWindowInstance.Text += $"Beginning transfer of Slack messages to Discord for {channelName}..." + "\n" +
-                            "-----------------------------------------";
+                                "-----------------------------------------";
                         });
 
-                        SocketThreadChannel threadID = null;
+                        RestThreadChannel threadID = null;
 
                         foreach (string message in messages)
                         {
@@ -198,7 +202,7 @@ namespace Slackord
                                         {
                                             await textChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
                                             var latestMessages = await textChannel.GetMessagesAsync(1).FlattenAsync();
-                                            threadID = await textChannel.CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, latestMessages.First());
+                                            threadID = threadID = await createdChannel.CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, latestMessages.First());
                                         }
                                     }
                                     else if (sendAsThreadReply)
@@ -220,7 +224,12 @@ namespace Slackord
                                     {
                                         await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                     }
-                                    //UpdateProgressBar();
+
+                                    progress += 1;
+                                    MainThread.BeginInvokeOnMainThread(async () =>
+                                    {
+                                        await MainPage.CommitProgress(progress, totalMessageCount);
+                                    });
                                 }
                                 wasSplit = true;
                             }
@@ -228,10 +237,10 @@ namespace Slackord
                             {
                                 MainThread.BeginInvokeOnMainThread(() =>
                                 {
-                                    MainPage.DebugWindowInstance.Text += $"""
+                                    MainPage.DebugWindowInstance.Text += $@"
                                 POSTING: {message}
                                 
-                                """;
+                                ";
                                 });
 
                                 if (!wasSplit)
@@ -239,8 +248,8 @@ namespace Slackord
                                     if (sendAsThread)
                                     {
                                         await createdChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                        var threadMessages = await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).GetMessagesAsync(1).FlattenAsync();
-                                        threadID = await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
+                                        var threadMessages = await createdChannel.GetMessagesAsync(1).FlattenAsync();
+                                        threadID = await createdChannel.CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
                                     }
                                     else if (sendAsThreadReply)
                                     {
@@ -264,11 +273,12 @@ namespace Slackord
                                         await createdChannel.SendMessageAsync(messageToSend);
                                     }
                                 }
-                                MainThread.BeginInvokeOnMainThread(() =>
-                                {
-                                    MainPage.ProgressBarInstance.Progress = 1 * totalMessageCount;
-                                });
 
+                                progress += 1;
+                                MainThread.BeginInvokeOnMainThread(async() =>
+                                {
+                                    await MainPage.CommitProgress(progress, totalMessageCount);
+                                });
                             }
                         }
                     }

@@ -8,9 +8,9 @@ namespace MenuApp
         public static Editor DebugWindowInstance { get; set; }
         private CancellationTokenSource cancellationTokenSource;
         public static ProgressBar ProgressBarInstance { get; set; }
+        public static Label ProgressBarTextInstance { get; set; }
         public static Button EnterBotTokenButtonInstance { get; set; }
         public string DiscordToken;
-        private int totalMessageCount;
         private DiscordBot discordBot;
         private readonly bool hasBotKey;
         private readonly bool isFirstRun;
@@ -20,6 +20,7 @@ namespace MenuApp
             InitializeComponent();
             DebugWindowInstance = DebugWindow;
             ProgressBarInstance = ProgressBar;
+            ProgressBarTextInstance = ProgressBarText;
             EnterBotTokenButtonInstance = EnterBotToken;
             Current = this;
             discordBot = new DiscordBot();
@@ -202,20 +203,6 @@ Would you like to open the donation page now?
             await Task.CompletedTask;
         }
 
-        private void DebugWindow_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                DebugWindow.CursorPosition = DebugWindow.Text.Length;
-            });
-        }
-
-        public int TotalMessageCount
-        {
-            get { return totalMessageCount; }
-            set { OnPropertyChanged(); }
-        }
-
         private void CheckForExistingBotToken()
         {
             if (hasBotKey)
@@ -270,6 +257,17 @@ The token is not long enough or the token value is empty. Please enter a new tok
                 EnterBotTokenButtonInstance.BackgroundColor = color;
                 EnterBotTokenButtonInstance.IsEnabled = isEnabled;
             });
+            await Task.CompletedTask;
+        }
+
+        public static async Task CommitProgress(float progress, float totalMessagesToSend)
+        {
+            ProgressBarInstance.IsVisible = true;
+            ProgressBarTextInstance.IsVisible = true;
+            // Do calculation to get float.
+            var currentProgress = progress / totalMessagesToSend;
+            ProgressBarTextInstance.Text = $"{progress} of {totalMessagesToSend} messages sent.";
+            ProgressBarInstance.Progress = currentProgress;
             await Task.CompletedTask;
         }
     }

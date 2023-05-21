@@ -24,14 +24,25 @@ namespace Slackord
             else
             {
                 await Toast.Make($"The folder was not picked with error: {result.Exception.Message}").Show(cancellationToken);
+                return; // Return early if the folder was not picked successfully
             }
 
-            if (result != null)
-                selectedFolder = result.Folder.Path;
+            selectedFolder = result.Folder.Path;
             subDirectories = Directory.GetDirectories(selectedFolder).ToList();
 
-            int fileCount = 0;
             int folderCount = subDirectories.Count;
+            int fileCount = 0;
+
+            foreach (var subDir in subDirectories)
+            {
+                var folderName = Path.GetFileName(subDir);
+                var files = Directory.EnumerateFiles(subDir, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".JSON", StringComparison.OrdinalIgnoreCase));
+
+                fileCount += files.Count();
+            }
+
+            await MainPage.Current.DisplayAlert("Information", $"Found {fileCount} JSON files in {folderCount} folders.", "OK");
 
             foreach (var subDir in subDirectories)
             {
@@ -48,7 +59,6 @@ namespace Slackord
                     if (DateTime.TryParseExact(fileName, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fileDate))
                     {
                         fileList.Add(file);
-                        fileCount++;
                     }
                 }
 
@@ -62,7 +72,6 @@ namespace Slackord
                     await parser.ParseJsonFiles(fileList, folderName, Channels);
                 }
             }
-            await MainPage.Current.DisplayAlert("Information", $"Found {fileCount} JSON files in {folderCount} folders.", "OK");
         }
     }
 }

@@ -34,8 +34,8 @@ namespace Slackord
                 foreach (string file in files)
                 {
                     currentFile = Path.GetFileNameWithoutExtension(file);
-                    var json = File.ReadAllText(file);
-                    parsed = JArray.Parse(json);
+                    var json = await File.ReadAllTextAsync(file);
+                    var parsed = JArray.Parse(json);
                     foreach (JObject pair in parsed.Cast<JObject>())
                     {
                         var rawTimeDate = pair["ts"];

@@ -48,8 +48,8 @@
 
         <!-- Progress Bar -->
         <StackLayout Grid.Row="2" Grid.Column="0" Orientation="Vertical" VerticalOptions="CenterAndExpand" Margin="400,0,0,0">
-            <Label Text="50 of 100 Mesages Sent" HorizontalOptions="Center" FontAttributes="Bold" FontFamily="Roboto"/>
-            <ProgressBar x:Name="ProgressBar" HeightRequest="10" HorizontalOptions="FillAndExpand" ProgressColor="OrangeRed" Progress="0.50"/>
+            <Label x:Name="ProgressBarText" Text="Progress" HorizontalOptions="Center" FontAttributes="Bold" FontFamily="Roboto"/>
+            <ProgressBar x:Name="ProgressBar" HeightRequest="10" HorizontalOptions="FillAndExpand" ProgressColor="OrangeRed" Progress="0.00"/>
         </StackLayout>
 
     </Grid>
