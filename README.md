@@ -36,7 +36,7 @@ If you are on the free plan of Slack or need a reliable tool for exporting both 
 1. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
 1. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
 
-# Running Slackord for Windows
+# Running Slackord
 1. Run Slackord.
 1. Click `Set Bot Token` and paste the copied token into the popup text field. Slackord will remember your token if you close it.
 1. Click `Connect` press to connect the bot to your server.
