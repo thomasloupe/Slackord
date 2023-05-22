@@ -19,18 +19,18 @@ https://github.com/thomasloupe/Slackord/assets/6563450/dfb117c2-4868-4b8d-b9a2-f
 1. `Multiple Discord Servers` - Slackord can discern which Discord server it's in and can post to the server(s) you choose.
 1. `Privacy first` - Slackord checks if user messages have a display name and will attempt to keep real names private unless there isn't one.
 1. `Data safety` - Your data is yours. Slackord works completely off your local connection and machine.
-1. `Update checks` - Slackord has the ability to check for updates and. Get the latest version with new features and fixes easily!
+1. `Update checks` - Slackord can check for the latest version with a single click. Get the latest version with new features and fixes easily!
 
 # Getting Started
 If you are on the free plan of Slack or need a reliable tool for exporting both private/public Slack JSON files *mostly* compatible with Slackord, check out [Slackdump](https://github.com/rusq/slackdump)! Please note, this tool is not developed by myself, and could potentially stop working for Slackord at any time.
-1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release for your OS and extract the contents. If you're on Linux/Mac, make sure to `cd` into the Slackord directory you extracted, and grant execute permissions to the directory with `chmod +x *` from the CLI/Terminal.
+1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release for your OS and extract the contents. If you're on Mac, make sure to `cd` into the Slackord directory you extracted, and grant execute permissions to the directory with `chmod +x *` from Terminal.
 1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
 1. Name your bot "Slackord", or any preferred custom name.
 1. Select "Bot" from the left panel, and click "Add Bot" at the top-right.
 1. Under OAuth2>URL Generator, set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below.
 1. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
 1. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
-1. Join the bot into your desired server.
+1. Join the bot into your desired server using the link generated.
 1. In the "Bot" page underneath "OAuth2", Upload an image for your bot if desired.
 1. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
 1. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
@@ -39,9 +39,9 @@ If you are on the free plan of Slack or need a reliable tool for exporting both 
 # Running Slackord
 1. Run Slackord.
 1. Click `Set Bot Token` and paste the copied token into the popup text field. Slackord will remember your token if you close it.
-1. Click `Connect` press to connect the bot to your server.
+1. Click `Connect` to connect the bot to your server.
 1. Click `Import JSON` and select the Slack JSON chat history root folder.
-1. Once parsing has completed, visit any Discord channel you wish to updates from Slack chat history to and type `/slackord` (case insensitive). Messages will begin posting.
+1. Once parsing has completed, visit any Discord channel you wish and type `/slackord` (case insensitive). Messages will begin posting and the progress bar will update as messages are sent.
 
 # Important: Please Read!
 1. If you need help, please feel free to join the Discord community listed at the top of this page, or open a new issue if it doesn't already exist.
