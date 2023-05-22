@@ -5,7 +5,6 @@ namespace Slackord
 {
     class Parser
     {
-        public JArray parsed;
         public bool _isFileParsed;
         public static readonly List<bool> isThreadMessages = new();
         public static readonly List<bool> isThreadStart = new();
@@ -13,8 +12,6 @@ namespace Slackord
 
         public async Task ParseJsonFiles(List<string> files, string channelName, Dictionary<string, List<string>> channels)
         {
-            var debugWindow = MainPage.DebugWindowInstance;
-
             string character = "⬓";
             string parsingLine = $"Begin parsing JSON data for {channelName}...";
             int lineLength = parsingLine.Length / 2 + 1;
@@ -23,7 +20,7 @@ namespace Slackord
             string boxOutput = new(character[0], boxCharacters);
             string leadingSpaces = new(' ', (boxCharacters - lineLength - 2) / 2);
 
-            await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += $"{boxOutput}\n⬓  {leadingSpaces}{parsingLine}{leadingSpaces}  ⬓\n{boxOutput}\n"; });
+            MainPage.WriteToDebugWindow($"{boxOutput}\n⬓  {leadingSpaces}{parsingLine}{leadingSpaces}  ⬓\n{boxOutput}\n");
 
             try
             {
@@ -96,10 +93,10 @@ namespace Slackord
                                 currentMessageParsing = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                 if (currentMessageParsing.Length >= 2000)
                                 {
-                                    await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += $@"
+                                    MainPage.WriteToDebugWindow($@"
                                 The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
                                 This message will be split into multiple posts. The message that will be split is: {currentMessageParsing}
-                                "; });
+                                ");
                                 }
                                 else
                                 {
@@ -108,7 +105,7 @@ namespace Slackord
                                     TotalMessageCount += 1;
                                 }
                             }
-                            await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += currentMessageParsing + "\n"; });
+                            MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
                         }
 
                         if (pair.ContainsKey("files") && pair["files"] is JArray filesArray && filesArray.Count > 0)
@@ -118,7 +115,7 @@ namespace Slackord
                             if (!string.IsNullOrEmpty(fileLink))
                             {
                                 currentMessageParsing = fileLink;
-                                await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += currentMessageParsing + "\n"; });
+                                MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
                             }
                         }
 
@@ -143,7 +140,7 @@ namespace Slackord
                                     currentMessageParsing = "A bot message was ignored. Please submit an issue on Github for this.";
                                 }
                             }
-                            await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += currentMessageParsing + "\n"; });
+                            MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
                         }
                     }
                 }
@@ -156,13 +153,13 @@ namespace Slackord
 
                 boxOutput = new(character[0], boxCharacters);
                 leadingSpaces = new(' ', (boxCharacters - lineLength - 2) / 2);
-                await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += $"{boxOutput}\n⬓  {leadingSpaces}{parsingLine}{leadingSpaces}  ⬓\n{boxOutput}\n\n"; });
+                MainPage.WriteToDebugWindow($"{boxOutput}\n⬓  {leadingSpaces}{parsingLine}{leadingSpaces}  ⬓\n{boxOutput}\n\n");
 
                 _isFileParsed = true;
             }
             catch (Exception ex)
             {
-                await MainThread.InvokeOnMainThreadAsync(() => { debugWindow.Text += $"\n\n{ex.Message}\n\n"; });
+                MainPage.WriteToDebugWindow($"\n\n{ex.Message}\n\n");
                 Page page = new();
                 await page.DisplayAlert("Error", ex.Message, "OK");
             }

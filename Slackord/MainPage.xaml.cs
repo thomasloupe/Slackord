@@ -1,4 +1,5 @@
-﻿using Slackord;
+﻿using Discord;
+using Slackord;
 
 namespace MenuApp
 {
@@ -8,31 +9,34 @@ namespace MenuApp
         public static Editor DebugWindowInstance { get; set; }
         private CancellationTokenSource cancellationTokenSource;
         public static ProgressBar ProgressBarInstance { get; set; }
+        public static Button BotConnectionButtonInstance { get; set; }
         public static Label ProgressBarTextInstance { get; set; }
         public static Button EnterBotTokenButtonInstance { get; set; }
         public string DiscordToken;
         private DiscordBot discordBot;
-        private readonly bool hasBotKey;
-        private readonly bool isFirstRun;
+        private bool isFirstRun;
+        private bool hasValidBotToken;
 
         public MainPage()
         {
             InitializeComponent();
             DebugWindowInstance = DebugWindow;
             ProgressBarInstance = ProgressBar;
+            BotConnectionButtonInstance = BotConnectionButton;
             ProgressBarTextInstance = ProgressBarText;
             EnterBotTokenButtonInstance = EnterBotToken;
+            ProgressBarTextInstance.IsVisible = false;
+            ProgressBarInstance.IsVisible = false;
             Current = this;
             discordBot = new DiscordBot();
-            hasBotKey = Preferences.Default.ContainsKey("SlackordBotToken");
-            isFirstRun = !Preferences.ContainsKey("FirstRun");
-            if (isFirstRun)
-            {
-                DebugWindow.Text += "Welcome to Slackord!" + "\n";
-                Preferences.Default.Set("FirstRun", true);
-                Preferences.Default.Set("SlackordBotToken", string.Empty);
-            }
-            CheckForExistingBotToken();
+
+            Initialize();
+        }
+
+        private async void Initialize()
+        {
+            await CheckForFirstRun();
+            await CheckForValidBotToken();
         }
 
         private void ImportJson_Clicked(object sender, EventArgs e)
@@ -59,31 +63,45 @@ namespace MenuApp
 
         private async Task ToggleDiscordConnection()
         {
-            if (hasBotKey && Preferences.Get("SlackordBotToken", string.Empty) == string.Empty)
+            if (!hasValidBotToken)
             {
-                await CreateBotTokenPrompt();
+                BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(128, 128, 128);
+                BotConnectionButton.IsEnabled = false;
+                WriteToDebugWindow("Your bot token doesn't look valid. Please enter a new, valid token.");
                 return;
             }
             else
             {
+                BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(255, 69, 0);
+                BotConnectionButton.IsEnabled = true;
                 DiscordToken = Preferences.Get("SlackordBotToken", string.Empty).Trim();
             }
+
             if (discordBot._discordClient == null)
             {
                 discordBot = new DiscordBot();
-                await ChangeBotConnectionButton("Connecting");
+                await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                 await discordBot.MainAsync(DiscordToken);
             }
-            else if (discordBot._discordClient != null && discordBot._discordClient.ConnectionState == Discord.ConnectionState.Disconnected)
+            else if (discordBot._discordClient != null && discordBot._discordClient.ConnectionState == ConnectionState.Disconnected)
             {
-                await ChangeBotConnectionButton("Connecting");
-                await discordBot.MainAsync(DiscordToken);
+                await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                await discordBot._discordClient.StartAsync();
+                while (true)
+                {
+                    var connectionState = discordBot._discordClient.ConnectionState;
+                    if (connectionState.ToString() == "Connected")
+                    {
+                        await ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                        break;
+                    }
+                }
             }
-            else if (discordBot._discordClient.ConnectionState == Discord.ConnectionState.Connected)
+            else if (discordBot._discordClient.ConnectionState == ConnectionState.Connected)
             {
-                await ChangeBotConnectionButton("Disconnecting");
-                await discordBot._discordClient.LogoutAsync();
-                await ChangeBotConnectionButton("Disconnected");
+                await ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                await discordBot._discordClient.StopAsync();
+                await ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
             }
         }
         private void CheckForUpdates_Clicked(object sender, EventArgs e)
@@ -180,77 +198,133 @@ Would you like to open the donation page now?
             if (!string.IsNullOrEmpty(discordToken))
             {
                 // OK button was clicked and a token was entered
-                if (discordToken.Length > 30)
+                if (discordToken.Length >= 30)
                 {
+                    Preferences.Default.Set("SlackordBotToken", discordToken);
                     DiscordToken = discordToken;
-                    Preferences.Set("SlackordBotToken", discordToken);
+                    await CheckForValidBotToken();
+                    if (hasValidBotToken)
+                    {
+                        WriteToDebugWindow("Slackord received a valid bot token. Bot connection is enabled!\n");
+                    }
+                    else
+                    {
+                        WriteToDebugWindow("Slackord received an invalid bot token. Please enter a valid token.\n");
+                    }
+
                 }
                 else
                 {
-                    DebugWindow.Text += "Your token wasn't long enough or valid, please re-enter a valid token.\n";
-                    Preferences.Set("SlackordBotToken", string.Empty);
-                    return;
+                    Preferences.Default.Set("SlackordBotToken", string.Empty);
+                    await CheckForValidBotToken();
                 }
             }
         }
 
-        public static async Task WriteToDebugWindow(string text)
+        public static void WriteToDebugWindow(string text)
         {
-            MainThread.BeginInvokeOnMainThread(() => 
-            {
-                DebugWindowInstance.Text += text;
-            });
-            await Task.CompletedTask;
+            DebugWindowInstance.Text += text;
         }
 
-        private void CheckForExistingBotToken()
+        private async Task CheckForFirstRun()
         {
-            if (hasBotKey)
+            if (Preferences.Default.ContainsKey("FirstRun"))
             {
-                DebugWindow.Text += "Welcome back to Slackord!\n";
-                DiscordToken = Preferences.Get("SlackordBotToken", string.Empty).Trim();
-            }
-            if (string.IsNullOrEmpty(DiscordToken) || string.IsNullOrEmpty(Preferences.Get("SlackordBotToken", string.Empty)))
-            {
-                BotConnectionButton.Text = "Disabled";
-                BotConnectionButton.IsEnabled = false;
-                DebugWindow.Text += @"
-Slackord tried to load your last bot token but wasn't successful.
-The token is not long enough or the token value is empty. Please enter a new token!
-";
+                if (Preferences.Default.Get("FirstRun", true))
+                {
+                    WriteToDebugWindow("Welcome to Slackord!\n");
+                    Preferences.Default.Set("FirstRun", false);
+                    isFirstRun = true;
+                }
+                else
+                {
+                    DebugWindow.Text += "Welcome back to Slackord!\n";
+                    isFirstRun = false;
+                }
             }
             else
             {
-                DebugWindow.Text += "Slackord 2 found an existing bot token and will use it! Bot connection is now enabled." + "\n";
-                BotConnectionButton.Text = "Connect";
-                BotConnectionButton.IsEnabled = true;
+                Preferences.Default.Set("FirstRun", true);
+                isFirstRun = true;
+                WriteToDebugWindow("Welcome to Slackord!\n");
             }
+            await Task.CompletedTask;
         }
 
-        public static async Task ChangeBotConnectionButton(string state)
+
+        private async Task CheckForValidBotToken()
+        {
+            if (isFirstRun)
+            {
+                if (Preferences.Default.ContainsKey("SlackordBotToken"))
+                {
+                    DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
+                    if (DiscordToken.Length > 30)
+                    {
+                        BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(255, 69, 0);
+                        BotConnectionButton.IsEnabled = true;
+                        hasValidBotToken = true;
+                        WriteToDebugWindow("Slackord found an existing valid bot token, and will use it.\n");
+                    }
+                    else
+                    {
+                        BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(128, 128, 128);
+                        BotConnectionButton.IsEnabled = false;
+                        hasValidBotToken = false;
+                        WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
+                    }
+                }
+                else
+                {
+                    Preferences.Default.Set("SlackordBotToken", string.Empty);
+                    BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(128, 128, 128);
+                    BotConnectionButton.IsEnabled = false;
+                    hasValidBotToken = false;
+                    WriteToDebugWindow("Please enter a valid bot token to enable bot connection.");
+                }
+            }
+            else
+            {
+                DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
+                if (DiscordToken .Length > 30)
+                {
+                    BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(255, 69, 0);
+                    BotConnectionButton.IsEnabled = true;
+                    hasValidBotToken = true;
+                    WriteToDebugWindow("Slackord found an existing valid bot token, and will use it.\n");
+                }
+                else
+                {
+                    BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(128, 128, 128);
+                    BotConnectionButton.IsEnabled = false;
+                    hasValidBotToken = false;
+                    WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
+                }
+            }
+            await Task.CompletedTask;
+        }
+
+        public static async Task ChangeBotConnectionButton(string state, Microsoft.Maui.Graphics.Color backgroundColor, Microsoft.Maui.Graphics.Color textColor)
         {
             Page currentPage = Current;
+            BotConnectionButtonInstance.BackgroundColor = backgroundColor;
 
             if (currentPage is MainPage mainPage)
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Button button = mainPage.BotConnectionButton;
-                    if (state == "Disabled")
-                    {
-                        button.BackgroundColor = new Color(128, 128, 128);
-                    }
-                    else
-                    {
-                        button.BackgroundColor = new Color(255, 69, 0);
-                    }
                     button.Text = state;
+                    if (textColor != null)
+                    {
+                        button.TextColor = textColor;
+                    }
                 });
             }
             await Task.CompletedTask;
         }
 
-        public static async Task ToggleBotTokenEnable(bool isEnabled, Color color)
+        public static async Task ToggleBotTokenEnable(bool isEnabled, Microsoft.Maui.Graphics.Color color)
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
@@ -264,7 +338,6 @@ The token is not long enough or the token value is empty. Please enter a new tok
         {
             ProgressBarInstance.IsVisible = true;
             ProgressBarTextInstance.IsVisible = true;
-            // Do calculation to get float.
             var currentProgress = progress / totalMessagesToSend;
             ProgressBarTextInstance.Text = $"{progress} of {totalMessagesToSend} messages sent.";
             ProgressBarInstance.Progress = currentProgress;

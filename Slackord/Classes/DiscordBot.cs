@@ -17,7 +17,7 @@ namespace Slackord
             Editor debugWindow = new();
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                MainPage.DebugWindowInstance.Text += "Starting Slackord Bot..." + "\n";
+                MainPage.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
             });
             _discordClient = new DiscordSocketClient();
             DiscordSocketConfig _config = new();
@@ -54,8 +54,12 @@ namespace Slackord
         {
             try
             {
-                await MainPage.ChangeBotConnectionButton("Connected");
-                await MainPage.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
+                MainThread.BeginInvokeOnMainThread(async() =>
+                {
+                    await MainPage.ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                    await MainPage.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
+                    MainPage.BotConnectionButtonInstance.BackgroundColor = new Microsoft.Maui.Graphics.Color(0, 255, 0);
+                });
 
                 foreach (var guild in _discordClient.Guilds)
                 {
@@ -70,7 +74,7 @@ namespace Slackord
                     {
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
-                            MainPage.DebugWindowInstance.Text += $"\nError creating slash command in guild {guild.Name}: {ex.Message}\n";
+                            MainPage.WriteToDebugWindow($"\nError creating slash command in guild {guild.Name}: {ex.Message}\n");
                         });
                     }
                 }
@@ -79,7 +83,7 @@ namespace Slackord
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    MainPage.DebugWindowInstance.Text += $"\nError encountered while creating slash command: {ex.Message}\n";
+                    MainPage.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n");
                 });
             }
         }
@@ -88,7 +92,7 @@ namespace Slackord
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                MainPage.DebugWindowInstance.Text += arg.ToString() + "\n";
+                MainPage.WriteToDebugWindow(arg.ToString() + "\n");
             });
 
             return Task.CompletedTask;
@@ -96,14 +100,21 @@ namespace Slackord
 
         public async Task DisconectClient()
         {
+            await MainPage.ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 204, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
             await _discordClient.StopAsync();
             await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+            await MainPage.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
             await Task.CompletedTask;
         }
 
         private async Task OnClientDisconnect()
         {
-            await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+                await MainPage.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+                await Task.CompletedTask;
+            });
             await Task.CompletedTask;
         }
 
@@ -138,7 +149,7 @@ namespace Slackord
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    MainPage.DebugWindowInstance.Text += $"Created {channelName} on Discord with ID: {createdChannelId}.\n";
+                    MainPage.WriteToDebugWindow($"Created {channelName} on Discord with ID: {createdChannelId}.\n");
                 });
 
                 try
@@ -150,8 +161,8 @@ namespace Slackord
                     {
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
-                            MainPage.DebugWindowInstance.Text += $"Beginning transfer of Slack messages to Discord for {channelName}..." + "\n" +
-                                "-----------------------------------------";
+                            MainPage.WriteToDebugWindow($"Beginning transfer of Slack messages to Discord for {channelName}..." + "\n" +
+                                "-----------------------------------------");
                         });
 
                         RestThreadChannel threadID = null;
@@ -189,7 +200,7 @@ namespace Slackord
 
                                 MainThread.BeginInvokeOnMainThread(() =>
                                 {
-                                    MainPage.DebugWindowInstance.Text += "SPLITTING AND POSTING: " + messageToSend;
+                                    MainPage.WriteToDebugWindow("SPLITTING AND POSTING: " + messageToSend);
                                 });
 
                                 foreach (var response in responses)
@@ -215,7 +226,7 @@ namespace Slackord
                                         {
                                             MainThread.BeginInvokeOnMainThread(() =>
                                             {
-                                                MainPage.DebugWindowInstance.Text += ("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
+                                                MainPage.WriteToDebugWindow("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
                                             });
                                             await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                         }
@@ -237,10 +248,7 @@ namespace Slackord
                             {
                                 MainThread.BeginInvokeOnMainThread(() =>
                                 {
-                                    MainPage.DebugWindowInstance.Text += $@"
-                                POSTING: {message}
-                                
-                                ";
+                                    MainPage.WriteToDebugWindow($"POSTING: {message}\n");
                                 });
 
                                 if (!wasSplit)
@@ -249,7 +257,7 @@ namespace Slackord
                                     {
                                         await createdChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
                                         var threadMessages = await createdChannel.GetMessagesAsync(1).FlattenAsync();
-                                        threadID = await createdChannel.CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
+                                        threadID = await createdChannel.CreateThreadAsync("New Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
                                     }
                                     else if (sendAsThreadReply)
                                     {
@@ -263,7 +271,7 @@ namespace Slackord
                                             // We should let the user know and post the message as a normal message, because that's what it is.
                                             MainThread.BeginInvokeOnMainThread(() =>
                                             {
-                                                MainPage.DebugWindowInstance.Text += "Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...";
+                                                MainPage.WriteToDebugWindow("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
                                             });
                                             await createdChannel.SendMessageAsync(messageToSend);
                                         }
@@ -288,7 +296,7 @@ namespace Slackord
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        MainPage.DebugWindowInstance.Text += $"\n{ex.Message}\n";
+                        MainPage.WriteToDebugWindow($"\n{ex.Message}\n");
                     });
                     Page page = new();
                     await page.DisplayAlert("Error", ex.Message, "OK");
@@ -297,14 +305,11 @@ namespace Slackord
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                MainPage.DebugWindowInstance.Text += $@"
-         -----------------------------------------
-        All messages sent to Discord successfully!
-        ";
+                MainPage.WriteToDebugWindow($"-----------------------------------------\nAll messages sent to Discord successfully!\n");
             });
 
             await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-            await _discordClient.SetActivityAsync(new Game("messages parse.", ActivityType.Watching));
+            await _discordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
             await Task.CompletedTask;
         }
     }

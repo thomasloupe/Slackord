@@ -15,7 +15,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <!--  -->
+        <!-- Main UI Buttons -->
         
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -38,8 +38,13 @@
         <Button x:Name="Exit" Grid.Column="1" Text="Exit" Clicked="Exit_Clicked" WidthRequest="150" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" Padding="14,10,14,10"/>
 
         <!-- Debug Window -->
-        <Editor x:Name="DebugWindow" Grid.Row="1" HeightRequest="500" Margin="0,0,0,0" HorizontalOptions="FillAndExpand" Grid.ColumnSpan="2" />
-        
+        <ScrollView Grid.Row="1" Grid.ColumnSpan="2">
+            <StackLayout Orientation="Vertical">
+                <Editor x:Name="DebugWindow" HeightRequest="500" Margin="0" HorizontalOptions="FillAndExpand" IsReadOnly="True" />
+                <BoxView HeightRequest="1" BackgroundColor="Transparent"/>
+            </StackLayout>
+        </ScrollView>
+
         <!-- Debug Window Buttons -->
         <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="2" Grid.Column="0" Margin="0,10,0,0">
             <Button x:Name="CopyLog" Text="Copy Log" Clicked="CopyLog_Clicked" BorderWidth="3" CornerRadius="20" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
