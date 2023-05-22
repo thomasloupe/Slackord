@@ -11,7 +11,7 @@ https://github.com/thomasloupe/Slackord/assets/6563450/dfb117c2-4868-4b8d-b9a2-f
 # Features
 1. `Cross platform` - Works on Windows(x64) and Mac(x64).
 1. `Imports channels` - Slackord will automatically recreate all your Slack channels on Discord.
-1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord will read your entire Slack export directory for JSON files parse/post them to Discord.
+1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord will read your entire Slack export directory for JSON files, and parse/post them to Discord.
 1. `Output window` - Slackord has a log window that will update you on what's going on in real-time.
 1. `Progress Bar` - Slackord has a progress bar and will tell you how many messages in total there are to send to Discord, and how many it's already sent.
 1. `Auto rate-limit detection` - Slackord limits the messages it sends over time so it doesn't spam or get itself squelched for posting too often.
