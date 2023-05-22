@@ -6,10 +6,7 @@ Slackord is a cross-platform application that parses JSON chat history file expo
 Slackord is the .NET7 MAUI version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord1) Python/Tkinter app with significant feature additions and improvements.
 
 # Demo
-## Windows
 https://user-images.githubusercontent.com/6563450/188337355-41fdc913-2b9f-41c3-9824-87986bb4d792.mp4
-## Linux/Mac
-https://user-images.githubusercontent.com/6563450/188337369-10823d19-5bce-42d8-a2b0-0fd8b8f5a8bc.mp4
 
 # Features
 1. `Cross platform` - Works on Windows(x64) and Mac(x64).
