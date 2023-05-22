@@ -14,17 +14,19 @@
 		<ApplicationTitle>Slackord</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.slackord</ApplicationId>
+		<ApplicationId>com.thomasloupe.slackord</ApplicationId>
 		<ApplicationIdGuid>9c3974ab-37d1-4859-8f7c-aa1c453b5b00</ApplicationIdGuid>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>3.0</ApplicationDisplayVersion>
 		<ApplicationVersion>3</ApplicationVersion>
 		
-		<!-- Package Type -->
+		<!-- Package Type (Windows Only) -->
+		<!--
 		<WindowsPackageType>None</WindowsPackageType>
 		<WindowsAppSDKSelfContained Condition="'$(IsUnpackaged)' == 'true'">true</WindowsAppSDKSelfContained>
 		<SelfContained Condition="'$(IsUnpackaged)' == 'true'">true</SelfContained>
+		--> 
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</SupportedOSPlatformVersion>
