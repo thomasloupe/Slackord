@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using Slackord;
 
-namespace MauiApp1;
+namespace Slackord;
 
 public static class MauiProgram
 {

@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace MauiApp1.Platforms.MacCatalyst;
+namespace Slackord.Platforms.MacCatalyst;
 
 public class Program
 {

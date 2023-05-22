@@ -1,7 +1,7 @@
 ﻿using Foundation;
-using MauiApp1;
+using Slackord;
 
-namespace MauiApp1.Platforms.MacCatalyst;
+namespace Slackord.Platforms.MacCatalyst;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

@@ -4,7 +4,7 @@ using MenuApp;
 using Octokit;
 using static System.Net.WebRequestMethods;
 
-namespace MauiApp1.Classes
+namespace Slackord.Classes
 {
     class UpdateCheck
     {
