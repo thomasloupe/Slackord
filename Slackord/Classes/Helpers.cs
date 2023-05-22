@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slackord
+namespace MauiApp1.Classes
 {
     static class Helpers
     {

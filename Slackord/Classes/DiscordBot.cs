@@ -5,7 +5,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using MenuApp;
 
-namespace Slackord
+namespace MauiApp1.Classes
 {
     class DiscordBot
     {
@@ -54,7 +54,7 @@ namespace Slackord
         {
             try
             {
-                MainThread.BeginInvokeOnMainThread(async() =>
+                MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     await MainPage.ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                     await MainPage.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
@@ -124,7 +124,7 @@ namespace Slackord
             var totalMessageCount = Parser.TotalMessageCount;
             float progress = 0;
 
-            MainThread.BeginInvokeOnMainThread(async() =>
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
                 await MainPage.CommitProgress(progress, totalMessageCount);
             });
@@ -196,7 +196,7 @@ namespace Slackord
 
                             if (message.Length >= 2000)
                             {
-                                var responses = Helpers.SplitInParts(messageToSend, 1800);
+                                var responses = messageToSend.SplitInParts(1800);
 
                                 MainThread.BeginInvokeOnMainThread(() =>
                                 {
@@ -283,7 +283,7 @@ namespace Slackord
                                 }
 
                                 progress += 1;
-                                MainThread.BeginInvokeOnMainThread(async() =>
+                                MainThread.BeginInvokeOnMainThread(async () =>
                                 {
                                     await MainPage.CommitProgress(progress, totalMessageCount);
                                 });

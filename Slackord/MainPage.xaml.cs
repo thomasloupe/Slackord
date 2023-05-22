@@ -1,5 +1,5 @@
 ﻿using Discord;
-using Slackord;
+using MauiApp1.Classes;
 
 namespace MenuApp
 {
@@ -43,7 +43,7 @@ namespace MenuApp
         {
             cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = cancellationTokenSource.Token;
-            _ = Slackord.ImportJson.ImportJsonFolder(cancellationToken);
+            _ = MauiApp1.Classes.ImportJson.ImportJsonFolder(cancellationToken);
         }
 
         private void CancelImport_Clicked(object sender, EventArgs e)
@@ -117,7 +117,7 @@ namespace MenuApp
 
         private void About_Clicked(object sender, EventArgs e)
         {
-            string currentVersion = Slackord.Version.GetVersion();
+            string currentVersion = MauiApp1.Classes.Version.GetVersion();
             DisplayAlert("", $"""
 Slackord {currentVersion}.
 Created by Thomas Loupe.

@@ -1,7 +1,7 @@
 ﻿using MenuApp;
 using Newtonsoft.Json.Linq;
 
-namespace Slackord
+namespace MauiApp1.Classes
 {
     class Parser
     {

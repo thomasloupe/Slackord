@@ -1,4 +1,4 @@
-﻿namespace Slackord
+﻿namespace MauiApp1.Classes
 {
     class Version
     {
