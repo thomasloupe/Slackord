@@ -1,23 +1,24 @@
 ﻿using MenuApp;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace Slackord.Classes
 {
     class Parser
     {
-        public bool _isFileParsed;
+        //public bool _isFileParsed;
         public static readonly List<bool> isThreadMessages = new();
         public static readonly List<bool> isThreadStart = new();
         public static int TotalMessageCount;
 
-        public async Task ParseJsonFiles(List<string> files, string channelName, Dictionary<string, List<string>> channels)
+        public async Task ParseJsonFiles(IEnumerable<string> files, string channelName, Dictionary<string, List<string>> channels)
         {
-            string character = "⬓";
+            const char character = '⬓';
             string parsingLine = $"Begin parsing JSON data for {channelName}...";
             int lineLength = parsingLine.Length / 2 + 1;
             int boxCharacters = lineLength + 6;
 
-            string boxOutput = new(character[0], boxCharacters);
+            string boxOutput = new(character, boxCharacters);
             string leadingSpaces = new(' ', (boxCharacters - lineLength - 2) / 2);
 
             MainPage.WriteToDebugWindow($"{boxOutput}\n⬓  {leadingSpaces}{parsingLine}{leadingSpaces}  ⬓\n{boxOutput}\n");
@@ -37,25 +38,9 @@ namespace Slackord.Classes
                     {
                         var rawTimeDate = pair["ts"];
                         double oldDateTime = (double)rawTimeDate;
-                        string convertDateTime = Helpers.ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
-                        string newDateTime = convertDateTime.ToString();
-
-                        // JSON message thread handling.
-                        if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
-                        {
-                            isThreadStart.Add(true);
-                            isThreadMessages.Add(false);
-                        }
-                        else if (pair.ContainsKey("thread_ts") && !pair.ContainsKey("reply_count"))
-                        {
-                            isThreadStart.Add(false);
-                            isThreadMessages.Add(true);
-                        }
-                        else
-                        {
-                            isThreadStart.Add(false);
-                            isThreadMessages.Add(false);
-                        }
+                        string convertDateTime = Helpers.ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g", CultureInfo.CurrentUICulture);
+                        string newDateTime = convertDateTime;
+                        ParseThreads(pair);
 
                         // JSON message parsing.
                         if (pair.ContainsKey("text") && !pair.ContainsKey("bot_profile"))
@@ -121,9 +106,10 @@ namespace Slackord.Classes
 
                         if (pair.ContainsKey("bot_profile"))
                         {
+                            //TODO: Clean up try/catch blocks.
                             try
                             {
-                                currentMessageParsing = pair["bot_profile"]["name"].ToString() + ": " + pair["text"] + "\n";
+                                currentMessageParsing = pair["bot_profile"]?["name"]?.ToString() + ": " + pair["text"] + "\n";
                                 parsedMessages.Add(currentMessageParsing);
                                 TotalMessageCount += 1;
                             }
@@ -137,6 +123,7 @@ namespace Slackord.Classes
                                 }
                                 catch (NullReferenceException)
                                 {
+                                    //TODO: Include details on which message was ignored.
                                     currentMessageParsing = "A bot message was ignored. Please submit an issue on Github for this.";
                                 }
                             }
@@ -146,24 +133,44 @@ namespace Slackord.Classes
                 }
                 channels[channelName] = parsedMessages;
 
-                character = "⬓";
                 parsingLine = $"Parsing for [{channelName}]>[{currentFile}] complete!";
                 lineLength = parsingLine.Length / 2 + 1;
                 boxCharacters = lineLength + 6;
 
-                boxOutput = new(character[0], boxCharacters);
+                boxOutput = new(character, boxCharacters);
                 leadingSpaces = new(' ', (boxCharacters - lineLength - 2) / 2);
-                MainPage.WriteToDebugWindow($"{boxOutput}\n⬓  {leadingSpaces}{parsingLine}{leadingSpaces}  ⬓\n{boxOutput}\n\n");
+                MainPage.WriteToDebugWindow($"{boxOutput}\n{character}  {leadingSpaces}{parsingLine}{leadingSpaces}  {character}\n{boxOutput}\n\n");
 
-                _isFileParsed = true;
+                //_isFileParsed = true;
             }
             catch (Exception ex)
             {
                 MainPage.WriteToDebugWindow($"\n\n{ex.Message}\n\n");
-                Page page = new();
-                await page.DisplayAlert("Error", ex.Message, "OK");
+                //TODO MainPage.DisplayAlert
+                //Page page = new();
+                //await page.DisplayAlert("Error", ex.Message, "OK");
             }
-            await Task.CompletedTask;
+        }
+
+        private static void ParseThreads(JObject pair)
+        {
+             
+            // JSON message thread handling.
+            if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
+            {
+                isThreadStart.Add(true);
+                isThreadMessages.Add(false);
+            }
+            else if (pair.ContainsKey("thread_ts") && !pair.ContainsKey("reply_count"))
+            {
+                isThreadStart.Add(false);
+                isThreadMessages.Add(true);
+            }
+            else
+            {
+                isThreadStart.Add(false);
+                isThreadMessages.Add(false);
+            }
         }
     }
 }

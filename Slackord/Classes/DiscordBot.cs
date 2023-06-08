@@ -4,49 +4,56 @@ using Discord.Net;
 using Discord.Rest;
 using Discord.WebSocket;
 using MenuApp;
+using System;
 
 namespace Slackord.Classes
 {
     class DiscordBot
     {
-        public DiscordSocketClient _discordClient;
+        public DiscordSocketClient DiscordClient { get; set; }
         public IServiceProvider _services;
 
         public async Task MainAsync(string discordToken)
         {
-            Editor debugWindow = new();
-            MainThread.BeginInvokeOnMainThread(() =>
+            if (DiscordClient is not null)
             {
-                MainPage.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
-            });
-            _discordClient = new DiscordSocketClient();
+                throw new InvalidOperationException("DiscordClient is already initialized.");
+            }
+            //Editor debugWindow = new();
+            MainPage.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
+            
+            //DiscordClient = new DiscordSocketClient();
             DiscordSocketConfig _config = new();
             {
                 _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
             }
-            _discordClient = new(_config);
+            DiscordClient = new(_config);
             _services = new ServiceCollection()
-                .AddSingleton(_discordClient)
+                .AddSingleton(DiscordClient)
                 .BuildServiceProvider();
-            _discordClient.Log += DiscordClient_Log;
-            await _discordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
-            await _discordClient.StartAsync();
-            await _discordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
-            _discordClient.Ready += ClientReady;
-            _discordClient.LoggedOut += OnClientDisconnect;
-            _discordClient.SlashCommandExecuted += SlashCommandHandler;
-            await Task.Delay(-1);
+            DiscordClient.Log += DiscordClient_Log;
+            await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
+            await DiscordClient.StartAsync();
+            await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
+            DiscordClient.Ready += ClientReady;
+            DiscordClient.LoggedOut += OnClientDisconnect;
+            DiscordClient.SlashCommandExecuted += SlashCommandHandler;
+            //await Task.Delay(-1);
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            if (command.Data.Name.Equals("slackord"))
+            if (command.Data.Name.Equals("slackord") &&
+                DiscordClient.Guilds.FirstOrDefault() is { } guild)
             {
-                var guildID = _discordClient.Guilds.FirstOrDefault().Id;
-                await MainPage.Current.Dispatcher.DispatchAsync(async () =>
-                {
-                    await PostMessagesToDiscord(guildID, command);
-                });
+                var guildID = guild.Id;
+                //TODO: Do we actually need to dispatch to the UI thread here?
+                //await MainPage.Current.Dispatcher.DispatchAsync(async () =>
+                //{
+                //    await PostMessagesToDiscord(guildID, command);
+                //});
+                await PostMessagesToDiscord(guildID, command);
+
             }
         }
 
@@ -61,7 +68,7 @@ namespace Slackord.Classes
                     MainPage.BotConnectionButtonInstance.BackgroundColor = new Microsoft.Maui.Graphics.Color(0, 255, 0);
                 });
 
-                foreach (var guild in _discordClient.Guilds)
+                foreach (var guild in DiscordClient.Guilds)
                 {
                     var guildCommand = new SlashCommandBuilder();
                     guildCommand.WithName("slackord");
@@ -101,7 +108,7 @@ namespace Slackord.Classes
         public async Task DisconectClient()
         {
             await MainPage.ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 204, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-            await _discordClient.StopAsync();
+            await DiscordClient.StopAsync();
             await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
             await MainPage.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
             await Task.CompletedTask;
@@ -131,7 +138,7 @@ namespace Slackord.Classes
 
             await interaction.DeferAsync();
 
-            SocketGuild guild = _discordClient.GetGuild(guildID);
+            SocketGuild guild = DiscordClient.GetGuild(guildID);
             string categoryName = "Slackord Import";
             var slackordCategory = await guild.CreateCategoryChannelAsync(categoryName);
             ulong slackordCategoryId = slackordCategory.Id;
@@ -154,7 +161,7 @@ namespace Slackord.Classes
 
                 try
                 {
-                    await _discordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
+                    await DiscordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
                     int messageCount = 0;
 
                     if (channels.TryGetValue(channelName, out var messages))
@@ -209,7 +216,7 @@ namespace Slackord.Classes
 
                                     if (sendAsThread)
                                     {
-                                        if (_discordClient.GetChannel(createdChannelId) is SocketTextChannel textChannel)
+                                        if (DiscordClient.GetChannel(createdChannelId) is SocketTextChannel textChannel)
                                         {
                                             await textChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
                                             var latestMessages = await textChannel.GetMessagesAsync(1).FlattenAsync();
@@ -228,12 +235,16 @@ namespace Slackord.Classes
                                             {
                                                 MainPage.WriteToDebugWindow("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
                                             });
-                                            await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                            await DiscordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
                                         }
                                     }
                                     else if (sendAsNormalMessage)
                                     {
-                                        await _discordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        if (DiscordClient.GetGuild(guildID).GetTextChannel(createdChannelId) is { } channel)
+                                        {
+                                            await channel.SendMessageAsync(messageToSend).ConfigureAwait(false);
+                                        }
+                                        //TODO: else? Do we care?
                                     }
 
                                     progress += 1;
@@ -290,7 +301,7 @@ namespace Slackord.Classes
                             }
                         }
                     }
-                    await _discordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
+                    await DiscordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
                 }
                 catch (Exception ex)
                 {
@@ -298,8 +309,8 @@ namespace Slackord.Classes
                     {
                         MainPage.WriteToDebugWindow($"\n{ex.Message}\n");
                     });
-                    Page page = new();
-                    await page.DisplayAlert("Error", ex.Message, "OK");
+                    //Page page = new();
+                    //await page.DisplayAlert("Error", ex.Message, "OK");
                 }
             }
 
@@ -309,8 +320,7 @@ namespace Slackord.Classes
             });
 
             await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-            await _discordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
-            await Task.CompletedTask;
+            await DiscordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
         }
     }
 }

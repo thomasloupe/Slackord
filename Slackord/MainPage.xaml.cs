@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Slackord.Classes;
+using System.Text;
 
 namespace MenuApp
 {
     public partial class MainPage : ContentPage
     {
+        //TODO: private
         public static MainPage Current { get; private set; }
         public static Editor DebugWindowInstance { get; set; }
         private CancellationTokenSource cancellationTokenSource;
@@ -13,13 +15,18 @@ namespace MenuApp
         public static Label ProgressBarTextInstance { get; set; }
         public static Button EnterBotTokenButtonInstance { get; set; }
         public string DiscordToken;
-        private DiscordBot discordBot;
+        private DiscordBot _discordBot;
         private bool isFirstRun;
         private bool hasValidBotToken;
 
         public MainPage()
         {
             InitializeComponent();
+            if (Current is not null)
+            {
+                throw new InvalidOperationException("Too many windows");
+            }
+
             DebugWindowInstance = DebugWindow;
             ProgressBarInstance = ProgressBar;
             BotConnectionButtonInstance = BotConnectionButton;
@@ -28,22 +35,35 @@ namespace MenuApp
             ProgressBarTextInstance.IsVisible = false;
             ProgressBarInstance.IsVisible = false;
             Current = this;
-            discordBot = new DiscordBot();
+            _discordBot = new DiscordBot();
 
+            Loaded += MainPage_Loaded;
+        }
+
+        private void MainPage_Loaded(object sender, EventArgs e)
+        {
             Initialize();
         }
 
-        private async void Initialize()
+        private void Initialize()
         {
-            await CheckForFirstRun();
-            await CheckForValidBotToken();
+            CheckForFirstRun();
+            CheckForValidBotToken();
         }
 
-        private void ImportJson_Clicked(object sender, EventArgs e)
+        private async void ImportJson_Clicked(object sender, EventArgs e)
         {
-            cancellationTokenSource = new CancellationTokenSource();
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
-            _ = Slackord.Classes.ImportJson.ImportJsonFolder(cancellationToken);
+            var cts = new CancellationTokenSource();
+            Interlocked.Exchange(ref cancellationTokenSource, cts)?.Cancel();
+            CancellationToken cancellationToken = cts.Token;
+            try
+            {
+                await Task.Run(() => Slackord.Classes.ImportJson.ImportJsonFolder(cancellationToken), cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                //TODO Any thing here?
+            }
         }
 
         private void CancelImport_Clicked(object sender, EventArgs e)
@@ -51,14 +71,14 @@ namespace MenuApp
             cancellationTokenSource?.Cancel();
         }
 
-        private void EnterBotToken_Clicked(object sender, EventArgs e)
+        private async void EnterBotToken_Clicked(object sender, EventArgs e)
         {
-            _ = CreateBotTokenPrompt();
+            await CreateBotTokenPrompt();
         }
-        
-        private void ToggleBotConnection_Clicked(object sender, EventArgs e)
+
+        private async void ToggleBotConnection_Clicked(object sender, EventArgs e)
         {
-            _ = ToggleDiscordConnection();
+            await ToggleDiscordConnection();
         }
 
         private async Task ToggleDiscordConnection()
@@ -77,30 +97,31 @@ namespace MenuApp
                 DiscordToken = Preferences.Get("SlackordBotToken", string.Empty).Trim();
             }
 
-            if (discordBot._discordClient == null)
+            if (_discordBot.DiscordClient == null)
             {
-                discordBot = new DiscordBot();
+                //_discordBot = new DiscordBot();
                 await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                await discordBot.MainAsync(DiscordToken);
+                await _discordBot.MainAsync(DiscordToken);
             }
-            else if (discordBot._discordClient != null && discordBot._discordClient.ConnectionState == ConnectionState.Disconnected)
+            else if (_discordBot.DiscordClient is { ConnectionState: ConnectionState.Disconnected } disconnectedClient)
+            //else if (discordBot.DiscordClient != null && discordBot.DiscordClient.ConnectionState == ConnectionState.Disconnected)
             {
                 await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                await discordBot._discordClient.StartAsync();
+                await disconnectedClient.StartAsync();
                 while (true)
                 {
-                    var connectionState = discordBot._discordClient.ConnectionState;
-                    if (connectionState.ToString() == "Connected")
+                    var connectionState = disconnectedClient.ConnectionState;
+                    if (connectionState == ConnectionState.Connected)
                     {
                         await ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                         break;
                     }
                 }
             }
-            else if (discordBot._discordClient.ConnectionState == ConnectionState.Connected)
+            else if (_discordBot.DiscordClient.ConnectionState == ConnectionState.Connected)
             {
                 await ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                await discordBot._discordClient.StopAsync();
+                await _discordBot.DiscordClient.StopAsync();
                 await ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
             }
         }
@@ -112,7 +133,6 @@ namespace MenuApp
         private static async Task CheckForNewVersion()
         {
             await UpdateCheck.CheckForUpdates();
-            await Task.CompletedTask;
         }
 
         private void About_Clicked(object sender, EventArgs e)
@@ -149,9 +169,9 @@ Would you like to open the donation page now?
             }
         }
 
-        private void Exit_Clicked(object sender, EventArgs e)
+        private async void Exit_Clicked(object sender, EventArgs e)
         {
-            _ = ExitApplication();
+            await ExitApplication();
         }
 
         private async Task ExitApplication()
@@ -167,7 +187,7 @@ Would you like to open the donation page now?
                 }
                 else if (operatingSystem == DevicePlatform.WinUI)
                 {
-                   Application.Current.Quit();
+                    Application.Current.Quit();
                 }
             }
         }
@@ -202,7 +222,7 @@ Would you like to open the donation page now?
                 {
                     Preferences.Default.Set("SlackordBotToken", discordToken);
                     DiscordToken = discordToken;
-                    await CheckForValidBotToken();
+                    CheckForValidBotToken();
                     if (hasValidBotToken)
                     {
                         WriteToDebugWindow("Slackord received a valid bot token. Bot connection is enabled!\n");
@@ -216,17 +236,44 @@ Would you like to open the donation page now?
                 else
                 {
                     Preferences.Default.Set("SlackordBotToken", string.Empty);
-                    await CheckForValidBotToken();
+                    CheckForValidBotToken();
                 }
             }
         }
 
+        //This is just as an example
+        private static readonly StringBuilder debugOutput = new();
         public static void WriteToDebugWindow(string text)
         {
-            DebugWindowInstance.Text += text;
+            debugOutput.Append(text);
+            //if (!MainThread.IsMainThread)
+            //{
+            //    MainThread.BeginInvokeOnMainThread(() =>
+            //    {
+            //        WriteToDebugWindow(text);
+            //    });
+            //    return;
+            //}
+            //
+            //DebugWindowInstance.Text += text;
         }
 
-        private async Task CheckForFirstRun()
+        public static void PushDebugText()
+        {
+            if (!MainThread.IsMainThread)
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    PushDebugText();
+                });
+                return;
+            }
+
+            DebugWindowInstance.Text += debugOutput.ToString();
+            debugOutput.Clear();
+        }
+
+        private void CheckForFirstRun()
         {
             if (Preferences.Default.ContainsKey("FirstRun"))
             {
@@ -248,11 +295,10 @@ Would you like to open the donation page now?
                 isFirstRun = true;
                 WriteToDebugWindow("Welcome to Slackord!\n");
             }
-            await Task.CompletedTask;
         }
 
 
-        private async Task CheckForValidBotToken()
+        private void CheckForValidBotToken()
         {
             if (isFirstRun)
             {
@@ -286,7 +332,7 @@ Would you like to open the donation page now?
             else
             {
                 DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
-                if (DiscordToken .Length > 30)
+                if (DiscordToken.Length > 30)
                 {
                     BotConnectionButton.BackgroundColor = new Microsoft.Maui.Graphics.Color(255, 69, 0);
                     BotConnectionButton.IsEnabled = true;
@@ -301,15 +347,15 @@ Would you like to open the donation page now?
                     WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
                 }
             }
-            await Task.CompletedTask;
         }
 
+        //TODO: Consider either making this just a void return
+        //Or change to MainThread.InvokeOnMainThreadAsync
         public static async Task ChangeBotConnectionButton(string state, Microsoft.Maui.Graphics.Color backgroundColor, Microsoft.Maui.Graphics.Color textColor)
         {
-            Page currentPage = Current;
             BotConnectionButtonInstance.BackgroundColor = backgroundColor;
 
-            if (currentPage is MainPage mainPage)
+            if (Current is MainPage mainPage)
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -321,7 +367,6 @@ Would you like to open the donation page now?
                     }
                 });
             }
-            await Task.CompletedTask;
         }
 
         public static async Task ToggleBotTokenEnable(bool isEnabled, Microsoft.Maui.Graphics.Color color)
@@ -331,17 +376,31 @@ Would you like to open the donation page now?
                 EnterBotTokenButtonInstance.BackgroundColor = color;
                 EnterBotTokenButtonInstance.IsEnabled = isEnabled;
             });
-            await Task.CompletedTask;
         }
 
         public static async Task CommitProgress(float progress, float totalMessagesToSend)
         {
-            ProgressBarInstance.IsVisible = true;
-            ProgressBarTextInstance.IsVisible = true;
+            if (!MainThread.IsMainThread)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await CommitProgress(progress, totalMessagesToSend);
+                });
+                return;
+            }
+
+            Current.ProgressBar.IsVisible = true;
+            Current.ProgressBarText.IsVisible = true;
             var currentProgress = progress / totalMessagesToSend;
-            ProgressBarTextInstance.Text = $"{progress} of {totalMessagesToSend} messages sent.";
-            ProgressBarInstance.Progress = currentProgress;
-            await Task.CompletedTask;
+            Current.ProgressBarText.Text = $"{progress} of {totalMessagesToSend} messages sent.";
+            Current.ProgressBar.Progress = currentProgress;
+
+            //ProgressBarInstance.IsVisible = true;
+            //ProgressBarTextInstance.IsVisible = true;
+            //var currentProgress = progress / totalMessagesToSend;
+            //ProgressBarTextInstance.Text = $"{progress} of {totalMessagesToSend} messages sent.";
+            //ProgressBarInstance.Progress = currentProgress;
+            //await Task.CompletedTask;
         }
     }
 }
