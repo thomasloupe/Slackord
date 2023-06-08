@@ -27,12 +27,12 @@
                 <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="ImportJson" Text="Import JSON" Clicked="ImportJson_Clicked" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
-            <Button x:Name="EnterBotToken" Grid.Column="1" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontAttributes="Bold" FontSize="Micro" BackgroundColor="OrangeRed" TextColor="White" />
-            <Button x:Name="BotConnectionButton" Grid.Column="2" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontAttributes="Bold" FontSize="Micro" BackgroundColor="OrangeRed" TextColor="White" />
-            <Button x:Name="CheckForUpdates" Grid.Column="4" Text="Update Check" Clicked="CheckForUpdates_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" />
-            <Button x:Name="About" Grid.Column="5" Text="About" Clicked="About_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" />
-            <Button x:Name="Donate" Grid.Column="6" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" />
+            <Button x:Name="ImportJson" Text="Import JSON" Clicked="ImportJson_Clicked" FontSize="Micro" FontAttributes="Bold" />
+            <Button x:Name="EnterBotToken" Grid.Column="1" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontAttributes="Bold" FontSize="Micro"  />
+            <Button x:Name="BotConnectionButton" Grid.Column="2" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontAttributes="Bold" FontSize="Micro"  />
+            <Button x:Name="CheckForUpdates" Grid.Column="4" Text="Update Check" Clicked="CheckForUpdates_Clicked" FontAttributes="Bold"  FontSize="Micro" />
+            <Button x:Name="About" Grid.Column="5" Text="About" Clicked="About_Clicked" FontAttributes="Bold"  FontSize="Micro" />
+            <Button x:Name="Donate" Grid.Column="6" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" FontSize="Micro"  />
         </Grid>
 
         <Button x:Name="Exit" Grid.Column="1" Text="Exit" Clicked="Exit_Clicked" WidthRequest="150" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" Padding="14,10,14,10"/>

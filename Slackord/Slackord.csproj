@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net7.0-maccatalyst;net7.0-windows10.0.22000.0</TargetFrameworks>
+		<TargetFrameworks>net7.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
@@ -9,6 +9,7 @@
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>11</LangVersion>
 
 		<!-- Display name -->
 		<ApplicationTitle>Slackord</ApplicationTitle>
@@ -34,7 +35,7 @@
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|x64'">
@@ -57,7 +58,7 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-windows10.0.19041.0|x64'">
 	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<ItemGroup>
 		<!-- Custom Fonts -->

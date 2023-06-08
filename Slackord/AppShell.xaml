@@ -5,7 +5,7 @@
     xmlns:local="clr-namespace:MenuApp"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
+  <ShellContent
         Title="Slackord"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
