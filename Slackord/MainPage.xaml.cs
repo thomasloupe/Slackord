@@ -15,7 +15,7 @@ namespace MenuApp
         public static Label ProgressBarTextInstance { get; set; }
         public static Button EnterBotTokenButtonInstance { get; set; }
         public string DiscordToken;
-        private DiscordBot _discordBot;
+        private readonly DiscordBot _discordBot;
         private bool isFirstRun;
         private bool hasValidBotToken;
 
@@ -62,7 +62,7 @@ namespace MenuApp
             }
             catch (OperationCanceledException)
             {
-                //TODO Any thing here?
+
             }
         }
 
@@ -99,12 +99,10 @@ namespace MenuApp
 
             if (_discordBot.DiscordClient == null)
             {
-                //_discordBot = new DiscordBot();
                 await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                 await _discordBot.MainAsync(DiscordToken);
             }
             else if (_discordBot.DiscordClient is { ConnectionState: ConnectionState.Disconnected } disconnectedClient)
-            //else if (discordBot.DiscordClient != null && discordBot.DiscordClient.ConnectionState == ConnectionState.Disconnected)
             {
                 await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                 await disconnectedClient.StartAsync();
@@ -217,7 +215,6 @@ Would you like to open the donation page now?
 
             if (!string.IsNullOrEmpty(discordToken))
             {
-                // OK button was clicked and a token was entered
                 if (discordToken.Length >= 30)
                 {
                     Preferences.Default.Set("SlackordBotToken", discordToken);
@@ -241,21 +238,10 @@ Would you like to open the donation page now?
             }
         }
 
-        //This is just as an example
         private static readonly StringBuilder debugOutput = new();
         public static void WriteToDebugWindow(string text)
         {
             debugOutput.Append(text);
-            //if (!MainThread.IsMainThread)
-            //{
-            //    MainThread.BeginInvokeOnMainThread(() =>
-            //    {
-            //        WriteToDebugWindow(text);
-            //    });
-            //    return;
-            //}
-            //
-            //DebugWindowInstance.Text += text;
         }
 
         public static void PushDebugText()
@@ -349,15 +335,13 @@ Would you like to open the donation page now?
             }
         }
 
-        //TODO: Consider either making this just a void return
-        //Or change to MainThread.InvokeOnMainThreadAsync
         public static async Task ChangeBotConnectionButton(string state, Microsoft.Maui.Graphics.Color backgroundColor, Microsoft.Maui.Graphics.Color textColor)
         {
             BotConnectionButtonInstance.BackgroundColor = backgroundColor;
 
             if (Current is MainPage mainPage)
             {
-                MainThread.BeginInvokeOnMainThread(() =>
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     Button button = mainPage.BotConnectionButton;
                     button.Text = state;
@@ -371,11 +355,15 @@ Would you like to open the donation page now?
 
         public static async Task ToggleBotTokenEnable(bool isEnabled, Microsoft.Maui.Graphics.Color color)
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            if (Current is MainPage mainPage)
             {
-                EnterBotTokenButtonInstance.BackgroundColor = color;
-                EnterBotTokenButtonInstance.IsEnabled = isEnabled;
-            });
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    EnterBotTokenButtonInstance.BackgroundColor = color;
+                    EnterBotTokenButtonInstance.IsEnabled = isEnabled;
+                });
+            }
+            return;
         }
 
         public static async Task CommitProgress(float progress, float totalMessagesToSend)
@@ -394,13 +382,6 @@ Would you like to open the donation page now?
             var currentProgress = progress / totalMessagesToSend;
             Current.ProgressBarText.Text = $"{progress} of {totalMessagesToSend} messages sent.";
             Current.ProgressBar.Progress = currentProgress;
-
-            //ProgressBarInstance.IsVisible = true;
-            //ProgressBarTextInstance.IsVisible = true;
-            //var currentProgress = progress / totalMessagesToSend;
-            //ProgressBarTextInstance.Text = $"{progress} of {totalMessagesToSend} messages sent.";
-            //ProgressBarInstance.Progress = currentProgress;
-            //await Task.CompletedTask;
         }
     }
 }

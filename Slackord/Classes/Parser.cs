@@ -6,7 +6,6 @@ namespace Slackord.Classes
 {
     class Parser
     {
-        //public bool _isFileParsed;
         public static readonly List<bool> isThreadMessages = new();
         public static readonly List<bool> isThreadStart = new();
         public static int TotalMessageCount;
@@ -42,7 +41,6 @@ namespace Slackord.Classes
                         string newDateTime = convertDateTime;
                         ParseThreads(pair);
 
-                        // JSON message parsing.
                         if (pair.ContainsKey("text") && !pair.ContainsKey("bot_profile"))
                         {
                             string slackUserName = "";
@@ -106,25 +104,26 @@ namespace Slackord.Classes
 
                         if (pair.ContainsKey("bot_profile"))
                         {
-                            //TODO: Clean up try/catch blocks.
                             try
                             {
                                 currentMessageParsing = pair["bot_profile"]?["name"]?.ToString() + ": " + pair["text"] + "\n";
                                 parsedMessages.Add(currentMessageParsing);
                                 TotalMessageCount += 1;
                             }
-                            catch (NullReferenceException)
+                            catch (Exception ex)
                             {
+                                MainPage.WriteToDebugWindow(ex.ToString() + "\n" + "Looking for bot_id instead...");
                                 try
                                 {
                                     currentMessageParsing = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
                                     parsedMessages.Add(currentMessageParsing);
                                     TotalMessageCount += 1;
                                 }
-                                catch (NullReferenceException)
+                                catch (Exception innerex)
                                 {
-                                    //TODO: Include details on which message was ignored.
-                                    currentMessageParsing = "A bot message was ignored. Please submit an issue on Github for this.";
+                                    MainPage.WriteToDebugWindow(innerex.ToString());
+                                    currentMessageParsing = "The bot message was ignored.\n" +
+                                        "Please submit an issue on Github for this.";
                                 }
                             }
                             MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
@@ -140,22 +139,15 @@ namespace Slackord.Classes
                 boxOutput = new(character, boxCharacters);
                 leadingSpaces = new(' ', (boxCharacters - lineLength - 2) / 2);
                 MainPage.WriteToDebugWindow($"{boxOutput}\n{character}  {leadingSpaces}{parsingLine}{leadingSpaces}  {character}\n{boxOutput}\n\n");
-
-                //_isFileParsed = true;
             }
             catch (Exception ex)
             {
                 MainPage.WriteToDebugWindow($"\n\n{ex.Message}\n\n");
-                //TODO MainPage.DisplayAlert
-                //Page page = new();
-                //await page.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
         private static void ParseThreads(JObject pair)
         {
-             
-            // JSON message thread handling.
             if (pair.ContainsKey("reply_count") && pair.ContainsKey("thread_ts"))
             {
                 isThreadStart.Add(true);

@@ -4,7 +4,6 @@ using Discord.Net;
 using Discord.Rest;
 using Discord.WebSocket;
 using MenuApp;
-using System;
 
 namespace Slackord.Classes
 {
@@ -19,10 +18,7 @@ namespace Slackord.Classes
             {
                 throw new InvalidOperationException("DiscordClient is already initialized.");
             }
-            //Editor debugWindow = new();
             MainPage.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
-            
-            //DiscordClient = new DiscordSocketClient();
             DiscordSocketConfig _config = new();
             {
                 _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
@@ -38,7 +34,6 @@ namespace Slackord.Classes
             DiscordClient.Ready += ClientReady;
             DiscordClient.LoggedOut += OnClientDisconnect;
             DiscordClient.SlashCommandExecuted += SlashCommandHandler;
-            //await Task.Delay(-1);
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
@@ -47,11 +42,6 @@ namespace Slackord.Classes
                 DiscordClient.Guilds.FirstOrDefault() is { } guild)
             {
                 var guildID = guild.Id;
-                //TODO: Do we actually need to dispatch to the UI thread here?
-                //await MainPage.Current.Dispatcher.DispatchAsync(async () =>
-                //{
-                //    await PostMessagesToDiscord(guildID, command);
-                //});
                 await PostMessagesToDiscord(guildID, command);
 
             }
@@ -244,7 +234,6 @@ namespace Slackord.Classes
                                         {
                                             await channel.SendMessageAsync(messageToSend).ConfigureAwait(false);
                                         }
-                                        //TODO: else? Do we care?
                                     }
 
                                     progress += 1;
@@ -309,8 +298,6 @@ namespace Slackord.Classes
                     {
                         MainPage.WriteToDebugWindow($"\n{ex.Message}\n");
                     });
-                    //Page page = new();
-                    //await page.DisplayAlert("Error", ex.Message, "OK");
                 }
             }
 
