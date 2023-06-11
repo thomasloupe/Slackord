@@ -27,6 +27,10 @@ namespace Slackord.Classes
                 foreach (var file in Directory.EnumerateFiles(selectedFolder, "*.json", SearchOption.AllDirectories))
                 {
                     fileCount++;
+                }
+
+                foreach (var file in Directory.EnumerateFiles(selectedFolder, "*.json", SearchOption.AllDirectories))
+                {
                     var folderName = Path.GetFileName(Path.GetDirectoryName(file));
 
                     string fileName = Path.GetFileNameWithoutExtension(file);
@@ -41,12 +45,11 @@ namespace Slackord.Classes
                         var parser = new Parser();
                         await parser.ParseJsonFiles(fileList, folderName, Channels);
                     }
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        await MainPage.UpdateParsingMessageProgress(fileList.Count, fileCount);
+                    });
                 }
-                int folderCount = Channels.Keys.Count;
-                await MainThread.InvokeOnMainThreadAsync(async () =>
-                {
-                    await MainPage.Current.DisplayAlert("Information", $"Found {fileCount} JSON files in {folderCount} folders.", "OK");
-                });
                 MainPage.PushDebugText();
             }
             catch (Exception ex)

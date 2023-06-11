@@ -123,7 +123,7 @@ namespace Slackord.Classes
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await MainPage.CommitProgress(progress, totalMessageCount);
+                await MainPage.UpdateMessageSendProgress(progress, totalMessageCount);
             });
 
             await interaction.DeferAsync();
@@ -239,7 +239,7 @@ namespace Slackord.Classes
                                     progress += 1;
                                     MainThread.BeginInvokeOnMainThread(async () =>
                                     {
-                                        await MainPage.CommitProgress(progress, totalMessageCount);
+                                        await MainPage.UpdateMessageSendProgress(progress, totalMessageCount);
                                     });
                                 }
                                 wasSplit = true;
@@ -285,7 +285,7 @@ namespace Slackord.Classes
                                 progress += 1;
                                 MainThread.BeginInvokeOnMainThread(async () =>
                                 {
-                                    await MainPage.CommitProgress(progress, totalMessageCount);
+                                    await MainPage.UpdateMessageSendProgress(progress, totalMessageCount);
                                 });
                             }
                         }

@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Slackord.Classes;
+using System;
 using System.Text;
 
 namespace MenuApp
@@ -366,13 +367,13 @@ Would you like to open the donation page now?
             return;
         }
 
-        public static async Task CommitProgress(float progress, float totalMessagesToSend)
+        public static async Task UpdateMessageSendProgress(float progress, float totalMessagesToSend)
         {
             if (!MainThread.IsMainThread)
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    await CommitProgress(progress, totalMessagesToSend);
+                    await UpdateMessageSendProgress(progress, totalMessagesToSend);
                 });
                 return;
             }
@@ -381,6 +382,24 @@ Would you like to open the donation page now?
             Current.ProgressBarText.IsVisible = true;
             var currentProgress = progress / totalMessagesToSend;
             Current.ProgressBarText.Text = $"{progress} of {totalMessagesToSend} messages sent.";
+            Current.ProgressBar.Progress = currentProgress;
+        }
+
+        public static async Task UpdateParsingMessageProgress(float currenFileCount, float totalFileCount)
+        {
+            if (!MainThread.IsMainThread)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await UpdateParsingMessageProgress(currenFileCount, totalFileCount);
+                });
+                return;
+            }
+
+            Current.ProgressBar.IsVisible = true;
+            Current.ProgressBarText.IsVisible = true;
+            var currentProgress = currenFileCount / totalFileCount;
+            Current.ProgressBarText.Text = $"{currenFileCount} of {totalFileCount} files parsed.";
             Current.ProgressBar.Progress = currentProgress;
         }
     }
