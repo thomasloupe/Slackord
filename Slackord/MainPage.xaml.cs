@@ -224,10 +224,12 @@ Would you like to open the donation page now?
                     if (hasValidBotToken)
                     {
                         WriteToDebugWindow("Slackord received a valid bot token. Bot connection is enabled!\n");
+                        PushDebugText();
                     }
                     else
                     {
                         WriteToDebugWindow("Slackord received an invalid bot token. Please enter a valid token.\n");
+                        PushDebugText();
                     }
 
                 }
@@ -267,12 +269,14 @@ Would you like to open the donation page now?
                 if (Preferences.Default.Get("FirstRun", true))
                 {
                     WriteToDebugWindow("Welcome to Slackord!\n");
+                    PushDebugText();
                     Preferences.Default.Set("FirstRun", false);
                     isFirstRun = true;
                 }
                 else
                 {
                     DebugWindow.Text += "Welcome back to Slackord!\n";
+                    PushDebugText();
                     isFirstRun = false;
                 }
             }
@@ -281,6 +285,7 @@ Would you like to open the donation page now?
                 Preferences.Default.Set("FirstRun", true);
                 isFirstRun = true;
                 WriteToDebugWindow("Welcome to Slackord!\n");
+                PushDebugText();
             }
         }
 
@@ -298,6 +303,7 @@ Would you like to open the donation page now?
                         BotConnectionButton.IsEnabled = true;
                         hasValidBotToken = true;
                         WriteToDebugWindow("Slackord found an existing valid bot token, and will use it.\n");
+                        PushDebugText();
                     }
                     else
                     {
@@ -305,6 +311,7 @@ Would you like to open the donation page now?
                         BotConnectionButton.IsEnabled = false;
                         hasValidBotToken = false;
                         WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
+                        PushDebugText();
                     }
                 }
                 else
@@ -314,6 +321,7 @@ Would you like to open the donation page now?
                     BotConnectionButton.IsEnabled = false;
                     hasValidBotToken = false;
                     WriteToDebugWindow("Please enter a valid bot token to enable bot connection.");
+                    PushDebugText();
                 }
             }
             else
@@ -325,6 +333,7 @@ Would you like to open the donation page now?
                     BotConnectionButton.IsEnabled = true;
                     hasValidBotToken = true;
                     WriteToDebugWindow("Slackord found an existing valid bot token, and will use it.\n");
+                    PushDebugText();
                 }
                 else
                 {
@@ -332,6 +341,7 @@ Would you like to open the donation page now?
                     BotConnectionButton.IsEnabled = false;
                     hasValidBotToken = false;
                     WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
+                    PushDebugText();
                 }
             }
         }

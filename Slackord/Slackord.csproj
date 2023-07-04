@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net7.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
+		<TargetFrameworks>net7.0-maccatalyst;net7.0-windows10.0.22621.0</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Slackord</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -30,36 +27,11 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</TargetPlatformMinVersion>
 		<BaseOutputPath></BaseOutputPath>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|x64'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-maccatalyst|AnyCPU'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-maccatalyst|x64'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-windows10.0.19041.0|x64'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-windows10.0.19041.0|x64'">
-	  <ApplicationId>com.thomasloupe.slackord</ApplicationId>
-	</PropertyGroup>-->
-
+	
 	<ItemGroup>
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
@@ -81,11 +53,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
 		<PackageReference Include="Discord.Net" Version="3.10.0" />
 		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-		<PackageReference Include="Octokit" Version="6.0.0" />
+		<PackageReference Include="Octokit" Version="6.1.0" />
 	</ItemGroup>
 
 </Project>

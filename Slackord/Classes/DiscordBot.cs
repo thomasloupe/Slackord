@@ -19,6 +19,7 @@ namespace Slackord.Classes
                 throw new InvalidOperationException("DiscordClient is already initialized.");
             }
             MainPage.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
+            MainPage.PushDebugText();
             DiscordSocketConfig _config = new();
             {
                 _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
@@ -72,6 +73,7 @@ namespace Slackord.Classes
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
                             MainPage.WriteToDebugWindow($"\nError creating slash command in guild {guild.Name}: {ex.Message}\n");
+                            MainPage.PushDebugText();
                         });
                     }
                 }
@@ -81,6 +83,7 @@ namespace Slackord.Classes
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     MainPage.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n");
+                    MainPage.PushDebugText();
                 });
             }
         }
@@ -90,6 +93,7 @@ namespace Slackord.Classes
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 MainPage.WriteToDebugWindow(arg.ToString() + "\n");
+                MainPage.PushDebugText();
             });
 
             return Task.CompletedTask;
