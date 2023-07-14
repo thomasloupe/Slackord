@@ -39,12 +39,10 @@ namespace Slackord.Classes
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            if (command.Data.Name.Equals("slackord") &&
-                DiscordClient.Guilds.FirstOrDefault() is { } guild)
+            if (command.Data.Name.Equals("slackord"))
             {
-                var guildID = guild.Id;
-                await PostMessagesToDiscord(guildID, command);
-
+                var guildId = command.GuildId;
+                await PostMessagesToDiscord((ulong)guildId, command);
             }
         }
 
