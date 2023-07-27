@@ -3,7 +3,6 @@
 [Join the Slackord Discord!](https://discord.gg/yccMweYPN8)
 
 Slackord is a cross-platform application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
-Slackord is the .NET7 MAUI version of the [Slackord 1.x](https://github.com/thomasloupe/Slackord1) Python/Tkinter app with significant feature additions and improvements.
 
 # Demo
 https://github.com/thomasloupe/Slackord/assets/6563450/adee8003-b51b-4859-b8d4-3a3e8dcc33c2
@@ -12,8 +11,8 @@ https://github.com/thomasloupe/Slackord/assets/6563450/adee8003-b51b-4859-b8d4-3
 1. `Cross platform` - Works on Windows(x64) and Mac(x64).
 1. `Imports channels` - Slackord will automatically recreate all your Slack channels on Discord.
 1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord will read your entire Slack export directory for JSON files, and parse/post them to Discord.
-1. `Output window` - Slackord has a log window that will update you on what's going on in real-time.
-1. `Progress Bar` - Slackord has a progress bar and will tell you how many messages in total there are to send to Discord, and how many it's already sent.
+1. `Output window` - Slackord has a log window that will warn you if anything went wrong.
+1. `Progress Bar` - Slackord has a progress bar for parsing and posting messages to Discord.
 1. `Auto rate-limit detection` - Slackord limits the messages it sends over time so it doesn't spam or get itself squelched for posting too often.
 1. `Ease-of-use` - Slackord only needs to be set up once, and it'll remember your bot's token, making future imports easy.
 1. `Multiple Discord Servers` - Slackord can discern which Discord server it's in and can post to the server(s) you choose.
@@ -45,4 +44,5 @@ If you are on the free plan of Slack or need a reliable tool for exporting both 
 
 # Important: Please Read!
 1. If you need help, please feel free to join the Discord community listed at the top of this page, or open a new issue if it doesn't already exist.
+1. If you have a very large Slack server to import, it's much better to parse a couple channels at a time rather than of all of them at once. "Large servers" would be Slack imports that have more than 300-400 JSON files to parse in total across all channels.
 1. Slackord is free, and it will always be free. However, if you found Slackord worth donating something, you can donate from within Slackord by clicking Donate inside Slackord, or you can sponsor Slackord at the top of this repository by clicking the heart (sponsor) button. You can also [click here](https://paypal.me/thomasloupe) (PayPal) to donate directly to me.
