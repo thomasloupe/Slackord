@@ -1,6 +1,5 @@
 ﻿using MenuApp;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 
 namespace Slackord.Classes
 {
@@ -37,7 +36,8 @@ namespace Slackord.Classes
                     {
                         var rawTimeDate = pair["ts"];
                         double oldDateTime = (double)rawTimeDate;
-                        string convertDateTime = Helpers.ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g", CultureInfo.CurrentUICulture);
+                        string convertDateTime = Helpers.ConvertFromUnixTimestampToHumanReadableTime(oldDateTime).ToString("g");
+
                         string newDateTime = convertDateTime;
                         ParseThreads(pair);
 
@@ -61,15 +61,13 @@ namespace Slackord.Classes
                                 if (string.IsNullOrEmpty(slackRealName))
                                 {
                                     currentMessageParsing = newDateTime + " - " + slackMessage;
-                                    parsedMessages.Add(currentMessageParsing);
-                                    TotalMessageCount += 1;
                                 }
                                 else
                                 {
                                     currentMessageParsing = newDateTime + " - " + slackRealName + ": " + slackMessage;
-                                    parsedMessages.Add(currentMessageParsing);
-                                    TotalMessageCount += 1;
                                 }
+                                parsedMessages.Add(currentMessageParsing);
+                                TotalMessageCount += 1;
                             }
                             else
                             {
@@ -77,18 +75,23 @@ namespace Slackord.Classes
                                 if (currentMessageParsing.Length >= 2000)
                                 {
                                     MainPage.WriteToDebugWindow($@"
-                                The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
-                                This message will be split into multiple posts. The message that will be split is: {currentMessageParsing}
-                                ");
+                                    The following parse is over 2000 characters. Discord does not allow messages over 2000 characters.
+                                    This message will be split into multiple posts. The message that will be split is: {currentMessageParsing}
+                                    ");
+
+                                    foreach (var part in Helpers.SplitInParts(currentMessageParsing, 1995))
+                                    {
+                                        parsedMessages.Add(part);
+                                        TotalMessageCount += 1;
+                                    }
                                 }
                                 else
                                 {
-                                    currentMessageParsing = newDateTime + " - " + slackUserName + ": " + slackMessage;
                                     parsedMessages.Add(currentMessageParsing);
                                     TotalMessageCount += 1;
                                 }
                             }
-                            MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
+
                         }
 
                         if (pair.ContainsKey("files") && pair["files"] is JArray filesArray && filesArray.Count > 0)
@@ -98,15 +101,16 @@ namespace Slackord.Classes
                             if (!string.IsNullOrEmpty(fileLink))
                             {
                                 currentMessageParsing = fileLink;
-                                MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
                             }
                         }
 
                         if (pair.ContainsKey("bot_profile"))
                         {
+                            string messagePart = null;
                             try
                             {
-                                currentMessageParsing = pair["bot_profile"]?["name"]?.ToString() + ": " + pair["text"] + "\n";
+                                messagePart = pair["bot_profile"]?["name"]?.ToString() + ": " + pair["text"] + "\n";
+                                currentMessageParsing = messagePart;
                                 parsedMessages.Add(currentMessageParsing);
                                 TotalMessageCount += 1;
                             }
@@ -115,19 +119,20 @@ namespace Slackord.Classes
                                 MainPage.WriteToDebugWindow(ex.ToString() + "\n" + "Looking for bot_id instead...");
                                 try
                                 {
-                                    currentMessageParsing = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
+                                    messagePart = pair["bot_id"].ToString() + ": " + pair["text"] + "\n";
+                                    currentMessageParsing = messagePart;
                                     parsedMessages.Add(currentMessageParsing);
                                     TotalMessageCount += 1;
                                 }
                                 catch (Exception innerex)
                                 {
-                                    MainPage.WriteToDebugWindow(innerex.ToString());
+                                    MainPage.WriteToDebugWindow(innerex.ToString() + "\n\n" + "Message: " + messagePart + "\n\n" + "File: " + currentFile);
                                     currentMessageParsing = "The bot message was ignored.\n" +
-                                        "Please submit an issue on Github for this.";
+                                        "Please submit an issue on Github for this. The message was: \n\n" + messagePart;
                                 }
                             }
-                            MainPage.WriteToDebugWindow(currentMessageParsing + "\n");
                         }
+
                     }
                 }
                 channels[channelName] = parsedMessages;
@@ -138,7 +143,7 @@ namespace Slackord.Classes
 
                 boxOutput = new(character, boxCharacters);
                 leadingSpaces = new(' ', (boxCharacters - lineLength - 2) / 2);
-                MainPage.WriteToDebugWindow($"{boxOutput}\n{character}  {leadingSpaces}{parsingLine}{leadingSpaces}  {character}\n{boxOutput}\n\n");
+                MainPage.WriteToDebugWindow("\n" + $"{boxOutput}\n{character}  {leadingSpaces}{parsingLine}{leadingSpaces}  {character}\n{boxOutput}\n\n");
             }
             catch (Exception ex)
             {
