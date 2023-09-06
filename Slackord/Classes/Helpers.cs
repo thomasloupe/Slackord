@@ -1,32 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
 namespace Slackord.Classes
 {
     static class Helpers
     {
         public static string DeDupeURLs(string input)
         {
-            // First issue: Replace %7C with /
-            var regex1 = new Regex(@"<(https?://[^\|>%7C]+)%7C([^>]+)>");
-            input = regex1.Replace(input, "<$1/$2>");
+            input = input.Replace("<", "").Replace(">", "");
 
-            // Second issue: Deduplicate URLs
-            var regex2 = new Regex(@"<((https?://|www\.)[^\|>%7C]+)\|((https?://|www\.)[^\|>%7C]+)>");
-            return regex2.Replace(input, match =>
+            string[] parts = input.Split('|');
+
+            if (parts.Length == 2)
             {
-                // If the two URLs are the same
-                if (match.Groups[1].Value == match.Groups[3].Value)
-                    return $"<{match.Groups[1].Value}>";
+                if (Uri.TryCreate(parts[0], UriKind.Absolute, out Uri uri1) &&
+                    Uri.TryCreate(parts[1], UriKind.Absolute, out Uri uri2))
+                {
+                    if (uri1.GetLeftPart(UriPartial.Path) == uri2.GetLeftPart(UriPartial.Path))
+                    {
+                        input = input.Replace(parts[1] + "|", "");
+                    }
+                }
+            }
 
-                // If the base of the two URLs is the same
-                if (match.Groups[1].Value == match.Groups[3].Value.Substring(0, match.Groups[1].Value.Length))
-                    return $"<{match.Groups[3].Value}>";
+            string[] parts2 = input.Split('|').Distinct().ToArray();
+            input = string.Join("|", parts2);
 
-                // If neither of the above conditions are met, return the original matched string
-                return match.Value;
-            });
+            // Replacing any instance of %7C with a space.
+            input = input.Replace("%7C", " ");
+
+            // Replacing any instance of | with a space, just in case it was missed in the URL encoding.
+            input = input.Replace("|", " ");
+
+            return input;
         }
 
         public static DateTime ConvertFromUnixTimestampToHumanReadableTime(double timestamp)
