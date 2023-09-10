@@ -30,6 +30,7 @@
 		<BaseOutputPath></BaseOutputPath>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<Platforms>AnyCPU;x64</Platforms>
+		<Configurations>Debug;Release;Slackord Mac</Configurations>
 	</PropertyGroup>
 	
 	<ItemGroup>

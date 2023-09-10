@@ -6,14 +6,18 @@ namespace Slackord.Classes
 {
     static class ImportJson
     {
-        public static readonly Dictionary<string, List<string>> Channels = new();
+        public static readonly Dictionary<string, List<Message>> Channels = new();
 
         public static async Task ImportJsonFolder(CancellationToken cancellationToken)
         {
-            string selectedFolder = null;
-            List<string> subDirectories = new();
             try
             {
+                string selectedFolder = null;
+                List<string> subDirectories = new();
+                List<string> fileList = new();
+                int fileCount = 0;
+                fileList.Clear();
+
                 var result = await FolderPicker.Default.PickAsync(cancellationToken);
                 if (!result.IsSuccessful)
                 {
@@ -21,8 +25,6 @@ namespace Slackord.Classes
                 }
 
                 selectedFolder = result.Folder.Path;
-                int fileCount = 0;
-                List<string> fileList = new();
 
                 foreach (var file in Directory.EnumerateFiles(selectedFolder, "*.json", SearchOption.AllDirectories))
                 {
@@ -40,8 +42,6 @@ namespace Slackord.Classes
                     }
                     if (fileList.Count > 0)
                     {
-                        Channels[folderName] = fileList;
-
                         var parser = new Parser();
                         await parser.ParseJsonFiles(fileList, folderName, Channels);
                     }

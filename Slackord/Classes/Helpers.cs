@@ -22,11 +22,7 @@ namespace Slackord.Classes
 
             string[] parts2 = input.Split('|').Distinct().ToArray();
             input = string.Join("|", parts2);
-
-            // Replacing any instance of %7C with a space.
             input = input.Replace("%7C", " ");
-
-            // Replacing any instance of | with a space, just in case it was missed in the URL encoding.
             input = input.Replace("|", " ");
 
             return input;
