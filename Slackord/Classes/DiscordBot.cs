@@ -108,6 +108,7 @@ namespace Slackord.Classes
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
+            await DiscordClient.SetActivityAsync(new Game("through messages...", ActivityType.Playing));
             var totalMessageCount = Parser.TotalMessageCount;
             float progress = 0;
 
@@ -145,7 +146,7 @@ namespace Slackord.Classes
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        MainPage.WriteToDebugWindow($"Beginning transfer of Slack messages to Discord for {channelName}...\n-----------------------------------------");
+                        MainPage.WriteToDebugWindow($"Beginning transfer of Slack messages to Discord for {channelName}...\n-----------------------------------------\n");
                     });
 
                     RestThreadChannel threadID = null;
@@ -156,8 +157,8 @@ namespace Slackord.Classes
 
                         if (messageToSend.Length >= 2000)
                         {
-                            // Break down long messages into parts that Discord can handle (2000 char limit per message)
-                            int maxMessageLength = 2000; // Discord's max message length
+                            // Break down long messages into parts that Discord can handle (2000 char limit per message).
+                            int maxMessageLength = 2000; // Discord's max message length.
                             int numberOfParts = (int)Math.Ceiling((double)messageToSend.Length / maxMessageLength);
                             RestThreadChannel currentThreadID = threadID;
 
@@ -187,7 +188,7 @@ namespace Slackord.Classes
                         }
                         else
                         {
-                            // The logic for messages that don't need to be split
+                            // The logic for messages that don't need to be split.
                             if (message.IsThreadStart)
                             {
                                 await createdChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
@@ -221,7 +222,7 @@ namespace Slackord.Classes
             });
 
             await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-            await DiscordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
+            await DiscordClient.SetActivityAsync(new Game("channels for commands!", ActivityType.Listening));
         }
     }
 }
