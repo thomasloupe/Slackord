@@ -1,61 +1,97 @@
-﻿using MenuApp;
-using System.Globalization;
-using CommunityToolkit.Maui.Storage;
-
-namespace Slackord.Classes
+﻿namespace Slackord.Classes
 {
-    static class ImportJson
-    {
-        public static readonly Dictionary<string, List<string>> Channels = new();
+    using System.Collections.Generic;
+    using System.IO;
+    using Newtonsoft.Json.Linq;
+    using System.Threading.Tasks;
+    using System.Threading;
+    using CommunityToolkit.Maui.Storage;
+    using MenuApp;
 
-        public static async Task ImportJsonFolder(CancellationToken cancellationToken)
+    public class ImportJson
+    {
+        public static List<Channel> Channels { get; set; } = new List<Channel>();
+
+        public static async Task ImportJsonAsync(CancellationToken cancellationToken)
         {
-            string selectedFolder = null;
-            List<string> subDirectories = new();
             try
             {
-                var result = await FolderPicker.Default.PickAsync(cancellationToken);
-                if (!result.IsSuccessful)
+                var picker = await FolderPicker.Default.PickAsync(cancellationToken);
+                var folderPath = picker.Folder.Path;
+                if (!string.IsNullOrEmpty(folderPath))
                 {
-                    return;
+                    Channels = await ConvertAsync(folderPath, cancellationToken);
                 }
-
-                selectedFolder = result.Folder.Path;
-                int fileCount = 0;
-                List<string> fileList = new();
-
-                foreach (var file in Directory.EnumerateFiles(selectedFolder, "*.json", SearchOption.AllDirectories))
+                else
                 {
-                    fileCount++;
+                    // Handle the case where no folder was selected or the dialog was canceled.
                 }
-
-                foreach (var file in Directory.EnumerateFiles(selectedFolder, "*.json", SearchOption.AllDirectories))
-                {
-                    var folderName = Path.GetFileName(Path.GetDirectoryName(file));
-
-                    string fileName = Path.GetFileNameWithoutExtension(file);
-                    if (DateTime.TryParseExact(fileName, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fileDate))
-                    {
-                        fileList.Add(file);
-                    }
-                    if (fileList.Count > 0)
-                    {
-                        Channels[folderName] = fileList;
-
-                        var parser = new Parser();
-                        await parser.ParseJsonFiles(fileList, folderName, Channels);
-                    }
-                    MainThread.BeginInvokeOnMainThread(async () =>
-                    {
-                        await MainPage.UpdateParsingMessageProgress(fileList.Count, fileCount);
-                    });
-                }
-                MainPage.PushDebugText();
             }
-            catch (Exception ex)
+            catch (OperationCanceledException)
             {
-                MainPage.WriteToDebugWindow($"\n\n{ex.Message}\n\n");
+                // Handle the cancellation.
             }
+        }
+
+        public static async Task<List<Channel>> ConvertAsync(string folderPath, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var channels = new List<Channel>();
+            var directoryInfo = new DirectoryInfo(folderPath);
+            var channelDirectories = directoryInfo.GetDirectories();
+
+            foreach (var channelDirectory in channelDirectories)
+            {
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var channel = new Channel { Name = channelDirectory.Name };
+                    var jsonFiles = channelDirectory.GetFiles("*.json");
+                    int jsonFileCount = jsonFiles.Length;
+
+                    ApplicationWindow.WriteToDebugWindow($"Importing channel {channel.Name} with {jsonFileCount} JSON files.\n");
+
+                    foreach (var jsonFile in jsonFiles)
+                    {
+                        try
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            var jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken);
+                            var messagesArray = JArray.Parse(jsonContent);
+
+                            foreach (JObject slackMessage in messagesArray.Cast<JObject>())
+                            {
+                                cancellationToken.ThrowIfCancellationRequested();
+
+                                var discordMessage = MessageBuilder.BuildMessage(slackMessage);
+                                channel.Messages.Add(discordMessage);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n");
+                        }
+                    }
+
+                    channels.Add(channel);
+                    ApplicationWindow.WriteToDebugWindow($"Completed importing channel {channel.Name}.\n");
+                }
+                catch (Exception ex)
+                {
+                    ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n");
+                }
+            }
+
+            return channels;
+        }
+
+        public class Channel
+        {
+            public string Name { get; set; }
+            public List<Message> Messages { get; set; } = new List<Message>();
         }
     }
 }

@@ -1,0 +1,456 @@
+[
+    {
+        "client_msg_id": "35911c51-bbc5-4749-b9d6-9703aeece7db",
+        "type": "message",
+        "text": "Bij RET zoeken ze een data analist\/power bi specialist. Er is een directe ingang via iemand in mijn netwerk, op dit moment heb helaas niet meer details. Graag een mailtje bij belangstelling, dan zorg ik dat je gekoppeld wordt aan de juiste persoon.",
+        "user": "U04C6A11YH5",
+        "ts": "1693987158.919409",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "6FO1",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Bij RET zoeken ze een data analist\/power bi specialist. Er is een directe ingang via iemand in mijn netwerk, op dit moment heb helaas niet meer details. Graag een mailtje bij belangstelling, dan zorg ik dat je gekoppeld wordt aan de juiste persoon."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "83dcfe115266",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-11-28\/4427752965205_83dcfe115266eb327984_72.jpg",
+            "first_name": "Natalie",
+            "real_name": "Natalie in 't Veld",
+            "display_name": "Natalie in 't Veld",
+            "team": "TMJ473C8J",
+            "name": "natalie.intveld",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        }
+    },
+    {
+        "client_msg_id": "D691B835-BF34-4703-8B81-962DB0B1B316",
+        "type": "message",
+        "text": "Via yacht wordt er een BI developer gezocht voor KPN in Amsterdam: \n<https:\/\/www.yacht.nl\/vacatures\/9139170|https:\/\/www.yacht.nl\/vacatures\/9139170>",
+        "user": "UMRH7UZSP",
+        "ts": "1693987316.361709",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "becR",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Via yacht wordt er een BI developer gezocht voor KPN in Amsterdam: \n"
+                            },
+                            {
+                                "type": "link",
+                                "url": "https:\/\/www.yacht.nl\/vacatures\/9139170",
+                                "text": "https:\/\/www.yacht.nl\/vacatures\/9139170"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "2f4bae347894",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-11-20\/4422714101952_2f4bae3478942a240bb3_72.png",
+            "first_name": "Remco",
+            "real_name": "Remco van Putten",
+            "display_name": "Remco van Putten",
+            "team": "TMJ473C8J",
+            "name": "info167",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "attachments": [
+            {
+                "image_url": "https:\/\/static.randstadgroep.nl\/yacht\/images\/share\/yacht-share.png",
+                "image_width": 600,
+                "image_height": 315,
+                "image_bytes": 62427,
+                "from_url": "https:\/\/www.yacht.nl\/vacatures\/9139170",
+                "service_icon": "https:\/\/www.yacht.nl\/favicon.ico",
+                "id": 1,
+                "original_url": "https:\/\/www.yacht.nl\/vacatures\/9139170",
+                "fallback": "YACHT: BI Developer Amsterdam",
+                "text": "Wij zijn op zoek naar een BI Developer in Amsterdam voor 40.0 uur bij Koninklijke KPN N.V.",
+                "title": "BI Developer Amsterdam",
+                "title_link": "https:\/\/www.yacht.nl\/vacatures\/9139170",
+                "service_name": "YACHT"
+            }
+        ],
+        "reactions": [
+            {
+                "name": "+1::skin-tone-4",
+                "users": [
+                    "UQZ2L2MUP"
+                ],
+                "count": 1
+            }
+        ]
+    },
+    {
+        "client_msg_id": "CF866246-3B22-4AB6-AB0B-CB993A5672C1",
+        "type": "message",
+        "text": "<@U04C6A11YH5> heb je voor mij een e-mailadres. De mijne is <mailto:info@theturningpoint.nl|info@theturningpoint.nl>\n\nM <tel:0629113588|0629113588>",
+        "user": "UMYUWF6HX",
+        "ts": "1693988107.076029",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "=D6E",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "user",
+                                "user_id": "U04C6A11YH5"
+                            },
+                            {
+                                "type": "text",
+                                "text": " heb je voor mij een e-mailadres. De mijne is "
+                            },
+                            {
+                                "type": "link",
+                                "url": "mailto:info@theturningpoint.nl",
+                                "text": "info@theturningpoint.nl"
+                            },
+                            {
+                                "type": "text",
+                                "text": "\n\nM "
+                            },
+                            {
+                                "type": "link",
+                                "url": "tel:0629113588",
+                                "text": "0629113588"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "008750d6fa70",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2023-01-17\/4668763789345_008750d6fa70b061d464_72.png",
+            "first_name": "Ton",
+            "real_name": "Ton Vermeij",
+            "display_name": "Ton Vermeij",
+            "team": "TMJ473C8J",
+            "name": "info105",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        }
+    },
+    {
+        "client_msg_id": "c39ef240-f977-4f5f-94bb-2c5dd0135649",
+        "type": "message",
+        "text": "Beste Erwin,\n\nVoor een goede relatie ben ik momenteel opzoek naar het volgende profiel. Is dit iets voor jou? Zo niet, voel je niet verplicht te reageren!\n\n*MS BI Back-end specialist | Omgeving Rotterdam | 32 uur | 6 maanden + optie tot verlenging | 1 dag op kantoor | 1 november starten |*\n\nVoor een goede relatie van Data-First ben ik opzoek naar een on prem BI-backend specialist. Binnen deze organisaties wordt er gewerkt in een agile omgeving met sprints van 2 weken. Op de planning van het bedrijf voor volgend jaar staat een grote migratie waar de on prem omgeving volledig word gemigreerd naar de cloud. Het is om die reden de intentie om voor de lange termijn een samenwerking aan te gaan.\n\n• Eisen:Ervaring met SSIS\/ SSAS\/ SSRS\n• Ervaring met Databricks is een pre\nInteresse en per direct beschikbaar? Stuur dan even je CV en ik bel je zo snel mogelijk op!\n\n\nIemand enig idee waar dit is?",
+        "user": "UN2FK7A68",
+        "ts": "1693994081.399179",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "VeUUr",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Beste Erwin,\n\nVoor een goede relatie ben ik momenteel opzoek naar het volgende profiel. Is dit iets voor jou? Zo niet, voel je niet verplicht te reageren!\n\n"
+                            },
+                            {
+                                "type": "text",
+                                "text": "MS BI Back-end specialist | Omgeving Rotterdam | 32 uur | 6 maanden + optie tot verlenging | 1 dag op kantoor | 1 november starten |",
+                                "style": {
+                                    "bold": true
+                                }
+                            },
+                            {
+                                "type": "text",
+                                "text": "\n\nVoor een goede relatie van Data-First ben ik opzoek naar een on prem BI-backend specialist. Binnen deze organisaties wordt er gewerkt in een agile omgeving met sprints van 2 weken. Op de planning van het bedrijf voor volgend jaar staat een grote migratie waar de on prem omgeving volledig word gemigreerd naar de cloud. Het is om die reden de intentie om voor de lange termijn een samenwerking aan te gaan.\n\n"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "rich_text_list",
+                        "elements": [
+                            {
+                                "type": "rich_text_section",
+                                "elements": [
+                                    {
+                                        "type": "text",
+                                        "text": "Eisen:Ervaring met SSIS\/ SSAS\/ SSRS"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "rich_text_section",
+                                "elements": [
+                                    {
+                                        "type": "text",
+                                        "text": "Ervaring met Databricks is een pre"
+                                    }
+                                ]
+                            }
+                        ],
+                        "style": "bullet",
+                        "indent": 0,
+                        "border": 0
+                    },
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "\nInteresse en per direct beschikbaar? Stuur dan even je CV en ik bel je zo snel mogelijk op!\n\n\nIemand enig idee waar dit is?"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "80ea71265bbf",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2019-09-07\/751828169060_80ea71265bbfe7c0cfda_72.jpg",
+            "first_name": "",
+            "real_name": "Erwin Slob",
+            "display_name": "Erwin Slob",
+            "team": "TMJ473C8J",
+            "name": "erwinslob",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1693994081.399179",
+        "reply_count": 4,
+        "reply_users_count": 3,
+        "latest_reply": "1694021541.803859",
+        "reply_users": [
+            "UNU70QLT0",
+            "UMRFQ2FQB",
+            "UPV5XUP09"
+        ],
+        "replies": [
+            {
+                "user": "UNU70QLT0",
+                "ts": "1693994698.239259"
+            },
+            {
+                "user": "UNU70QLT0",
+                "ts": "1693998668.655929"
+            },
+            {
+                "user": "UMRFQ2FQB",
+                "ts": "1694010053.401619"
+            },
+            {
+                "user": "UPV5XUP09",
+                "ts": "1694021541.803859"
+            }
+        ],
+        "is_locked": false,
+        "subscribed": false
+    },
+    {
+        "client_msg_id": "fa1f0389-a189-4d46-92dc-24e235ff18b8",
+        "type": "message",
+        "text": "Helaas niet. Zie dat Data-First deze op freelance heeft geplaatst. Ik zal eens contact opnemen.",
+        "user": "UNU70QLT0",
+        "ts": "1693994698.239259",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "nYQ",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Helaas niet. Zie dat Data-First deze op freelance heeft geplaatst. Ik zal eens contact opnemen."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "c1eec45c3877",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2019-09-26\/776044950215_c1eec45c38772ffa731c_72.jpg",
+            "first_name": "",
+            "real_name": "Ruud van de Beeten",
+            "display_name": "Ruud van de Beeten",
+            "team": "TMJ473C8J",
+            "name": "ruudvandebeeten",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "edited": {
+            "user": "UNU70QLT0",
+            "ts": "1693995144.000000"
+        },
+        "thread_ts": "1693994081.399179",
+        "parent_user_id": "UN2FK7A68"
+    },
+    {
+        "client_msg_id": "078a0a3a-4e02-4d2d-b605-67e6f2c6c0df",
+        "type": "message",
+        "text": "Ik kon alleen lospeuteren dat het gaat om een grote logistiek speler.",
+        "user": "UNU70QLT0",
+        "ts": "1693998668.655929",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "KAiZj",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Ik kon alleen lospeuteren dat het gaat om een grote logistiek speler."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "c1eec45c3877",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2019-09-26\/776044950215_c1eec45c38772ffa731c_72.jpg",
+            "first_name": "",
+            "real_name": "Ruud van de Beeten",
+            "display_name": "Ruud van de Beeten",
+            "team": "TMJ473C8J",
+            "name": "ruudvandebeeten",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1693994081.399179",
+        "parent_user_id": "UN2FK7A68"
+    },
+    {
+        "client_msg_id": "22554c18-869c-40f0-9c36-71cb3f10b28f",
+        "type": "message",
+        "text": "Ik kan zo niks verzinnen met Rotterdam en \"Grote Logistieke speler\" :zany_face:",
+        "user": "UMRFQ2FQB",
+        "ts": "1694010053.401619",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "Yfb",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Ik kan zo niks verzinnen met Rotterdam en \"Grote Logistieke speler\" "
+                            },
+                            {
+                                "type": "emoji",
+                                "name": "zany_face",
+                                "unicode": "1f92a"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "bdd7da46eea5",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2023-09-06\/5842027940599_bdd7da46eea50ff0e2dd_72.png",
+            "first_name": "",
+            "real_name": "Eelco Drost",
+            "display_name": "Eelco Drost",
+            "team": "TMJ473C8J",
+            "name": "eelcodrost",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1693994081.399179",
+        "parent_user_id": "UN2FK7A68"
+    },
+    {
+        "client_msg_id": "4640720e-b681-41ef-a4b8-8b88ed031fd2",
+        "type": "message",
+        "text": "Ik denk is 1 van deze bedrijven (ckeck onder):\n\"\nHi Manhal, Devi hier van Hero. Het is al eventjes geleden, hoe is het? Wij zijn op dit moment voor Dura Vermeer en Croonwolter en Dros op zoek naar Data Engineers. 1 keer on-prem\/cloud combinatie, 1 keer MS Azure en Databricks en 2 keer PowerBI. Allemaal in Rotterdam. Mocht je iemand in je netwerk hebben die vanaf oktober op zoek is naar een nieuwe opdracht kom ik graag in contact\"",
+        "user": "UPV5XUP09",
+        "ts": "1694021541.803859",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "nt99",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Ik denk is 1 van deze bedrijven (ckeck onder):\n\"\nHi Manhal, Devi hier van Hero. Het is al eventjes geleden, hoe is het? Wij zijn op dit moment voor Dura Vermeer en Croonwolter en Dros op zoek naar Data Engineers. 1 keer on-prem\/cloud combinatie, 1 keer MS Azure en Databricks en 2 keer PowerBI. Allemaal in Rotterdam. Mocht je iemand in je netwerk hebben die vanaf oktober op zoek is naar een nieuwe opdracht kom ik graag in contact\""
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "27836a894533",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-11\/993395668388_27836a894533af840f08_72.jpg",
+            "first_name": "Manhal10",
+            "real_name": "Manhal10",
+            "display_name": "Manhal",
+            "team": "TMJ473C8J",
+            "name": "biam.consultancy",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1693994081.399179",
+        "parent_user_id": "UN2FK7A68",
+        "reactions": [
+            {
+                "name": "+1::skin-tone-4",
+                "users": [
+                    "UN2FK7A68"
+                ],
+                "count": 1
+            }
+        ]
+    }
+]

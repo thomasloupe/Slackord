@@ -16,7 +16,6 @@
         </Grid.ColumnDefinitions>
         
         <!-- Main UI Buttons -->
-        
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />

@@ -1,0 +1,170 @@
+[
+    {
+        "client_msg_id": "d6a21c2e-5704-484c-98cb-aad0fe561974",
+        "type": "message",
+        "text": "Let ook op dat GA een soort van beveiliging heeft dat data te specifiek mag worden. (zodat het niet te herleiden is naar een te specifieke doelgroep\/persoon). Voorbeeld: som van het aantal sessies geeft bijvoorbeeld het getal 1000. Als je de  rapportage maakt per dag ipv per maand, en handmatig de som maakt, kom je niet meer op 1000 maar minder. Het is dus belangrijk dat je de rapportages niet met te veel detail niveau maakt, want dan kloppen je cijfers niet meer....",
+        "user": "U04B95WA9M5",
+        "ts": "1692954196.551089",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "r8wGx",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Let ook op dat GA een soort van beveiliging heeft dat data te specifiek mag worden. (zodat het niet te herleiden is naar een te specifieke doelgroep\/persoon). Voorbeeld: som van het aantal sessies geeft bijvoorbeeld het getal 1000. Als je de  rapportage maakt per dag ipv per maand, en handmatig de som maakt, kom je niet meer op 1000 maar minder. Het is dus belangrijk dat je de rapportages niet met te veel detail niveau maakt, want dan kloppen je cijfers niet meer...."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "gc826b409cc8",
+            "image_72": "https:\/\/secure.gravatar.com\/avatar\/c826b409cc833b8f4affc4faffffc6c2.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0015-72.png",
+            "first_name": "Sjoerd",
+            "real_name": "Sjoerd Nefkens",
+            "display_name": "Sjoerd Nefkens",
+            "team": "TMJ473C8J",
+            "name": "sjoerd",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691488634.881819",
+        "parent_user_id": "U03Q4LFLYQZ"
+    },
+    {
+        "client_msg_id": "8056D007-161B-4613-BE09-30417967FD95",
+        "type": "message",
+        "text": "Dat was vroeger, tegenwoordig met GA4 dat een andere architectuur heeft en event based is, heb je dat soort verschillen niet meer. ",
+        "user": "U04CPA6CKLL",
+        "ts": "1692957128.002819",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "X72YP",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Dat was vroeger, tegenwoordig met GA4 dat een andere architectuur heeft en event based is, heb je dat soort verschillen niet meer"
+                            },
+                            {
+                                "type": "text",
+                                "text": "."
+                            },
+                            {
+                                "type": "text",
+                                "text": " "
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "cc70d4d42342",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2023-07-18\/5598132631475_cc70d4d42342687a34c7_72.png",
+            "first_name": "Bob",
+            "real_name": "Bob Brooijmans",
+            "display_name": "Bob Brooijmans",
+            "team": "TMJ473C8J",
+            "name": "bobbrooijmans",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691488634.881819",
+        "parent_user_id": "U03Q4LFLYQZ"
+    },
+    {
+        "client_msg_id": "931c43b5-b722-4659-bfe3-e0ca73931b2e",
+        "type": "message",
+        "text": "Goed om te weten, maar dat kan het verschil met GA3 goed verklaren.",
+        "user": "U04B95WA9M5",
+        "ts": "1692957190.768809",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "Md+kK",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Goed om te weten, maar dat kan het verschil met GA3 goed verklaren."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "gc826b409cc8",
+            "image_72": "https:\/\/secure.gravatar.com\/avatar\/c826b409cc833b8f4affc4faffffc6c2.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0015-72.png",
+            "first_name": "Sjoerd",
+            "real_name": "Sjoerd Nefkens",
+            "display_name": "Sjoerd Nefkens",
+            "team": "TMJ473C8J",
+            "name": "sjoerd",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691488634.881819",
+        "parent_user_id": "U03Q4LFLYQZ"
+    },
+    {
+        "client_msg_id": "873e698d-38f3-42ea-86c5-7eba4a6fa612",
+        "type": "message",
+        "text": "Thanks, Sjoerd. Leuk dat je meedenkt!",
+        "user": "U03Q4LFLYQZ",
+        "ts": "1692958633.724719",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "JXU+A",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Thanks, Sjoerd. Leuk dat je meedenkt!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "a0127304a290",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-08-04\/3921005099952_a0127304a29029d282c3_72.png",
+            "first_name": "Afrom",
+            "real_name": "Afrom van Berg",
+            "display_name": "Afrom van Berg",
+            "team": "TMJ473C8J",
+            "name": "afrom",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691488634.881819",
+        "parent_user_id": "U03Q4LFLYQZ"
+    }
+]

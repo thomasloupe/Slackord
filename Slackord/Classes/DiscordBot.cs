@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.Net;
-using Discord.Rest;
 using Discord.WebSocket;
 using MenuApp;
 
@@ -18,8 +17,7 @@ namespace Slackord.Classes
             {
                 throw new InvalidOperationException("DiscordClient is already initialized.");
             }
-            MainPage.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
-            MainPage.PushDebugText();
+            ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
             DiscordSocketConfig _config = new();
             {
                 _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
@@ -50,12 +48,9 @@ namespace Slackord.Classes
         {
             try
             {
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await MainPage.ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                    await MainPage.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
-                    MainPage.BotConnectionButtonInstance.BackgroundColor = new Microsoft.Maui.Graphics.Color(0, 255, 0);
-                });
+                await ApplicationWindow.ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                await ApplicationWindow.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
+                MainPage.BotConnectionButtonInstance.BackgroundColor = new Microsoft.Maui.Graphics.Color(0, 255, 0);
 
                 foreach (var guild in DiscordClient.Guilds)
                 {
@@ -68,41 +63,28 @@ namespace Slackord.Classes
                     }
                     catch (HttpException ex)
                     {
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            MainPage.WriteToDebugWindow($"\nError creating slash command in guild {guild.Name}: {ex.Message}\n");
-                            MainPage.PushDebugText();
-                        });
+                        ApplicationWindow.WriteToDebugWindow($"\nError creating slash command in guild {guild.Name}: {ex.Message}\n");
                     }
                 }
             }
             catch (Exception ex)
             {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    MainPage.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n");
-                    MainPage.PushDebugText();
-                });
+                ApplicationWindow.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n");
             }
         }
 
         private Task DiscordClient_Log(LogMessage arg)
         {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                MainPage.WriteToDebugWindow(arg.ToString() + "\n");
-                MainPage.PushDebugText();
-            });
-
+            ApplicationWindow.WriteToDebugWindow(arg.ToString() + "\n");
             return Task.CompletedTask;
         }
 
         public async Task DisconectClient()
         {
-            await MainPage.ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 204, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+            await ApplicationWindow.ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 204, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
             await DiscordClient.StopAsync();
-            await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
-            await MainPage.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+            await ApplicationWindow.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+            await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
             await Task.CompletedTask;
         }
 
@@ -110,24 +92,15 @@ namespace Slackord.Classes
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await MainPage.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
-                await MainPage.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+                await ApplicationWindow.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+                await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                 await Task.CompletedTask;
             });
             await Task.CompletedTask;
         }
-
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
-            var totalMessageCount = Parser.TotalMessageCount;
-            float progress = 0;
-
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await MainPage.UpdateMessageSendProgress(progress, totalMessageCount);
-            });
-
             await interaction.DeferAsync();
 
             SocketGuild guild = DiscordClient.GetGuild(guildID);
@@ -135,181 +108,71 @@ namespace Slackord.Classes
             var slackordCategory = await guild.CreateCategoryChannelAsync(categoryName);
             ulong slackordCategoryId = slackordCategory.Id;
 
-            var channels = ImportJson.Channels;
+            var userManager = new UserManager(usersFilePath);  // Assume usersFilePath is the path to your users file
+            var threads = Parser.Convert(ImportJson);  // Get the threads using the Parser.Convert method
 
-            foreach (var channelName in channels.Keys)
+            foreach (var thread in threads)
             {
-                var createdChannel = await guild.CreateTextChannelAsync(channelName, properties =>
+
+                var channel = thread.Messages.First();  // Assume each message has a Channel property indicating its channel
+                var channelToCreate = channel.Name;
+                var createdChannel = await guild.CreateTextChannelAsync(channelToCreate, properties =>
                 {
                     properties.CategoryId = slackordCategoryId;
                 });
 
                 ulong createdChannelId = createdChannel.Id;
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    MainPage.WriteToDebugWindow($"Created {channelName} on Discord with ID: {createdChannelId}.\n");
-                });
+                ApplicationWindow.WriteToDebugWindow($"Created {channelToCreate} on Discord with ID: {createdChannelId}.\n");
 
                 try
                 {
                     await DiscordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
-                    int messageCount = 0;
 
-                    if (channels.TryGetValue(channelName, out var messages))
+                    foreach (var message in thread.Messages)
                     {
-                        MainThread.BeginInvokeOnMainThread(() =>
+                        var textContent = Reconstruct.ConvertTextContent(message.Text);
+                        var discordEmbedBuilder = Reconstruct.ConvertAttachments(message.Attachments);
+                        var discordReactions = Reconstruct.ConvertReactions(message.Reactions);
+
+                        // Replace Slack user IDs with user names
+                        textContent = userManager.GetUserName(message.UserId) + ": " + textContent;
+
+                        // If textContent is not empty, send it as a separate message.
+                        if (!string.IsNullOrWhiteSpace(textContent))
                         {
-                            MainPage.WriteToDebugWindow($"Beginning transfer of Slack messages to Discord for {channelName}..." + "\n" +
-                                "-----------------------------------------");
-                        });
+                            var sentMessage = await createdChannel.SendMessageAsync(textContent);
+                            ApplicationWindow.WriteToDebugWindow($"Sent message: {textContent} to channel {createdChannel.Name}\n");
 
-                        RestThreadChannel threadID = null;
-
-                        foreach (string message in messages)
-                        {
-                            bool sendAsThread = false;
-                            bool sendAsThreadReply = false;
-                            bool sendAsNormalMessage = false;
-
-                            string messageToSend = message;
-                            bool wasSplit = false;
-
-                            var _isThreadStart = Parser.isThreadStart;
-                            var _isThreadMessages = Parser.isThreadMessages;
-
-                            if (_isThreadStart[messageCount] == true)
+                            // Add reactions to the sent message
+                            foreach (var reaction in discordReactions)
                             {
-                                sendAsThread = true;
-                            }
-                            else if (_isThreadStart[messageCount] == false && _isThreadMessages[messageCount] == true)
-                            {
-                                sendAsThreadReply = true;
-                            }
-                            else
-                            {
-                                sendAsNormalMessage = true;
-                            }
-
-                            messageCount += 1;
-
-                            if (message.Length >= 2000)
-                            {
-                                var responses = messageToSend.SplitInParts(1800);
-
-                                MainThread.BeginInvokeOnMainThread(() =>
-                                {
-                                    MainPage.WriteToDebugWindow("SPLITTING AND POSTING: " + messageToSend);
-                                });
-
-                                foreach (var response in responses)
-                                {
-                                    messageToSend = response + " " + "\n";
-
-                                    if (sendAsThread)
-                                    {
-                                        if (DiscordClient.GetChannel(createdChannelId) is SocketTextChannel textChannel)
-                                        {
-                                            await textChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                            var latestMessages = await textChannel.GetMessagesAsync(1).FlattenAsync();
-                                            threadID = threadID = await createdChannel.CreateThreadAsync("Slackord Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, latestMessages.First());
-                                        }
-                                    }
-                                    else if (sendAsThreadReply)
-                                    {
-                                        if (threadID is not null)
-                                        {
-                                            await threadID.SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                        }
-                                        else
-                                        {
-                                            MainThread.BeginInvokeOnMainThread(() =>
-                                            {
-                                                MainPage.WriteToDebugWindow("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
-                                            });
-                                            await DiscordClient.GetGuild(guildID).GetTextChannel(createdChannelId).SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                        }
-                                    }
-                                    else if (sendAsNormalMessage)
-                                    {
-                                        if (DiscordClient.GetGuild(guildID).GetTextChannel(createdChannelId) is { } channel)
-                                        {
-                                            await channel.SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                        }
-                                    }
-
-                                    progress += 1;
-                                    MainThread.BeginInvokeOnMainThread(async () =>
-                                    {
-                                        await MainPage.UpdateMessageSendProgress(progress, totalMessageCount);
-                                    });
-                                }
-                                wasSplit = true;
-                            }
-                            else
-                            {
-                                MainThread.BeginInvokeOnMainThread(() =>
-                                {
-                                    MainPage.WriteToDebugWindow($"POSTING: {message}\n");
-                                });
-
-                                if (!wasSplit)
-                                {
-                                    if (sendAsThread)
-                                    {
-                                        await createdChannel.SendMessageAsync(messageToSend).ConfigureAwait(false);
-                                        var threadMessages = await createdChannel.GetMessagesAsync(1).FlattenAsync();
-                                        threadID = await createdChannel.CreateThreadAsync("New Thread", ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
-                                    }
-                                    else if (sendAsThreadReply)
-                                    {
-                                        if (threadID is not null)
-                                        {
-                                            await threadID.SendMessageAsync(messageToSend);
-                                        }
-                                        else
-                                        {
-                                            // This exception is hit when a Slackdump export contains a thread_ts in a message that isn't a thread reply.
-                                            // We should let the user know and post the message as a normal message, because that's what it is.
-                                            MainThread.BeginInvokeOnMainThread(() =>
-                                            {
-                                                MainPage.WriteToDebugWindow("Caught a Slackdump thread reply exception where a JSON entry had thread_ts and wasn't actually a thread start or reply before it excepted. Sending as a normal message...");
-                                            });
-                                            await createdChannel.SendMessageAsync(messageToSend);
-                                        }
-                                    }
-                                    else if (sendAsNormalMessage)
-                                    {
-                                        await createdChannel.SendMessageAsync(messageToSend);
-                                    }
-                                }
-
-                                progress += 1;
-                                MainThread.BeginInvokeOnMainThread(async () =>
-                                {
-                                    await MainPage.UpdateMessageSendProgress(progress, totalMessageCount);
-                                });
+                                await sentMessage.AddReactionAsync(new Emoji(reaction));
                             }
                         }
+
+                        // If there are attachments or files, send them as an embed in a separate message.
+                        if (discordEmbedBuilder.Fields.Count > 0)
+                        {
+                            var sentEmbedMessage = await createdChannel.SendMessageAsync(embed: discordEmbedBuilder.Build());
+                            ApplicationWindow.WriteToDebugWindow($"Sent embed message to channel {createdChannel.Name}\n");
+
+                            // Optionally, add reactions to the sent embed message too, if needed.
+                            // foreach (var reaction in discordReactions)
+                            // {
+                            //     await sentEmbedMessage.AddReactionAsync(new Emoji(reaction));
+                            // }
+                        }
                     }
-                    await DiscordClient.SetActivityAsync(new Game("for the Slackord command...", ActivityType.Listening));
+
+                    await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
+                    await DiscordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
                 }
                 catch (Exception ex)
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        MainPage.WriteToDebugWindow($"\n{ex.Message}\n");
-                    });
+                    ApplicationWindow.WriteToDebugWindow(ex.Message);
                 }
             }
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                MainPage.WriteToDebugWindow($"-----------------------------------------\nAll messages sent to Discord successfully!\n");
-            });
-
-            await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-            await DiscordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
         }
+
     }
 }

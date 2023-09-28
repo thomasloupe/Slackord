@@ -1,0 +1,258 @@
+[
+    {
+        "client_msg_id": "aff9ad4f-4626-4f6b-b7f3-9c9619a5d422",
+        "type": "message",
+        "text": "Ik ken OrinoQo niet maar er zijn vast mensen hier die een directe ingang hebben bij DHL. Voor de geïnteresseerden:\n\n*freelance Kafka\/DevOps bij DHL*\nBeste Arjen-Pieter, Ik stuurde je in april jl. ook al een inMail, maar het was toen denk ik niet opportuun. Ik recruit nog steeds voor DHL en zoek ditmaal een Kafka 'specialist'; iemand die op schaal met Kafka heeft gewerkt (voorbij aan beheer: configuring topics, managing data ingestion, streaming etc). Het platform team (de ambitie is ‘van wereldklasse’) krijgt verantwoordelijkheid over (beheer en doorontwikkeling) van een groot Kafka cluster. Wij zoeken dus iemand die goed is met Kafka op schaal, maar ook bij kan dragen aan de andere focus areas van het team: CI\/CD, andere Kubernetes clusters, DBaaS voor dev teams, allerhande automatisering, etc etc. Zou gaan om een inzet per ZSM voor 32-40 uur per week gedurende ten minste een jaar. 2 dagen per week in Utrecht. Interessant? Ben benieuwd, jij hopelijk ook. Fijne dag, Wietse. Wietse Boersma Managing Recruiter bij OrinoQo\n\nPS: Workflow 'post een aanvraag' lijkt bij mij niet te werken. Klopt dit?",
+        "user": "U02C58HRT9T",
+        "ts": "1691662371.802499",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "HvtnD",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Ik ken OrinoQo niet maar er zijn vast mensen hier die een directe ingang hebben bij DHL. Voor de geïnteresseerden:\n\n"
+                            },
+                            {
+                                "type": "text",
+                                "text": "freelance Kafka\/DevOps bij DHL",
+                                "style": {
+                                    "bold": true
+                                }
+                            },
+                            {
+                                "type": "text",
+                                "text": "\nBeste Arjen-Pieter, Ik stuurde je in april jl. ook al een inMail, maar het was toen denk ik niet opportuun. Ik recruit nog steeds voor DHL en zoek ditmaal een Kafka 'specialist'; iemand die op schaal met Kafka heeft gewerkt (voorbij aan beheer: configuring topics, managing data ingestion, streaming etc). Het platform team (de ambitie is ‘van wereldklasse’) krijgt verantwoordelijkheid over (beheer en doorontwikkeling) van een groot Kafka cluster. Wij zoeken dus iemand die goed is met Kafka op schaal, maar ook bij kan dragen aan de andere focus areas van het team: CI\/CD, andere Kubernetes clusters, DBaaS voor dev teams, allerhande automatisering, etc etc. Zou gaan om een inzet per ZSM voor 32-40 uur per week gedurende ten minste een jaar. 2 dagen per week in Utrecht. Interessant? Ben benieuwd, jij hopelijk ook. Fijne dag, Wietse. Wietse Boersma Managing Recruiter bij OrinoQo\n\nPS: Workflow 'post een aanvraag' lijkt bij mij niet te werken. Klopt dit?"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "0e886634d177",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2022-09-16\/4088299650453_0e886634d17721999ba2_72.png",
+            "first_name": "Arjen-Pieter",
+            "real_name": "Arjen-Pieter Troost",
+            "display_name": "Arjen-Pieter Troost",
+            "team": "TMJ473C8J",
+            "name": "a.p.troost",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691662371.802499",
+        "reply_count": 2,
+        "reply_users_count": 2,
+        "latest_reply": "1691665596.511919",
+        "reply_users": [
+            "UN2FK7A68",
+            "UNEGCNYMR"
+        ],
+        "replies": [
+            {
+                "user": "UN2FK7A68",
+                "ts": "1691664358.316119"
+            },
+            {
+                "user": "UNEGCNYMR",
+                "ts": "1691665596.511919"
+            }
+        ],
+        "is_locked": false,
+        "subscribed": false
+    },
+    {
+        "client_msg_id": "3598A605-5A80-429F-8CFE-890155747BDB",
+        "type": "message",
+        "text": "<@UNEGCNYMR> misschien ",
+        "user": "UN2FK7A68",
+        "ts": "1691664358.316119",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "nUne",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "user",
+                                "user_id": "UNEGCNYMR"
+                            },
+                            {
+                                "type": "text",
+                                "text": " misschien "
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "80ea71265bbf",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2019-09-07\/751828169060_80ea71265bbfe7c0cfda_72.jpg",
+            "first_name": "",
+            "real_name": "Erwin Slob",
+            "display_name": "Erwin Slob",
+            "team": "TMJ473C8J",
+            "name": "erwinslob",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691662371.802499",
+        "parent_user_id": "U02C58HRT9T"
+    },
+    {
+        "client_msg_id": "F8C73DCD-84DC-48F5-A52B-A99BC8C378AE",
+        "type": "message",
+        "text": "Ik zit er niet meer, wellicht <@UN5BZRSUE> of <@U013BSJJ6TU> ",
+        "user": "UNEGCNYMR",
+        "ts": "1691665596.511919",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "zPc8v",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Ik zit er niet meer, wellicht "
+                            },
+                            {
+                                "type": "user",
+                                "user_id": "UN5BZRSUE"
+                            },
+                            {
+                                "type": "text",
+                                "text": " of "
+                            },
+                            {
+                                "type": "user",
+                                "user_id": "U013BSJJ6TU"
+                            },
+                            {
+                                "type": "text",
+                                "text": " "
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "98c78cd71fef",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-01-24\/922652921398_98c78cd71fefb055e4a2_72.jpg",
+            "first_name": "",
+            "real_name": "Ricardo Schuurman",
+            "display_name": "",
+            "team": "TMJ473C8J",
+            "name": "ricardo",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691662371.802499",
+        "parent_user_id": "U02C58HRT9T"
+    },
+    {
+        "client_msg_id": "cdf592b1-51f9-4fe0-bcb9-952b76091ac3",
+        "type": "message",
+        "text": "Ja. Ik geef op LI altijd aan tot wanneer mijn contract loopt, en ben nu al gesprekken aan het voeren per 1 dec",
+        "user": "USKA7EYLT",
+        "ts": "1691665820.449389",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "Iafx",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Ja. Ik geef op LI altijd aan tot wanneer mijn contract loopt, en ben nu al gesprekken aan het voeren per 1 dec"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "g288492c820a",
+            "image_72": "https:\/\/secure.gravatar.com\/avatar\/288492c820a43ea087f3e1abb2f13c12.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0000-72.png",
+            "first_name": "Derek",
+            "real_name": "Derek van Leeuwen",
+            "display_name": "Derek van Leeuwen",
+            "team": "TMJ473C8J",
+            "name": "derek",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691572749.923779",
+        "parent_user_id": "U02DSLKN81L"
+    },
+    {
+        "client_msg_id": "73f2ef95-0b89-43eb-a69f-d6cee7915236",
+        "type": "message",
+        "text": "Nog een aanvraag die ik binnen kreeg. Loopt via Vye. Als je interesse hebt kan ik je het nummer sturen vd consultant daar.\n\n----\n\nIk zoek voor ABN Amro momenteel een Data Governance Lead voor hun onderdeel Detecting Financial Crime. Binnen dit onderdeel is een dataplatform (Azure) opgezet waarin zowel klantdata als interne\/operationele data is opgeslagen. Dit programma is al compliant op een aantal gangbare principes zoals GDPR en BCBS239\/Perdarr, maar ze willen de data governance hieromheen naar een hoger niveau tillen. Daarom zoeken ze een Lead met ervaring in dit soort regelgevingen, data governance\/management die hier het voortouw in kan nemen. Opdracht loopt van 1 september tot ten minste eind augustus 2024, werkvorm is hybride met 1 a 2 dagen per week op kantoor in Amsterdam, 36 uur per week. Tarief ligt tussen de €100,- en €115,- per uur all-in excl. BTW.",
+        "user": "UND7HE83U",
+        "ts": "1691672956.636149",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "5egqu",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Nog een aanvraag die ik binnen kreeg. Loopt via Vye. Als je interesse hebt kan ik je het nummer sturen vd consultant daar.\n\n----\n\nIk zoek voor ABN Amro momenteel een Data Governance Lead voor hun onderdeel Detecting Financial Crime. Binnen dit onderdeel is een dataplatform (Azure) opgezet waarin zowel klantdata als interne\/operationele data is opgeslagen. Dit programma is al compliant op een aantal gangbare principes zoals GDPR en BCBS239\/Perdarr, maar ze willen de data governance hieromheen naar een hoger niveau tillen. Daarom zoeken ze een Lead met ervaring in dit soort regelgevingen, data governance\/management die hier het voortouw in kan nemen. Opdracht loopt van 1 september tot ten minste eind augustus 2024, werkvorm is hybride met 1 a 2 dagen per week op kantoor in Amsterdam, 36 uur per week. Tarief ligt tussen de €100,- en €115,- per uur all-in excl. BTW."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "4d184950bba7",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-01-24\/907826426834_4d184950bba789f57f1b_72.jpg",
+            "first_name": "Jaap",
+            "real_name": "Jaap van t Hoff",
+            "display_name": "Jaap van t Hoff",
+            "team": "TMJ473C8J",
+            "name": "jvthoff76",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "reactions": [
+            {
+                "name": "+1::skin-tone-4",
+                "users": [
+                    "UQZ2L2MUP"
+                ],
+                "count": 1
+            }
+        ]
+    }
+]

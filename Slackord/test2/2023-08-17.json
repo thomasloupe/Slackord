@@ -1,0 +1,42 @@
+[
+    {
+        "client_msg_id": "A445E32E-22D4-4628-9312-D67E7C80282F",
+        "type": "message",
+        "text": "Viterra?",
+        "user": "UPHFMNXDM",
+        "ts": "1692282403.887139",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "H3Af",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Viterra?"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "TMJ473C8J",
+        "user_team": "TMJ473C8J",
+        "source_team": "TMJ473C8J",
+        "user_profile": {
+            "avatar_hash": "cea2e7a09f97",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2019-11-11\/830068757285_cea2e7a09f97eeb0ad7e_72.png",
+            "first_name": "Mike",
+            "real_name": "Mike Klaarhamer",
+            "display_name": "Mike",
+            "team": "TMJ473C8J",
+            "name": "mike",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "thread_ts": "1691530526.818409",
+        "parent_user_id": "UNE94HVUL"
+    }
+]
