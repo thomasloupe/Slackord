@@ -7,22 +7,11 @@ namespace MenuApp
     public class ApplicationWindow
     {
         private static MainPage MainPageInstance => MainPage.Current;
-        private readonly DiscordBot _discordBot = new();
+        private readonly DiscordBot _discordBot = DiscordBot.Instance;
         private CancellationTokenSource cancellationTokenSource;
         private bool isFirstRun;
         private bool hasValidBotToken;
         private string DiscordToken;
-
-        public ApplicationWindow()
-        {
-            Initialize();
-        }
-
-        private async void Initialize()
-        {
-            CheckForFirstRun();
-            await CheckForValidBotToken();
-        }
 
         public void CheckForFirstRun()
         {
@@ -65,7 +54,10 @@ namespace MenuApp
                     {
                         await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                         hasValidBotToken = false;
-                        WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
+                        WriteToDebugWindow("""
+                            Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.
+
+                            """);
                     }
                 }
                 else
@@ -73,7 +65,7 @@ namespace MenuApp
                     Preferences.Default.Set("SlackordBotToken", string.Empty);
                     await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                     hasValidBotToken = false;
-                    WriteToDebugWindow("Please enter a valid bot token to enable bot connection.");
+                    WriteToDebugWindow("Please enter a valid bot token to enable bot connection.\n");
                 }
             }
             else
@@ -89,7 +81,10 @@ namespace MenuApp
                 {
                     await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                     hasValidBotToken = false;
-                    WriteToDebugWindow("Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.\n");
+                    WriteToDebugWindow("""
+                        Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.
+
+                        """);
                 }
             }
         }
@@ -162,13 +157,13 @@ namespace MenuApp
                 await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                 await _discordBot.MainAsync(DiscordToken);
             }
-            else if (_discordBot.DiscordClient is { ConnectionState: ConnectionState.Disconnected } disconnectedClient)
+            else if (_discordBot.GetClientConnectionState() == ConnectionState.Disconnected)
             {
                 await ChangeBotConnectionButton("Connecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                await disconnectedClient.StartAsync();
+                await _discordBot.StartClientAsync();
                 while (true)
                 {
-                    var connectionState = disconnectedClient.ConnectionState;
+                    var connectionState = _discordBot.GetClientConnectionState();
                     if (connectionState == ConnectionState.Connected)
                     {
                         await ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
@@ -176,10 +171,10 @@ namespace MenuApp
                     }
                 }
             }
-            else if (_discordBot.DiscordClient.ConnectionState == ConnectionState.Connected)
+            else if (_discordBot.GetClientConnectionState() == ConnectionState.Connected)
             {
                 await ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                await _discordBot.DiscordClient.StopAsync();
+                await _discordBot.StopClientAsync();
                 await ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
             }
         }

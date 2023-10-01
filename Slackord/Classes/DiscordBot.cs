@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.Net;
+using Discord.Rest;
 using Discord.WebSocket;
 using MenuApp;
 
@@ -8,31 +9,42 @@ namespace Slackord.Classes
 {
     class DiscordBot
     {
+        public static DiscordBot Instance { get; private set; } = new DiscordBot();
         public DiscordSocketClient DiscordClient { get; set; }
         public IServiceProvider _services;
+        public Dictionary<ulong, RestTextChannel> CreatedChannels { get; set; } = new Dictionary<ulong, RestTextChannel>();
+        private DiscordBot() { }
 
-        public async Task MainAsync(string discordToken)
+        public async Task StartClientAsync()
         {
-            if (DiscordClient is not null)
-            {
-                throw new InvalidOperationException("DiscordClient is already initialized.");
-            }
-            ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
-            DiscordSocketConfig _config = new();
-            {
-                _config.GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds;
-            }
-            DiscordClient = new(_config);
-            _services = new ServiceCollection()
-                .AddSingleton(DiscordClient)
-                .BuildServiceProvider();
-            DiscordClient.Log += DiscordClient_Log;
-            await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
             await DiscordClient.StartAsync();
-            await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
-            DiscordClient.Ready += ClientReady;
-            DiscordClient.LoggedOut += OnClientDisconnect;
-            DiscordClient.SlashCommandExecuted += SlashCommandHandler;
+        }
+
+        public async Task StopClientAsync()
+        {
+            await DiscordClient.StopAsync();
+        }
+
+        public ConnectionState GetClientConnectionState()
+        {
+            return DiscordClient.ConnectionState;
+        }
+
+        private Task DiscordClient_Log(LogMessage arg)
+        {
+            ApplicationWindow.WriteToDebugWindow(arg.ToString() + "\n");
+            return Task.CompletedTask;
+        }
+
+        private async Task OnClientDisconnect()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await ApplicationWindow.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+                await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+                await Task.CompletedTask;
+            });
+            await Task.CompletedTask;
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
@@ -42,6 +54,42 @@ namespace Slackord.Classes
                 var guildId = command.GuildId;
                 await PostMessagesToDiscord((ulong)guildId, command);
             }
+        }
+
+        public async Task MainAsync(string discordToken)
+        {
+            if (DiscordClient is not null)
+            {
+                throw new InvalidOperationException("DiscordClient is already initialized.");
+            }
+            ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
+
+            // Configure the DiscordSocketClient
+            DiscordSocketConfig _config = new()
+            {
+                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+            };
+
+            // Initialize the DiscordClient
+            DiscordClient = new DiscordSocketClient(_config);
+
+            // Set up dependency injection
+            _services = new ServiceCollection()
+                .AddSingleton(DiscordClient)
+                .BuildServiceProvider();
+
+            // Assign event handlers
+            DiscordClient.Log += DiscordClient_Log;
+            DiscordClient.Ready += ClientReady;
+            DiscordClient.LoggedOut += OnClientDisconnect;
+            DiscordClient.SlashCommandExecuted += SlashCommandHandler;
+
+            // Login and start the client
+            await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
+            await DiscordClient.StartAsync();
+
+            // Set the client's activity
+            await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
         }
 
         private async Task ClientReady()
@@ -63,116 +111,111 @@ namespace Slackord.Classes
                     }
                     catch (HttpException ex)
                     {
-                        ApplicationWindow.WriteToDebugWindow($"\nError creating slash command in guild {guild.Name}: {ex.Message}\n");
+                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nError creating slash command in guild {guild.Name}: {ex.Message}\n"); });
                     }
                 }
             }
             catch (Exception ex)
             {
-                ApplicationWindow.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n");
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n"); });
             }
         }
 
-        private Task DiscordClient_Log(LogMessage arg)
-        {
-            ApplicationWindow.WriteToDebugWindow(arg.ToString() + "\n");
-            return Task.CompletedTask;
-        }
-
-        public async Task DisconectClient()
-        {
-            await ApplicationWindow.ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 204, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-            await DiscordClient.StopAsync();
-            await ApplicationWindow.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
-            await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-            await Task.CompletedTask;
-        }
-
-        private async Task OnClientDisconnect()
-        {
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await ApplicationWindow.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
-                await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                await Task.CompletedTask;
-            });
-            await Task.CompletedTask;
-        }
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
-            await interaction.DeferAsync();
-
-            SocketGuild guild = DiscordClient.GetGuild(guildID);
-            string categoryName = "Slackord Import";
-            var slackordCategory = await guild.CreateCategoryChannelAsync(categoryName);
-            ulong slackordCategoryId = slackordCategory.Id;
-
-            var userManager = new UserManager(usersFilePath);  // Assume usersFilePath is the path to your users file
-            var threads = Parser.Convert(ImportJson);  // Get the threads using the Parser.Convert method
-
-            foreach (var thread in threads)
+            try
             {
-
-                var channel = thread.Messages.First();  // Assume each message has a Channel property indicating its channel
-                var channelToCreate = channel.Name;
-                var createdChannel = await guild.CreateTextChannelAsync(channelToCreate, properties =>
-                {
-                    properties.CategoryId = slackordCategoryId;
-                });
-
-                ulong createdChannelId = createdChannel.Id;
-                ApplicationWindow.WriteToDebugWindow($"Created {channelToCreate} on Discord with ID: {createdChannelId}.\n");
-
-                try
-                {
-                    await DiscordClient.SetActivityAsync(new Game("messages...", ActivityType.Streaming));
-
-                    foreach (var message in thread.Messages)
-                    {
-                        var textContent = Reconstruct.ConvertTextContent(message.Text);
-                        var discordEmbedBuilder = Reconstruct.ConvertAttachments(message.Attachments);
-                        var discordReactions = Reconstruct.ConvertReactions(message.Reactions);
-
-                        // Replace Slack user IDs with user names
-                        textContent = userManager.GetUserName(message.UserId) + ": " + textContent;
-
-                        // If textContent is not empty, send it as a separate message.
-                        if (!string.IsNullOrWhiteSpace(textContent))
-                        {
-                            var sentMessage = await createdChannel.SendMessageAsync(textContent);
-                            ApplicationWindow.WriteToDebugWindow($"Sent message: {textContent} to channel {createdChannel.Name}\n");
-
-                            // Add reactions to the sent message
-                            foreach (var reaction in discordReactions)
-                            {
-                                await sentMessage.AddReactionAsync(new Emoji(reaction));
-                            }
-                        }
-
-                        // If there are attachments or files, send them as an embed in a separate message.
-                        if (discordEmbedBuilder.Fields.Count > 0)
-                        {
-                            var sentEmbedMessage = await createdChannel.SendMessageAsync(embed: discordEmbedBuilder.Build());
-                            ApplicationWindow.WriteToDebugWindow($"Sent embed message to channel {createdChannel.Name}\n");
-
-                            // Optionally, add reactions to the sent embed message too, if needed.
-                            // foreach (var reaction in discordReactions)
-                            // {
-                            //     await sentEmbedMessage.AddReactionAsync(new Emoji(reaction));
-                            // }
-                        }
-                    }
-
-                    await interaction.FollowupAsync("All messages sent to Discord successfully!", ephemeral: true);
-                    await DiscordClient.SetActivityAsync(new Game("to some cool music!", ActivityType.Listening));
-                }
-                catch (Exception ex)
-                {
-                    ApplicationWindow.WriteToDebugWindow(ex.Message);
-                }
+                await interaction.DeferAsync();
+                await ReconstructSlackChannelsOnDiscord(guildID);
+                var task = PostMessagesToDiscord(guildID: guildID);
+                await task;
+                await interaction.FollowupAsync("All messages sent to Discord successfully!");
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                await interaction.FollowupAsync($"""
+                An exception was encountered while sending messages! The exception was:
+                {ex.Message}
+                """);
             }
         }
 
+        public async Task ReconstructSlackChannelsOnDiscord(ulong guildID)
+        {
+            try
+            {
+                SocketGuild guild = DiscordClient.GetGuild(guildID);
+                string categoryName = "Slackord Import";
+                var slackordCategory = await guild.CreateCategoryChannelAsync(categoryName);
+                ulong slackordCategoryId = slackordCategory.Id;
+
+                foreach (var channel in ImportJson.Channels)
+                {
+                    try
+                    {
+                        var channelName = channel.Name.ToLower();
+                        var createdRestChannel = await guild.CreateTextChannelAsync(channelName, properties =>
+                        {
+                            properties.CategoryId = slackordCategoryId;
+                        });
+
+                        ulong createdChannelId = createdRestChannel.Id;
+                        channel.DiscordChannelId = createdChannelId;
+
+                        CreatedChannels[createdChannelId] = createdRestChannel;
+                    }
+                    catch (Exception ex)
+                    {
+                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+            }
+        }
+
+        public async Task PostMessagesToDiscord(ulong guildID)
+        {
+            Application.Current.Dispatcher.Dispatch(() =>
+            {
+                ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord called with guildID: {guildID}\n");
+            });
+
+            // Assuming ImportJson.Channels holds the list of Channel objects
+            foreach (var channel in ImportJson.Channels)
+            {
+                try
+                {
+                    if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out var discordChannel))
+                    {
+                        // Iterate through the ReconstructedMessagesList and post each message to the Discord channel
+                        foreach (var message in channel.ReconstructedMessagesList)
+                        {
+                            try
+                            {
+                                await discordChannel.SendMessageAsync(message.Content);
+                            }
+                            catch (Exception ex)
+                            {
+                                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Handle the case where the Discord channel is not found or the ID is incorrect
+                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Discord channel not found for channel: {channel.Name}\n"); });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                }
+            }
+        }
     }
 }

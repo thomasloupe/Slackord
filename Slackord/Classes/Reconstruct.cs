@@ -1,76 +1,160 @@
-﻿using Discord;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MenuApp;
+using System.Text.RegularExpressions;
 
 namespace Slackord.Classes
 {
-    public class Reconstruct
+    public partial class Reconstruct
     {
-        public static string ConvertTextContent(string slackText)
-        {
-            // For simplicity, assume both platforms use similar markdown formatting
-            // If there are specific differences, they would be handled here
-            return slackText;
-        }
+        private static readonly Dictionary<string, DeconstructedUser> UsersDict = new();
 
-        public static EmbedBuilder ConvertAttachments(List<Attachment> slackAttachments)
+        public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
         {
-            var discordEmbedBuilder = new EmbedBuilder();
-            foreach (var attachment in slackAttachments)
+            foreach (var kvp in usersDict)
             {
-                // Assume each Slack attachment translates to a field in a Discord embed
-                discordEmbedBuilder.AddField(attachment.Title, attachment.Text);
+                UsersDict[kvp.Key] = kvp.Value;
             }
-            return discordEmbedBuilder;
         }
 
-        public static List<string> ConvertReactions(List<UserReaction> slackReactions)
+        [GeneratedRegex("<i>(.*?)</i>")]
+        private static partial Regex Italics();
+
+        [GeneratedRegex("<b>(.*?)</b>")]
+        private static partial Regex Bold();
+
+        [GeneratedRegex("<u>(.*?)</u>")]
+        private static partial Regex Underline();
+
+        [GeneratedRegex("<s>(.*?)</s>")]
+        private static partial Regex Strikethrough();
+
+        [GeneratedRegex("<a href=\"(.*?)\">(.*?)</a>")]
+        private static partial Regex MaskedLinks();
+
+        public static async Task ReconstructAsync(List<Channel> channels, CancellationToken cancellationToken)
         {
-            var discordReactions = new List<string>();
-            foreach (var userReaction in slackReactions)
+            try
             {
-                foreach (var reaction in userReaction.Reactions)
+                // Iterate through each channel.
+                foreach (var channel in channels)
                 {
-                    // Assume emoji names are the same on both platforms
-                    discordReactions.Add(reaction.Name);
-                }
-            }
-            return discordReactions;
-        }
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Processing channel: {channel.Name}, DeconstructedMessagesCount: {channel.DeconstructedMessagesList.Count}\n"); });
 
-        public static async Task ConvertThreads(List<Thread> slackThreads, SocketTextChannel channel)
-        {
-            foreach (var thread in slackThreads)
-            {
-                if (thread.Messages.Count > 0)
-                {
-                    // Send the parent message to the channel
-                    await channel.SendMessageAsync(thread.Messages[0].Text).ConfigureAwait(false);
-
-                    // Fetch the latest message from the channel which should be the parent message
-                    var threadMessages = await channel.GetMessagesAsync(1).FlattenAsync();
-                    var parentMessage = threadMessages.First();
-
-                    // Create a thread from the parent message
-                    var threadName = GetThreadName(thread.Messages[0].Text);
-                    var discordThread = await channel.CreateThreadAsync(threadName, ThreadType.PublicThread, ThreadArchiveDuration.OneDay, parentMessage);
-
-                    // Send replies to the thread
-                    for (int i = 1; i < thread.Messages.Count; i++)
+                    // Iterate through each deconstructed message in the channel.
+                    foreach (var deconstructedMessage in channel.DeconstructedMessagesList)
                     {
-                        await discordThread.SendMessageAsync(thread.Messages[i].Text);
+                        // Reconstruct message for Discord.
+                        ReconstructMessage(deconstructedMessage, channel);
+                    }
+
+                    Application.Current.Dispatcher.Dispatch(() =>
+                    {
+                        ApplicationWindow.WriteToDebugWindow($"ReconstructedMessagesCount after processing: {channel.ReconstructedMessagesList.Count}\n");
+                    });
+                }
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n"); });
+            }
+        }
+
+        private static void ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
+        {
+            try
+            {
+                // Convert Unix timestamp to a readable format.
+                if (!double.TryParse(deconstructedMessage.Timestamp, out double timestampDouble))
+                {
+                    // Handle the error, e.g., log it, and don't continue processing the message.
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {deconstructedMessage.Timestamp}\n"); });
+                    return;
+                }
+                long timestampMilliseconds = (long)(timestampDouble * 1000);
+                var timestamp = DateTimeOffset.FromUnixTimeMilliseconds(timestampMilliseconds).ToString("dd-MM-yy");
+
+                // Handle rich text formatting.
+                var messageContent = deconstructedMessage.Text;
+                messageContent = ConvertToDiscordMarkdown(messageContent);
+
+                // Handle getting the username for the message.
+                var formattedMessage = string.Empty;
+                if (UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
+                {
+                    string userName =
+                        !string.IsNullOrEmpty(user.DisplayName) ? user.DisplayName :
+                        !string.IsNullOrEmpty(user.Name) ? user.Name :
+                        !string.IsNullOrEmpty(user.RealName) ? user.RealName :
+                        user.Id;  // Default to the user's ID if no name is available.
+
+                    // Format the message.
+                    formattedMessage = $"[{timestamp}] {userName} - {messageContent}";
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found: {deconstructedMessage.User}\n"); });
+                }
+
+                // Ensure formattedMessage is not empty before proceeding to split and reconstruct the message
+                if (!string.IsNullOrEmpty(formattedMessage))
+                {
+                    var messageParts = SplitMessageIntoParts(formattedMessage);  // Declare messageParts here
+                    foreach (var part in messageParts)
+                    {
+                        var reconstructedMessage = new ReconstructedMessage { Content = part };
+                        channel.ReconstructedMessagesList.Add(reconstructedMessage);
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message}\n"); });
+            }
         }
 
-        private static string GetThreadName(string text)
+        private static string ConvertToDiscordMarkdown(string input)
         {
-            // Get the first 20 characters of the text as the thread name, or the entire text if it's shorter than 20 characters
-            return text.Length <= 20 ? text : text[..20];
+            try
+            {
+                // Rich text conversions.
+                input = Italics().Replace(input, "*$1*");  // Italics
+                input = Bold().Replace(input, "**$1**");  // Bold
+                input = Underline().Replace(input, "__$1__");  // Underline
+                input = Strikethrough().Replace(input, "~~$1~~");  // Strikethrough
+                input = MaskedLinks().Replace(input, "[$2]($1)");  // Masked Links
+                                                                   // Additional conversions here.
+
+                return input;
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertToDiscordMarkdown(): {ex.Message}\n"); });
+                return input;
+            }
         }
+
+        private static List<string> SplitMessageIntoParts(string message)
+        {
+            const int maxMessageLength = 2000;
+            var messageParts = new List<string>();
+
+            int index = 0;
+            while (index < message.Length)
+            {
+                int partLength = Math.Min(maxMessageLength, message.Length - index);
+                var messagePart = message.Substring(index, partLength);
+                messageParts.Add(messagePart);
+                index += partLength;
+            }
+
+            return messageParts;
+        }
+    }
+
+    public class ReconstructedMessage
+    {
+        // Define properties based on Discord message structure.
+        public string Content { get; set; }
+        // Additional properties for Discord messages.
     }
 }
