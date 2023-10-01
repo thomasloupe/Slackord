@@ -64,16 +64,16 @@ namespace Slackord.Classes
             }
             ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
 
-            // Configure the DiscordSocketClient
+            // Configure the DiscordSocketClient.
             DiscordSocketConfig _config = new()
             {
                 GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
             };
 
-            // Initialize the DiscordClient
+            // Initialize the DiscordClient.
             DiscordClient = new DiscordSocketClient(_config);
 
-            // Set up dependency injection
+            // Set up dependency injection.
             _services = new ServiceCollection()
                 .AddSingleton(DiscordClient)
                 .BuildServiceProvider();
@@ -84,11 +84,11 @@ namespace Slackord.Classes
             DiscordClient.LoggedOut += OnClientDisconnect;
             DiscordClient.SlashCommandExecuted += SlashCommandHandler;
 
-            // Login and start the client
+            // Login and start the client.
             await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
             await DiscordClient.StartAsync();
 
-            // Set the client's activity
+            // Set the client's activity.
             await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
         }
 
@@ -180,24 +180,56 @@ namespace Slackord.Classes
 
         public async Task PostMessagesToDiscord(ulong guildID)
         {
-            Application.Current.Dispatcher.Dispatch(() =>
-            {
-                ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord called with guildID: {guildID}\n");
-            });
+            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord called with guildID: {guildID}\n"); });
 
-            // Assuming ImportJson.Channels holds the list of Channel objects
+            var threadStartsDict = new Dictionary<string, RestThreadChannel>();
+
             foreach (var channel in ImportJson.Channels)
             {
                 try
                 {
                     if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out var discordChannel))
                     {
-                        // Iterate through the ReconstructedMessagesList and post each message to the Discord channel
+                        // Iterate through the ReconstructedMessagesList and post each message to the Discord channel.
                         foreach (var message in channel.ReconstructedMessagesList)
                         {
                             try
                             {
-                                await discordChannel.SendMessageAsync(message.Content);
+                                IUserMessage sentMessage = null;
+                                if (message.ThreadType == ThreadType.Parent)
+                                {
+                                    // It's a thread start.
+                                    var threadName = message.Content.Length <= 20 ? message.Content : message.Content[..20];
+                                    sentMessage = await discordChannel.SendMessageAsync(message.Content).ConfigureAwait(false);
+                                    var threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
+                                    var threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
+                                    threadStartsDict[message.ParentThreadTs] = threadID;
+                                }
+                                else if (message.ThreadType == ThreadType.Reply)
+                                {
+                                    // It's a thread reply.
+                                    if (threadStartsDict.TryGetValue(message.ParentThreadTs, out var threadID))
+                                    {
+                                        sentMessage = await threadID.SendMessageAsync(message.Content);
+                                    }
+                                    else
+                                    {
+                                        // Handle the case where the parent message is not found.
+                                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parent message not found for thread reply: {message.Content}\n"); });
+                                        sentMessage = await discordChannel.SendMessageAsync(message.Content);  // Send as a regular message.
+                                    }
+                                }
+                                else  // message.ThreadType == ThreadType.None
+                                {
+                                    // It's a regular message.
+                                    sentMessage = await discordChannel.SendMessageAsync(message.Content);
+                                }
+
+                                // Check if the message should be pinned.
+                                if (message.IsPinned && sentMessage != null)
+                                {
+                                    await sentMessage.PinAsync();
+                                }
                             }
                             catch (Exception ex)
                             {
