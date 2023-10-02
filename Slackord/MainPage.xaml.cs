@@ -18,7 +18,7 @@ namespace MenuApp
             InitializeComponent();
             if (Current is not null)
             {
-                throw new InvalidOperationException("Too many windows");
+                throw new InvalidOperationException("Too many windows.");
             }
 
             DebugWindowInstance = DebugWindow;

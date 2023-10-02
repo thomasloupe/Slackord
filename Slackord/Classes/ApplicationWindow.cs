@@ -302,5 +302,56 @@ Would you like to open the donation page now?
             }
             return;
         }
+
+        public static void ShowProgressBar()
+        {
+            if (MainPage.Current != null)
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.ProgressBarInstance.IsVisible = true;
+                    MainPage.ProgressBarTextInstance.IsVisible = true;
+                });
+            }
+        }
+
+        public static void HideProgressBar()
+        {
+            if (MainPage.Current != null)
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.ProgressBarInstance.IsVisible = false;
+                    MainPage.ProgressBarTextInstance.IsVisible = false;
+                });
+            }
+        }
+
+        public static void UpdateProgressBar(int current, int total, string type)
+        {
+            double progressValue = (double)current / total;
+
+            if (MainPage.Current != null)
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.ProgressBarInstance.Progress = progressValue;
+                    MainPage.ProgressBarTextInstance.Text = $"Completed {current} out of {total} {type}.";
+                });
+            }
+        }
+
+        public static void ResetProgressBar()
+        {
+            // Reset the progress bar value to 0.
+            if (MainPage.Current != null)
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.ProgressBarInstance.Progress = 0;
+                    MainPage.ProgressBarTextInstance.Text = string.Empty;
+                });
+            }
+        }
     }
 }

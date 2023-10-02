@@ -49,6 +49,9 @@ namespace Slackord.Classes
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
+            ApplicationWindow.ResetProgressBar();
+            ApplicationWindow.ShowProgressBar();
+
             if (command.Data.Name.Equals("slackord"))
             {
                 var guildId = command.GuildId;
@@ -121,27 +124,6 @@ namespace Slackord.Classes
             }
         }
 
-        [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
-        public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
-        {
-            try
-            {
-                await interaction.DeferAsync();
-                await ReconstructSlackChannelsOnDiscord(guildID);
-                var task = PostMessagesToDiscord(guildID: guildID);
-                await task;
-                await interaction.FollowupAsync("All messages sent to Discord successfully!");
-            }
-            catch (Exception ex)
-            {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
-                await interaction.FollowupAsync($"""
-                An exception was encountered while sending messages! The exception was:
-                {ex.Message}
-                """);
-            }
-        }
-
         public async Task ReconstructSlackChannelsOnDiscord(ulong guildID)
         {
             try
@@ -159,6 +141,7 @@ namespace Slackord.Classes
                         var createdRestChannel = await guild.CreateTextChannelAsync(channelName, properties =>
                         {
                             properties.CategoryId = slackordCategoryId;
+                            properties.Topic = channel.Description;
                         });
 
                         ulong createdChannelId = createdRestChannel.Id;
@@ -178,11 +161,31 @@ namespace Slackord.Classes
             }
         }
 
-        public async Task PostMessagesToDiscord(ulong guildID)
+        [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
+        public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
             Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord called with guildID: {guildID}\n"); });
+            int totalMessagesToPost = ImportJson.Channels.Sum(channel => channel.ReconstructedMessagesList.Count);
+            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Total messages to send to Discord: {totalMessagesToPost}\n"); });
+
+            try
+            {
+                await interaction.DeferAsync();
+                await ReconstructSlackChannelsOnDiscord(guildID);
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                await interaction.FollowupAsync($"""
+                An exception was encountered while sending messages! The exception was:
+                {ex.Message}
+                """);
+            }
 
             var threadStartsDict = new Dictionary<string, RestThreadChannel>();
+            int messagesPosted = 0;
+            ApplicationWindow.ResetProgressBar();
+
 
             foreach (var channel in ImportJson.Channels)
             {
@@ -230,6 +233,9 @@ namespace Slackord.Classes
                                 {
                                     await sentMessage.PinAsync();
                                 }
+                                
+                                messagesPosted++;
+                                ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
                             }
                             catch (Exception ex)
                             {
@@ -248,6 +254,7 @@ namespace Slackord.Classes
                     Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
                 }
             }
+            await interaction.FollowupAsync("All messages sent to Discord successfully!");
         }
     }
 }

@@ -149,10 +149,18 @@ namespace Slackord.Classes
                             {
                                 usersDict[deconstructedUser.Id] = deconstructedUser;
                             }
+                            // If user count is 0, then the users.json file is empty or not found.
+                            if (usersDict.Count == 0)
+                            {
+                                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); });
+                            }
+                            // Otherwise, write the number of users found to the debug window.
+                            else
+                            {
+                                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
+                            }
                         }
                     }
-
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
                     return usersDict;
                 }
                 catch (Exception ex)
