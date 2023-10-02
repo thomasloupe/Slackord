@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using MenuApp;
+﻿using MenuApp;
 using Octokit;
-using static System.Net.WebRequestMethods;
 
 namespace Slackord.Classes
 {
