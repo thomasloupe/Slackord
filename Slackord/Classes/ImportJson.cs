@@ -15,6 +15,14 @@ namespace Slackord.Classes
             try
             {
                 var picker = await FolderPicker.Default.PickAsync(cancellationToken);
+
+                // Check if picker is null or if its Folder property is null.
+                if (picker == null || picker.Folder == null)
+                {
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception(1000) in FolderPicker : Import canceled by user.\nDue to platform requirements, Slackord must be restarted when you cancel the folder browser.\nCurrently, there's no workaround. Sorry about this!\n"); });
+                    return;
+                }
+
                 var folderPath = picker.Folder.Path;
                 RootFolderPath = folderPath;
                 Dictionary<string, DeconstructedUser> usersDict = null;
@@ -24,15 +32,11 @@ namespace Slackord.Classes
                     Channels = result.Channels;
                     usersDict = result.UsersDict;
                 }
-                else
-                {
-                    // Handle the case where no folder was selected or the dialog was canceled.
-                }
 
-                // Populate UsersDict in Reconstruct before calling ReconstructAsync
+                // Populate UsersDict in Reconstruct before calling ReconstructAsync.
                 Reconstruct.InitializeUsersDict(usersDict);
 
-                // This checks whether any folder was selected and whether any channels were deconstructed
+                // This checks whether any folder was selected and whether any channels were deconstructed.
                 if (!string.IsNullOrEmpty(RootFolderPath) && Channels.Count != 0)
                 {
                     // Call ReconstructAsync to reconstruct messages for Discord
@@ -42,6 +46,7 @@ namespace Slackord.Classes
             catch (Exception ex)
             {
                 Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ImportJsonAsync() : {ex.Message}\n"); });
+                return;
             }
         }
 
