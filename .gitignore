@@ -100,3 +100,4 @@ StyleCopReport.xml
 _ReSharper*/
 *.sln.DotSettings.user
 *.resharper.user
+.DS_Store
