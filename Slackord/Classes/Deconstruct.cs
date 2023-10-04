@@ -8,7 +8,12 @@ namespace Slackord.Classes
     public class Deconstruct
     {
 
-        public static Dictionary<string, ThreadInfo> ThreadDictionary = new();
+        private static readonly Dictionary<string, ThreadInfo> threadDictionary = new();
+
+        public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary
+        {
+            get { return threadDictionary; }
+        }
 
         public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
         {
@@ -42,7 +47,7 @@ namespace Slackord.Classes
             {
                 if (!ThreadDictionary.ContainsKey(threadTs))
                 {
-                    ThreadDictionary[threadTs] = new ThreadInfo();
+                    threadDictionary[threadTs] = new ThreadInfo();
                 }
             }
 
@@ -54,7 +59,18 @@ namespace Slackord.Classes
             string threadTs = slackMessage["thread_ts"]?.ToString();
             string timestamp = slackMessage["ts"]?.ToString();
 
-            return threadTs == null ? ThreadType.None : threadTs == timestamp ? ThreadType.Parent : ThreadType.Reply;
+            if (threadTs == null)
+            {
+                return ThreadType.None;
+            }
+            else if (threadTs == timestamp)
+            {
+                return ThreadType.Parent;
+            }
+            else
+            {
+                return ThreadType.Reply;
+            }
         }
     }
 
@@ -87,7 +103,7 @@ namespace Slackord.Classes
         {
             try
             {
-                Dictionary<string, DeconstructedUser> usersDict = new();
+                var usersDict = new Dictionary<string, DeconstructedUser>();
 
                 if (usersFile != null)
                 {
@@ -98,20 +114,19 @@ namespace Slackord.Classes
                     {
                         DeconstructedUser deconstructedUser = userObject.ToObject<DeconstructedUser>();
 
-                        if (deconstructedUser.Id == null)
+                        if (deconstructedUser.Id != null)
                         {
-                            continue;
+                            usersDict[deconstructedUser.Id] = deconstructedUser;
                         }
-                        usersDict[deconstructedUser.Id] = deconstructedUser;
                     }
                 }
 
                 UsersDict = usersDict;
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
             }
         }
 
@@ -140,28 +155,36 @@ namespace Slackord.Classes
                             usersDict[deconstructedUser.Id] = deconstructedUser;
                         }
                         // If user count is 0, then the users.json file is empty or not found.
-                        _ = usersDict.Count == 0
-                            ? Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); })
-                            : Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
+                        if (usersDict.Count == 0)
+                        {
+                            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); });
+                        }
+                        // Otherwise, write the number of users found to the debug window.
+                        else
+                        {
+                            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
+                        }
                     }
                 }
                 return usersDict;
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
                 return null;
             }
         }
     }
 
+    public enum ThreadType
+    {
+        None,
+        Parent,
+        Reply
+    }
+
     public class ThreadInfo
     {
-        public ThreadInfo(string discordMessageId)
-        {
-            DiscordMessageId = discordMessageId;
-        }
-
         public string DiscordMessageId { get; set; }
     }
 
