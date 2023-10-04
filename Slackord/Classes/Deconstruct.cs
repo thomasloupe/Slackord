@@ -12,10 +12,10 @@ namespace Slackord.Classes
 
         public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
         {
-            var threadTs = slackMessage["thread_ts"]?.ToString();
-            var timestamp = slackMessage["ts"]?.ToString();
+            string threadTs = slackMessage["thread_ts"]?.ToString();
+            string timestamp = slackMessage["ts"]?.ToString();
 
-            var deconstructedMessage = new DeconstructedMessage
+            DeconstructedMessage deconstructedMessage = new()
             {
                 MessageType = slackMessage["type"]?.ToString(),
                 Channel = slackMessage["channel"]?.ToString(),
@@ -51,21 +51,10 @@ namespace Slackord.Classes
 
         private static ThreadType DetermineThreadType(JObject slackMessage)
         {
-            var threadTs = slackMessage["thread_ts"]?.ToString();
-            var timestamp = slackMessage["ts"]?.ToString();
+            string threadTs = slackMessage["thread_ts"]?.ToString();
+            string timestamp = slackMessage["ts"]?.ToString();
 
-            if (threadTs == null)
-            {
-                return ThreadType.None;
-            }
-            else if (threadTs == timestamp)
-            {
-                return ThreadType.Parent;
-            }
-            else
-            {
-                return ThreadType.Reply;
-            }
+            return threadTs == null ? ThreadType.None : threadTs == timestamp ? ThreadType.Parent : ThreadType.Reply;
         }
     }
 
@@ -98,88 +87,81 @@ namespace Slackord.Classes
         {
             try
             {
-                var usersDict = new Dictionary<string, DeconstructedUser>();
+                Dictionary<string, DeconstructedUser> usersDict = new();
 
                 if (usersFile != null)
                 {
-                    var jsonContent = File.ReadAllText(usersFile.FullName);
-                    var usersArray = JArray.Parse(jsonContent);
+                    string jsonContent = File.ReadAllText(usersFile.FullName);
+                    JArray usersArray = JArray.Parse(jsonContent);
 
                     foreach (JObject userObject in usersArray.Cast<JObject>())
                     {
-                        var deconstructedUser = userObject.ToObject<DeconstructedUser>();
+                        DeconstructedUser deconstructedUser = userObject.ToObject<DeconstructedUser>();
+
+                        if (deconstructedUser.Id == null)
+                        {
+                            continue;
+                        }
+                        usersDict[deconstructedUser.Id] = deconstructedUser;
+                    }
+                }
+
+                UsersDict = usersDict;
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
+            }
+            catch (Exception ex)
+            {
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+            }
+        }
+
+        public static Dictionary<string, DeconstructedUser> ParseUsersFile(FileInfo usersFile)
+        {
+            try
+            {
+                Dictionary<string, DeconstructedUser> usersDict = new();
+
+                if (usersFile != null)
+                {
+                    string jsonContent = File.ReadAllText(usersFile.FullName);
+                    JArray usersArray = JArray.Parse(jsonContent);
+
+                    foreach (JObject userObject in usersArray.Cast<JObject>())
+                    {
+                        DeconstructedUser deconstructedUser = new()
+                        {
+                            Id = userObject["id"]?.ToString(),
+                            Name = userObject["name"]?.ToString(),
+                            Profile = userObject["profile"]?.ToObject<UserProfile>()
+                        };
 
                         if (deconstructedUser.Id != null)
                         {
                             usersDict[deconstructedUser.Id] = deconstructedUser;
                         }
+                        // If user count is 0, then the users.json file is empty or not found.
+                        _ = usersDict.Count == 0
+                            ? Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); })
+                            : Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
                     }
                 }
-
-                UsersDict = usersDict;
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
+                return usersDict;
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+                return null;
             }
         }
-
-        public static Dictionary<string, DeconstructedUser> ParseUsersFile(FileInfo usersFile)
-            {
-                try
-                {
-                    var usersDict = new Dictionary<string, DeconstructedUser>();
-
-                    if (usersFile != null)
-                    {
-                        var jsonContent = File.ReadAllText(usersFile.FullName);
-                        var usersArray = JArray.Parse(jsonContent);
-
-                        foreach (JObject userObject in usersArray.Cast<JObject>())
-                        {
-                            var deconstructedUser = new DeconstructedUser
-                            {
-                                Id = userObject["id"]?.ToString(),
-                                Name = userObject["name"]?.ToString(),
-                                Profile = userObject["profile"]?.ToObject<UserProfile>()
-                            };
-
-                            if (deconstructedUser.Id != null)
-                            {
-                                usersDict[deconstructedUser.Id] = deconstructedUser;
-                            }
-                            // If user count is 0, then the users.json file is empty or not found.
-                            if (usersDict.Count == 0)
-                            {
-                                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); });
-                            }
-                            // Otherwise, write the number of users found to the debug window.
-                            else
-                            {
-                                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
-                            }
-                        }
-                    }
-                    return usersDict;
-                }
-                catch (Exception ex)
-                {
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
-                    return null;
-                }
-            }
-        }
-
-    public enum ThreadType
-    {
-        None,
-        Parent,
-        Reply
     }
 
     public class ThreadInfo
     {
+        public ThreadInfo(string discordMessageId)
+        {
+            DiscordMessageId = discordMessageId;
+        }
+
         public string DiscordMessageId { get; set; }
     }
 

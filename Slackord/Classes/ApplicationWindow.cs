@@ -91,7 +91,7 @@ namespace MenuApp
 
         public async Task ImportJsonAsync()
         {
-            using var cts = new CancellationTokenSource();
+            using CancellationTokenSource cts = new();
             Interlocked.Exchange(ref cancellationTokenSource, cts)?.Cancel();
             CancellationToken cancellationToken = cts.Token;
             try
@@ -163,7 +163,7 @@ namespace MenuApp
                 await _discordBot.StartClientAsync();
                 while (true)
                 {
-                    var connectionState = _discordBot.GetClientConnectionState();
+                    ConnectionState connectionState = _discordBot.GetClientConnectionState();
                     if (connectionState == ConnectionState.Connected)
                     {
                         await ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
@@ -187,7 +187,7 @@ namespace MenuApp
         public static void DisplayAbout()
         {
             string currentVersion = Slackord.Classes.Version.GetVersion();
-            MainPageInstance.DisplayAlert("", $@"
+            _ = MainPageInstance.DisplayAlert("", $@"
 Slackord {currentVersion}.
 Created by Thomas Loupe.
 Github: https://github.com/thomasloupe
@@ -198,31 +198,31 @@ Website: https://thomasloupe.com
 
         public static async Task CreateDonateAlert()
         {
-            var url = "https://paypal.me/thomasloupe";
-            var message = @"
+            string url = "https://paypal.me/thomasloupe";
+            string message = @"
 Slackord will always be free!
 If you'd like to buy me a beer anyway, I won't tell you not to!
 Would you like to open the donation page now?
 ";
 
-            var result = await MainPageInstance.DisplayAlert("Slackord is free, but beer is not!", message, "Yes", "No");
+            bool result = await MainPageInstance.DisplayAlert("Slackord is free, but beer is not!", message, "Yes", "No");
 
             if (result)
             {
-                await Launcher.OpenAsync(new Uri(url));
+                _ = await Launcher.OpenAsync(new Uri(url));
             }
         }
 
         public static async Task ExitApplication()
         {
-            var result = await MainPageInstance.DisplayAlert("Confirm Exit", "Are you sure you want to quit Slackord?", "Yes", "No");
+            bool result = await MainPageInstance.DisplayAlert("Confirm Exit", "Are you sure you want to quit Slackord?", "Yes", "No");
 
             if (result)
             {
-                var operatingSystem = DeviceInfo.Platform;
+                DevicePlatform operatingSystem = DeviceInfo.Platform;
                 if (operatingSystem == DevicePlatform.MacCatalyst)
                 {
-                    System.Diagnostics.Process.GetCurrentProcess().CloseMainWindow();
+                    _ = System.Diagnostics.Process.GetCurrentProcess().CloseMainWindow();
                 }
                 else if (operatingSystem == DevicePlatform.WinUI)
                 {
@@ -233,7 +233,7 @@ Would you like to open the donation page now?
 
         public static void CopyLog()
         {
-            MainPage.DebugWindowInstance.Focus();
+            _ = MainPage.DebugWindowInstance.Focus();
             MainPage.DebugWindowInstance.CursorPosition = 0;
             MainPage.DebugWindowInstance.SelectionLength = MainPage.DebugWindowInstance.Text.Length;
 
@@ -241,7 +241,7 @@ Would you like to open the donation page now?
 
             if (!string.IsNullOrEmpty(selectedText))
             {
-                Clipboard.SetTextAsync(selectedText);
+                _ = Clipboard.SetTextAsync(selectedText);
             }
         }
 
@@ -253,7 +253,7 @@ Would you like to open the donation page now?
         private static readonly StringBuilder debugOutput = new();
         public static void WriteToDebugWindow(string text)
         {
-            debugOutput.Append(text);
+            _ = debugOutput.Append(text);
             PushDebugText();
         }
 
@@ -261,15 +261,12 @@ Would you like to open the donation page now?
         {
             if (!MainThread.IsMainThread)
             {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    PushDebugText();
-                });
+                MainThread.BeginInvokeOnMainThread(PushDebugText);
                 return;
             }
 
             MainPage.DebugWindowInstance.Text += debugOutput.ToString();
-            debugOutput.Clear();
+            _ = debugOutput.Clear();
         }
 
         public static async Task ChangeBotConnectionButton(string state, Microsoft.Maui.Graphics.Color backgroundColor, Microsoft.Maui.Graphics.Color textColor)
@@ -307,7 +304,7 @@ Would you like to open the donation page now?
         {
             if (MainPage.Current != null)
             {
-                MainThread.InvokeOnMainThreadAsync(() =>
+                _ = MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     MainPage.ProgressBarInstance.IsVisible = true;
                     MainPage.ProgressBarTextInstance.IsVisible = true;
@@ -319,7 +316,7 @@ Would you like to open the donation page now?
         {
             if (MainPage.Current != null)
             {
-                MainThread.InvokeOnMainThreadAsync(() =>
+                _ = MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     MainPage.ProgressBarInstance.IsVisible = false;
                     MainPage.ProgressBarTextInstance.IsVisible = false;
@@ -333,7 +330,7 @@ Would you like to open the donation page now?
 
             if (MainPage.Current != null)
             {
-                MainThread.InvokeOnMainThreadAsync(() =>
+                _ = MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     MainPage.ProgressBarInstance.Progress = progressValue;
                     MainPage.ProgressBarTextInstance.Text = $"Completed {current} out of {total} {type}.";
@@ -346,7 +343,7 @@ Would you like to open the donation page now?
             // Reset the progress bar value to 0.
             if (MainPage.Current != null)
             {
-                MainThread.InvokeOnMainThreadAsync(() =>
+                _ = MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     MainPage.ProgressBarInstance.Progress = 0;
                     MainPage.ProgressBarTextInstance.Text = string.Empty;

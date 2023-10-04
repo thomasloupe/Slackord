@@ -1,7 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-using Slackord.Classes;
-
-namespace MenuApp
+﻿namespace MenuApp
 {
     public partial class MainPage : ContentPage
     {
@@ -36,7 +33,7 @@ namespace MenuApp
 
         private void MainPage_Loaded(object sender, EventArgs e)
         {
-            Initialize().ConfigureAwait(false);
+            _ = Initialize().ConfigureAwait(false);
         }
 
         private async Task Initialize()
@@ -47,21 +44,22 @@ namespace MenuApp
 
         private void ImportJson_Clicked(object sender, EventArgs e)
         {
-            applicationWindow.ImportJsonAsync().ConfigureAwait(false);
+            _ = applicationWindow.ImportJsonAsync().ConfigureAwait(false);
         }
 
         private void EnterBotToken_Clicked(object sender, EventArgs e)
         {
-            applicationWindow.CreateBotTokenPrompt().ConfigureAwait(false);
+            _ = applicationWindow.CreateBotTokenPrompt().ConfigureAwait(false);
         }
 
         private void ToggleBotConnection_Clicked(object sender, EventArgs e)
         {
-            applicationWindow.ToggleDiscordConnection().ConfigureAwait(false);
+            _ = applicationWindow.ToggleDiscordConnection().ConfigureAwait(false);
         }
+
         private void CheckForUpdates_Clicked(object sender, EventArgs e)
         {
-            ApplicationWindow.CheckForNewVersion().ConfigureAwait(true);
+            _ = ApplicationWindow.CheckForNewVersion().ConfigureAwait(true);
         }
 
         private void About_Clicked(object sender, EventArgs e)
@@ -71,12 +69,12 @@ namespace MenuApp
 
         private void Donate_Clicked(object sender, EventArgs e)
         {
-            ApplicationWindow.CreateDonateAlert().ConfigureAwait(false);
+            _ = ApplicationWindow.CreateDonateAlert().ConfigureAwait(false);
         }
 
         private void Exit_Clicked(object sender, EventArgs e)
         {
-            ApplicationWindow.ExitApplication().ConfigureAwait(false);
+            _ = ApplicationWindow.ExitApplication().ConfigureAwait(false);
         }
 
         private void CopyLog_Clicked(object sender, EventArgs e)

@@ -10,7 +10,7 @@ namespace Slackord.Classes
 
         public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
         {
-            foreach (var kvp in usersDict)
+            foreach (KeyValuePair<string, DeconstructedUser> kvp in usersDict)
             {
                 UsersDict[kvp.Key] = kvp.Value;
             }
@@ -40,25 +40,25 @@ namespace Slackord.Classes
             try
             {
                 // Iterate through each channel.
-                foreach (var channel in channels)
+                foreach (Channel channel in channels)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Deconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Deconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
 
                     // Iterate through each deconstructed message in the channel.
-                    foreach (var deconstructedMessage in channel.DeconstructedMessagesList)
+                    foreach (DeconstructedMessage deconstructedMessage in channel.DeconstructedMessagesList)
                     {
                         // Reconstruct message for Discord.
                         ReconstructMessage(deconstructedMessage, channel);
                     }
 
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
                 }
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"All channels have been successfully deconstructed and reconstructed for Discord!\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"All channels have been successfully deconstructed and reconstructed for Discord!\n"); });
                 await Task.CompletedTask;
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n"); });
             }
         }
 
@@ -70,7 +70,7 @@ namespace Slackord.Classes
                 if (!double.TryParse(deconstructedMessage.Timestamp, out double timestampDouble))
                 {
                     // Log the error, and don't continue processing the message.
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {deconstructedMessage.Timestamp}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {deconstructedMessage.Timestamp}\n"); });
                     return;
                 }
                 long timestampMilliseconds = (long)(timestampDouble * 1000);
@@ -83,14 +83,14 @@ namespace Slackord.Classes
                 string customFormat = $"{dtfi.ShortDatePattern} {dtfi.LongTimePattern}";
 
                 // Format the DateTimeOffset object using the custom format string.
-                var timestamp = dateTimeOffset.ToString(customFormat);
+                string timestamp = dateTimeOffset.ToString(customFormat);
 
                 // Handle rich text formatting.
-                var messageContent = deconstructedMessage.Text;
+                string messageContent = deconstructedMessage.Text;
                 messageContent = ConvertToDiscordMarkdown(messageContent);
 
                 // Handle getting the username for the message.
-                var formattedMessage = string.Empty;
+                string formattedMessage = string.Empty;
                 if (UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
                 {
                     string userName =
@@ -104,16 +104,16 @@ namespace Slackord.Classes
                 }
                 else
                 {
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found: {deconstructedMessage.User}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found: {deconstructedMessage.User}\n"); });
                 }
 
                 // Ensure formattedMessage is not empty before proceeding to split and reconstruct the message.
                 if (!string.IsNullOrEmpty(formattedMessage))
                 {
-                    var messageParts = SplitMessageIntoParts(formattedMessage);
-                    foreach (var part in messageParts)
+                    List<string> messageParts = SplitMessageIntoParts(formattedMessage);
+                    foreach (string part in messageParts)
                     {
-                        var reconstructedMessage = new ReconstructedMessage
+                        ReconstructedMessage reconstructedMessage = new()
                         {
                             Content = part,
                             ParentThreadTs = deconstructedMessage.ParentThreadTs,
@@ -126,7 +126,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message}\n"); });
             }
         }
 
@@ -146,7 +146,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertToDiscordMarkdown(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertToDiscordMarkdown(): {ex.Message}\n"); });
                 return input;
             }
         }
@@ -154,13 +154,13 @@ namespace Slackord.Classes
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
-            var messageParts = new List<string>();
+            List<string> messageParts = new();
 
             int index = 0;
             while (index < message.Length)
             {
                 int partLength = Math.Min(maxMessageLength, message.Length - index);
-                var messagePart = message.Substring(index, partLength);
+                string messagePart = message.Substring(index, partLength);
                 messageParts.Add(messagePart);
                 index += partLength;
             }

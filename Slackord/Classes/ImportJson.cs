@@ -14,21 +14,21 @@ namespace Slackord.Classes
             ApplicationWindow.HideProgressBar();
             try
             {
-                var picker = await FolderPicker.Default.PickAsync(cancellationToken);
+                FolderPickerResult picker = await FolderPicker.Default.PickAsync(cancellationToken);
 
                 // Check if picker is null or if its Folder property is null.
                 if (picker == null || picker.Folder == null)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception(1000) in FolderPicker : Import canceled by user.\nDue to platform requirements, Slackord must be restarted when you cancel the folder browser.\nCurrently, there's no workaround. Sorry about this!\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception(1000) in FolderPicker : Import canceled by user.\nDue to platform requirements, Slackord must be restarted when you cancel the folder browser.\nCurrently, there's no workaround. Sorry about this!\n"); });
                     return;
                 }
 
-                var folderPath = picker.Folder.Path;
+                string folderPath = picker.Folder.Path;
                 RootFolderPath = folderPath;
                 Dictionary<string, DeconstructedUser> usersDict = null;
                 if (!string.IsNullOrEmpty(folderPath))
                 {
-                    var result = await ConvertAsync(folderPath, cancellationToken);
+                    (List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict) result = await ConvertAsync(folderPath, cancellationToken);
                     Channels = result.Channels;
                     usersDict = result.UsersDict;
                 }
@@ -45,7 +45,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ImportJsonAsync() : {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ImportJsonAsync() : {ex.Message}\n"); });
                 return;
             }
         }
@@ -54,22 +54,21 @@ namespace Slackord.Classes
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var channels = new List<Channel>();
-            var directoryInfo = new DirectoryInfo(folderPath);
-            var channelDirectories = directoryInfo.GetDirectories();
-            var usersFile = directoryInfo.GetFiles("users.json").FirstOrDefault();
-            var channelsFile = directoryInfo.GetFiles("channels.json").FirstOrDefault();
+            List<Channel> channels = new();
+            DirectoryInfo directoryInfo = new(folderPath);
+            DirectoryInfo[] channelDirectories = directoryInfo.GetDirectories();
+            FileInfo usersFile = directoryInfo.GetFiles("users.json").FirstOrDefault();
+            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users for import...\n"); });
 
-            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users for import...\n"); });
-
-            var usersDict = DeconstructedUsers.ParseUsersFile(usersFile);
+            Dictionary<string, DeconstructedUser> usersDict = DeconstructedUsers.ParseUsersFile(usersFile);
 
             // Parse channels.json to get channel descriptions.
             Dictionary<string, string> channelDescriptions = null;
+            FileInfo channelsFile = directoryInfo.GetFiles("channels.json").FirstOrDefault();
             if (channelsFile != null)
             {
-                var channelsJsonContent = await File.ReadAllTextAsync(channelsFile.FullName, cancellationToken).ConfigureAwait(false);
-                var channelsJson = JArray.Parse(channelsJsonContent);
+                string channelsJsonContent = await File.ReadAllTextAsync(channelsFile.FullName, cancellationToken).ConfigureAwait(false);
+                JArray channelsJson = JArray.Parse(channelsJsonContent);
                 channelDescriptions = channelsJson.ToDictionary(
                     jChannel => jChannel["name"].ToString(),
                     jChannel => jChannel["purpose"]["value"].ToString()
@@ -79,36 +78,36 @@ namespace Slackord.Classes
             int totalFiles = CountTotalJsonFiles(channelDirectories);
             int filesProcessed = 0;
 
-            foreach (var channelDirectory in channelDirectories)
+            foreach (DirectoryInfo channelDirectory in channelDirectories)
             {
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    var channel = new Channel { Name = channelDirectory.Name };
-                    var jsonFiles = channelDirectory.GetFiles("*.json");
+                    Channel channel = new() { Name = channelDirectory.Name };
+                    FileInfo[] jsonFiles = channelDirectory.GetFiles("*.json");
                     int jsonFileCount = jsonFiles.Length;
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Begin parsing JSON data for {channel.Name} with {jsonFileCount} JSON files...\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Begin parsing JSON data for {channel.Name} with {jsonFileCount} JSON files...\n"); });
 
                     if (jsonFileCount > 400)
                     {
-                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started..."); });
+                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started..."); });
                     }
 
-                    foreach (var jsonFile in jsonFiles)
+                    foreach (FileInfo jsonFile in jsonFiles)
                     {
                         try
                         {
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            var jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken).ConfigureAwait(false);
-                            var messagesArray = JArray.Parse(jsonContent);
+                            string jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken).ConfigureAwait(false);
+                            JArray messagesArray = JArray.Parse(jsonContent);
 
                             foreach (JObject slackMessage in messagesArray.Cast<JObject>())
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                var deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
+                                DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
                                 channel.DeconstructedMessagesList.Add(deconstructedMessage);
                             }
 
@@ -117,21 +116,21 @@ namespace Slackord.Classes
                         }
                         catch (Exception ex)
                         {
-                            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n"); });
+                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n"); });
                         }
                     }
 
                     // Look up the description for the channel and set it on the Channel object
-                    if (channelDescriptions != null && channelDescriptions.TryGetValue(channel.Name, out var description))
+                    if (channelDescriptions != null && channelDescriptions.TryGetValue(channel.Name, out string description))
                     {
                         channel.Description = description;
                     }
                     channels.Add(channel);
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Completed importing channel {channel.Name}.\n\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Completed importing channel {channel.Name}.\n\n"); });
                 }
                 catch (Exception ex)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
                 }
             }
 
@@ -141,7 +140,7 @@ namespace Slackord.Classes
         private static int CountTotalJsonFiles(DirectoryInfo[] channelDirectories)
         {
             int totalFiles = 0;
-            foreach (var channelDirectory in channelDirectories)
+            foreach (DirectoryInfo channelDirectory in channelDirectories)
             {
                 totalFiles += channelDirectory.GetFiles("*.json").Length;
             }

@@ -1,6 +1,6 @@
 ﻿namespace Slackord.Classes
 {
-    class Version
+    internal class Version
     {
         public static string GetVersion()
         {

@@ -1,24 +1,26 @@
 ﻿using CommunityToolkit.Maui;
-using Slackord;
 
-public static class MauiProgram
+namespace Slackord
 {
-    public static MauiApp CreateMauiApp()
+    public static class MauiProgram
     {
-        var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            // Initialize the .NET MAUI Community Toolkit by adding the below line of code
-            .UseMauiCommunityToolkit()
-            // After initializing the .NET MAUI Community Toolkit, optionally add additional fonts
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+        public static MauiApp CreateMauiApp()
+        {
+            MauiAppBuilder builder = MauiApp.CreateBuilder();
+            _ = builder
+                .UseMauiApp<App>()
+                // Initialize the .NET MAUI Community Toolkit by adding the below line of code
+                .UseMauiCommunityToolkit()
+                // After initializing the .NET MAUI Community Toolkit, optionally add additional fonts
+                .ConfigureFonts(fonts =>
+                {
+                    _ = fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    _ = fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                });
 
-        // Continue initializing your .NET MAUI App here
+            // Continue initializing your .NET MAUI App here
 
-        return builder.Build();
+            return builder.Build();
+        }
     }
 }

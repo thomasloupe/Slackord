@@ -1,13 +1,14 @@
 ﻿using MenuApp;
 
-namespace Slackord;
-
-public partial class App : Application
+namespace Slackord
 {
-    public App()
+    public partial class App : Application
     {
-        InitializeComponent();
+        public App()
+        {
+            InitializeComponent();
 
-        MainPage = new AppShell();
+            MainPage = new AppShell();
+        }
     }
 }
