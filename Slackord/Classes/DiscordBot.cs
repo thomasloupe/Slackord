@@ -128,25 +128,40 @@ namespace Slackord.Classes
             try
             {
                 SocketGuild guild = DiscordClient.GetGuild(guildID);
-                string categoryName = "Slackord Import";
-                RestCategoryChannel slackordCategory = await guild.CreateCategoryChannelAsync(categoryName);
-                ulong slackordCategoryId = slackordCategory.Id;
+                string baseCategoryName = "Slackord Import";
+                int categoryCount = 1;
+                string currentCategoryName = baseCategoryName + (categoryCount > 1 ? $" {categoryCount}" : "");
+
+                RestCategoryChannel currentCategory = await guild.CreateCategoryChannelAsync(currentCategoryName);
+                ulong currentCategoryId = currentCategory.Id;
+
+                int channelCountInCurrentCategory = 0;
 
                 foreach (Channel channel in ImportJson.Channels)
                 {
                     try
                     {
+                        if (channelCountInCurrentCategory >= 50)  // If we've reached the 50 channel limit in this category, create a new category.
+                        {
+                            categoryCount++;
+                            currentCategoryName = baseCategoryName + $" {categoryCount}";
+                            currentCategory = await guild.CreateCategoryChannelAsync(currentCategoryName);
+                            currentCategoryId = currentCategory.Id;
+                            channelCountInCurrentCategory = 0;
+                        }
+
                         string channelName = channel.Name.ToLower();
                         RestTextChannel createdRestChannel = await guild.CreateTextChannelAsync(channelName, properties =>
                         {
-                            properties.CategoryId = slackordCategoryId;
+                            properties.CategoryId = currentCategoryId;
                             properties.Topic = channel.Description;
                         });
 
                         ulong createdChannelId = createdRestChannel.Id;
                         channel.DiscordChannelId = createdChannelId;
-
                         CreatedChannels[createdChannelId] = createdRestChannel;
+
+                        channelCountInCurrentCategory++;
                     }
                     catch (Exception ex)
                     {
@@ -201,7 +216,7 @@ namespace Slackord.Classes
                                 if (message.ThreadType == ThreadType.Parent)
                                 {
                                     // It's a thread start.
-                                    string threadName = message.Content.Length <= 20 ? message.Content : message.Content[..20];
+                                    string threadName = message.Message.Length <= 20 ? message.Message: message.Message[..20];
                                     sentMessage = await discordChannel.SendMessageAsync(message.Content).ConfigureAwait(false);
                                     IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
                                     RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());

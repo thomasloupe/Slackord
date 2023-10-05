@@ -115,6 +115,7 @@ namespace Slackord.Classes
                     {
                         ReconstructedMessage reconstructedMessage = new()
                         {
+                            Message = deconstructedMessage.Text,
                             Content = part,
                             ParentThreadTs = deconstructedMessage.ParentThreadTs,
                             ThreadType = deconstructedMessage.ThreadType,
@@ -171,6 +172,7 @@ namespace Slackord.Classes
 
     public class ReconstructedMessage
     {
+        public string Message { get; set; }
         public string Content { get; set; }
         public string ParentThreadTs { get; set; }
         public ThreadType ThreadType { get; set; }
