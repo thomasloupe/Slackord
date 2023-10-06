@@ -14,6 +14,20 @@ We have a dedicated directory `docs` in the root of the github repo containing:
 - The [README](../README.md) traditionally is home to the installation and configuration *howto*
 
 ## Questions about installation and configuration
-## Questions while using Slackord 
 
+### How do I get started with Slackord?
+The [README](../README.md) traditionally is home to the installation and configuration *howto*
+
+| TBW |
+## Questions while using Slackord 
+| TBW |
 ## Question about concepts behind - and features of Slackord
+| TBW |
+## Questions about contribution
+
+### I see repeating questions in Discord, can I assist answering them?
+Yes, feel free to do so within the Discord code of conduct. **You can point straight into the FAQ** for repeating questions. This is how to do it:
+1. Go to https://github.com/henkvancann/Slackord/blob/main/docs/FAQ.md
+2. Right click the link following the question and copy the link
+3. Paste the link wherever you'd like to
+e.g. https://github.com/henkvancann/Slackord/blob/main/docs/FAQ.md#q-where-can-i-find-documentation
