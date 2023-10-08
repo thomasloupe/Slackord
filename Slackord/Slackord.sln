@@ -3,22 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34112.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slackord", "Slackord.csproj", "{CD2A9023-3AA1-440C-8788-570D2C04B71B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slackord", "Slackord.csproj", "{CD2A9023-3AA1-440C-8788-570D2C04B71B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
 		Debug-Mac|Any CPU = Debug-Mac|Any CPU
+		Release|Any CPU = Release|Any CPU
 		Release-Mac|Any CPU = Release-Mac|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Debug-Mac|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Debug-Mac|Any CPU.Build.0 = Debug|Any CPU
+		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Debug-Mac|Any CPU.Deploy.0 = Debug|Any CPU
 		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Release-Mac|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Release-Mac|Any CPU.Build.0 = Release|Any CPU
+		{CD2A9023-3AA1-440C-8788-570D2C04B71B}.Release-Mac|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,19 +36,17 @@ Global
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
-		$0.TextStylePolicy = $2
+		$0.TextStylePolicy = $6
 		$2.inheritsSet = null
 		$2.scope = application/xaml
 		$0.XmlFormattingPolicy = $3
 		$3.inheritsSet = null
 		$3.scope = application/xaml
-		$0.TextStylePolicy = $4
 		$4.FileWidth = 80
 		$4.TabsToSpaces = True
 		$4.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $5
 		$5.scope = text/x-csharp
-		$0.TextStylePolicy = $6
 		$6.FileWidth = 80
 		$6.TabsToSpaces = True
 		$6.scope = text/plain

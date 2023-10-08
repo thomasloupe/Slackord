@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Discord.Net;
 using Discord.Rest;
+using Discord.Webhook;
 using Discord.WebSocket;
 using MenuApp;
 
@@ -105,11 +106,13 @@ namespace Slackord.Classes
 
                 foreach (SocketGuild guild in DiscordClient.Guilds)
                 {
-                    _ = new SlashCommandBuilder().WithName("slackord");
-                    _ = new SlashCommandBuilder().WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
                     try
                     {
-                        _ = await guild.CreateApplicationCommandAsync(new SlashCommandBuilder().Build());
+                        var commandBuilder = new SlashCommandBuilder()
+                                                .WithName("slackord")
+                                                .WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
+
+                        _ = await guild.CreateApplicationCommandAsync(commandBuilder.Build());
                     }
                     catch (HttpException ex)
                     {
@@ -191,83 +194,90 @@ namespace Slackord.Classes
             {
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
                 _ = await interaction.FollowupAsync($"""
-                An exception was encountered while sending messages! The exception was:
-                {ex.Message}
-                """);
+An exception was encountered while sending messages! The exception was:
+{ex.Message}
+""");
             }
 
             Dictionary<string, RestThreadChannel> threadStartsDict = new();
             int messagesPosted = 0;
             ApplicationWindow.ResetProgressBar();
 
-
             foreach (Channel channel in ImportJson.Channels)
             {
-                try
+                if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
                 {
-                    if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
+                    // Create a webhook for the channel once
+                    var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
+                    string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
+                    using var webhookClient = new DiscordWebhookClient(webhookUrl);
+
+                    foreach (ReconstructedMessage message in channel.ReconstructedMessagesList)
                     {
-                        // Iterate through the ReconstructedMessagesList and post each message to the Discord channel.
-                        foreach (ReconstructedMessage message in channel.ReconstructedMessagesList)
+                        try
                         {
-                            try
+                            ulong? threadIdForReply = null;
+
+                            if (message.ThreadType == ThreadType.Parent)
                             {
-                                IUserMessage sentMessage = null;
-                                if (message.ThreadType == ThreadType.Parent)
+                                string threadName = message.Message.Length <= 20 ? message.Message : message.Message[..20];
+                                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
+
+                                IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
+                                RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
+
+                                threadStartsDict[message.ParentThreadTs] = threadID;
+                            }
+                            else if (message.ThreadType == ThreadType.Reply)
+                            {
+                                if (threadStartsDict.TryGetValue(message.ParentThreadTs, out RestThreadChannel threadID))
                                 {
-                                    // It's a thread start.
-                                    string threadName = message.Message.Length <= 20 ? message.Message: message.Message[..20];
-                                    sentMessage = await discordChannel.SendMessageAsync(message.Content).ConfigureAwait(false);
-                                    IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
-                                    RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
-                                    threadStartsDict[message.ParentThreadTs] = threadID;
+                                    threadIdForReply = threadID.Id;
                                 }
-                                else if (message.ThreadType == ThreadType.Reply)
+                                else
                                 {
-                                    // It's a thread reply.
-                                    if (threadStartsDict.TryGetValue(message.ParentThreadTs, out RestThreadChannel threadID))
-                                    {
-                                        sentMessage = await threadID.SendMessageAsync(message.Content);
-                                    }
-                                    else
-                                    {
-                                        // Handle the case where the parent message is not found.
-                                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parent message not found for thread reply: {message.Content}\n"); });
-                                        sentMessage = await discordChannel.SendMessageAsync(message.Content);  // Send as a regular message.
-                                    }
-                                }
-                                else  // message.ThreadType == ThreadType.None
-                                {
-                                    // It's a regular message.
-                                    sentMessage = await discordChannel.SendMessageAsync(message.Content);
+                                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parent message not found for thread reply: {message.Content}\n"); });
                                 }
 
-                                // Check if the message should be pinned.
-                                if (message.IsPinned && sentMessage != null)
-                                {
-                                    await sentMessage.PinAsync();
-                                }
-
-                                messagesPosted++;
-                                ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
+                                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, threadId: threadIdForReply);
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
                             }
+
+                            // Handle pinning the message.
+                            //if (message.IsPinned && message.ThreadType == ThreadType.None)
+                            //{
+                            //    // Get the recently sent message using its ID.
+                            //    IMessage recentMessage = await discordChannel.GetMessageAsync(sentMessageId);
+
+                            //    // Pin the message.
+                            //    if (recentMessage is IUserMessage userMessage)
+                            //    {
+                            //        await userMessage.PinAsync();
+                            //    }
+                            //}
+
+                            messagesPosted++;
+                            ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
+
+                            await Task.Delay(1000);  // Delay to prevent rate limiting.
+                        }
+                        catch (Exception ex)
+                        {
+                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
                         }
                     }
-                    else
-                    {
-                        // Handle the case where the Discord channel is not found or the ID is incorrect
-                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Discord channel not found for channel: {channel.Name}\n"); });
-                    }
+
+                    await webhook.DeleteAsync();  // Delete the webhook after all messages for the channel are sent.
                 }
-                catch (Exception ex)
+                else
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Discord channel not found for channel: {channel.Name}\n"); });
                 }
             }
+
             _ = await interaction.FollowupAsync("All messages sent to Discord successfully!");
         }
     }

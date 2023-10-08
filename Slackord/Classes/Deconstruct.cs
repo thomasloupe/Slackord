@@ -51,6 +51,18 @@ namespace Slackord.Classes
                 }
             }
 
+            if (slackMessage["files"] is JArray files) // This is a message with files attached.
+            {
+                foreach (var file in files)
+                {
+                    var fileUrl = file["url_private"]?.ToString();
+                    if (!string.IsNullOrEmpty(fileUrl))
+                    {
+                        deconstructedMessage.FileURLs.Add(fileUrl);
+                    }
+                }
+            }
+
             return deconstructedMessage;
         }
 
@@ -92,6 +104,9 @@ namespace Slackord.Classes
 
             [JsonProperty("real_name")]
             public string RealName { get; set; }
+
+            [JsonProperty("image_192")]
+            public string Avatar { get; set; }
         }
     }
 
@@ -147,7 +162,7 @@ namespace Slackord.Classes
                         {
                             Id = userObject["id"]?.ToString(),
                             Name = userObject["name"]?.ToString(),
-                            Profile = userObject["profile"]?.ToObject<UserProfile>()
+                            Profile = userObject["profile"]?.ToObject<UserProfile>(),
                         };
 
                         if (deconstructedUser.Id != null)
@@ -209,6 +224,7 @@ namespace Slackord.Classes
         public string OriginalTimestamp { get; set; }
         public string Subtype { get; set; }
         public string EditorId { get; set; }
+        public List<string> FileURLs { get; set; } = new List<string>();
     }
 
     public class Reaction

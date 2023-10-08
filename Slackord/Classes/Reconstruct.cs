@@ -1,12 +1,14 @@
 ﻿using MenuApp;
+using Octokit;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace Slackord.Classes
 {
     public partial class Reconstruct
     {
-        private static readonly Dictionary<string, DeconstructedUser> UsersDict = new();
+        internal static readonly Dictionary<string, DeconstructedUser> UsersDict = new();
 
         public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
         {
@@ -89,18 +91,22 @@ namespace Slackord.Classes
                 string messageContent = deconstructedMessage.Text;
                 messageContent = ConvertToDiscordMarkdown(messageContent);
 
-                // Handle getting the username for the message.
+                // Handle getting the username and avatar for the message.
                 string formattedMessage = string.Empty;
+                string userAvatar = null;
+                string userName = string.Empty;
                 if (UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
                 {
-                    string userName =
+                    userName =
                         !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
                         !string.IsNullOrEmpty(user.Name) ? user.Name :
                         !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
                         user.Id;  // Default to the user's ID if no name is available.
 
+                    userAvatar = user.Profile.Avatar; // Get the avatar from the user profile.
+
                     // Format the message.
-                    formattedMessage = $"[{timestamp}] {userName}: {messageContent}";
+                    formattedMessage = $"[{timestamp}] : {messageContent}";
                 }
                 else
                 {
@@ -115,11 +121,14 @@ namespace Slackord.Classes
                     {
                         ReconstructedMessage reconstructedMessage = new()
                         {
+                            User = userName,
                             Message = deconstructedMessage.Text,
                             Content = part,
                             ParentThreadTs = deconstructedMessage.ParentThreadTs,
                             ThreadType = deconstructedMessage.ThreadType,
-                            IsPinned = deconstructedMessage.IsPinned
+                            IsPinned = deconstructedMessage.IsPinned,
+                            FileURLs = deconstructedMessage.FileURLs,
+                            Avatar = userAvatar
                         };
                         channel.ReconstructedMessagesList.Add(reconstructedMessage);
                     }
@@ -136,12 +145,12 @@ namespace Slackord.Classes
             try
             {
                 // Rich text conversions.
-                input = Bold().Replace(input, "**$1**");       // Bold
-                input = Italics().Replace(input, "*$1*");      // Italics
-                input = Underline().Replace(input, "__$1__");  // Underline
-                input = Strikethrough().Replace(input, "~~$1~~"); // Strikethrough
-                input = MaskedLinks().Replace(input, "[$2]($1)");  // Masked Links
-                input = BlockQuotes().Replace(input, "> $1\n");    // Blockquotes
+                input = Bold().Replace(input, "**$1**");       // Bold.
+                input = Italics().Replace(input, "*$1*");      // Italics.
+                input = Underline().Replace(input, "__$1__");  // Underline.
+                input = Strikethrough().Replace(input, "~~$1~~"); // Strikethrough.
+                input = MaskedLinks().Replace(input, "[$2]($1)");  // Masked Links.
+                input = BlockQuotes().Replace(input, "> $1\n");    // Blockquotes.
 
                 return input;
             }
@@ -156,26 +165,62 @@ namespace Slackord.Classes
         {
             const int maxMessageLength = 2000;
             List<string> messageParts = new();
+            Regex urlPattern = URLPattern();
 
-            int index = 0;
-            while (index < message.Length)
+            int currentIndex = 0;
+            while (currentIndex < message.Length)
             {
-                int partLength = Math.Min(maxMessageLength, message.Length - index);
-                string messagePart = message.Substring(index, partLength);
-                messageParts.Add(messagePart);
-                index += partLength;
+                int bestSplitIndex = Math.Min(currentIndex + maxMessageLength, message.Length);
+
+                // Ensure we're not splitting in the middle of a word.
+                while (bestSplitIndex > currentIndex &&
+                       bestSplitIndex < message.Length &&
+                       !char.IsWhiteSpace(message[bestSplitIndex]))
+                {
+                    bestSplitIndex--;
+                }
+
+                // Check for URLs and ensure we're not splitting a URL.
+                MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
+                if (matches.Count > 0)
+                {
+                    Match lastMatch = matches[^1]; // Use the ^ operator for the last element
+                    if (lastMatch.Index + lastMatch.Length > bestSplitIndex)
+                    {
+                        bestSplitIndex = lastMatch.Index;
+                    }
+                }
+
+                // Ensure we're not splitting in the middle of markdown syntax (this can be expanded as needed).
+                int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
+                if (boldSyntax > -1 && boldSyntax == bestSplitIndex - 2)
+                {
+                    bestSplitIndex -= 2;
+                }
+
+                // Use the range operator for substring
+                string part = message[currentIndex..bestSplitIndex];
+                messageParts.Add(part);
+
+                currentIndex = bestSplitIndex;
             }
 
             return messageParts;
         }
+
+        [GeneratedRegex(@"https?://\S+")]
+        private static partial Regex URLPattern();
     }
 
     public class ReconstructedMessage
     {
+        public string User { get; set; }
+        public string Avatar { get; set; }
         public string Message { get; set; }
         public string Content { get; set; }
         public string ParentThreadTs { get; set; }
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
+        public List<string> FileURLs { get; set; } = new List<string>();
     }
 }
