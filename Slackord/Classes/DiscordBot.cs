@@ -247,17 +247,18 @@ An exception was encountered while sending messages! The exception was:
                             }
 
                             // Handle pinning the message.
-                            //if (message.IsPinned && message.ThreadType == ThreadType.None)
-                            //{
-                            //    // Get the recently sent message using its ID.
-                            //    IMessage recentMessage = await discordChannel.GetMessageAsync(sentMessageId);
+                            if (message.IsPinned && message.ThreadType == ThreadType.None)
+                            {
+                                // Retrieve the most recent message from the channel.
+                                IEnumerable<IMessage> recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync();
+                                IMessage recentMessage = recentMessages.FirstOrDefault();
 
-                            //    // Pin the message.
-                            //    if (recentMessage is IUserMessage userMessage)
-                            //    {
-                            //        await userMessage.PinAsync();
-                            //    }
-                            //}
+                                // Pin the message.
+                                if (recentMessage is IUserMessage userMessage)
+                                {
+                                    await userMessage.PinAsync();
+                                }
+                            }
 
                             messagesPosted++;
                             ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
