@@ -50,50 +50,66 @@ namespace Slackord.Classes
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            ApplicationWindow.ResetProgressBar();
-            ApplicationWindow.ShowProgressBar();
-
-            if (command.Data.Name.Equals("slackord"))
+            try
             {
-                ulong? guildId = command.GuildId;
-                await PostMessagesToDiscord((ulong)guildId, command);
+                ApplicationWindow.ResetProgressBar();
+                ApplicationWindow.ShowProgressBar();
+
+                if (command.Data.Name.Equals("slackord"))
+                {
+                    ulong? guildId = command.GuildId;
+                    await PostMessagesToDiscord((ulong)guildId, command);
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationWindow.WriteToDebugWindow($"Exception in SlashCommandHandler() : {ex.Message}\n");
             }
         }
 
         public async Task MainAsync(string discordToken)
         {
-            if (DiscordClient is not null)
+            try
             {
-                throw new InvalidOperationException("DiscordClient is already initialized.");
+                if (DiscordClient is not null)
+                {
+                    throw new InvalidOperationException("DiscordClient is already initialized.");
+                }
+                ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot...\n");
+
+                // Configure the DiscordSocketClient.
+                DiscordSocketConfig _config = new()
+                {
+                    GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+                };
+
+                // Initialize the DiscordClient.
+                //DiscordClient = new DiscordSocketClient(_config);
+                DiscordClient = new DiscordSocketClient();
+
+                // Set up dependency injection.
+                _services = new ServiceCollection()
+                    .AddSingleton(DiscordClient)
+                    .BuildServiceProvider();
+
+                // Assign event handlers.
+                DiscordClient.Log += DiscordClient_Log;
+                DiscordClient.Ready += ClientReady;
+                DiscordClient.LoggedOut += OnClientDisconnect;
+                DiscordClient.SlashCommandExecuted += SlashCommandHandler;
+
+                // Login and start the client.
+                await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
+                await DiscordClient.StartAsync();
+
+                // Set the client's activity.
+                await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
             }
-            ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
-
-            // Configure the DiscordSocketClient.
-            DiscordSocketConfig _config = new()
+            catch (Exception ex)
             {
-                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
-            };
-
-            // Initialize the DiscordClient.
-            DiscordClient = new DiscordSocketClient(_config);
-
-            // Set up dependency injection.
-            _services = new ServiceCollection()
-                .AddSingleton(DiscordClient)
-                .BuildServiceProvider();
-
-            // Assign event handlers
-            DiscordClient.Log += DiscordClient_Log;
-            DiscordClient.Ready += ClientReady;
-            DiscordClient.LoggedOut += OnClientDisconnect;
-            DiscordClient.SlashCommandExecuted += SlashCommandHandler;
-
-            // Login and start the client.
-            await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
-            await DiscordClient.StartAsync();
-
-            // Set the client's activity.
-            await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
+                ApplicationWindow.WriteToDebugWindow($"Exception in MainAsync() : {ex.Message}\n");
+            }
+            
         }
 
         private async Task ClientReady()

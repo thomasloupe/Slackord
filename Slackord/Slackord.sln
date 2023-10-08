@@ -37,19 +37,6 @@ Global
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
 		$0.TextStylePolicy = $6
-		$2.inheritsSet = null
-		$2.scope = application/xaml
-		$0.XmlFormattingPolicy = $3
-		$3.inheritsSet = null
-		$3.scope = application/xaml
-		$4.FileWidth = 80
-		$4.TabsToSpaces = True
-		$4.scope = text/x-csharp
-		$0.CSharpFormattingPolicy = $5
-		$5.scope = text/x-csharp
-		$6.FileWidth = 80
-		$6.TabsToSpaces = True
-		$6.scope = text/plain
 		version = 4
 	EndGlobalSection
 EndGlobal
