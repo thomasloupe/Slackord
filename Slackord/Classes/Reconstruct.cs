@@ -78,8 +78,12 @@ namespace Slackord.Classes
                     _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {currentValue}\n"); });
                     return;
                 }
-                long timestampMilliseconds = (long)(timestampDouble * 1000);
-                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestampMilliseconds);
+
+                double timestampSeconds = timestampDouble;
+                long timestampMilliseconds = (long)(timestampSeconds * 1000);
+                long timestampFractionalMilliseconds = (long)((timestampSeconds % 1) * 1000000);
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestampMilliseconds).AddTicks(timestampFractionalMilliseconds);
+
                 DateTimeFormatInfo dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
                 string customFormat = $"{dtfi.ShortDatePattern} {dtfi.LongTimePattern}";
                 string timestamp = dateTimeOffset.ToString(customFormat);
@@ -93,20 +97,16 @@ namespace Slackord.Classes
 
                 if (deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
                 {
-                    // Set the userName to the user's DisplayName, Name, RealName, or Id, in order of fallback.
                     userName = !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
                                !string.IsNullOrEmpty(user.Name) ? user.Name :
                                !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
                                user.Id;
-                    // Set the userAvatar to the user's Avatar of Image192, then format the message with the timestamp and message content.
                     userAvatar = user.Profile.Avatar;
                     formattedMessage = $"[{timestamp}] : {messageContent}";
                 }
                 else
                 {
-                    // We couldn't find a user here, so set it to "Unknown User". This doesn't happen often, but it can happen.
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found for message: {timestamp} {deconstructedMessage.Text}\nSetting to \"Unknown User\"...\n"); });
-                    userName = "Unknown User";
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found: {deconstructedMessage.User}\n"); });
                 }
 
                 if (!string.IsNullOrEmpty(formattedMessage))
@@ -134,7 +134,6 @@ namespace Slackord.Classes
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message} while processing property '{currentProperty}' with value '{currentValue}'\n"); });
             }
         }
-
 
         private static string ConvertToDiscordMarkdown(string input)
         {
