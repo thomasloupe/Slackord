@@ -60,60 +60,55 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n\n"); });
             }
         }
 
         private static void ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
         {
+            string currentProperty = "";
+            object currentValue = null;
+
             try
             {
-                // Convert Unix timestamp to a readable format.
-                if (!double.TryParse(deconstructedMessage.Timestamp, out double timestampDouble))
+                currentProperty = "Timestamp";
+                currentValue = deconstructedMessage.Timestamp;
+                if (!double.TryParse(currentValue?.ToString(), out double timestampDouble))
                 {
-                    // Log the error, and don't continue processing the message.
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {deconstructedMessage.Timestamp}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {currentValue}\n"); });
                     return;
                 }
                 long timestampMilliseconds = (long)(timestampDouble * 1000);
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestampMilliseconds);
-
-                // Get the current culture's DateTimeFormatInfo object.
                 DateTimeFormatInfo dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
-
-                // Create a custom format string using the current culture's short date pattern and long time pattern.
                 string customFormat = $"{dtfi.ShortDatePattern} {dtfi.LongTimePattern}";
-
-                // Format the DateTimeOffset object using the custom format string.
                 string timestamp = dateTimeOffset.ToString(customFormat);
 
-                // Handle rich text formatting.
                 string messageContent = deconstructedMessage.Text;
                 messageContent = ConvertToDiscordMarkdown(messageContent);
 
-                // Handle getting the username and avatar for the message.
                 string formattedMessage = string.Empty;
                 string userAvatar = null;
                 string userName = string.Empty;
-                if (UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
+
+                if (deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
                 {
-                    userName =
-                        !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
-                        !string.IsNullOrEmpty(user.Name) ? user.Name :
-                        !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
-                        user.Id;  // Default to the user's ID if no name is available.
-
-                    userAvatar = user.Profile.Avatar; // Get the avatar from the user profile.
-
-                    // Format the message.
+                    // Set the userName to the user's DisplayName, Name, RealName, or Id, in order of fallback.
+                    userName = !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
+                               !string.IsNullOrEmpty(user.Name) ? user.Name :
+                               !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
+                               user.Id;
+                    // Set the userAvatar to the user's Avatar of Image192, then format the message with the timestamp and message content.
+                    userAvatar = user.Profile.Avatar;
                     formattedMessage = $"[{timestamp}] : {messageContent}";
                 }
                 else
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found: {deconstructedMessage.User}\n"); });
+                    // We couldn't find a user here, so set it to "Unknown User". This doesn't happen often, but it can happen.
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found for message: {timestamp} {deconstructedMessage.Text}\nSetting to \"Unknown User\"...\n"); });
+                    userName = "Unknown User";
                 }
 
-                // Ensure formattedMessage is not empty before proceeding to split and reconstruct the message.
                 if (!string.IsNullOrEmpty(formattedMessage))
                 {
                     List<string> messageParts = SplitMessageIntoParts(formattedMessage);
@@ -136,9 +131,10 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message} while processing property '{currentProperty}' with value '{currentValue}'\n"); });
             }
         }
+
 
         private static string ConvertToDiscordMarkdown(string input)
         {

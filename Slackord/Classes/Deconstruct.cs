@@ -17,50 +17,113 @@ namespace Slackord.Classes
 
         public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
         {
-            string threadTs = slackMessage["thread_ts"]?.ToString();
-            string timestamp = slackMessage["ts"]?.ToString();
+            DeconstructedMessage deconstructedMessage = new();
+            string currentProperty = "";
+            JToken currentValue = null;
 
-            DeconstructedMessage deconstructedMessage = new()
+            try
             {
-                MessageType = slackMessage["type"]?.ToString(),
-                Channel = slackMessage["channel"]?.ToString(),
-                User = slackMessage["user"]?.ToString(),
-                Text = slackMessage["text"]?.ToString(),
-                Timestamp = slackMessage["ts"]?.ToString(),
-                IsStarred = slackMessage["is_starred"]?.ToObject<bool>() ?? false,
-                IsPinned = slackMessage["pinned_to"] != null,
-                IsBot = slackMessage["subtype"]?.ToString() == "bot_message",
-                Reactions = slackMessage["reactions"]?.ToObject<List<Reaction>>() ?? new List<Reaction>(),
-                ThreadTs = threadTs,
-                ParentUserId = slackMessage["parent_user_id"]?.ToString(),
-                HasRichText = slackMessage["blocks"] != null,
-                Attachments = slackMessage["attachments"] != null,
-                PreviousMessage = slackMessage["previous"]?["text"]?.ToString(),
-                OriginalTimestamp = slackMessage["original_ts"]?.ToString(),
-                Subtype = slackMessage["subtype"]?.ToString(),
-                EditorId = slackMessage["editor_id"]?.ToString(),
-                ThreadType = DetermineThreadType(slackMessage),
-                ParentThreadTs = slackMessage["thread_ts"]?.ToString(),
-            };
+                currentProperty = "thread_ts";
+                currentValue = slackMessage[currentProperty];
+                string threadTs = currentValue?.ToString();
 
-            if (threadTs == timestamp)  // This is a thread parent message.
-            {
-                if (!ThreadDictionary.ContainsKey(threadTs))
+                currentProperty = "ts";
+                currentValue = slackMessage[currentProperty];
+                string timestamp = currentValue?.ToString();
+
+                currentProperty = "type";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.MessageType = currentValue?.ToString();
+
+                currentProperty = "channel";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.Channel = currentValue?.ToString();
+
+                currentProperty = "user";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.User = currentValue?.ToString();
+
+                currentProperty = "text";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.Text = currentValue?.ToString();
+
+                currentProperty = "ts";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.Timestamp = currentValue?.ToString();
+
+                currentProperty = "is_starred";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.IsStarred = currentValue?.ToObject<bool>() ?? false;
+
+                currentProperty = "pinned_to";
+                deconstructedMessage.IsPinned = slackMessage[currentProperty] != null;
+
+                currentProperty = "subtype";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.IsBot = currentValue?.ToString() == "bot_message";
+
+                currentProperty = "reactions";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.Reactions = currentValue?.ToObject<List<Reaction>>() ?? new List<Reaction>();
+
+                deconstructedMessage.ThreadTs = threadTs;
+
+                currentProperty = "parent_user_id";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.ParentUserId = currentValue?.ToString();
+
+                currentProperty = "blocks";
+                deconstructedMessage.HasRichText = slackMessage[currentProperty] != null;
+
+                currentProperty = "attachments";
+                deconstructedMessage.Attachments = slackMessage[currentProperty] != null;
+
+                currentProperty = "previous.text";
+                currentValue = slackMessage["previous"]?["text"];
+                deconstructedMessage.PreviousMessage = currentValue?.ToString();
+
+                currentProperty = "original_ts";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.OriginalTimestamp = currentValue?.ToString();
+
+                currentProperty = "subtype";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.Subtype = currentValue?.ToString();
+
+                currentProperty = "editor_id";
+                currentValue = slackMessage[currentProperty];
+                deconstructedMessage.EditorId = currentValue?.ToString();
+
+                deconstructedMessage.ThreadType = DetermineThreadType(slackMessage);
+
+                deconstructedMessage.ParentThreadTs = threadTs;
+
+                if (threadTs == timestamp)  // This is a thread parent message.
                 {
-                    threadDictionary[threadTs] = new ThreadInfo();
-                }
-            }
-
-            if (slackMessage["files"] is JArray files) // This is a message with files attached.
-            {
-                foreach (var file in files)
-                {
-                    var fileUrl = file["url_private"]?.ToString();
-                    if (!string.IsNullOrEmpty(fileUrl))
+                    if (!ThreadDictionary.ContainsKey(threadTs))
                     {
-                        deconstructedMessage.FileURLs.Add(fileUrl);
+                        threadDictionary[threadTs] = new ThreadInfo();
                     }
                 }
+
+                currentProperty = "files";
+                if (slackMessage[currentProperty] is JArray files) // This is a message with files attached.
+                {
+                    foreach (var file in files)
+                    {
+                        currentProperty = "file.url_private";
+                        currentValue = file[currentProperty];
+                        var fileUrl = currentValue?.ToString();
+                        if (!string.IsNullOrEmpty(fileUrl))
+                        {
+                            deconstructedMessage.FileURLs.Add(fileUrl);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error processing property '{currentProperty}' with value '{currentValue}' in JSON", ex);
             }
 
             return deconstructedMessage;
@@ -169,17 +232,16 @@ namespace Slackord.Classes
                         {
                             usersDict[deconstructedUser.Id] = deconstructedUser;
                         }
-                        // If user count is 0, then the users.json file is empty or not found.
-                        if (usersDict.Count == 0)
-                        {
-                            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); });
-                        }
-                        // Otherwise, write the number of users found to the debug window.
-                        else
-                        {
-                            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
-                        }
                     }
+                }
+                if (usersDict.Count == 0)
+                {
+                    // If user count is 0, then the users.json file is empty or not found.
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"No users found in users.json file.\n"); });
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Successfully parsed {usersDict.Count} users.\n"); });
                 }
                 return usersDict;
             }
