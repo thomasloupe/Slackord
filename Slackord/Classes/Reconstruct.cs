@@ -79,10 +79,10 @@ namespace Slackord.Classes
                     return;
                 }
 
-                double timestampSeconds = timestampDouble;
-                long timestampMilliseconds = (long)(timestampSeconds * 1000);
-                long timestampFractionalMilliseconds = (long)((timestampSeconds % 1) * 1000000);
-                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestampMilliseconds).AddTicks(timestampFractionalMilliseconds);
+                long wholeSeconds = (long)timestampDouble;
+                long fractionalTicks = (long)((timestampDouble - wholeSeconds) * TimeSpan.TicksPerSecond);
+
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(wholeSeconds).AddTicks(fractionalTicks);
 
                 DateTimeFormatInfo dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
                 string customFormat = $"{dtfi.ShortDatePattern} {dtfi.LongTimePattern}";
