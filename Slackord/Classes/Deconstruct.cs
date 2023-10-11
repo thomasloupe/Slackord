@@ -17,7 +17,12 @@ namespace Slackord.Classes
 
         public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
         {
-            DeconstructedMessage deconstructedMessage = new();
+            // This is original unmodified JSON from Slack. We keep this in case we run into issues with the deconstructed message for review.
+            DeconstructedMessage deconstructedMessage = new()
+            {
+                OriginalSlackMessageJson = slackMessage.ToString()
+            };
+
             string currentProperty = "";
             JToken currentValue = null;
 
@@ -111,10 +116,21 @@ namespace Slackord.Classes
                 {
                     foreach (var file in files)
                     {
-                        currentProperty = "file.url_private";
+                        currentProperty = "permalink";
                         currentValue = file[currentProperty];
                         var fileUrl = currentValue?.ToString();
-                        if (!string.IsNullOrEmpty(fileUrl))
+
+                        if (string.IsNullOrEmpty(fileUrl))
+                        {
+                            // Log empty or null file URLs.
+                            _ = Application.Current.Dispatcher.Dispatch(() =>
+                            {
+                                ApplicationWindow.WriteToDebugWindow($"Empty or null file URL found. Check the log for more information.\n");
+                                string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
+                                Logger.Log(logMessage);
+                            });
+                        }
+                        else
                         {
                             deconstructedMessage.FileURLs.Add(fileUrl);
                         }
@@ -123,6 +139,8 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
+                string logMessage = $"Error processing property '{currentProperty}' with value '{currentValue}' in JSON. {ex.Message}";
+                Logger.Log(logMessage);
                 throw new Exception($"Error processing property '{currentProperty}' with value '{currentValue}' in JSON", ex);
             }
 
@@ -267,6 +285,7 @@ namespace Slackord.Classes
 
     public class DeconstructedMessage
     {
+        public string OriginalSlackMessageJson { get; set; }
         public string MessageType { get; set; }
         public string Channel { get; set; }
         public string User { get; set; }

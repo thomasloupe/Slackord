@@ -1,5 +1,4 @@
 ﻿using MenuApp;
-using Octokit;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
@@ -44,7 +43,7 @@ namespace Slackord.Classes
                 // Iterate through each channel.
                 foreach (Channel channel in channels)
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Deconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nDeconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
 
                     // Iterate through each deconstructed message in the channel.
                     foreach (DeconstructedMessage deconstructedMessage in channel.DeconstructedMessagesList)
@@ -66,72 +65,141 @@ namespace Slackord.Classes
 
         private static void ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
         {
-            string currentProperty = "";
-            object currentValue = null;
-
             try
             {
-                currentProperty = "Timestamp";
-                currentValue = deconstructedMessage.Timestamp;
-                if (!double.TryParse(currentValue?.ToString(), out double timestampDouble))
+                // Skip markdown conversion if the message is null and has file attachments.
+                if (string.IsNullOrEmpty(deconstructedMessage.Text))
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Invalid timestamp format: {currentValue}\n"); });
+                    if (deconstructedMessage.FileURLs.Count > 0)
+                    {
+                        // This is a file upload message. Download the file and store it.
+                        foreach (var fileUrl in deconstructedMessage.FileURLs)
+                        {
+                            // Call DownloadFile method.
+                            Task.Run(() => DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp))
+                            .ContinueWith(t =>
+                            {
+                                if (t.IsCompletedSuccessfully)
+                                {
+                                    var (localFilePath, permalink) = t.Result;
+
+                                    // Find the corresponding ReconstructedMessage.
+                                    var reconstructedMessage = channel.ReconstructedMessagesList.FirstOrDefault(rm => rm.OriginalTimestamp == deconstructedMessage.OriginalTimestamp);
+
+                                    // Add the localFilePath and permalink to the ReconstructedMessage.
+                                    if (reconstructedMessage != null)
+                                    {
+                                        reconstructedMessage.FileURLs.Add(localFilePath);
+                                        reconstructedMessage.FilePermalinks.Add(permalink);
+                                    }
+                                }
+                                else if (t.IsFaulted)
+                                {
+                                    Logger.Log($"File download for channel {channel.Name} failed! Original Slack Message:\n{deconstructedMessage.OriginalSlackMessageJson}");
+                                }
+                            });
+                        }
+                        return;  // Skip further processing for this message.
+                    }
+                }
+
+                if (!double.TryParse(deconstructedMessage.Timestamp?.ToString(), out double timestampDouble))
+                {
+                    // Log invalid timestamp format
                     return;
                 }
 
+                string displayTimestamp = ConvertTimestampToLocalizedString(timestampDouble);
+                if (string.IsNullOrEmpty(displayTimestamp))
+                {
+                    return;
+                }
+
+                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? string.Empty : ConvertToDiscordMarkdown(deconstructedMessage.Text);
+                string userName = ConvertUserToDisplayName(deconstructedMessage.User);
+                string userAvatar = deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user) ? user.Profile.Avatar : null;
+
+                string formattedMessage = FormatMessage(messageContent, displayTimestamp, userName);
+
+                SplitAndAddMessages(formattedMessage, deconstructedMessage, channel, userName, userAvatar);
+            }
+            catch (Exception ex)
+            {
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage() : {ex.Message}\n"); });
+            }
+        }
+
+        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string originalTimestamp)
+        {
+            try
+            {
+                // Check for null or empty originalTimestamp.
+                if (string.IsNullOrEmpty(originalTimestamp))
+                {
+                    originalTimestamp = Guid.NewGuid().ToString();
+                }
+
+                using HttpClient httpClient = new();
+                HttpResponseMessage response = await httpClient.GetAsync(fileUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                    string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads");
+                    Directory.CreateDirectory(downloadsFolder);
+
+                    string channelFolder = Path.Combine(downloadsFolder, channelName);
+                    Directory.CreateDirectory(channelFolder);
+
+                    string fileExtension = Path.GetExtension(new Uri(fileUrl).AbsolutePath);
+                    string fileName = $"{originalTimestamp}{fileExtension}";
+                    string localFilePath = Path.Combine(channelFolder, fileName);
+
+                    if (File.Exists(localFilePath))
+                    {
+                        // Generate a new unique filename.
+                        fileName = $"{originalTimestamp}_{Guid.NewGuid()}{fileExtension}";
+                        localFilePath = Path.Combine(channelFolder, fileName);
+                    }
+
+                    await File.WriteAllBytesAsync(localFilePath, fileBytes);
+                    string permalink = fileUrl;
+
+                    return (localFilePath, permalink);
+                }
+                else
+                {
+                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Failed to download file: {response.StatusCode}\n"); });
+                    return (null, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"DownloadFile(): {ex.Message}\n"); });
+                return (null, null);
+            }
+        }
+
+        private static string ConvertTimestampToLocalizedString(double timestampDouble)
+        {
+            try
+            {
                 long wholeSeconds = (long)timestampDouble;
                 long fractionalTicks = (long)((timestampDouble - wholeSeconds) * TimeSpan.TicksPerSecond);
 
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(wholeSeconds).AddTicks(fractionalTicks);
 
-                DateTimeFormatInfo dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
-                string customFormat = $"{dtfi.ShortDatePattern} {dtfi.LongTimePattern}";
-                string timestamp = dateTimeOffset.ToString(customFormat);
+                var timePattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern;
 
-                string messageContent = deconstructedMessage.Text;
-                messageContent = ConvertToDiscordMarkdown(messageContent);
+                string format = timePattern.Contains('H') ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd hh:mm:ss tt";
 
-                string formattedMessage = string.Empty;
-                string userAvatar = null;
-                string userName = string.Empty;
-
-                if (deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user))
-                {
-                    userName = !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
-                               !string.IsNullOrEmpty(user.Name) ? user.Name :
-                               !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
-                               user.Id;
-                    userAvatar = user.Profile.Avatar;
-                    formattedMessage = $"[{timestamp}] : {messageContent}";
-                }
-                else
-                {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"User not found: {deconstructedMessage.User}\n"); });
-                }
-
-                if (!string.IsNullOrEmpty(formattedMessage))
-                {
-                    List<string> messageParts = SplitMessageIntoParts(formattedMessage);
-                    foreach (string part in messageParts)
-                    {
-                        ReconstructedMessage reconstructedMessage = new()
-                        {
-                            User = userName,
-                            Message = deconstructedMessage.Text,
-                            Content = part,
-                            ParentThreadTs = deconstructedMessage.ParentThreadTs,
-                            ThreadType = deconstructedMessage.ThreadType,
-                            IsPinned = deconstructedMessage.IsPinned,
-                            FileURLs = deconstructedMessage.FileURLs,
-                            Avatar = userAvatar
-                        };
-                        channel.ReconstructedMessagesList.Add(reconstructedMessage);
-                    }
-                }
+                return dateTimeOffset.ToLocalTime().ToString(format);
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message} while processing property '{currentProperty}' with value '{currentValue}'\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertTimestampToLocalizedString() : {ex.Message}\n"); });
+                return null;
             }
         }
 
@@ -151,8 +219,46 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertToDiscordMarkdown(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertToDiscordMarkdown() : {ex.Message}\n"); });
                 return input;
+            }
+        }
+
+        private static string ConvertUserToDisplayName(string userId)
+        {
+            if (userId != null && UsersDict.TryGetValue(userId, out DeconstructedUser user))
+            {
+                return !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
+                       !string.IsNullOrEmpty(user.Name) ? user.Name :
+                       !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
+                       user.Id;
+            }
+            return "Unknown User";
+        }
+
+        private static string FormatMessage(string messageContent, string timestamp, string userName)
+        {
+            return $"[{timestamp}] : {messageContent}";
+        }
+
+        private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
+        {
+            List<string> messageParts = SplitMessageIntoParts(formattedMessage);
+            foreach (string part in messageParts)
+            {
+                ReconstructedMessage reconstructedMessage = new()
+                {
+                    User = userName,
+                    Message = deconstructedMessage.Text,
+                    Content = part,
+                    ParentThreadTs = deconstructedMessage.ParentThreadTs,
+                    ThreadType = deconstructedMessage.ThreadType,
+                    IsPinned = deconstructedMessage.IsPinned,
+                    Avatar = userAvatar,
+                    OriginalTimestamp = deconstructedMessage.OriginalTimestamp,
+                    FileURLs = deconstructedMessage.FileURLs
+                };
+                channel.ReconstructedMessagesList.Add(reconstructedMessage);
             }
         }
 
@@ -179,7 +285,7 @@ namespace Slackord.Classes
                 MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
                 if (matches.Count > 0)
                 {
-                    Match lastMatch = matches[^1]; // Use the ^ operator for the last element
+                    Match lastMatch = matches[^1];
                     if (lastMatch.Index + lastMatch.Length > bestSplitIndex)
                     {
                         bestSplitIndex = lastMatch.Index;
@@ -209,6 +315,7 @@ namespace Slackord.Classes
 
     public class ReconstructedMessage
     {
+        public string OriginalTimestamp { get; set; }
         public string User { get; set; }
         public string Avatar { get; set; }
         public string Message { get; set; }
@@ -217,5 +324,6 @@ namespace Slackord.Classes
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
         public List<string> FileURLs { get; set; } = new List<string>();
+        public List<string> FilePermalinks { get; set; } = new List<string>();
     }
 }

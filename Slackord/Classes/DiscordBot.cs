@@ -223,7 +223,6 @@ An exception was encountered while sending messages! The exception was:
             {
                 if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
                 {
-                    // Create a webhook for the channel once
                     var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
                     string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
                     using var webhookClient = new DiscordWebhookClient(webhookUrl);
@@ -233,15 +232,12 @@ An exception was encountered while sending messages! The exception was:
                         try
                         {
                             ulong? threadIdForReply = null;
-
                             if (message.ThreadType == ThreadType.Parent)
                             {
                                 string threadName = message.Message.Length <= 20 ? message.Message : message.Message[..20];
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
-
                                 IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
                                 RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
-
                                 threadStartsDict[message.ParentThreadTs] = threadID;
                             }
                             else if (message.ThreadType == ThreadType.Reply)
@@ -265,14 +261,30 @@ An exception was encountered while sending messages! The exception was:
                             // Handle pinning the message.
                             if (message.IsPinned && message.ThreadType == ThreadType.None)
                             {
-                                // Retrieve the most recent message from the channel.
                                 IEnumerable<IMessage> recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync();
                                 IMessage recentMessage = recentMessages.FirstOrDefault();
-
-                                // Pin the message.
                                 if (recentMessage is IUserMessage userMessage)
                                 {
                                     await userMessage.PinAsync();
+                                }
+                            }
+
+                            foreach (var localFilePath in message.FileURLs)
+                            {
+                                FileInfo fileInfo = new FileInfo(localFilePath);
+                                long fileSizeInBytes = fileInfo.Length;
+
+                                // Discord has a file size limit of 25MB (25 * 1024 * 1024 bytes).
+                                if (fileSizeInBytes <= 25 * 1024 * 1024)
+                                {
+                                    using FileStream fs = new(localFilePath, FileMode.Open);
+                                    await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath), "File uploaded");
+                                }
+                                else
+                                {
+                                    // If the file is too large, send the permalink instead.
+                                    string permalink = "YOUR_PERMALINK_HERE";
+                                    await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({permalink}).");
                                 }
                             }
 
