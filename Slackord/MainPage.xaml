@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MenuApp"
              x:Class="MenuApp.MainPage">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -10,46 +11,50 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Add column definitions -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Main UI Buttons -->
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="150" />
-            </Grid.ColumnDefinitions>
-            <Button x:Name="ImportJson" Text="Import JSON" Clicked="ImportJson_Clicked" FontSize="Micro" FontAttributes="Bold" />
-            <Button x:Name="EnterBotToken" Grid.Column="1" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontAttributes="Bold" FontSize="Micro"  />
-            <Button x:Name="BotConnectionButton" Grid.Column="2" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontAttributes="Bold" FontSize="Micro"  />
-            <Button x:Name="CheckForUpdates" Grid.Column="4" Text="Update Check" Clicked="CheckForUpdates_Clicked" FontAttributes="Bold"  FontSize="Micro" />
-            <Button x:Name="About" Grid.Column="5" Text="About" Clicked="About_Clicked" FontAttributes="Bold"  FontSize="Micro" />
-            <Button x:Name="Donate" Grid.Column="6" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" FontSize="Micro"  />
+        <Grid Grid.Row="0">
+            <StackLayout Orientation="Horizontal">
+                <!-- Button Group 1 -->
+                <Button x:Name="ImportJson" Text="Import JSON" Clicked="ImportJson_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="130"/>
+                <Button x:Name="TimestampToggle" Text="Timestamp: " Clicked="Timestamp_Clicked" FontAttributes="Bold" FontSize="Micro" WidthRequest="200"/>
+                <Button x:Name="EnterBotToken" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontAttributes="Bold" FontSize="Micro" />
+                <Button x:Name="BotConnectionButton" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontAttributes="Bold" FontSize="Micro" />
+
+                <!-- Spacer -->
+                <Label WidthRequest="200"/>
+
+                <!-- Button Group 2 -->
+                <Button x:Name="CheckForUpdates" Text="Update Check" Clicked="CheckForUpdates_Clicked" FontAttributes="Bold" FontSize="Micro" />
+                <Button x:Name="About" Text="About" Clicked="About_Clicked" FontAttributes="Bold" FontSize="Micro" />
+                <Button x:Name="Donate" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" FontSize="Micro" />
+
+                <!-- Spacer -->
+                <Label WidthRequest="40" HorizontalOptions="StartAndExpand"/>
+
+                <!-- Exit button -->
+                <Button x:Name="Exit" Text="Exit" Clicked="Exit_Clicked" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" Padding="14,10,14,10" HorizontalOptions="End"/>
+            </StackLayout>
         </Grid>
 
-        <Button x:Name="Exit" Grid.Column="1" Text="Exit" Clicked="Exit_Clicked" WidthRequest="150" FontAttributes="Bold" BackgroundColor="OrangeRed" FontSize="Micro" TextColor="White" Padding="14,10,14,10"/>
-
         <!-- Debug Window -->
-        <Editor x:Name="DebugWindow" Grid.Row="1" HeightRequest="500" Margin="0,0,0,0" HorizontalOptions="FillAndExpand" Grid.ColumnSpan="2" IsReadOnly="True"/>
+        <Editor x:Name="DebugWindow" Grid.Row="1" HeightRequest="500" Margin="0,0,0,0" HorizontalOptions="FillAndExpand" IsReadOnly="True"/>
 
         <!-- Debug Window Buttons -->
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="2" Grid.Column="0" Margin="0,10,0,0">
+        <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="Start">
             <Button x:Name="CopyLog" Text="Copy Log" Clicked="CopyLog_Clicked" BorderWidth="3" CornerRadius="20" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
             <Button x:Name="ClearLog" Text="Clear Log" Clicked="ClearLog_Clicked" BorderWidth="3" CornerRadius="20" FontSize="Micro" FontAttributes="Bold" BackgroundColor="OrangeRed" TextColor="White" />
         </StackLayout>
 
         <!-- Progress Bar -->
-        <StackLayout Grid.Row="2" Grid.Column="0" Orientation="Vertical" VerticalOptions="CenterAndExpand" Margin="400,0,0,0">
-            <Label x:Name="ProgressBarText" Text="Progress" HorizontalOptions="Center" FontAttributes="Bold" FontFamily="Roboto"/>
-            <ProgressBar x:Name="ProgressBar" HeightRequest="10" HorizontalOptions="FillAndExpand" ProgressColor="OrangeRed" Progress="0.00"/>
+        <StackLayout Grid.Row="2" Orientation="Vertical" HorizontalOptions="EndAndExpand" Margin="0,0,100,0">
+            <Label x:Name="ProgressBarText" Text="Progress" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <ProgressBar x:Name="ProgressBar" WidthRequest="800" HeightRequest="30" HorizontalOptions="Fill" ProgressColor="OrangeRed" Progress="0.00"/>
         </StackLayout>
-
     </Grid>
 </ContentPage>

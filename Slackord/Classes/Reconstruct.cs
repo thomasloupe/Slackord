@@ -1,4 +1,5 @@
 ﻿using MenuApp;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
@@ -103,15 +104,17 @@ namespace Slackord.Classes
                     }
                 }
 
-                if (!double.TryParse(deconstructedMessage.Timestamp?.ToString(), out double timestampDouble))
+                string timestampString = deconstructedMessage.Timestamp?.ToString();
+                if (string.IsNullOrEmpty(timestampString))
                 {
-                    // Log invalid timestamp format
+                    // Log invalid or missing timestamp
                     return;
                 }
 
-                string displayTimestamp = ConvertTimestampToLocalizedString(timestampDouble);
+                string displayTimestamp = ConvertTimestampToLocalizedString(timestampString);
                 if (string.IsNullOrEmpty(displayTimestamp))
                 {
+                    // Log error in converting timestamp
                     return;
                 }
 
@@ -176,23 +179,33 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"DownloadFile(): {ex.Message}\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"DownloadFile() : {ex.Message}\n"); });
                 return (null, null);
             }
         }
 
-        private static string ConvertTimestampToLocalizedString(double timestampDouble)
+        private static string ConvertTimestampToLocalizedString(string timestampString)
         {
             try
             {
-                long wholeSeconds = (long)timestampDouble;
-                long fractionalTicks = (long)((timestampDouble - wholeSeconds) * TimeSpan.TicksPerSecond);
+                // Split the timestamp into whole and fractional seconds
+                string[] parts = timestampString.Split('.');
+                if (parts.Length != 2)
+                {
+                    throw new ArgumentException("Invalid timestamp format");
+                }
 
+                long wholeSeconds = long.Parse(parts[0]);
+                long fractionalTicks = long.Parse(parts[1]) * (TimeSpan.TicksPerSecond / 1_000_000); // Convert microseconds to ticks
+
+                // Create a DateTimeOffset from the Unix timestamp
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(wholeSeconds).AddTicks(fractionalTicks);
 
-                var timePattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern;
+                // Retrieve the current timestamp setting
+                string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
 
-                string format = timePattern.Contains('H') ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd hh:mm:ss tt";
+                // Determine the format string
+                string format = timestampValue == "24 Hour" ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd hh:mm:ss tt";
 
                 return dateTimeOffset.ToLocalTime().ToString(format);
             }

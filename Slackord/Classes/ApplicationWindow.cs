@@ -89,6 +89,61 @@ namespace MenuApp
             }
         }
 
+        public static async Task GetTimeStampValue()
+        {
+            // Variable to hold the current timestamp setting.
+            string timestampValue;
+
+            // Check if the key "TimestampValue" exists in Preferences.
+            if (Preferences.Default.ContainsKey("TimestampValue"))
+            {
+                // Get the stored value.
+                timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
+
+                // Update the text of the button.
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.TimeStampButtonInstance.Text = "Timestamp: " + timestampValue;
+                });
+            }
+            else
+            {
+                // Set the default value "12 Hour".
+                timestampValue = "12 Hour";
+                Preferences.Default.Set("TimestampValue", timestampValue);
+
+                // Update the text of the button.
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.TimeStampButtonInstance.Text = "Timestamp: " + timestampValue;
+                });
+            }
+
+            // Write the current setting to the debug window.
+            WriteToDebugWindow($"Current Timestamp setting is {timestampValue}. Messages sent to Discord will use this format.\n");
+        }
+
+        public static async Task SetTimestampValue()
+        {
+            // Retrieve the current setting.
+            string currentSetting = Preferences.Default.Get("TimestampValue", "12 Hour");
+
+            // Determine the new setting.
+            string newSetting = currentSetting == "12 Hour" ? "24 Hour" : "12 Hour";
+
+            // Store the new setting.
+            Preferences.Default.Set("TimestampValue", newSetting);
+
+            // Update the button's text.
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                MainPage.TimeStampButtonInstance.Text = "Timestamp: " + newSetting;
+            });
+
+            // Write the new setting to the debug window.
+            WriteToDebugWindow($"Timestamp setting changed to {newSetting}. Messages sent to Discord will use this format.\n");
+        }
+
         public async Task ImportJsonAsync()
         {
             using CancellationTokenSource cts = new();

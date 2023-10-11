@@ -8,6 +8,7 @@
         public static Button BotConnectionButtonInstance { get; set; }
         public static Label ProgressBarTextInstance { get; set; }
         public static Button EnterBotTokenButtonInstance { get; set; }
+        public static Button TimeStampButtonInstance { get; set; }
         private readonly ApplicationWindow applicationWindow;
 
         public MainPage()
@@ -23,6 +24,7 @@
             BotConnectionButtonInstance = BotConnectionButton;
             ProgressBarTextInstance = ProgressBarText;
             EnterBotTokenButtonInstance = EnterBotToken;
+            TimeStampButtonInstance = TimestampToggle;
             ProgressBarTextInstance.IsVisible = false;
             ProgressBarInstance.IsVisible = false;
             Current = this;
@@ -40,6 +42,7 @@
         {
             applicationWindow.CheckForFirstRun();
             await applicationWindow.CheckForValidBotToken();
+            await ApplicationWindow.GetTimeStampValue();
         }
 
         private void ImportJson_Clicked(object sender, EventArgs e)
@@ -55,6 +58,11 @@
         private void ToggleBotConnection_Clicked(object sender, EventArgs e)
         {
             _ = applicationWindow.ToggleDiscordConnection().ConfigureAwait(false);
+        }
+
+        private void Timestamp_Clicked(object sender, EventArgs e)
+        {
+            _ = ApplicationWindow.SetTimestampValue().ConfigureAwait(false);
         }
 
         private void CheckForUpdates_Clicked(object sender, EventArgs e)
