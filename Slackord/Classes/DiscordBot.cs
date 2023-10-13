@@ -107,7 +107,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                ApplicationWindow.WriteToDebugWindow($"Exception in MainAsync() : {ex.Message}\n");
+                ApplicationWindow.WriteToDebugWindow($"Exception in MainAsync() : {ex.Message}\n\n Stacktrace: {ex.StackTrace}");
             }
             
         }
