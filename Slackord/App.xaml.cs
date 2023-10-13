@@ -18,11 +18,13 @@ namespace Slackord
             // Set window size
             if (MainPage is AppShell appShell)
             {
-                Window window = appShell.Parent as Window;
-                if (window != null)
+                if (appShell.Parent is Window window)
                 {
+
+#if WINDOWS
                     window.Width = 1175;
                     window.Height = 750;
+#endif
                 }
             }
         }
