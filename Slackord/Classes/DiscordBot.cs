@@ -209,10 +209,7 @@ namespace Slackord.Classes
             catch (Exception ex)
             {
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
-                _ = await interaction.FollowupAsync($"""
-An exception was encountered while sending messages! The exception was:
-{ex.Message}
-""");
+                _ = await interaction.FollowupAsync($"An exception was encountered while sending messages! The exception was:\n{ex.Message}");
             }
 
             Dictionary<string, RestThreadChannel> threadStartsDict = new();
@@ -223,6 +220,7 @@ An exception was encountered while sending messages! The exception was:
             {
                 if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
                 {
+                    // Create a temporary webhook to post messages to the channel.
                     var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
                     string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
                     using var webhookClient = new DiscordWebhookClient(webhookUrl);
@@ -232,6 +230,9 @@ An exception was encountered while sending messages! The exception was:
                         try
                         {
                             ulong? threadIdForReply = null;
+                            bool shouldArchiveThreadBack = false;
+
+                            // Post the message to Discord.
                             if (message.ThreadType == ThreadType.Parent)
                             {
                                 string threadName = message.Message.Length <= 20 ? message.Message : message.Message[..20];
@@ -244,6 +245,13 @@ An exception was encountered while sending messages! The exception was:
                             {
                                 if (threadStartsDict.TryGetValue(message.ParentThreadTs, out RestThreadChannel threadID))
                                 {
+                                    // Check if the thread is archived.
+                                    if (threadID.IsArchived)
+                                    {
+                                        await threadID.ModifyAsync(properties => properties.Archived = false);  // Unarchive the thread.
+                                        shouldArchiveThreadBack = true;  // Set a flag to re-archive the thread after posting the message.
+                                    }
+
                                     threadIdForReply = threadID.Id;
                                 }
                                 else
@@ -252,13 +260,19 @@ An exception was encountered while sending messages! The exception was:
                                 }
 
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, threadId: threadIdForReply);
+
+                                // Re-archive the thread if it was unarchived before.
+                                if (shouldArchiveThreadBack)
+                                {
+                                    await threadID.ModifyAsync(properties => properties.Archived = true);
+                                }
                             }
                             else
                             {
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
                             }
 
-                            // Handle pinning the message.
+                            // Pin message.
                             if (message.IsPinned && message.ThreadType == ThreadType.None)
                             {
                                 IEnumerable<IMessage> recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync();
@@ -269,12 +283,12 @@ An exception was encountered while sending messages! The exception was:
                                 }
                             }
 
+                            // Handle file uploads.
                             foreach (var localFilePath in message.FileURLs)
                             {
-                                FileInfo fileInfo = new FileInfo(localFilePath);
+                                FileInfo fileInfo = new(localFilePath);
                                 long fileSizeInBytes = fileInfo.Length;
 
-                                // Discord has a file size limit of 25MB (25 * 1024 * 1024 bytes).
                                 if (fileSizeInBytes <= 25 * 1024 * 1024)
                                 {
                                     using FileStream fs = new(localFilePath, FileMode.Open);
@@ -282,16 +296,23 @@ An exception was encountered while sending messages! The exception was:
                                 }
                                 else
                                 {
-                                    // If the file is too large, send the permalink instead.
-                                    string permalink = "YOUR_PERMALINK_HERE";
-                                    await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({permalink}).");
+                                    // If the file is too large, check if a fallback URL exists and send the permalink instead.
+                                    int fileIndex = message.FileURLs.IndexOf(localFilePath);
+                                    if (fileIndex != -1 && message.FallbackFileURLs.Count > fileIndex)
+                                    {
+                                        string downloadLink = message.FallbackFileURLs[fileIndex];
+                                        await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({downloadLink}).");
+                                    }
+                                    else
+                                    {
+                                        await discordChannel.SendMessageAsync("File was too large to upload, and a download link is not available.");
+                                    }
                                 }
                             }
 
                             messagesPosted++;
+                            // Update the progress bar.
                             ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
-
-                            await Task.Delay(1000);  // Delay to prevent rate limiting.
                         }
                         catch (Exception ex)
                         {
@@ -299,7 +320,7 @@ An exception was encountered while sending messages! The exception was:
                         }
                     }
 
-                    await webhook.DeleteAsync();  // Delete the webhook after all messages for the channel are sent.
+                    await webhook.DeleteAsync();
                 }
                 else
                 {

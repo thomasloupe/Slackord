@@ -1,6 +1,4 @@
 ﻿using MenuApp;
-using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -68,16 +66,20 @@ namespace Slackord.Classes
         {
             try
             {
-                // Skip markdown conversion if the message is null and has file attachments.
-                if (string.IsNullOrEmpty(deconstructedMessage.Text))
+                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? string.Empty : ConvertToDiscordMarkdown(deconstructedMessage.Text);
+
+                // Check for files and their downloadability.
+                if (deconstructedMessage.FileURLs.Count > 0)
                 {
-                    if (deconstructedMessage.FileURLs.Count > 0)
+                    for (int i = 0; i < deconstructedMessage.FileURLs.Count; i++)
                     {
-                        // This is a file upload message. Download the file and store it.
-                        foreach (var fileUrl in deconstructedMessage.FileURLs)
+                        string fileUrl = deconstructedMessage.FileURLs[i];
+                        bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
+
+                        if (isDownloadable)
                         {
                             // Call DownloadFile method.
-                            Task.Run(() => DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp))
+                            Task.Run(() => DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp, isDownloadable))
                             .ContinueWith(t =>
                             {
                                 if (t.IsCompletedSuccessfully)
@@ -88,11 +90,7 @@ namespace Slackord.Classes
                                     var reconstructedMessage = channel.ReconstructedMessagesList.FirstOrDefault(rm => rm.OriginalTimestamp == deconstructedMessage.OriginalTimestamp);
 
                                     // Add the localFilePath and permalink to the ReconstructedMessage.
-                                    if (reconstructedMessage != null)
-                                    {
-                                        reconstructedMessage.FileURLs.Add(localFilePath);
-                                        reconstructedMessage.FilePermalinks.Add(permalink);
-                                    }
+                                    reconstructedMessage?.FileURLs.Add(localFilePath);
                                 }
                                 else if (t.IsFaulted)
                                 {
@@ -100,30 +98,39 @@ namespace Slackord.Classes
                                 }
                             });
                         }
-                        return;  // Skip further processing for this message.
+                        else
+                        {
+                            // File is hidden by Slack, append this info to the messageContent.
+                            messageContent += " [File hidden by Slack limit]";
+                        }
                     }
+                }
+
+                // If after all of this, the message is still empty, set a default message.
+                if (string.IsNullOrEmpty(messageContent))
+                {
+                    messageContent = "File hidden by Slack limit";
                 }
 
                 string timestampString = deconstructedMessage.Timestamp?.ToString();
                 if (string.IsNullOrEmpty(timestampString))
                 {
-                    // Log invalid or missing timestamp
+                    // Log invalid or missing timestamp.
+                    Logger.Log(timestampString == null ? $"Missing timestamp for message {deconstructedMessage.Text}" : $"Invalid timestamp format {deconstructedMessage.Text}");
                     return;
                 }
 
                 string displayTimestamp = ConvertTimestampToLocalizedString(timestampString);
                 if (string.IsNullOrEmpty(displayTimestamp))
                 {
-                    // Log error in converting timestamp
+                    Logger.Log($"Invalid timestamp format {deconstructedMessage.Text}");
                     return;
                 }
 
-                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? string.Empty : ConvertToDiscordMarkdown(deconstructedMessage.Text);
                 string userName = ConvertUserToDisplayName(deconstructedMessage.User);
                 string userAvatar = deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user) ? user.Profile.Avatar : null;
 
                 string formattedMessage = FormatMessage(messageContent, displayTimestamp, userName);
-
                 SplitAndAddMessages(formattedMessage, deconstructedMessage, channel, userName, userAvatar);
             }
             catch (Exception ex)
@@ -132,8 +139,13 @@ namespace Slackord.Classes
             }
         }
 
-        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string originalTimestamp)
+        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string originalTimestamp, bool isDownloadable)
         {
+            if (!isDownloadable)
+            {
+                return (null, null);
+            }
+
             try
             {
                 // Check for null or empty originalTimestamp.
@@ -148,26 +160,25 @@ namespace Slackord.Classes
                 if (response.IsSuccessStatusCode)
                 {
                     byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-
                     string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads");
                     Directory.CreateDirectory(downloadsFolder);
-
                     string channelFolder = Path.Combine(downloadsFolder, channelName);
                     Directory.CreateDirectory(channelFolder);
-
                     string fileExtension = Path.GetExtension(new Uri(fileUrl).AbsolutePath);
                     string fileName = $"{originalTimestamp}{fileExtension}";
                     string localFilePath = Path.Combine(channelFolder, fileName);
 
                     if (File.Exists(localFilePath))
                     {
-                        // Generate a new unique filename.
                         fileName = $"{originalTimestamp}_{Guid.NewGuid()}{fileExtension}";
                         localFilePath = Path.Combine(channelFolder, fileName);
                     }
 
                     await File.WriteAllBytesAsync(localFilePath, fileBytes);
                     string permalink = fileUrl;
+
+                    // Here, add the localFilePath to ReconstructedMessage.FileURLs
+                    // and the permalink (or fileUrl) to ReconstructedMessage.FallbackFileURLs
 
                     return (localFilePath, permalink);
                 }
@@ -337,6 +348,7 @@ namespace Slackord.Classes
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
         public List<string> FileURLs { get; set; } = new List<string>();
-        public List<string> FilePermalinks { get; set; } = new List<string>();
+        public List<string> FallbackFileURLs { get; set; } = new List<string>();
+        public List<bool> IsFileDownloadable { get; set; } = new List<bool>();
     }
 }

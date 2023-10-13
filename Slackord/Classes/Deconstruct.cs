@@ -112,11 +112,11 @@ namespace Slackord.Classes
                 }
 
                 currentProperty = "files";
-                if (slackMessage[currentProperty] is JArray files) // This is a message with files attached.
+                if (slackMessage[currentProperty] is JArray files)
                 {
                     foreach (var file in files)
                     {
-                        currentProperty = "permalink";
+                        currentProperty = "url_private_download";
                         currentValue = file[currentProperty];
                         var fileUrl = currentValue?.ToString();
 
@@ -125,7 +125,7 @@ namespace Slackord.Classes
                             // Log empty or null file URLs.
                             _ = Application.Current.Dispatcher.Dispatch(() =>
                             {
-                                ApplicationWindow.WriteToDebugWindow($"Empty or null file URL found. Check the log for more information.\n");
+                                ApplicationWindow.WriteToDebugWindow($"A file was found that Slack has hidden due to limits. Check the log for more information.\n");
                                 string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
                                 Logger.Log(logMessage);
                             });
@@ -133,6 +133,15 @@ namespace Slackord.Classes
                         else
                         {
                             deconstructedMessage.FileURLs.Add(fileUrl);
+                            deconstructedMessage.IsFileDownloadable.Add(true);
+                        }
+
+                        currentProperty = "mode";
+                        currentValue = file[currentProperty];
+                        if (currentValue?.ToString() == "hidden_by_limit")
+                        {
+                            deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
+                            deconstructedMessage.IsFileDownloadable.Add(false);
                         }
                     }
                 }
@@ -306,6 +315,7 @@ namespace Slackord.Classes
         public string Subtype { get; set; }
         public string EditorId { get; set; }
         public List<string> FileURLs { get; set; } = new List<string>();
+        public List<bool> IsFileDownloadable { get; set; } = new List<bool>();
     }
 
     public class Reaction
