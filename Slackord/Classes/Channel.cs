@@ -1,4 +1,6 @@
-﻿namespace Slackord.Classes
+﻿using System.Collections.Concurrent;
+
+namespace Slackord.Classes
 {
     public class Channel
     {
@@ -6,6 +8,6 @@
         public ulong DiscordChannelId { get; set; }
         public string Description { get; set; }
         public List<DeconstructedMessage> DeconstructedMessagesList { get; set; } = new List<DeconstructedMessage>();
-        public List<ReconstructedMessage> ReconstructedMessagesList { get; set; } = new List<ReconstructedMessage>();
+        public ConcurrentBag<ReconstructedMessage> ReconstructedMessagesList { get; set; } = new ConcurrentBag<ReconstructedMessage>();
     }
 }

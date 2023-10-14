@@ -1,4 +1,5 @@
 ﻿using MenuApp;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -154,6 +155,34 @@ namespace Slackord.Classes
                     originalTimestamp = Guid.NewGuid().ToString();
                 }
 
+                // Check if the fileUrl is a slackdump-style local path.
+                if (fileUrl.StartsWith("attachments/"))
+                {
+                    // This is a slackdump-style local path (indicating it's a slackdump export).
+                    string channelFolder = Path.Combine(ImportJson.RootFolderPath, channelName);
+                    string localFilePath = Path.Combine(channelFolder, "attachments", fileUrl["attachments/".Length..]);
+
+                    if (File.Exists(localFilePath))
+                    {
+                        return (localFilePath, fileUrl); // Return the local path.
+                    }
+                    else
+                    {
+                        // Log that the file doesn't exist locally.
+                        Logger.Log($"Expected file from Slackdump doesn't exist locally: {localFilePath}");
+                        return (null, null);
+                    }
+                }
+
+                // Continue with the rest of the method for normal Slack export.
+                if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
+                {
+                    Logger.Log($"Invalid URL provided: {fileUrl}");
+                    return (null, null);
+                }
+
+                Logger.Log($"Attempting to download from URL: {fileUrl}");
+
                 using HttpClient httpClient = new();
                 HttpResponseMessage response = await httpClient.GetAsync(fileUrl);
 
@@ -176,9 +205,6 @@ namespace Slackord.Classes
 
                     await File.WriteAllBytesAsync(localFilePath, fileBytes);
                     string permalink = fileUrl;
-
-                    // Here, add the localFilePath to ReconstructedMessage.FileURLs
-                    // and the permalink (or fileUrl) to ReconstructedMessage.FallbackFileURLs
 
                     return (localFilePath, permalink);
                 }
@@ -279,9 +305,15 @@ namespace Slackord.Classes
                     ThreadType = deconstructedMessage.ThreadType,
                     IsPinned = deconstructedMessage.IsPinned,
                     Avatar = userAvatar,
-                    OriginalTimestamp = deconstructedMessage.OriginalTimestamp,
-                    FileURLs = deconstructedMessage.FileURLs
+                    OriginalTimestamp = deconstructedMessage.OriginalTimestamp
                 };
+
+                // Add each item in the list to the bag.
+                foreach (var url in deconstructedMessage.FileURLs)
+                {
+                    reconstructedMessage.FileURLs.Add(url);
+                }
+
                 channel.ReconstructedMessagesList.Add(reconstructedMessage);
             }
         }
@@ -347,7 +379,7 @@ namespace Slackord.Classes
         public string ParentThreadTs { get; set; }
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
-        public List<string> FileURLs { get; set; } = new List<string>();
+        public ConcurrentBag<string> FileURLs { get; set; } = new ConcurrentBag<string>();
         public List<string> FallbackFileURLs { get; set; } = new List<string>();
         public List<bool> IsFileDownloadable { get; set; } = new List<bool>();
     }

@@ -107,8 +107,8 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Logger.Log($"Exception in MainAsync() : {ex.Message}\n\n Stacktrace: {ex.StackTrace}");
-                ApplicationWindow.WriteToDebugWindow($"Exception in MainAsync() : {ex.Message}\n\n Stacktrace: {ex.StackTrace}");
+                Logger.Log($"Exception in MainAsync() : {ex.Message}\n\n StackTrace: {ex.StackTrace}");
+                ApplicationWindow.WriteToDebugWindow($"Exception in MainAsync() : {ex.Message}\n\n StackTrace: {ex.StackTrace}");
             }
             
         }
@@ -285,8 +285,11 @@ namespace Slackord.Classes
                             }
 
                             // Handle file uploads.
-                            foreach (var localFilePath in message.FileURLs)
+                            List<string> localFilePaths = message.FileURLs.ToList(); // Convert to list for easy indexing
+
+                            for (int i = 0; i < localFilePaths.Count; i++)
                             {
+                                var localFilePath = localFilePaths[i];
                                 FileInfo fileInfo = new(localFilePath);
                                 long fileSizeInBytes = fileInfo.Length;
 
@@ -298,10 +301,9 @@ namespace Slackord.Classes
                                 else
                                 {
                                     // If the file is too large, check if a fallback URL exists and send the permalink instead.
-                                    int fileIndex = message.FileURLs.IndexOf(localFilePath);
-                                    if (fileIndex != -1 && message.FallbackFileURLs.Count > fileIndex)
+                                    if (message.FallbackFileURLs.Count > i)
                                     {
-                                        string downloadLink = message.FallbackFileURLs[fileIndex];
+                                        string downloadLink = message.FallbackFileURLs[i];
                                         await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({downloadLink}).");
                                     }
                                     else
