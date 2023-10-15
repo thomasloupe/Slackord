@@ -91,7 +91,7 @@ namespace Slackord.Classes
                                     var reconstructedMessage = channel.ReconstructedMessagesList.FirstOrDefault(rm => rm.OriginalTimestamp == deconstructedMessage.OriginalTimestamp);
 
                                     // Add the localFilePath and permalink to the ReconstructedMessage.
-                                    reconstructedMessage?.FileURLs.Add(localFilePath);
+                                    reconstructedMessage?.FileURLs.Enqueue(localFilePath);
                                 }
                                 else if (t.IsFaulted)
                                 {
@@ -311,10 +311,10 @@ namespace Slackord.Classes
                 // Add each item in the list to the bag.
                 foreach (var url in deconstructedMessage.FileURLs)
                 {
-                    reconstructedMessage.FileURLs.Add(url);
+                    reconstructedMessage.FileURLs.Enqueue(url);
                 }
 
-                channel.ReconstructedMessagesList.Add(reconstructedMessage);
+                channel.ReconstructedMessagesList.Enqueue(reconstructedMessage);
             }
         }
 
@@ -379,7 +379,7 @@ namespace Slackord.Classes
         public string ParentThreadTs { get; set; }
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
-        public ConcurrentBag<string> FileURLs { get; set; } = new ConcurrentBag<string>();
+        public ConcurrentQueue<string> FileURLs { get; set; } = new ConcurrentQueue<string>();
         public List<string> FallbackFileURLs { get; set; } = new List<string>();
         public List<bool> IsFileDownloadable { get; set; } = new List<bool>();
     }
