@@ -314,8 +314,8 @@ namespace Slackord.Classes
         public string OriginalTimestamp { get; set; }
         public string Subtype { get; set; }
         public string EditorId { get; set; }
-        public List<string> FileURLs { get; set; } = new List<string>();
-        public List<bool> IsFileDownloadable { get; set; } = new List<bool>();
+        public List<string> FileURLs { get; set; } = new();
+        public List<bool> IsFileDownloadable { get; set; } = new();
     }
 
     public class Reaction

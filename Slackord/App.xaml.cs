@@ -22,7 +22,7 @@ namespace Slackord
                 {
 
 #if WINDOWS
-                    window.Width = 1175;
+                    window.Width = 1230;
                     window.Height = 750;
 #endif
                 }

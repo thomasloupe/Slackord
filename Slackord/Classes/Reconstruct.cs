@@ -49,7 +49,7 @@ namespace Slackord.Classes
                     foreach (DeconstructedMessage deconstructedMessage in channel.DeconstructedMessagesList)
                     {
                         // Reconstruct message for Discord.
-                        ReconstructMessage(deconstructedMessage, channel);
+                        await ReconstructMessage(deconstructedMessage, channel);
                     }
 
                     _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
@@ -63,49 +63,13 @@ namespace Slackord.Classes
             }
         }
 
-        private static void ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
+        private static async Task ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
         {
             try
             {
-                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? string.Empty : ConvertToDiscordMarkdown(deconstructedMessage.Text);
-
-                // Check for files and their downloadability.
-                if (deconstructedMessage.FileURLs.Count > 0)
-                {
-                    for (int i = 0; i < deconstructedMessage.FileURLs.Count; i++)
-                    {
-                        string fileUrl = deconstructedMessage.FileURLs[i];
-                        bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
-
-                        if (isDownloadable)
-                        {
-                            // Call DownloadFile method.
-                            Task.Run(() => DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp, isDownloadable))
-                            .ContinueWith(t =>
-                            {
-                                if (t.IsCompletedSuccessfully)
-                                {
-                                    var (localFilePath, permalink) = t.Result;
-
-                                    // Find the corresponding ReconstructedMessage.
-                                    var reconstructedMessage = channel.ReconstructedMessagesList.FirstOrDefault(rm => rm.OriginalTimestamp == deconstructedMessage.OriginalTimestamp);
-
-                                    // Add the localFilePath and permalink to the ReconstructedMessage.
-                                    reconstructedMessage?.FileURLs.Enqueue(localFilePath);
-                                }
-                                else if (t.IsFaulted)
-                                {
-                                    Logger.Log($"File download for channel {channel.Name} failed! Original Slack Message:\n{deconstructedMessage.OriginalSlackMessageJson}");
-                                }
-                            });
-                        }
-                        else
-                        {
-                            // File is hidden by Slack, append this info to the messageContent.
-                            messageContent += " [File hidden by Slack limit]";
-                        }
-                    }
-                }
+                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text)
+                                        ? string.Empty
+                                        : ConvertToDiscordMarkdown(deconstructedMessage.Text);
 
                 // If after all of this, the message is still empty, set a default message.
                 if (string.IsNullOrEmpty(messageContent))
@@ -122,17 +86,56 @@ namespace Slackord.Classes
                 }
 
                 string displayTimestamp = ConvertTimestampToLocalizedString(timestampString);
-                if (string.IsNullOrEmpty(displayTimestamp))
-                {
-                    Logger.Log($"Invalid timestamp format {deconstructedMessage.Text}");
-                    return;
-                }
-
                 string userName = ConvertUserToDisplayName(deconstructedMessage.User);
                 string userAvatar = deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user) ? user.Profile.Avatar : null;
 
                 string formattedMessage = FormatMessage(messageContent, displayTimestamp, userName);
-                SplitAndAddMessages(formattedMessage, deconstructedMessage, channel, userName, userAvatar);
+
+                // Create and add the ReconstructedMessage to the list BEFORE downloading the files.
+                ReconstructedMessage reconstructedMessage = new()
+                {
+                    User = userName,
+                    Message = deconstructedMessage.Text,
+                    Content = formattedMessage,
+                    ParentThreadTs = deconstructedMessage.ParentThreadTs,
+                    ThreadType = deconstructedMessage.ThreadType,
+                    IsPinned = deconstructedMessage.IsPinned,
+                    Avatar = userAvatar,
+                    OriginalTimestamp = deconstructedMessage.OriginalTimestamp
+                };
+
+                channel.ReconstructedMessagesList.Add(reconstructedMessage);
+
+                // Check for files and their downloadability.
+                if (deconstructedMessage.FileURLs.Count > 0)
+                {
+                    for (int i = 0; i < deconstructedMessage.FileURLs.Count; i++)
+                    {
+                        string fileUrl = deconstructedMessage.FileURLs[i];
+                        bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
+
+                        if (isDownloadable)
+                        {
+                            // Await the DownloadFile method.
+                            var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp, isDownloadable);
+
+                            if (!string.IsNullOrEmpty(localFilePath))
+                            {
+                                // Add the localFilePath and permalink to the ReconstructedMessage.
+                                reconstructedMessage.FileURLs.Add(localFilePath);
+                            }
+                            else
+                            {
+                                Logger.Log($"File download for channel {channel.Name} failed! Original Slack Message:\n{deconstructedMessage.OriginalSlackMessageJson}");
+                            }
+                        }
+                        else
+                        {
+                            // File is hidden by Slack, append this info to the messageContent.
+                            reconstructedMessage.Content += " [File hidden by Slack limit]";
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -225,7 +228,7 @@ namespace Slackord.Classes
         {
             try
             {
-                // Split the timestamp into whole and fractional seconds
+                // Split the timestamp into whole and fractional seconds.
                 string[] parts = timestampString.Split('.');
                 if (parts.Length != 2)
                 {
@@ -233,15 +236,15 @@ namespace Slackord.Classes
                 }
 
                 long wholeSeconds = long.Parse(parts[0]);
-                long fractionalTicks = long.Parse(parts[1]) * (TimeSpan.TicksPerSecond / 1_000_000); // Convert microseconds to ticks
+                long fractionalTicks = long.Parse(parts[1]) * (TimeSpan.TicksPerSecond / 1_000_000); // Convert microseconds to ticks.
 
-                // Create a DateTimeOffset from the Unix timestamp
+                // Create a DateTimeOffset from the Unix timestamp.
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(wholeSeconds).AddTicks(fractionalTicks);
 
-                // Retrieve the current timestamp setting
+                // Retrieve the current timestamp setting.
                 string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
 
-                // Determine the format string
+                // Determine the format string.
                 string format = timestampValue == "24 Hour" ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd hh:mm:ss tt";
 
                 return dateTimeOffset.ToLocalTime().ToString(format);
@@ -308,13 +311,12 @@ namespace Slackord.Classes
                     OriginalTimestamp = deconstructedMessage.OriginalTimestamp
                 };
 
-                // Add each item in the list to the bag.
                 foreach (var url in deconstructedMessage.FileURLs)
                 {
-                    reconstructedMessage.FileURLs.Enqueue(url);
+                    reconstructedMessage.FileURLs.Add(url);
                 }
 
-                channel.ReconstructedMessagesList.Enqueue(reconstructedMessage);
+                channel.ReconstructedMessagesList.Add(reconstructedMessage);
             }
         }
 
@@ -379,8 +381,8 @@ namespace Slackord.Classes
         public string ParentThreadTs { get; set; }
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
-        public ConcurrentQueue<string> FileURLs { get; set; } = new ConcurrentQueue<string>();
-        public List<string> FallbackFileURLs { get; set; } = new List<string>();
-        public List<bool> IsFileDownloadable { get; set; } = new List<bool>();
+        public List<string> FileURLs { get; set; } = new();
+        public List<string> FallbackFileURLs { get; set; } = new();
+        public List<bool> IsFileDownloadable { get; set; } = new();
     }
 }

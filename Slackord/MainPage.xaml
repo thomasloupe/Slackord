@@ -22,9 +22,9 @@
             <StackLayout Orientation="Horizontal">
                 <!-- Button Group 1 -->
                 <Button x:Name="ImportJson" Text="Import JSON" Clicked="ImportJson_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="130"/>
-                <Button x:Name="TimestampToggle" Text="Timestamp: " Clicked="Timestamp_Clicked" FontAttributes="Bold" FontSize="Micro" WidthRequest="200"/>
-                <Button x:Name="EnterBotToken" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontAttributes="Bold" FontSize="Micro" />
-                <Button x:Name="BotConnectionButton" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontAttributes="Bold" FontSize="Micro" />
+                <Button x:Name="TimestampToggle" Text="Timestamp: " Clicked="Timestamp_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="200"/>
+                <Button x:Name="EnterBotToken" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontSize="Micro" FontAttributes="Bold"/>
+                <Button x:Name="BotConnectionButton" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="150"/>
 
                 <!-- Spacer -->
                 <Label WidthRequest="200"/>

@@ -50,67 +50,50 @@ namespace Slackord.Classes
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            try
-            {
-                ApplicationWindow.ResetProgressBar();
-                ApplicationWindow.ShowProgressBar();
+            ApplicationWindow.ResetProgressBar();
+            ApplicationWindow.ShowProgressBar();
 
-                if (command.Data.Name.Equals("slackord"))
-                {
-                    ulong? guildId = command.GuildId;
-                    await PostMessagesToDiscord((ulong)guildId, command);
-                }
-            }
-            catch (Exception ex)
+            if (command.Data.Name.Equals("slackord"))
             {
-                ApplicationWindow.WriteToDebugWindow($"Exception in SlashCommandHandler() : {ex.Message}\n");
+                ulong? guildId = command.GuildId;
+                await PostMessagesToDiscord((ulong)guildId, command);
             }
         }
 
         public async Task MainAsync(string discordToken)
         {
-            try
+            if (DiscordClient is not null)
             {
-                if (DiscordClient is not null)
-                {
-                    throw new InvalidOperationException("DiscordClient is already initialized.");
-                }
-                ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot...\n");
-
-                // Configure the DiscordSocketClient.
-                DiscordSocketConfig _config = new()
-                {
-                    GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
-                };
-
-                // Initialize the DiscordClient.
-                //DiscordClient = new DiscordSocketClient(_config);
-                DiscordClient = new DiscordSocketClient();
-
-                // Set up dependency injection.
-                _services = new ServiceCollection()
-                    .AddSingleton(DiscordClient)
-                    .BuildServiceProvider();
-
-                // Assign event handlers.
-                DiscordClient.Log += DiscordClient_Log;
-                DiscordClient.Ready += ClientReady;
-                DiscordClient.LoggedOut += OnClientDisconnect;
-                DiscordClient.SlashCommandExecuted += SlashCommandHandler;
-
-                // Login and start the client.
-                await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
-                await DiscordClient.StartAsync();
-
-                // Set the client's activity.
-                await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
+                throw new InvalidOperationException("DiscordClient is already initialized.");
             }
-            catch (Exception ex)
+            ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
+
+            // Configure the DiscordSocketClient.
+            DiscordSocketConfig _config = new()
             {
-                Logger.Log($"Exception in MainAsync() : {ex.Message}\n\n StackTrace: {ex.StackTrace}");
-                ApplicationWindow.WriteToDebugWindow($"Exception in MainAsync() : {ex.Message}\n\n StackTrace: {ex.StackTrace}");
-            }
-            
+                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+            };
+
+            // Initialize the DiscordClient.
+            DiscordClient = new DiscordSocketClient(_config);
+
+            // Set up dependency injection.
+            _services = new ServiceCollection()
+                .AddSingleton(DiscordClient)
+                .BuildServiceProvider();
+
+            // Assign event handlers
+            DiscordClient.Log += DiscordClient_Log;
+            DiscordClient.Ready += ClientReady;
+            DiscordClient.LoggedOut += OnClientDisconnect;
+            DiscordClient.SlashCommandExecuted += SlashCommandHandler;
+
+            // Login and start the client.
+            await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
+            await DiscordClient.StartAsync();
+
+            // Set the client's activity.
+            await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
         }
 
         private async Task ClientReady()

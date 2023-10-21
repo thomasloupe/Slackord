@@ -8,6 +8,6 @@ namespace Slackord.Classes
         public ulong DiscordChannelId { get; set; }
         public string Description { get; set; }
         public List<DeconstructedMessage> DeconstructedMessagesList { get; set; } = new List<DeconstructedMessage>();
-        public ConcurrentQueue<ReconstructedMessage> ReconstructedMessagesList { get; set; } = new ConcurrentQueue<ReconstructedMessage>();
+        public List<ReconstructedMessage> ReconstructedMessagesList { get; set; } = new List<ReconstructedMessage>();
     }
 }
