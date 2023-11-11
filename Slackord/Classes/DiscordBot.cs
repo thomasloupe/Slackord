@@ -18,7 +18,33 @@ namespace Slackord.Classes
 
         public async Task StartClientAsync()
         {
-            await DiscordClient.StartAsync();
+            bool isConnected = false;
+            int maxRetryAttempts = 5;
+            int delayMilliseconds = 5000;
+
+            for (int attempt = 1; attempt <= maxRetryAttempts; attempt++)
+            {
+                try
+                {
+                    await DiscordClient.StartAsync();
+                    isConnected = true;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    ApplicationWindow.WriteToDebugWindow($"Attempt {attempt}: Failed to start DiscordClient - {ex.Message}\n");
+                    if (attempt < maxRetryAttempts)
+                    {
+                        await Task.Delay(delayMilliseconds);
+                    }
+                }
+            }
+
+            if (!isConnected)
+            {
+                ApplicationWindow.WriteToDebugWindow($"Failed to connect after {maxRetryAttempts} attempts.\n");
+                await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+            }
         }
 
         public async Task StopClientAsync()
