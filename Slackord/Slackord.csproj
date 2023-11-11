@@ -27,6 +27,9 @@
 		<!-- Specify the runtime identifiers for Mac Catalyst. -->
 		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net8.0-maccatalyst'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
 		<ReleaseVersion>4</ReleaseVersion>
+
+		<!-- Don't use native HttpHandler because it breaks the Mac version -->
+		<UseNativeHttpHandler>false</UseNativeHttpHandler>
 	</PropertyGroup>
 
 	<ItemGroup>
