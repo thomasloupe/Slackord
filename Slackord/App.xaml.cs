@@ -20,11 +20,8 @@ namespace Slackord
             {
                 if (appShell.Parent is Window window)
                 {
-
-#if WINDOWS
-                    window.Width = 1230;
+                    window.Width = 1445;
                     window.Height = 750;
-#endif
                 }
             }
         }

@@ -1,5 +1,4 @@
 ﻿using MenuApp;
-using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -68,14 +67,8 @@ namespace Slackord.Classes
             try
             {
                 string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text)
-                                        ? string.Empty
-                                        : ConvertToDiscordMarkdown(deconstructedMessage.Text);
-
-                // If after all of this, the message is still empty, set a default message.
-                if (string.IsNullOrEmpty(messageContent))
-                {
-                    messageContent = "File hidden by Slack limit";
-                }
+                                        ? "File hidden by Slack limit" // Default message when content is empty.
+                                        : ConvertToDiscordMarkdown(deconstructedMessage.Text); // Apply Markdown conversions for Discord.
 
                 string timestampString = deconstructedMessage.Timestamp?.ToString();
                 if (string.IsNullOrEmpty(timestampString))
@@ -88,10 +81,9 @@ namespace Slackord.Classes
                 string displayTimestamp = ConvertTimestampToLocalizedString(timestampString);
                 string userName = ConvertUserToDisplayName(deconstructedMessage.User);
                 string userAvatar = deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user) ? user.Profile.Avatar : null;
-
                 string formattedMessage = FormatMessage(messageContent, displayTimestamp, userName);
 
-                // Create and add the ReconstructedMessage to the list BEFORE downloading the files.
+                // Create and add the ReconstructedMessage to the channel's message list.
                 ReconstructedMessage reconstructedMessage = new()
                 {
                     User = userName,
@@ -106,7 +98,7 @@ namespace Slackord.Classes
 
                 channel.ReconstructedMessagesList.Add(reconstructedMessage);
 
-                // Check for files and their downloadability.
+                // Check and process files for downloadability.
                 if (deconstructedMessage.FileURLs.Count > 0)
                 {
                     for (int i = 0; i < deconstructedMessage.FileURLs.Count; i++)
@@ -116,13 +108,11 @@ namespace Slackord.Classes
 
                         if (isDownloadable)
                         {
-                            // Await the DownloadFile method.
                             var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp, isDownloadable);
 
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
-                                // Add the localFilePath and permalink to the ReconstructedMessage.
-                                reconstructedMessage.FileURLs.Add(localFilePath);
+                                reconstructedMessage.FileURLs.Add(localFilePath); // Attach local file path to the message.
                             }
                             else
                             {
@@ -131,8 +121,7 @@ namespace Slackord.Classes
                         }
                         else
                         {
-                            // File is hidden by Slack, append this info to the messageContent.
-                            reconstructedMessage.Content += " [File hidden by Slack limit]";
+                            reconstructedMessage.Content += " [File hidden by Slack limit]"; // Append notice for non-downloadable files.
                         }
                     }
                 }
@@ -279,19 +268,30 @@ namespace Slackord.Classes
 
         private static string ConvertUserToDisplayName(string userId)
         {
-            if (userId != null && UsersDict.TryGetValue(userId, out DeconstructedUser user))
+            if (!UsersDict.TryGetValue(userId, out DeconstructedUser user))
             {
-                return !string.IsNullOrEmpty(user.Profile.DisplayName) ? user.Profile.DisplayName :
-                       !string.IsNullOrEmpty(user.Name) ? user.Name :
-                       !string.IsNullOrEmpty(user.Profile.RealName) ? user.Profile.RealName :
-                       user.Id;
+                return "Unknown User";
             }
-            return "Unknown User";
+
+            string displayName = user.Profile.DisplayName;
+            string realName = user.Profile.RealName;
+            string userName = user.Name;
+
+            return ApplicationWindow.CurrentUserFormatOrder switch
+            {
+                ApplicationWindow.UserFormatOrder.DisplayName_User_RealName => $"{displayName} {userName} {realName}",
+                ApplicationWindow.UserFormatOrder.DisplayName_RealName_User => $"{displayName} {realName} {userName}",
+                ApplicationWindow.UserFormatOrder.User_DisplayName_RealName => $"{userName} {displayName} {realName}",
+                ApplicationWindow.UserFormatOrder.User_RealName_DisplayName => $"{userName} {realName} {displayName}",
+                ApplicationWindow.UserFormatOrder.RealName_DisplayName_User => $"{realName} {displayName} {userName}",
+                ApplicationWindow.UserFormatOrder.RealName_User_DisplayName => $"{realName} {userName} {displayName}",
+                _ => $"{displayName}",// Fallback to just display name if something goes wrong
+            };
         }
 
         private static string FormatMessage(string messageContent, string timestamp, string userName)
         {
-            return $"[{timestamp}] : {messageContent}";
+            return $"[{timestamp}] : {userName} {messageContent}";
         }
 
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
@@ -350,7 +350,7 @@ namespace Slackord.Classes
                     }
                 }
 
-                // Ensure we're not splitting in the middle of markdown syntax (this can be expanded as needed).
+                // Ensure we're not splitting in the middle of markdown syntax.
                 int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
                 if (boldSyntax > -1 && boldSyntax == bestSplitIndex - 2)
                 {

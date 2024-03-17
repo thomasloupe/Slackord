@@ -158,49 +158,61 @@ namespace Slackord.Classes
             {
                 SocketGuild guild = DiscordClient.GetGuild(guildID);
                 string baseCategoryName = "Slackord Import";
-                int categoryCount = 1;
-                string currentCategoryName = baseCategoryName + (categoryCount > 1 ? $" {categoryCount}" : "");
 
-                RestCategoryChannel currentCategory = await guild.CreateCategoryChannelAsync(currentCategoryName);
-                ulong currentCategoryId = currentCategory.Id;
+                SocketCategoryChannel currentCategory = null;
+                ulong currentCategoryId = 0;
 
-                int channelCountInCurrentCategory = 0;
+                // Attempt to find an existing category named "Slackord Import"
+                currentCategory = guild.CategoryChannels.FirstOrDefault(c => c.Name.StartsWith(baseCategoryName));
+
+                if (currentCategory == null)
+                {
+                    var createdCategory = await guild.CreateCategoryChannelAsync(baseCategoryName);
+                    currentCategoryId = createdCategory.Id;
+                }
+                else
+                {
+                    currentCategoryId = currentCategory.Id;
+                }
+
+                int channelCountInCurrentCategory = guild.Channels.Count(c => c is SocketTextChannel && c.Id == currentCategoryId);
 
                 foreach (Channel channel in ImportJson.Channels)
                 {
-                    try
+                    if (channelCountInCurrentCategory >= 50)
                     {
-                        if (channelCountInCurrentCategory >= 50)  // If we've reached the 50 channel limit in this category, create a new category.
-                        {
-                            categoryCount++;
-                            currentCategoryName = baseCategoryName + $" {categoryCount}";
-                            currentCategory = await guild.CreateCategoryChannelAsync(currentCategoryName);
-                            currentCategoryId = currentCategory.Id;
-                            channelCountInCurrentCategory = 0;
-                        }
-
-                        string channelName = channel.Name.ToLower();
-                        RestTextChannel createdRestChannel = await guild.CreateTextChannelAsync(channelName, properties =>
-                        {
-                            properties.CategoryId = currentCategoryId;
-                            properties.Topic = channel.Description;
-                        });
-
-                        ulong createdChannelId = createdRestChannel.Id;
-                        channel.DiscordChannelId = createdChannelId;
-                        CreatedChannels[createdChannelId] = createdRestChannel;
-
-                        channelCountInCurrentCategory++;
+                        // Create a new category if the existing one or previously created is full
+                        var newCategory = await guild.CreateCategoryChannelAsync($"{baseCategoryName} {currentCategoryId + 1}");
+                        currentCategoryId = newCategory.Id;
+                        channelCountInCurrentCategory = 0; // Reset the count for the new category
                     }
-                    catch (Exception ex)
+
+                    string channelName = channel.Name.ToLower();
+                    // Handle potential channel name conflicts
+                    if (guild.TextChannels.Any(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId))
                     {
-                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                        int suffix = 1;
+                        string newName;
+                        do
+                        {
+                            newName = $"{channelName}-{suffix++}";
+                        } while (guild.TextChannels.Any(c => c.Name.Equals(newName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId));
+
+                        channelName = newName;
                     }
+
+                    var createdChannel = await guild.CreateTextChannelAsync(channelName, properties =>
+                    {
+                        properties.CategoryId = currentCategoryId;
+                        properties.Topic = channel.Description;
+                    });
+
+                    channelCountInCurrentCategory++;
                 }
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                ApplicationWindow.WriteToDebugWindow($"Error in ReconstructSlackChannelsOnDiscord: {ex.Message}\n");
             }
         }
 

@@ -12,6 +12,16 @@ namespace MenuApp
         private bool isFirstRun;
         private bool hasValidBotToken;
         private string DiscordToken;
+        public static UserFormatOrder CurrentUserFormatOrder { get; set; } = UserFormatOrder.DisplayName_User_RealName;
+        public enum UserFormatOrder
+        {
+            DisplayName_User_RealName,
+            DisplayName_RealName_User,
+            User_DisplayName_RealName,
+            User_RealName_DisplayName,
+            RealName_DisplayName_User,
+            RealName_User_DisplayName
+        }
 
         public void CheckForFirstRun()
         {
@@ -91,67 +101,86 @@ namespace MenuApp
 
         public static async Task GetTimeStampValue()
         {
-            // Variable to hold the current timestamp setting.
-            string timestampValue;
-
-            // Check if the key "TimestampValue" exists in Preferences.
-            if (Preferences.Default.ContainsKey("TimestampValue"))
+            if (!Preferences.Default.ContainsKey("TimestampValue"))
             {
-                // Get the stored value.
-                timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
-
-                // Update the text of the button.
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    MainPage.TimeStampButtonInstance.Text = "Timestamp: " + timestampValue;
-                });
-            }
-            else
-            {
-                // Set the default value "12 Hour".
-                timestampValue = "12 Hour";
-                Preferences.Default.Set("TimestampValue", timestampValue);
-
-                // Update the text of the button.
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    MainPage.TimeStampButtonInstance.Text = "Timestamp: " + timestampValue;
-                });
+                Preferences.Default.Set("TimestampValue", "12 Hour");
             }
 
-            // Write the current setting to the debug window.
+            string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
+            
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                MainPage.TimeStampButtonInstance.Text = "Timestamp: " + timestampValue;
+            });
+
             WriteToDebugWindow($"Current Timestamp setting is {timestampValue}. Messages sent to Discord will use this format.\n");
         }
 
         public static async Task SetTimestampValue()
         {
-            // Retrieve the current setting.
             string currentSetting = Preferences.Default.Get("TimestampValue", "12 Hour");
-
-            // Determine the new setting.
             string newSetting = currentSetting == "12 Hour" ? "24 Hour" : "12 Hour";
-
-            // Store the new setting.
             Preferences.Default.Set("TimestampValue", newSetting);
-
-            // Update the button's text.
+            
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 MainPage.TimeStampButtonInstance.Text = "Timestamp: " + newSetting;
             });
 
-            // Write the new setting to the debug window.
             WriteToDebugWindow($"Timestamp setting changed to {newSetting}. Messages sent to Discord will use this format.\n");
         }
 
-        public async Task ImportJsonAsync()
+        public static async Task GetUserFormatValue()
+        {
+            if (!Preferences.Default.ContainsKey("UserFormatValue"))
+            {
+                Preferences.Default.Set("UserFormatValue", UserFormatOrder.DisplayName_User_RealName.ToString());
+            }
+
+            string userFormatValue = Preferences.Default.Get("UserFormatValue", CurrentUserFormatOrder.ToString());
+            UserFormatOrder currentSetting = Enum.Parse<UserFormatOrder>(userFormatValue);
+            
+            string shorthand = currentSetting.ToString().Replace("_", " > ")
+                                                        .Replace("DisplayName", "D")
+                                                        .Replace("User", "U")
+                                                        .Replace("RealName", "R");
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                MainPage.UserFormatButtonInstance.Text = "User Format: " + shorthand;
+            });
+
+            string fullFormat = currentSetting.ToString().Replace("_", " > ");
+            WriteToDebugWindow($"Current User Format setting is {fullFormat}. Messages sent to Discord will use this format.\n");
+        }
+
+        public static async Task SetUserFormatValue()
+        {
+            try
+            {
+                UserFormatOrder currentSetting = Enum.Parse<UserFormatOrder>(Preferences.Default.Get("UserFormatValue", CurrentUserFormatOrder.ToString()));
+                int nextSettingIndex = ((int)currentSetting + 1) % Enum.GetNames(typeof(UserFormatOrder)).Length;
+                UserFormatOrder nextSetting = (UserFormatOrder)nextSettingIndex;
+
+                Preferences.Default.Set("UserFormatValue", nextSetting.ToString());
+                CurrentUserFormatOrder = nextSetting;
+
+                await GetUserFormatValue();
+            }
+            catch (Exception ex)
+            {
+                WriteToDebugWindow($"Error in SetUserFormatValue: {ex.Message}");
+            }
+        }
+
+        public async Task ImportJsonAsync(bool isFullExport)
         {
             using CancellationTokenSource cts = new();
             Interlocked.Exchange(ref cancellationTokenSource, cts)?.Cancel();
             CancellationToken cancellationToken = cts.Token;
             try
             {
-                await ImportJson.ImportJsonAsync(cancellationToken);
+                await ImportJson.ImportJsonAsync(isFullExport, cancellationToken);
             }
             catch (OperationCanceledException)
             {
