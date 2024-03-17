@@ -2,28 +2,27 @@
 ![Discord Shield](https://discordapp.com/api/guilds/1095636526873972766/widget.png?style=shield)    
 [Join the Slackord Discord!](https://discord.gg/yccMweYPN8)
 
-Slackord is a cross-platform application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
+Slackord is an application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
 
 # Demo
 https://github.com/thomasloupe/Slackord/assets/6563450/adee8003-b51b-4859-b8d4-3a3e8dcc33c2
 
 # Features
-1. `Cross platform` - Works on Windows(x64) and Mac(x64).
 1. `Imports channels` - Slackord will automatically recreate all your Slack channels on Discord along with their descriptions.
-1. `Batch parsing/posting` - Instead of importing JSON files individually, Slackord will read your entire Slack export directory for JSON files, and parse/post them to Discord.
-1. `Output window` - Slackord has a log window that will warn you if anything went wrong.
-1. `Progress bar` - Slackord has a progress bar for parsing and posting messages to Discord.
-1. `Slack-to-Discord markdown` - Slackord will convert messages with markdown to Discord markdown.
+1. `Batch and Single channel compatibility` - Choose between importing a single channel or your entire Slack server into Discord.
+1. `Output window` - Slackord has a log window that keeps you updated on what's happening.
+1. `Progress bar` - Slackord has a progress bar that keeps you updated on parsing and posting progress.
+1. `Slack-to-Discord markdown` - Slackord will convert messages with Slack markdown to Discord markdown.
 1. `Auto rate-limit detection` - Slackord limits the messages it sends over time so it doesn't spam or get itself squelched for posting too often.
-1. `Ease-of-use` - Slackord only needs to be set up once, and it'll remember your bot's token, making future imports easy.
+1. `Ease-of-use` - Slackord only needs to be set up once, making future imports easy. It also remembers your bot's token.
 1. `Multiple Discord Servers` - Slackord can discern which Discord server it's in and can post to the server(s) you choose.
-1. `Privacy first` - Slackord checks if user messages have a display name and will attempt to keep real names private unless there isn't one.
+1. `Privacy first` - Slackord allows you to set the name format and fallback when posting messages. Choose between Display name, user name, and real name.
 1. `Data safety` - Your data is yours. Slackord works completely off your local connection and machine.
 1. `Update checks` - Slackord can check for the latest version with a single click. Get the latest version with new features and fixes easily!
 
 # Getting Started
-If you are on the free plan of Slack or need a reliable tool for exporting both private/public Slack JSON files *mostly* compatible with Slackord, check out [Slackdump](https://github.com/rusq/slackdump)! Please note, this tool is not developed by myself, and could potentially stop working for Slackord at any time.
-1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release for your OS and extract the contents. If you're on Mac, make sure to `cd` into the Slackord directory you extracted, and grant execute permissions to the directory with `chmod +x *` from Terminal.
+If you're looking for a great way to archive your Slack history, I recommend [Slackdump](https://github.com/rusq/slackdump)! Please keep in mind that Slackord is developed specifically for default Slack exports, that Slackdump is not developed or maintained by myself, and that Slackdump is very likely imcompatible at this point with Slackord. If your Slackdump export doesn't work with Slackord, it's best to use the default Slack export. I cannot offer troubleshooting assistance with Slackdump exports.
+1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release and extract the contents.
 1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
 1. Name your bot "Slackord", or any preferred custom name.
 1. Select "Bot" from the left panel, and click "Add Bot" at the top-right.
@@ -40,10 +39,10 @@ If you are on the free plan of Slack or need a reliable tool for exporting both 
 1. Run Slackord.
 1. Click `Set Bot Token` and paste the copied token into the popup text field. Slackord will remember your token if you close it.
 1. Click `Connect` to connect the bot to your server.
-1. Click `Import JSON` and select the Slack JSON chat history root folder.
-1. Once parsing has completed, visit any Discord channel you wish and type `/slackord` (case insensitive). Messages will begin posting and the progress bar will update as messages are sent.
+1. Click `Import Server` and select the Slack JSON chat history root folder, or `Import Channel` and select the channel folder.
+1. Once parsing has completed, visit any Discord channel you wish and type `/slackord`. Messages will begin posting and the progress bar will update as messages are sent.
 
 # Important: Please Read!
 1. If you need help, please feel free to join the Discord community listed at the top of this page, or open a new issue if it doesn't already exist.
-1. If you have a very large Slack server to import, it's much better to parse a couple channels at a time rather than of all of them at once. "Large servers" would be Slack imports that have more than 400+ JSON files to parse in total across all channels.
+1. If you have a very large Slack server to import, it's much better to import a single channel, rather than the entire server. "Large servers" by Slackord's definition would be Slack imports that have more than 400+ JSON files to parse in total, either by single channel or across the entire server.
 1. Slackord is free, and it will always be free. However, if you found Slackord worth donating something, you can donate from within Slackord by clicking Donate inside Slackord, or you can sponsor Slackord at the top of this repository by clicking the heart (sponsor) button. You can also [click here](https://paypal.me/thomasloupe) (PayPal) to donate directly to me.
