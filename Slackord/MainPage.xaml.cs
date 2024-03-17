@@ -9,6 +9,7 @@
         public static Label ProgressBarTextInstance { get; set; }
         public static Button EnterBotTokenButtonInstance { get; set; }
         public static Button TimeStampButtonInstance { get; set; }
+        public static Button UserFormatButtonInstance { get; set; }
         private readonly ApplicationWindow applicationWindow;
 
         public MainPage()
@@ -25,6 +26,7 @@
             ProgressBarTextInstance = ProgressBarText;
             EnterBotTokenButtonInstance = EnterBotToken;
             TimeStampButtonInstance = TimestampToggle;
+            UserFormatButtonInstance = UserFormatToggle;
             ProgressBarTextInstance.IsVisible = false;
             ProgressBarInstance.IsVisible = false;
             Current = this;
@@ -43,11 +45,17 @@
             applicationWindow.CheckForFirstRun();
             await applicationWindow.CheckForValidBotToken();
             await ApplicationWindow.GetTimeStampValue();
+            await ApplicationWindow.GetUserFormatValue();
         }
 
-        private void ImportJson_Clicked(object sender, EventArgs e)
+        private void ImportServer_Clicked(object sender, EventArgs e)
         {
-            _ = applicationWindow.ImportJsonAsync().ConfigureAwait(false);
+            _ = applicationWindow.ImportJsonAsync(true).ConfigureAwait(false);
+        }
+
+        private void ImportChannel_Clicked(object sender, EventArgs e)
+        {
+            _ = applicationWindow.ImportJsonAsync(false).ConfigureAwait(false);
         }
 
         private void EnterBotToken_Clicked(object sender, EventArgs e)
@@ -63,6 +71,11 @@
         private void Timestamp_Clicked(object sender, EventArgs e)
         {
             _ = ApplicationWindow.SetTimestampValue().ConfigureAwait(false);
+        }
+
+        private void UserFormat_Clicked(object sender, EventArgs e)
+        {
+            _ = ApplicationWindow.SetUserFormatValue().ConfigureAwait(false);
         }
 
         private void CheckForUpdates_Clicked(object sender, EventArgs e)

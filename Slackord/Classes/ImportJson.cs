@@ -9,7 +9,7 @@ namespace Slackord.Classes
         public static string RootFolderPath { get; private set; }
         public static List<Channel> Channels { get; set; } = new List<Channel>();
 
-        public static async Task ImportJsonAsync(CancellationToken cancellationToken)
+        public static async Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
         {
             ApplicationWindow.HideProgressBar();
             try
@@ -28,7 +28,7 @@ namespace Slackord.Classes
                 Dictionary<string, DeconstructedUser> usersDict = null;
                 if (!string.IsNullOrEmpty(folderPath))
                 {
-                    (List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict) result = await ConvertAsync(folderPath, cancellationToken);
+                    (List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict) result = await ConvertAsync(isFullExport, folderPath, cancellationToken);
                     Channels = result.Channels;
                     usersDict = result.UsersDict;
                 }
@@ -50,21 +50,22 @@ namespace Slackord.Classes
             }
         }
 
-        public static async Task<(List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict)> ConvertAsync(string folderPath, CancellationToken cancellationToken)
+        public static async Task<(List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict)> ConvertAsync(bool isFullExport, string folderPath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            List<Channel> channels = new();
             DirectoryInfo directoryInfo = new(folderPath);
-            DirectoryInfo[] channelDirectories = directoryInfo.GetDirectories();
-            FileInfo usersFile = directoryInfo.GetFiles("users.json").FirstOrDefault();
+            DirectoryInfo rootDirectory = isFullExport ? directoryInfo : directoryInfo.Parent;
+
+            // Fetch users.json and channels.json from the appropriate root directory.
+            FileInfo usersFile = rootDirectory.GetFiles("users.json").FirstOrDefault();
+            FileInfo channelsFile = rootDirectory.GetFiles("channels.json").FirstOrDefault();
+
             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users for import...\n"); });
 
-            Dictionary<string, DeconstructedUser> usersDict = DeconstructedUsers.ParseUsersFile(usersFile);
+            Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : new Dictionary<string, DeconstructedUser>();
+            Dictionary<string, string> channelDescriptions = new();
 
-            // Parse channels.json to get channel descriptions.
-            Dictionary<string, string> channelDescriptions = null;
-            FileInfo channelsFile = directoryInfo.GetFiles("channels.json").FirstOrDefault();
             if (channelsFile != null)
             {
                 string channelsJsonContent = await File.ReadAllTextAsync(channelsFile.FullName, cancellationToken).ConfigureAwait(false);
@@ -75,6 +76,9 @@ namespace Slackord.Classes
                 );
             }
 
+            DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : new DirectoryInfo[] { directoryInfo };
+
+            List<Channel> channels = new();
             int totalFiles = CountTotalJsonFiles(channelDirectories);
             int filesProcessed = 0;
 
@@ -105,8 +109,6 @@ namespace Slackord.Classes
 
                             foreach (JObject slackMessage in messagesArray.Cast<JObject>())
                             {
-                                cancellationToken.ThrowIfCancellationRequested();
-
                                 DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
                                 channel.DeconstructedMessagesList.Add(deconstructedMessage);
                             }
@@ -120,7 +122,6 @@ namespace Slackord.Classes
                         }
                     }
 
-                    // Look up the description for the channel and set it on the Channel object
                     if (channelDescriptions != null && channelDescriptions.TryGetValue(channel.Name, out string description))
                     {
                         channel.Description = description;
