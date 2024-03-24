@@ -207,6 +207,11 @@ namespace Slackord.Classes
                         properties.Topic = channel.Description;
                     });
 
+                    // Set the DiscordChannelId and populate the CreatedChannels dictionary
+                    ulong createdChannelId = createdChannel.Id;
+                    channel.DiscordChannelId = createdChannelId;
+                    CreatedChannels[createdChannelId] = createdChannel;
+
                     channelCountInCurrentCategory++;
                 }
             }
@@ -242,7 +247,6 @@ namespace Slackord.Classes
             {
                 if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
                 {
-                    // Create a temporary webhook to post messages to the channel.
                     var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
                     string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
                     using var webhookClient = new DiscordWebhookClient(webhookUrl);
@@ -254,7 +258,6 @@ namespace Slackord.Classes
                             ulong? threadIdForReply = null;
                             bool shouldArchiveThreadBack = false;
 
-                            // Post the message to Discord.
                             if (message.ThreadType == ThreadType.Parent)
                             {
                                 string threadName = message.Message.Length <= 20 ? message.Message : message.Message[..20];
@@ -267,11 +270,10 @@ namespace Slackord.Classes
                             {
                                 if (threadStartsDict.TryGetValue(message.ParentThreadTs, out RestThreadChannel threadID))
                                 {
-                                    // Check if the thread is archived.
                                     if (threadID.IsArchived)
                                     {
-                                        await threadID.ModifyAsync(properties => properties.Archived = false);  // Unarchive the thread.
-                                        shouldArchiveThreadBack = true;  // Set a flag to re-archive the thread after posting the message.
+                                        await threadID.ModifyAsync(properties => properties.Archived = false);
+                                        shouldArchiveThreadBack = true;
                                     }
 
                                     threadIdForReply = threadID.Id;
@@ -283,7 +285,6 @@ namespace Slackord.Classes
 
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, threadId: threadIdForReply);
 
-                                // Re-archive the thread if it was unarchived before.
                                 if (shouldArchiveThreadBack)
                                 {
                                     await threadID.ModifyAsync(properties => properties.Archived = true);

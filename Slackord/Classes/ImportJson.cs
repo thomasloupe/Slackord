@@ -8,6 +8,7 @@ namespace Slackord.Classes
     {
         public static string RootFolderPath { get; private set; }
         public static List<Channel> Channels { get; set; } = new List<Channel>();
+        public static int TotalHiddenFileCount { get; internal set; } = 0;
 
         public static async Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
         {
@@ -41,6 +42,15 @@ namespace Slackord.Classes
                 {
                     // Call ReconstructAsync to reconstruct messages for Discord
                     await Reconstruct.ReconstructAsync(Channels, cancellationToken);
+
+                    // Write the total count of hidden files to the debug window
+                    if (TotalHiddenFileCount > 0)
+                    {
+                        _ = Application.Current.Dispatcher.Dispatch(() =>
+                        {
+                            ApplicationWindow.WriteToDebugWindow($"Total files hidden by Slack due to limits: {TotalHiddenFileCount}\n");
+                        });
+                    }
                 }
             }
             catch (Exception ex)
@@ -95,7 +105,7 @@ namespace Slackord.Classes
 
                     if (jsonFileCount > 400)
                     {
-                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started..."); });
+                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started...\n"); });
                     }
 
                     foreach (FileInfo jsonFile in jsonFiles)

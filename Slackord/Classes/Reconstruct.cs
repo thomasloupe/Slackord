@@ -7,6 +7,8 @@ namespace Slackord.Classes
     public partial class Reconstruct
     {
         internal static readonly Dictionary<string, DeconstructedUser> UsersDict = new();
+        private static readonly Dictionary<string, ThreadInfo> threadDictionary = new();
+        public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary => threadDictionary;
 
         public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
         {
@@ -47,14 +49,23 @@ namespace Slackord.Classes
                     // Iterate through each deconstructed message in the channel.
                     foreach (DeconstructedMessage deconstructedMessage in channel.DeconstructedMessagesList)
                     {
+                        // Check if cancellation is requested.
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         // Reconstruct message for Discord.
                         await ReconstructMessage(deconstructedMessage, channel);
                     }
 
                     _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
                 }
+
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"All channels have been successfully deconstructed and reconstructed for Discord!\n"); });
                 await Task.CompletedTask;
+            }
+            catch (OperationCanceledException)
+            {
+                // Handle the cancellation.
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstruction operation was cancelled.\n"); });
             }
             catch (Exception ex)
             {
@@ -81,22 +92,10 @@ namespace Slackord.Classes
                 string displayTimestamp = ConvertTimestampToLocalizedString(timestampString);
                 string userName = ConvertUserToDisplayName(deconstructedMessage.User);
                 string userAvatar = deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user) ? user.Profile.Avatar : null;
-                string formattedMessage = FormatMessage(messageContent, displayTimestamp, userName);
+                string formattedMessage = FormatMessage(messageContent, displayTimestamp);
 
-                // Create and add the ReconstructedMessage to the channel's message list.
-                ReconstructedMessage reconstructedMessage = new()
-                {
-                    User = userName,
-                    Message = deconstructedMessage.Text,
-                    Content = formattedMessage,
-                    ParentThreadTs = deconstructedMessage.ParentThreadTs,
-                    ThreadType = deconstructedMessage.ThreadType,
-                    IsPinned = deconstructedMessage.IsPinned,
-                    Avatar = userAvatar,
-                    OriginalTimestamp = deconstructedMessage.OriginalTimestamp
-                };
-
-                channel.ReconstructedMessagesList.Add(reconstructedMessage);
+                // Split the message if it exceeds the character limit and add each part as a separate message
+                SplitAndAddMessages(formattedMessage, deconstructedMessage, channel, userName, userAvatar);
 
                 // Check and process files for downloadability.
                 if (deconstructedMessage.FileURLs.Count > 0)
@@ -112,7 +111,9 @@ namespace Slackord.Classes
 
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
-                                reconstructedMessage.FileURLs.Add(localFilePath); // Attach local file path to the message.
+                                // Attach local file path to the last message part
+                                int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
+                                channel.ReconstructedMessagesList[lastMessageIndex].FileURLs.Add(localFilePath);
                             }
                             else
                             {
@@ -121,7 +122,9 @@ namespace Slackord.Classes
                         }
                         else
                         {
-                            reconstructedMessage.Content += " [File hidden by Slack limit]"; // Append notice for non-downloadable files.
+                            // Append notice for non-downloadable files to the last message part
+                            int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
+                            channel.ReconstructedMessagesList[lastMessageIndex].Content += " [File hidden by Slack limit]";
                         }
                     }
                 }
@@ -268,30 +271,38 @@ namespace Slackord.Classes
 
         private static string ConvertUserToDisplayName(string userId)
         {
-            if (!UsersDict.TryGetValue(userId, out DeconstructedUser user))
+            try
             {
+                if (string.IsNullOrEmpty(userId) || !UsersDict.TryGetValue(userId, out DeconstructedUser user))
+                {
+                    return "Unknown User";
+                }
+
+                string displayName = user.Profile.DisplayName;
+                string realName = user.Profile.RealName;
+                string userName = user.Name;
+
+                return ApplicationWindow.CurrentUserFormatOrder switch
+                {
+                    ApplicationWindow.UserFormatOrder.DisplayName_User_RealName => !string.IsNullOrEmpty(displayName) ? displayName : (!string.IsNullOrEmpty(userName) ? userName : realName),
+                    ApplicationWindow.UserFormatOrder.DisplayName_RealName_User => !string.IsNullOrEmpty(displayName) ? displayName : (!string.IsNullOrEmpty(realName) ? realName : userName),
+                    ApplicationWindow.UserFormatOrder.User_DisplayName_RealName => !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(displayName) ? displayName : realName),
+                    ApplicationWindow.UserFormatOrder.User_RealName_DisplayName => !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(realName) ? realName : displayName),
+                    ApplicationWindow.UserFormatOrder.RealName_DisplayName_User => !string.IsNullOrEmpty(realName) ? realName : (!string.IsNullOrEmpty(displayName) ? displayName : userName),
+                    ApplicationWindow.UserFormatOrder.RealName_User_DisplayName => !string.IsNullOrEmpty(realName) ? realName : (!string.IsNullOrEmpty(userName) ? userName : displayName),
+                    _ => !string.IsNullOrEmpty(displayName) ? displayName : (!string.IsNullOrEmpty(userName) ? userName : realName),
+                };
+            }
+            catch (Exception ex)
+            {
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertUserToDisplayName() : {ex.Message}\n Returning as unknown user...\n"); });
                 return "Unknown User";
             }
-
-            string displayName = user.Profile.DisplayName;
-            string realName = user.Profile.RealName;
-            string userName = user.Name;
-
-            return ApplicationWindow.CurrentUserFormatOrder switch
-            {
-                ApplicationWindow.UserFormatOrder.DisplayName_User_RealName => $"{displayName} {userName} {realName}",
-                ApplicationWindow.UserFormatOrder.DisplayName_RealName_User => $"{displayName} {realName} {userName}",
-                ApplicationWindow.UserFormatOrder.User_DisplayName_RealName => $"{userName} {displayName} {realName}",
-                ApplicationWindow.UserFormatOrder.User_RealName_DisplayName => $"{userName} {realName} {displayName}",
-                ApplicationWindow.UserFormatOrder.RealName_DisplayName_User => $"{realName} {displayName} {userName}",
-                ApplicationWindow.UserFormatOrder.RealName_User_DisplayName => $"{realName} {userName} {displayName}",
-                _ => $"{displayName}",// Fallback to just display name if something goes wrong
-            };
         }
 
-        private static string FormatMessage(string messageContent, string timestamp, string userName)
+        private static string FormatMessage(string messageContent, string timestamp)
         {
-            return $"[{timestamp}] : {userName} {messageContent}";
+            return $"[{timestamp}] : {messageContent}";
         }
 
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
