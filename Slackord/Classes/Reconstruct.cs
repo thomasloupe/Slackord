@@ -79,7 +79,7 @@ namespace Slackord.Classes
             {
                 string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text)
                                         ? "File hidden by Slack limit" // Default message when content is empty.
-                                        : ConvertToDiscordMarkdown(deconstructedMessage.Text); // Apply Markdown conversions for Discord.
+                                        : ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text)); // Apply Markdown conversions and replace user ID mentions
 
                 string timestampString = deconstructedMessage.Timestamp?.ToString();
                 if (string.IsNullOrEmpty(timestampString))
@@ -298,6 +298,49 @@ namespace Slackord.Classes
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ConvertUserToDisplayName() : {ex.Message}\n Returning as unknown user...\n"); });
                 return "Unknown User";
             }
+        }
+
+        private static string ReplaceUserMentions(string messageText)
+        {
+            string replacedText = messageText;
+
+            // Regular expression pattern to match user ID mentions
+            string mentionPattern = @"<@(U[A-Z0-9]+)>";
+
+            // Find all user ID mentions in the message text
+            MatchCollection matches = Regex.Matches(messageText, mentionPattern);
+
+            foreach (Match match in matches.Cast<Match>())
+            {
+                string userId = match.Groups[1].Value;
+
+                // Find the corresponding user in the UsersDict dictionary
+                if (UsersDict.TryGetValue(userId, out DeconstructedUser user))
+                {
+                    string replacementName = GetUserReplacementName(user);
+                    replacedText = replacedText.Replace(match.Value, replacementName);
+                }
+            }
+
+            return replacedText;
+        }
+
+        private static string GetUserReplacementName(DeconstructedUser user)
+        {
+            string displayName = user.Profile.DisplayName;
+            string realName = user.Profile.RealName;
+            string username = user.Name;
+
+            return ApplicationWindow.CurrentUserFormatOrder switch
+            {
+                ApplicationWindow.UserFormatOrder.DisplayName_User_RealName => !string.IsNullOrEmpty(displayName) ? displayName : (!string.IsNullOrEmpty(username) ? username : realName),
+                ApplicationWindow.UserFormatOrder.DisplayName_RealName_User => !string.IsNullOrEmpty(displayName) ? displayName : (!string.IsNullOrEmpty(realName) ? realName : username),
+                ApplicationWindow.UserFormatOrder.User_DisplayName_RealName => !string.IsNullOrEmpty(username) ? username : (!string.IsNullOrEmpty(displayName) ? displayName : realName),
+                ApplicationWindow.UserFormatOrder.User_RealName_DisplayName => !string.IsNullOrEmpty(username) ? username : (!string.IsNullOrEmpty(realName) ? realName : displayName),
+                ApplicationWindow.UserFormatOrder.RealName_DisplayName_User => !string.IsNullOrEmpty(realName) ? realName : (!string.IsNullOrEmpty(displayName) ? displayName : username),
+                ApplicationWindow.UserFormatOrder.RealName_User_DisplayName => !string.IsNullOrEmpty(realName) ? realName : (!string.IsNullOrEmpty(username) ? username : displayName),
+                _ => !string.IsNullOrEmpty(displayName) ? displayName : (!string.IsNullOrEmpty(username) ? username : realName),
+            };
         }
 
         private static string FormatMessage(string messageContent, string timestamp)

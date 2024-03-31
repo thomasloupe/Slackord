@@ -1,4 +1,6 @@
-﻿namespace MenuApp
+﻿using Slackord.Classes;
+
+namespace MenuApp
 {
     public partial class MainPage : ContentPage
     {
@@ -50,12 +52,14 @@
 
         private void ImportServer_Clicked(object sender, EventArgs e)
         {
-            _ = applicationWindow.ImportJsonAsync(true).ConfigureAwait(false);
+            ResetSlackordImportedData();
+            _ = applicationWindow.ImportJsonAsync(true);
         }
 
         private void ImportChannel_Clicked(object sender, EventArgs e)
         {
-            _ = applicationWindow.ImportJsonAsync(false).ConfigureAwait(false);
+            ResetSlackordImportedData();
+            _ = applicationWindow.ImportJsonAsync(false);
         }
 
         private void EnterBotToken_Clicked(object sender, EventArgs e)
@@ -106,6 +110,13 @@
         private void ClearLog_Clicked(object sender, EventArgs e)
         {
             ApplicationWindow.ClearLog();
+        }
+
+        private static void ResetSlackordImportedData()
+        {
+            ImportJson.Channels.Clear();
+            ImportJson.TotalHiddenFileCount = 0;
+            ApplicationWindow.ResetProgressBar();
         }
     }
 }

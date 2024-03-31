@@ -15,11 +15,12 @@ namespace Slackord.Classes
         public IServiceProvider _services;
         public Dictionary<ulong, RestTextChannel> CreatedChannels { get; set; } = new Dictionary<ulong, RestTextChannel>();
         private DiscordBot() { }
+        private CancellationTokenSource _cancellationTokenSource;
 
         public async Task StartClientAsync()
         {
             bool isConnected = false;
-            int maxRetryAttempts = 5;
+            int maxRetryAttempts = 3;
             int delayMilliseconds = 5000;
 
             for (int attempt = 1; attempt <= maxRetryAttempts; attempt++)
@@ -36,6 +37,7 @@ namespace Slackord.Classes
                     if (attempt < maxRetryAttempts)
                     {
                         await Task.Delay(delayMilliseconds);
+                        delayMilliseconds = Math.Min(delayMilliseconds * 2, 30000); // Double the delay, up to 30 seconds
                     }
                 }
             }
@@ -49,6 +51,7 @@ namespace Slackord.Classes
 
         public async Task StopClientAsync()
         {
+            _cancellationTokenSource?.Cancel();
             await DiscordClient.StopAsync();
         }
 
@@ -156,13 +159,16 @@ namespace Slackord.Classes
         {
             try
             {
+                _cancellationTokenSource = new CancellationTokenSource();
+                CancellationToken cancellationToken = _cancellationTokenSource.Token;
+
                 SocketGuild guild = DiscordClient.GetGuild(guildID);
                 string baseCategoryName = "Slackord Import";
 
                 SocketCategoryChannel currentCategory = null;
                 ulong currentCategoryId = 0;
 
-                // Attempt to find an existing category named "Slackord Import"
+                // Attempt to find an existing category named "Slackord Import".
                 currentCategory = guild.CategoryChannels.FirstOrDefault(c => c.Name.StartsWith(baseCategoryName));
 
                 if (currentCategory == null)
@@ -181,14 +187,14 @@ namespace Slackord.Classes
                 {
                     if (channelCountInCurrentCategory >= 50)
                     {
-                        // Create a new category if the existing one or previously created is full
+                        // Create a new category if the existing one or previously created is full.
                         var newCategory = await guild.CreateCategoryChannelAsync($"{baseCategoryName} {currentCategoryId + 1}");
                         currentCategoryId = newCategory.Id;
-                        channelCountInCurrentCategory = 0; // Reset the count for the new category
+                        channelCountInCurrentCategory = 0; // Reset the count for the new category.
                     }
 
                     string channelName = channel.Name.ToLower();
-                    // Handle potential channel name conflicts
+                    // Handle potential channel name conflicts.
                     if (guild.TextChannels.Any(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId))
                     {
                         int suffix = 1;
@@ -207,7 +213,7 @@ namespace Slackord.Classes
                         properties.Topic = channel.Description;
                     });
 
-                    // Set the DiscordChannelId and populate the CreatedChannels dictionary
+                    // Set the DiscordChannelId and populate the CreatedChannels dictionary.
                     ulong createdChannelId = createdChannel.Id;
                     channel.DiscordChannelId = createdChannelId;
                     CreatedChannels[createdChannelId] = createdChannel;
@@ -215,15 +221,26 @@ namespace Slackord.Classes
                     channelCountInCurrentCategory++;
                 }
             }
+            catch (OperationCanceledException)
+            {
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Channel creation was canceled.\n"); });
+            }
             catch (Exception ex)
             {
                 ApplicationWindow.WriteToDebugWindow($"Error in ReconstructSlackChannelsOnDiscord: {ex.Message}\n");
+            }
+            finally
+            {
+                _cancellationTokenSource.Dispose();
             }
         }
 
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
+            _cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken cancellationToken = _cancellationTokenSource.Token;
+
             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord called with guildID: {guildID}\n"); });
             int totalMessagesToPost = ImportJson.Channels.Sum(channel => channel.ReconstructedMessagesList.Count);
             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Total messages to send to Discord: {totalMessagesToPost}\n"); });
@@ -255,6 +272,8 @@ namespace Slackord.Classes
                     {
                         try
                         {
+                            cancellationToken.ThrowIfCancellationRequested();
+
                             ulong? threadIdForReply = null;
                             bool shouldArchiveThreadBack = false;
 
@@ -338,6 +357,11 @@ namespace Slackord.Classes
                             messagesPosted++;
                             // Update the progress bar.
                             ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Posting messages cancelled.\n"); });
+                            return;
                         }
                         catch (Exception ex)
                         {
