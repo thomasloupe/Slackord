@@ -51,7 +51,6 @@ namespace Slackord.Classes
 
         public async Task StopClientAsync()
         {
-            _cancellationTokenSource?.Cancel();
             await DiscordClient.StopAsync();
         }
 

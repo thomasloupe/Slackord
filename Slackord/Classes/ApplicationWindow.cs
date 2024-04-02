@@ -1,6 +1,7 @@
 using Discord;
 using Slackord.Classes;
 using System.Text;
+using System.Threading;
 
 namespace MenuApp
 {
@@ -175,6 +176,7 @@ namespace MenuApp
 
         public async Task ImportJsonAsync(bool isFullExport)
         {
+            cancellationTokenSource = new CancellationTokenSource();
             using CancellationTokenSource cts = new();
             Interlocked.Exchange(ref cancellationTokenSource, cts)?.Cancel();
             CancellationToken cancellationToken = cts.Token;
@@ -184,7 +186,7 @@ namespace MenuApp
             }
             catch (OperationCanceledException)
             {
-                // Handle the cancellation.
+                cancellationTokenSource?.Cancel();
             }
         }
 
@@ -258,8 +260,10 @@ namespace MenuApp
             else if (_discordBot.GetClientConnectionState() == ConnectionState.Connected)
             {
                 await ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                cancellationTokenSource?.Cancel();
                 await _discordBot.StopClientAsync();
                 await ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+                await ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
             }
         }
 
