@@ -50,7 +50,7 @@
 		<PackageReference Include="Discord.Net.Rest" Version="3.14.1" />
 		<PackageReference Include="Discord.Net.Webhook" Version="3.14.1" />
 		<PackageReference Include="Discord.Net.WebSocket" Version="3.14.1" />
-		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="5.0.0-preview.5.20278.1" />
+		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
@@ -59,6 +59,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.14" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.14" />
 		<PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.14" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
 		<PackageReference Include="Octokit" Version="10.0.0" />
 	</ItemGroup>
 
