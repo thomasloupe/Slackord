@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<!-- Separate TargetFrameworks for clarity. -->
 		<TargetFramework Condition="$([MSBuild]::IsOSPlatform('windows'))">net8.0-windows10.0.19041.0</TargetFramework>
-		<TargetFramework Condition="!$([MSBuild]::IsOSPlatform('windows'))">net8.0-maccatalyst</TargetFramework>
 
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Slackord</RootNamespace>
@@ -18,18 +16,11 @@
 		<ApplicationDisplayVersion>4.0</ApplicationDisplayVersion>
 		<ApplicationVersion>4</ApplicationVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<WindowsPackageType Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">None</WindowsPackageType>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 
-		<!-- Specify the runtime identifiers for Mac Catalyst. -->
-		<RuntimeIdentifiers Condition="'$(TargetFramework)' == 'net8.0-maccatalyst'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
-		<ReleaseVersion>4</ReleaseVersion>
-
-		<!-- Don't use native HttpHandler because it breaks the Mac version -->
-		<UseNativeHttpHandler>false</UseNativeHttpHandler>
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
@@ -46,7 +37,7 @@
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
-		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<!-- Raw Assets -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" />
@@ -91,24 +82,6 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<!-- Build Properties must be defined within these property groups to ensure successful publishing
-       to the Mac App Store. See: https://aka.ms/maui-publish-app-store#define-build-properties-in-your-project-file -->
-	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Debug'">
-		<CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Debug.plist</CodesignEntitlements>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
-		<CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Release.plist</CodesignEntitlements>
-		<UseHardenedRuntime>true</UseHardenedRuntime>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-maccatalyst|AnyCPU'">
-		<CreatePackage>false</CreatePackage>
-		<CodesignEntitlements>Platforms\MacCatalyst\Entitlements.Debug.plist</CodesignEntitlements>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-maccatalyst|AnyCPU'">
-		<CreatePackage>false</CreatePackage>
-		<CodesignEntitlements>Platforms\MacCatalyst\Entitlements.Release.plist</CodesignEntitlements>
-	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<ApplicationDisplayVersion>4.3.0</ApplicationDisplayVersion>
 	</PropertyGroup>
