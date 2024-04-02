@@ -123,12 +123,8 @@ namespace Slackord.Classes
                         if (string.IsNullOrEmpty(fileUrl))
                         {
                             // Log empty or null file URLs.
-                            _ = Application.Current.Dispatcher.Dispatch(() =>
-                            {
-                                ApplicationWindow.WriteToDebugWindow($"A file was found that Slack has hidden due to limits. Check the log for more information.\n");
-                                string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
-                                Logger.Log(logMessage);
-                            });
+                            string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
+                            Logger.Log(logMessage);
                         }
                         else
                         {
@@ -142,6 +138,7 @@ namespace Slackord.Classes
                         {
                             deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
                             deconstructedMessage.IsFileDownloadable.Add(false);
+                            ImportJson.TotalHiddenFileCount++;
                         }
                     }
                 }
