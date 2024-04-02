@@ -8,10 +8,17 @@ namespace Slackord.Classes
     {
         public static string RootFolderPath { get; private set; }
         public static List<Channel> Channels { get; set; } = new List<Channel>();
+        public static int TotalHiddenFileCount { get; internal set; } = 0;
 
         public static async Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
         {
             ApplicationWindow.HideProgressBar();
+
+            // Clear existing data and reset counts
+            Channels.Clear();
+            TotalHiddenFileCount = 0;
+            ApplicationWindow.ResetProgressBar();
+
             try
             {
                 FolderPickerResult picker = await FolderPicker.Default.PickAsync(cancellationToken);
@@ -39,8 +46,17 @@ namespace Slackord.Classes
                 // This checks whether any folder was selected and whether any channels were deconstructed.
                 if (!string.IsNullOrEmpty(RootFolderPath) && Channels.Count != 0)
                 {
-                    // Call ReconstructAsync to reconstruct messages for Discord
+                    // Call ReconstructAsync to reconstruct messages for Discord.
                     await Reconstruct.ReconstructAsync(Channels, cancellationToken);
+
+                    // Write the total count of hidden files to the debug window.
+                    if (TotalHiddenFileCount > 0)
+                    {
+                        _ = Application.Current.Dispatcher.Dispatch(() =>
+                        {
+                            ApplicationWindow.WriteToDebugWindow($"Total files hidden by Slack due to limits: {TotalHiddenFileCount}\n");
+                        });
+                    }
                 }
             }
             catch (Exception ex)
@@ -95,7 +111,7 @@ namespace Slackord.Classes
 
                     if (jsonFileCount > 400)
                     {
-                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started..."); });
+                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started...\n"); });
                     }
 
                     foreach (FileInfo jsonFile in jsonFiles)
