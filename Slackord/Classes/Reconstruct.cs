@@ -188,25 +188,25 @@ namespace Slackord.Classes
                     Directory.CreateDirectory(downloadsFolder);
                     string channelFolder = Path.Combine(downloadsFolder, channelName);
                     Directory.CreateDirectory(channelFolder);
-                    string fileExtension = Path.GetExtension(new Uri(fileUrl).AbsolutePath);
-                    string fileName = $"{originalTimestamp}{fileExtension}";
-                    string localFilePath = Path.Combine(channelFolder, fileName);
+
+                    // Extract the file name from the URL without the query parameters
+                    string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
+
+                    // Remove any invalid characters from the file name
+                    string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
+                    string localFilePath = Path.Combine(channelFolder, sanitizedFileName);
 
                     if (File.Exists(localFilePath))
                     {
-                        fileName = $"{originalTimestamp}_{Guid.NewGuid()}{fileExtension}";
-                        localFilePath = Path.Combine(channelFolder, fileName);
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sanitizedFileName);
+                        string fileExtension = Path.GetExtension(sanitizedFileName);
+                        string newFileName = $"{fileNameWithoutExtension}_{Guid.NewGuid()}{fileExtension}";
+                        localFilePath = Path.Combine(channelFolder, newFileName);
                     }
 
                     await File.WriteAllBytesAsync(localFilePath, fileBytes);
                     string permalink = fileUrl;
-
                     return (localFilePath, permalink);
-                }
-                else
-                {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Failed to download file: {response.StatusCode}\n"); });
-                    return (null, null);
                 }
             }
             catch (Exception ex)
@@ -214,6 +214,9 @@ namespace Slackord.Classes
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"DownloadFile() : {ex.Message}\n"); });
                 return (null, null);
             }
+
+            // Add a default return statement to ensure all code paths return a value
+            return (null, null);
         }
 
         private static string ConvertTimestampToLocalizedString(string timestampString)
