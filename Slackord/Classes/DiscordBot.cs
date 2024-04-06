@@ -226,7 +226,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                ApplicationWindow.WriteToDebugWindow($"Error in ReconstructSlackChannelsOnDiscord: {ex.Message}\n");
+                ApplicationWindow.WriteToDebugWindow($"ReconstructSlackChannelsOnDiscord: {ex.Message}\n");
             }
             finally
             {
@@ -330,26 +330,41 @@ namespace Slackord.Classes
                             for (int i = 0; i < localFilePaths.Count; i++)
                             {
                                 var localFilePath = localFilePaths[i];
-                                FileInfo fileInfo = new(localFilePath);
-                                long fileSizeInBytes = fileInfo.Length;
+                                if (File.Exists(localFilePath))
+                                {
+                                    FileInfo fileInfo = new(localFilePath);
+                                    long fileSizeInBytes = fileInfo.Length;
 
-                                if (fileSizeInBytes <= 25 * 1024 * 1024)
-                                {
-                                    using FileStream fs = new(localFilePath, FileMode.Open);
-                                    await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath), "File uploaded");
-                                }
-                                else
-                                {
-                                    // If the file is too large, check if a fallback URL exists and send the permalink instead.
-                                    if (message.FallbackFileURLs.Count > i)
+                                    if (fileSizeInBytes <= 25 * 1024 * 1024) // Discord's file size limit for bots is 8MB for most cases, using 25MB limit for Nitro boosted servers
                                     {
-                                        string downloadLink = message.FallbackFileURLs[i];
-                                        await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({downloadLink}).");
+                                        using FileStream fs = new(localFilePath, FileMode.Open, FileAccess.Read);
+                                        try
+                                        {
+                                            await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath));
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Logger.Log($"Failed to upload file {localFilePath}: {ex.Message}");
+                                        }
                                     }
                                     else
                                     {
-                                        await discordChannel.SendMessageAsync("File was too large to upload, and a download link is not available.");
+                                        // If the file is too large, check if a fallback URL exists and send the permalink instead.
+                                        if (message.FallbackFileURLs.Count > i)
+                                        {
+                                            string downloadLink = message.FallbackFileURLs[i];
+                                            await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({downloadLink}).");
+                                        }
+                                        else
+                                        {
+                                            await discordChannel.SendMessageAsync("File was too large to upload, and a download link is not available.");
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    Logger.Log($"File not found: {localFilePath}");
+                                    await discordChannel.SendMessageAsync("Attachment:");
                                 }
                             }
 
@@ -364,7 +379,7 @@ namespace Slackord.Classes
                         }
                         catch (Exception ex)
                         {
-                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
+                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord(): {ex.Message}\n"); });
                         }
                     }
 
