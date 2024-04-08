@@ -145,9 +145,9 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                string logMessage = $"Error processing property '{currentProperty}' with value '{currentValue}' in JSON. {ex.Message}";
+                string logMessage = $"DeconstructMessage(): Error processing property '{currentProperty}' with value '{currentValue}' in JSON. {ex.Message}";
                 Logger.Log(logMessage);
-                throw new Exception($"Error processing property '{currentProperty}' with value '{currentValue}' in JSON", ex);
+                throw new Exception($"DeconstructMessage(): Error processing property '{currentProperty}' with value '{currentValue}' in JSON", ex);
             }
 
             return deconstructedMessage;
@@ -228,7 +228,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"InitializeUsersDict(): Parsing Users file failed with an exception: {ex.Message}\n"); });
             }
         }
 
@@ -271,7 +271,7 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users file failed with an exception: {ex.Message}\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ParseUsersFile(): Parsing Users file failed with an exception: {ex.Message}\n"); });
                 return null;
             }
         }

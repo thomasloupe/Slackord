@@ -65,7 +65,7 @@ namespace Slackord.Classes
             catch (OperationCanceledException)
             {
                 // Handle the cancellation.
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstruction operation was cancelled.\n"); });
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): Reconstruction operation was cancelled.\n"); });
             }
             catch (Exception ex)
             {
@@ -77,15 +77,11 @@ namespace Slackord.Classes
         {
             try
             {
-                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text)
-                                        ? "File hidden by Slack limit" // Default message when content is empty.
-                                        : ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text)); // Apply Markdown conversions and replace user ID mentions
-
+                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? "File hidden by Slack limit" : ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text));
                 string timestampString = deconstructedMessage.Timestamp?.ToString();
                 if (string.IsNullOrEmpty(timestampString))
                 {
-                    // Log invalid or missing timestamp.
-                    Logger.Log(timestampString == null ? $"Missing timestamp for message {deconstructedMessage.Text}" : $"Invalid timestamp format {deconstructedMessage.Text}");
+                    Logger.Log(timestampString == null ? "Missing timestamp for message." : "Invalid timestamp format.");
                     return;
                 }
 
@@ -94,35 +90,29 @@ namespace Slackord.Classes
                 string userAvatar = deconstructedMessage.User != null && UsersDict.TryGetValue(deconstructedMessage.User, out DeconstructedUser user) ? user.Profile.Avatar : null;
                 string formattedMessage = FormatMessage(messageContent, displayTimestamp);
 
-                // Split the message if it exceeds the character limit and add each part as a separate message
                 SplitAndAddMessages(formattedMessage, deconstructedMessage, channel, userName, userAvatar);
 
-                // Check and process files for downloadability.
                 if (deconstructedMessage.FileURLs.Count > 0)
                 {
                     for (int i = 0; i < deconstructedMessage.FileURLs.Count; i++)
                     {
                         string fileUrl = deconstructedMessage.FileURLs[i];
                         bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
-
                         if (isDownloadable)
                         {
                             var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp, isDownloadable);
-
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
-                                // Attach local file path to the last message part
                                 int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
                                 channel.ReconstructedMessagesList[lastMessageIndex].FileURLs.Add(localFilePath);
                             }
                             else
                             {
-                                Logger.Log($"File download for channel {channel.Name} failed! Original Slack Message:\n{deconstructedMessage.OriginalSlackMessageJson}");
+                                Logger.Log($"File download for channel {channel.Name} failed. Original Slack Message: {deconstructedMessage.OriginalSlackMessageJson}");
                             }
                         }
                         else
                         {
-                            // Append notice for non-downloadable files to the last message part
                             int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
                             channel.ReconstructedMessagesList[lastMessageIndex].Content += " [File hidden by Slack limit]";
                         }
@@ -131,87 +121,58 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage() : {ex.Message}\n"); });
+                Logger.Log($"ReconstructMessage(): {ex.Message}");
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructMessage(): {ex.Message}\n"); });
             }
         }
 
         public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string originalTimestamp, bool isDownloadable)
         {
-            if (!isDownloadable)
+            if (!isDownloadable || string.IsNullOrWhiteSpace(fileUrl))
             {
                 return (null, null);
             }
 
+            // Normalize the file URL and check if it's a valid URI
+            if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
+            {
+                Logger.Log($"Invalid URL provided: {fileUrl}");
+                return (null, null);
+            }
+
+            // Prepare directories and file path
+            string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
+            Directory.CreateDirectory(downloadsFolder); // Ensure the download directory exists
+            string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
+            string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
+            string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
+
+            // Download the file
             try
             {
-                // Check for null or empty originalTimestamp.
-                if (string.IsNullOrEmpty(originalTimestamp))
-                {
-                    originalTimestamp = Guid.NewGuid().ToString();
-                }
-
-                // Check if the fileUrl is a slackdump-style local path.
-                if (fileUrl.StartsWith("attachments/"))
-                {
-                    // This is a slackdump-style local path (indicating it's a slackdump export).
-                    string channelFolder = Path.Combine(ImportJson.RootFolderPath, channelName);
-                    string localFilePath = Path.Combine(channelFolder, "attachments", fileUrl["attachments/".Length..]);
-
-                    if (File.Exists(localFilePath))
-                    {
-                        return (localFilePath, fileUrl); // Return the local path.
-                    }
-                    else
-                    {
-                        // Log that the file doesn't exist locally.
-                        Logger.Log($"Expected file from Slackdump doesn't exist locally: {localFilePath}");
-                        return (null, null);
-                    }
-                }
-
-                // Continue with the rest of the method for normal Slack export.
-                if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
-                {
-                    Logger.Log($"Invalid URL provided: {fileUrl}");
-                    return (null, null);
-                }
-
-                Logger.Log($"Attempting to download from URL: {fileUrl}");
-
                 using HttpClient httpClient = new();
                 HttpResponseMessage response = await httpClient.GetAsync(fileUrl);
-
                 if (response.IsSuccessStatusCode)
                 {
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads");
-                    Directory.CreateDirectory(downloadsFolder);
-                    string channelFolder = Path.Combine(downloadsFolder, channelName);
-                    Directory.CreateDirectory(channelFolder);
-                    string fileExtension = Path.GetExtension(new Uri(fileUrl).AbsolutePath);
-                    string fileName = $"{originalTimestamp}{fileExtension}";
-                    string localFilePath = Path.Combine(channelFolder, fileName);
-
+                    byte[] fileData = await response.Content.ReadAsByteArrayAsync();
                     if (File.Exists(localFilePath))
                     {
-                        fileName = $"{originalTimestamp}_{Guid.NewGuid()}{fileExtension}";
-                        localFilePath = Path.Combine(channelFolder, fileName);
+                        string fileExtension = Path.GetExtension(sanitizedFileName);
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sanitizedFileName);
+                        localFilePath = Path.Combine(downloadsFolder, $"{fileNameWithoutExtension}_{Guid.NewGuid()}{fileExtension}");
                     }
-
-                    await File.WriteAllBytesAsync(localFilePath, fileBytes);
-                    string permalink = fileUrl;
-
-                    return (localFilePath, permalink);
+                    await File.WriteAllBytesAsync(localFilePath, fileData);
+                    return (localFilePath, fileUrl);
                 }
                 else
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Failed to download file: {response.StatusCode}\n"); });
+                    Logger.Log($"Failed to download file from {fileUrl}. HTTP status: {response.StatusCode}");
                     return (null, null);
                 }
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"DownloadFile() : {ex.Message}\n"); });
+                Logger.Log($"DownloadFile(): Exception during file download: {ex.Message}");
                 return (null, null);
             }
         }
