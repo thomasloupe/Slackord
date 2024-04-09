@@ -26,8 +26,18 @@ namespace Slackord.Classes
                 // Check if picker is null or if its Folder property is null.
                 if (picker == null || picker.Folder == null)
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception(1000) in FolderPicker : Import canceled by user.\nDue to platform requirements, Slackord must be restarted when you cancel the folder browser.\nCurrently, there's no workaround. Sorry about this!\n"); });
-                    return;
+                    // Check if the cancellation was requested
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        // Log the cancellation message
+                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Folder selection was cancelled.\n"); });
+                        return;
+                    }
+                    else
+                    {
+                        // Import was cancelled
+                        return;
+                    }
                 }
 
                 string folderPath = picker.Folder.Path;
@@ -58,6 +68,11 @@ namespace Slackord.Classes
                         });
                     }
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                // Handle the cancellation exception
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Import operation was cancelled.\n"); });
             }
             catch (Exception ex)
             {

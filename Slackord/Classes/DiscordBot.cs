@@ -278,7 +278,7 @@ namespace Slackord.Classes
 
                             if (message.ThreadType == ThreadType.Parent)
                             {
-                                string threadName = message.Message.Length <= 20 ? message.Message : message.Message[..20];
+                                string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" : message.Message.Length <= 20 ? message.Message : message.Message[..20];
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
                                 IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
                                 RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
