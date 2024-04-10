@@ -10,11 +10,10 @@ namespace Slackord.Classes
         public static async Task CheckForUpdates()
         {
             string _currentVersion = Version.GetVersion();
-
             _octoClient = new GitHubClient(new ProductHeaderValue("Slackord"));
-
             IReadOnlyList<Release> releases = await _octoClient.Repository.Release.GetAll("thomasloupe", "Slackord");
             Release latest = releases[0];
+
             if (_currentVersion == latest.TagName)
             {
                 await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
@@ -24,20 +23,29 @@ namespace Slackord.Classes
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     MainPage.DebugWindowInstance.Text += $"""
+                    Your Slackord version is out of date.
+                    Current Version: {_currentVersion}
+                    Latest Version: {latest.TagName}
+                    
+                    Release Notes:
+                    {latest.Body}
 
-                Your Slackord version is out of date.
-                Current Version: {_currentVersion}
-                Latest Version: {latest.TagName}
-                Please consider upgrading at https://github.com/thomasloupe/Slackord/release/{latest.TagName}.
-
-                """;
+                    Please consider upgrading at https://github.com/thomasloupe/Slackord/release/{latest.TagName}.
+                    
+                    """;
                 });
 
-                bool result = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert("Update Available!",
-                    "A new version of Slackord is available!" + "\n" +
-                    $"Current version: {_currentVersion}" + "\n" +
-                    $"Latest version: {latest.TagName}" + "\n" +
-                    "Would you like to visit the download page?",
+                bool result = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert("Slackord Update Available!",
+                    $@"A new version of Slackord is available!
+Current version: {_currentVersion}
+Latest version: {latest.TagName}
+    
+You are missing the following features and bug fixes:
+
+{latest.Body}
+
+It is highly recommended that you always have the latest version available.    
+Would you like to visit the download page?",
                     "Yes", "No");
 
                 if (result)
