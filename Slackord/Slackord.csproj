@@ -44,7 +44,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="8.0.1" />
 		<PackageReference Include="Discord.Net.Core" Version="3.14.1" />
 		<PackageReference Include="Discord.Net.Interactions" Version="3.14.1" />
 		<PackageReference Include="Discord.Net.Rest" Version="3.14.1" />
@@ -56,15 +56,15 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.14" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.14" />
-		<PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.14" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.20" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.20" />
+		<PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.20" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
 		<PackageReference Include="Octokit" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">
-		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="8.0.14">
+		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="8.0.20">
 		</PackageReference>
 	</ItemGroup>
 
