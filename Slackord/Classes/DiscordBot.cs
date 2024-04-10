@@ -17,7 +17,7 @@ namespace Slackord.Classes
         private DiscordBot() { }
         private CancellationTokenSource _cancellationTokenSource;
 
-        public async Task StartClientAsync()
+        public async Task StartClientAsync(string discordToken)
         {
             bool isConnected = false;
             int maxRetryAttempts = 3;
@@ -27,6 +27,10 @@ namespace Slackord.Classes
             {
                 try
                 {
+                    if (DiscordClient.LoginState != LoginState.LoggedIn)
+                    {
+                        await DiscordClient.LoginAsync(TokenType.Bot, discordToken.Trim());
+                    }
                     await DiscordClient.StartAsync();
                     isConnected = true;
                     break;
@@ -49,14 +53,21 @@ namespace Slackord.Classes
             }
         }
 
-        public async Task StopClientAsync()
+        public async Task LogoutClientAsync()
         {
-            await DiscordClient.StopAsync();
+            try
+            {
+                await DiscordClient.LogoutAsync();
+            }
+            catch (Exception ex)
+            {
+                ApplicationWindow.WriteToDebugWindow($"Error while stopping the Discord client: {ex.Message}");
+            }
         }
 
         public ConnectionState GetClientConnectionState()
         {
-            return DiscordClient.ConnectionState;
+            return DiscordClient?.ConnectionState ?? ConnectionState.Disconnected;
         }
 
         private Task DiscordClient_Log(LogMessage arg)
@@ -278,7 +289,7 @@ namespace Slackord.Classes
 
                             if (message.ThreadType == ThreadType.Parent)
                             {
-                                string threadName = message.Message.Length <= 20 ? message.Message : message.Message[..20];
+                                string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" : message.Message.Length <= 20 ? message.Message : message.Message[..20];
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
                                 IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
                                 RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());

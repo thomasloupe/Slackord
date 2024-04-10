@@ -45,6 +45,7 @@ namespace MenuApp
         private async Task Initialize()
         {
             applicationWindow.CheckForFirstRun();
+            await ApplicationWindow.CheckForNewVersion();
             await applicationWindow.CheckForValidBotToken();
             await ApplicationWindow.GetTimeStampValue();
             await ApplicationWindow.GetUserFormatValue();

@@ -13,7 +13,7 @@
 		<ApplicationTitle>Slackord</ApplicationTitle>
 		<ApplicationId>com.thomasloupe.slackord</ApplicationId>
 		<ApplicationIdGuid>9c3974ab-37d1-4859-8f7c-aa1c453b5b00</ApplicationIdGuid>
-		<ApplicationDisplayVersion>4.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.2</ApplicationDisplayVersion>
 		<ApplicationVersion>4</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
