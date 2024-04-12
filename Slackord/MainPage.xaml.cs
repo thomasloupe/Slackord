@@ -45,7 +45,7 @@ namespace MenuApp
         private async Task Initialize()
         {
             applicationWindow.CheckForFirstRun();
-            await ApplicationWindow.CheckForNewVersion();
+            await ApplicationWindow.CheckForNewVersion(true);
             await applicationWindow.CheckForValidBotToken();
             await ApplicationWindow.GetTimeStampValue();
             await ApplicationWindow.GetUserFormatValue();
@@ -85,7 +85,7 @@ namespace MenuApp
 
         private void CheckForUpdates_Clicked(object sender, EventArgs e)
         {
-            _ = ApplicationWindow.CheckForNewVersion().ConfigureAwait(true);
+            _ = ApplicationWindow.CheckForNewVersion(false).ConfigureAwait(true);
         }
 
         private void About_Clicked(object sender, EventArgs e)

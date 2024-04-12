@@ -13,7 +13,7 @@
 		<ApplicationTitle>Slackord</ApplicationTitle>
 		<ApplicationId>com.thomasloupe.slackord</ApplicationId>
 		<ApplicationIdGuid>9c3974ab-37d1-4859-8f7c-aa1c453b5b00</ApplicationIdGuid>
-		<ApplicationDisplayVersion>4.3.2</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>4</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
@@ -60,7 +60,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.20" />
 		<PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.20" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
-		<PackageReference Include="Octokit" Version="10.0.0" />
+		<PackageReference Include="Octokit" Version="11.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">

@@ -7,7 +7,7 @@ namespace Slackord.Classes
     {
         private static GitHubClient _octoClient;
 
-        public static async Task CheckForUpdates()
+        public static async Task CheckForUpdates(bool isStartupCheck)
         {
             string _currentVersion = Version.GetVersion();
             _octoClient = new GitHubClient(new ProductHeaderValue("Slackord"));
@@ -16,7 +16,22 @@ namespace Slackord.Classes
 
             if (_currentVersion == latest.TagName)
             {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
+                if (isStartupCheck) 
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        MainPage.DebugWindowInstance.Text += $"""
+                    Current Version: {_currentVersion}
+                    Latest Version: {latest.TagName}
+                    You have the latest Slackord version!
+
+                    """;
+                    });
+                }
+                else
+                {
+                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
+                }
             }
             else if (_currentVersion != latest.TagName)
             {

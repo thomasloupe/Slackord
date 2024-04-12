@@ -288,9 +288,9 @@ namespace MenuApp
             }
         }
 
-        public static async Task CheckForNewVersion()
+        public static async Task CheckForNewVersion(bool isStartupCheck)
         {
-            await UpdateCheck.CheckForUpdates();
+            await UpdateCheck.CheckForUpdates(isStartupCheck);
         }
 
         public static void DisplayAbout()
