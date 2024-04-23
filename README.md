@@ -16,9 +16,10 @@ https://github.com/thomasloupe/Slackord/assets/6563450/adee8003-b51b-4859-b8d4-3
 1. `Auto rate-limit detection` - Slackord limits the messages it sends over time so it doesn't spam or get itself squelched for posting too often.
 1. `Ease-of-use` - Slackord only needs to be set up once, making future imports easy. It also remembers your bot's token.
 1. `Multiple Discord Servers` - Slackord can discern which Discord server it's in and can post to the server(s) you choose.
-1. `Privacy first` - Slackord allows you to set the name format and fallback when posting messages. Choose between Display name, user name, and real name.
+1. `Privacy first` - Slackord allows you to set the name format and fallback when posting messages. Choose between `display name`, `user name`, and `real name`.
 1. `Data safety` - Your data is yours. Slackord works completely off your local connection and machine.
-1. `Update checks` - Slackord can check for the latest version with a single click. Get the latest version with new features and fixes easily!
+1. `Update checks` - Slackord checks for the latest version automatically. You can also check manually with two clicks. Get the latest version with new features and fixes easily!
+1. `Active development` - Slackord is actively maintained with consistent quality-of-life fixes, bugfixes, and new features.
 
 # Getting Started
 If you're looking for a great way to archive your Slack history, I recommend [Slackdump](https://github.com/rusq/slackdump)! Please keep in mind that Slackord is developed specifically for default Slack exports, that Slackdump is not developed or maintained by myself, and that Slackdump is very likely imcompatible at this point with Slackord. If your Slackdump export doesn't work with Slackord, it's best to use the default Slack export. I cannot offer troubleshooting assistance with Slackdump exports.
