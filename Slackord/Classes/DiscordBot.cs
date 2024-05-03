@@ -111,6 +111,7 @@ namespace Slackord.Classes
             DiscordSocketConfig _config = new()
             {
                 GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+                UseInteractionSnowflakeDate = false
             };
 
             // Initialize the DiscordClient.
