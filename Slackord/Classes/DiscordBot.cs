@@ -110,7 +110,7 @@ namespace Slackord.Classes
             // Configure the DiscordSocketClient.
             DiscordSocketConfig _config = new()
             {
-                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds,
                 UseInteractionSnowflakeDate = false
             };
 
