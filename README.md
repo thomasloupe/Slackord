@@ -26,13 +26,13 @@ If you're looking for a great way to archive your Slack history, I recommend [Sl
 1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release and extract the contents.
 1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
 1. Name your bot "Slackord", or any preferred custom name.
-1. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
-1. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
-1. Join the bot into your desired server using the link generated.
-1. In the "Bot" page underneath "OAuth2", Upload an image for your bot if desired.
-1. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
-1. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
-1. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
+2. In the "Bot" page underneath "OAuth2", Upload an image for your bot if desired.
+3. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
+4. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
+5. Join the bot into your desired server using the link generated.
+6. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
+7. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
+8. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
 
 # Running Slackord
 1. Run Slackord.
