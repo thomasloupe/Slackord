@@ -24,15 +24,15 @@ https://github.com/thomasloupe/Slackord/assets/6563450/adee8003-b51b-4859-b8d4-3
 # Getting Started
 If you're looking for a great way to archive your Slack history, I recommend [Slackdump](https://github.com/rusq/slackdump)! Please keep in mind that Slackord is developed specifically for default Slack exports, that Slackdump is not developed or maintained by myself, and that Slackdump is very likely imcompatible at this point with Slackord. If your Slackdump export doesn't work with Slackord, it's best to use the default Slack export. I cannot offer troubleshooting assistance with Slackdump exports.
 1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release and extract the contents.
-1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
-1. Name your bot "Slackord", or any preferred custom name.
-2. In the "Bot" page underneath "OAuth2", Upload an image for your bot if desired.
-3. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
-4. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
-5. Join the bot into your desired server using the link generated.
-6. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
-7. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
-8. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
+2. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
+3. Name your bot "Slackord", or any preferred custom name.
+4. Select "Bot" from the left panel, and upload an image for your bot if desired.
+5. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
+6. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
+7. Join the bot into your desired server using the link generated.
+8. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
+9. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
+10. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
 
 # Running Slackord
 1. Run Slackord.
