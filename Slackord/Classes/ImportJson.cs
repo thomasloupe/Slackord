@@ -67,6 +67,10 @@ namespace Slackord.Classes
                             ApplicationWindow.WriteToDebugWindow($"Total files hidden by Slack due to limits: {TotalHiddenFileCount}\n");
                         });
                     }
+
+                    // Count threads per channel and display the results
+                    Dictionary<string, int> channelThreadCounts = CountThreadsPerChannel();
+                    DisplayThreadCounts(channelThreadCounts);
                 }
             }
             catch (OperationCanceledException)
@@ -81,7 +85,7 @@ namespace Slackord.Classes
             }
         }
 
-        public static async Task<(List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict)> ConvertAsync(bool isFullExport, string folderPath, CancellationToken cancellationToken)
+        private static async Task<(List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict)> ConvertAsync(bool isFullExport, string folderPath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -167,6 +171,42 @@ namespace Slackord.Classes
             }
 
             return (channels, usersDict);
+        }
+
+        private static Dictionary<string, int> CountThreadsPerChannel()
+        {
+            Dictionary<string, int> channelThreadCounts = new();
+
+            foreach (var channel in Channels)
+            {
+                int threadCount = channel.DeconstructedMessagesList
+                    .Where(m => !string.IsNullOrEmpty(m.ThreadTs))
+                    .GroupBy(m => m.ThreadTs)
+                    .Count();
+                channelThreadCounts[channel.Name] = threadCount;
+            }
+
+            return channelThreadCounts;
+        }
+
+        private static void DisplayThreadCounts(Dictionary<string, int> channelThreadCounts)
+        {
+            int totalThreads = channelThreadCounts.Values.Sum();
+
+            foreach (var channel in channelThreadCounts)
+            {
+                ApplicationWindow.WriteToDebugWindow($"Found {channel.Value} threads in {channel.Key}.\n");
+            }
+
+            if (totalThreads > 1000)
+            {
+                ApplicationWindow.WriteToDebugWindow("WARNING: Guild thread limit exceeds 1000. You will need to close threads on your own, manually to prevent threads from failing to create! The number of threads per channel are listed below." +
+                    "\n Please visit https://github.com/thomasloupe/Slackord/blob/main/docs/FAQ.md on how to handle this limitation.");
+                foreach (var channel in channelThreadCounts)
+                {
+                    ApplicationWindow.WriteToDebugWindow($"{channel.Key} ({channel.Value})\n");
+                }
+            }
         }
 
         private static int CountTotalJsonFiles(DirectoryInfo[] channelDirectories)

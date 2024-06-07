@@ -7,7 +7,6 @@ namespace Slackord.Classes
 {
     public class Deconstruct
     {
-
         private static readonly Dictionary<string, ThreadInfo> threadDictionary = new();
 
         public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary
@@ -17,7 +16,6 @@ namespace Slackord.Classes
 
         public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
         {
-            // This is original unmodified JSON from Slack. We keep this in case we run into issues with the deconstructed message for review.
             DeconstructedMessage deconstructedMessage = new()
             {
                 OriginalSlackMessageJson = slackMessage.ToString()
@@ -105,7 +103,7 @@ namespace Slackord.Classes
 
                 if (threadTs == timestamp)  // This is a thread parent message.
                 {
-                    if (!ThreadDictionary.ContainsKey(threadTs))
+                    if (!threadDictionary.ContainsKey(threadTs))
                     {
                         threadDictionary[threadTs] = new ThreadInfo();
                     }
