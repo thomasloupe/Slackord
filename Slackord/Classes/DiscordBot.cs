@@ -265,7 +265,18 @@ namespace Slackord.Classes
             {
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
                 _ = await interaction.FollowupAsync($"An exception was encountered while sending messages! The exception was:\n{ex.Message}");
+                return;
             }
+
+            // Determine the file size limit based on the server's boost level
+            SocketGuild guild = DiscordClient.GetGuild(guildID);
+            long fileSizeLimit = guild.PremiumTier switch
+            {
+                PremiumTier.Tier1 => 8 * 1024 * 1024, // 8 MB
+                PremiumTier.Tier2 => 50 * 1024 * 1024, // 50 MB
+                PremiumTier.Tier3 => 100 * 1024 * 1024, // 100 MB
+                _ => 8 * 1024 * 1024 // Default to 8 MB for non-boosted servers
+            };
 
             Dictionary<string, RestThreadChannel> threadStartsDict = new();
             int messagesPosted = 0;
@@ -293,7 +304,7 @@ namespace Slackord.Classes
                                 string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" : message.Message.Length <= 20 ? message.Message : message.Message[..20];
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
                                 IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
-                                RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneDay, threadMessages.First());
+                                RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneHour, threadMessages.First());
                                 threadStartsDict[message.ParentThreadTs] = threadID;
                             }
                             else if (message.ThreadType == ThreadType.Reply)
@@ -317,7 +328,15 @@ namespace Slackord.Classes
 
                                 if (shouldArchiveThreadBack)
                                 {
-                                    await threadID.ModifyAsync(properties => properties.Archived = true);
+                                    try
+                                    {
+                                        await threadID.ModifyAsync(properties => properties.Archived = true);
+                                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Archived thread: {threadID.Name}\n"); });
+                                    }
+                                    catch (Exception archiveEx)
+                                    {
+                                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error archiving thread: {archiveEx.Message}\n"); });
+                                    }
                                 }
                             }
                             else
@@ -347,7 +366,7 @@ namespace Slackord.Classes
                                     FileInfo fileInfo = new(localFilePath);
                                     long fileSizeInBytes = fileInfo.Length;
 
-                                    if (fileSizeInBytes <= 25 * 1024 * 1024) // Discord's file size limit for bots is 8MB for most cases, using 25MB limit for Nitro boosted servers
+                                    if (fileSizeInBytes <= fileSizeLimit)
                                     {
                                         using FileStream fs = new(localFilePath, FileMode.Open, FileAccess.Read);
                                         try

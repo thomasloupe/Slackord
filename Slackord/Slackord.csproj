@@ -24,6 +24,8 @@
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
+		<AssemblyVersion>4.3.6.0</AssemblyVersion>
+		<FileVersion>4.3.6.0</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -84,9 +86,9 @@
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>4.3.5</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>4.3.5</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
 	</PropertyGroup>
 </Project>
