@@ -43,5 +43,6 @@ If you're looking for a great way to archive your Slack history, I recommend [Sl
 
 # Important: Please Read!
 1. If you need help, please feel free to join the Discord community listed at the top of this page, or open a new issue if it doesn't already exist.
+1. Slackord is targeted for Windows 11. If you use Windows 10, Slackord may not work the way you desire, or at all. 
 1. If you have a very large Slack server to import, it's much better to import a single channel, rather than the entire server. "Large servers" by Slackord's definition would be Slack imports that have more than 400+ JSON files to parse in total, either by single channel or across the entire server.
 1. Slackord is free, and it will always be free. However, if you found Slackord worth donating something, you can donate from within Slackord by clicking Donate inside Slackord, or you can sponsor Slackord at the top of this repository by clicking the heart (sponsor) button. You can also [click here](https://paypal.me/thomasloupe) (PayPal) to donate directly to me.
