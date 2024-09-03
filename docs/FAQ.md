@@ -24,3 +24,9 @@ A: If you'd like to contribute to Slackord, you can raise an issue about the con
 
 ### Q: I see repeating questions in Discord, can I assist answering them?
 A: Yes, feel free to do so within the Discord code of conduct. **You can point straight to the FAQ** for repeating questions with a link.
+
+### Q: I see "The application did not respond" in the Discord client. What's wrong?
+A: This is an automated timeout in discord and generally can be ignored. It may also indicate that the local Slackord client cannot be contacted - make sure it's still running. 
+
+### Q: What causes Rate Limiting messages in the Slackord app, what's happening?
+A: You can safely ignore this. This is rate limiting on the Discord API, caused by traffic on the API itself. The Slackord client retries automatically.
