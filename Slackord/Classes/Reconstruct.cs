@@ -41,35 +41,38 @@ namespace Slackord.Classes
         {
             try
             {
-                // Iterate through each channel.
                 foreach (Channel channel in channels)
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nDeconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    var resumeData = ResumeData.LoadResumeData().FirstOrDefault(rd => rd.ChannelName == channel.Name);
+                    int startMessageIndex = resumeData?.LastMessagePosition + 1 ?? 0;
 
-                    // Iterate through each deconstructed message in the channel.
-                    foreach (DeconstructedMessage deconstructedMessage in channel.DeconstructedMessagesList)
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nDeconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+
+                    for (int i = startMessageIndex; i < channel.DeconstructedMessagesList.Count; i++)
                     {
-                        // Check if cancellation is requested.
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        // Reconstruct message for Discord.
+                        DeconstructedMessage deconstructedMessage = channel.DeconstructedMessagesList[i];
                         await ReconstructMessage(deconstructedMessage, channel);
+
+                        // Update resume data
+                        resumeData.LastMessagePosition = i;
+                        ResumeData.SaveResumeData(ResumeData.LoadResumeData());
                     }
 
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
                 }
 
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"All channels have been successfully deconstructed and reconstructed for Discord!\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"All channels have been successfully deconstructed and reconstructed for Discord!\n"); });
                 await Task.CompletedTask;
             }
             catch (OperationCanceledException)
             {
-                // Handle the cancellation.
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): Reconstruction operation was cancelled.\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): Reconstruction operation was cancelled.\n"); });
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n\n"); });
             }
         }
 
