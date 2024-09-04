@@ -76,7 +76,7 @@ namespace Slackord.Classes
             }
         }
 
-        private static async Task ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
+        public static async Task ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
         {
             try
             {

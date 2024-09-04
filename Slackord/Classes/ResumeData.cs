@@ -36,58 +36,64 @@ namespace Slackord.Classes
             return await MainPage.Current.DisplayAlert("Resume Import", $"This channel '{channelName}' has not finished importing to Discord. Would you like to resume?", "Yes", "No");
         }
 
-        public static void InitializeChannelForResume(Channel channel, ResumeData resumeData)
+        public static async Task InitializeChannelForResume(Channel channel, ResumeData resumeData)
         {
             // Set the Discord channel ID based on resume data
             channel.DiscordChannelId = resumeData.ChannelIdUlong;
 
-            // Check if the channel has already been reconstructed
+            // Proceed with reconstruction and posting if needed
             if (resumeData.Reconstructed)
             {
-                // Check if the channel's deconstructed messages list is populated
-                if (channel.DeconstructedMessagesList == null || channel.DeconstructedMessagesList.Count == 0)
-                {
-                    // Reload or reinitialize the list of deconstructed messages if needed
-                    channel.DeconstructedMessagesList = LoadDeconstructedMessagesForChannel(channel.Name);
-                }
+                // Messages are already deconstructed and ready to be reconstructed
+                await ReconstructMessages(channel, resumeData);
             }
             else
             {
-                // Deconstruct messages if not already reconstructed
-                channel.DeconstructedMessagesList = new List<DeconstructedMessage>();
-                foreach (var messageJson in FetchMessagesJsonForChannel(channel.Name))
-                {
-                    DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(messageJson);
-                    channel.DeconstructedMessagesList.Add(deconstructedMessage);
-                }
-                resumeData.Reconstructed = true; // Mark as reconstructed
+                // Deconstruct messages first
+                DeconstructMessages(channel);
+                resumeData.Reconstructed = true;
+                SaveResumeData(LoadResumeData()); // Save the updated state
+                await ReconstructMessages(channel, resumeData);
             }
+        }
 
-            // Check if the channel was partially posted to Discord
-            if (!resumeData.ImportedToDiscord)
+        private static void DeconstructMessages(Channel channel)
+        {
+            // Fetch messages and deconstruct them
+            foreach (var messageJson in FetchMessagesJsonForChannel(channel.Name))
             {
-                // Calculate the start position to the last successfully posted message + 1
-                int startPosition = resumeData.LastMessagePosition + 1;
-
-                // Logic to handle setting up the state for importing remaining messages
-                // Reset progress bar or any relevant UI elements
-                ApplicationWindow.ResetProgressBar();
-                ApplicationWindow.UpdateProgressBar(startPosition, channel.DeconstructedMessagesList.Count, "messages");
-
-                // Use startPosition to resume from the correct place in the DeconstructedMessagesList
-                // This might be passed to a method that starts posting messages to Discord
+                DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(messageJson);
+                channel.DeconstructedMessagesList.Add(deconstructedMessage);
             }
         }
 
-        private static List<DeconstructedMessage> LoadDeconstructedMessagesForChannel(string _channelName)
+        private static async Task ReconstructMessages(Channel channel, ResumeData resumeData)
         {
-            // Implement logic to load deconstructed messages from storage or regenerate them
-            return new List<DeconstructedMessage>(); // Placeholder
+            int startPosition = resumeData.LastMessagePosition + 1;
+            ApplicationWindow.UpdateProgressBar(startPosition, channel.DeconstructedMessagesList.Count, "messages");
+
+            for (int i = startPosition; i < channel.DeconstructedMessagesList.Count; i++)
+            {
+                // Process each message
+                var deconstructedMessage = channel.DeconstructedMessagesList[i];
+                await Reconstruct.ReconstructMessage(deconstructedMessage, channel);
+
+                // Update the resume state
+                resumeData.LastMessagePosition = i;
+                SaveResumeData(LoadResumeData());
+            }
+
+            // Mark as complete if all messages are posted
+            if (resumeData.LastMessagePosition == channel.DeconstructedMessagesList.Count - 1)
+            {
+                resumeData.ImportedToDiscord = true;
+                SaveResumeData(LoadResumeData());
+            }
         }
 
-        private static List<JObject> FetchMessagesJsonForChannel(string _channelName)
+        private static List<JObject> FetchMessagesJsonForChannel(string channelName)
         {
-            // Implement logic to fetch raw JSON messages for the channel
+            // Logic to fetch raw JSON messages for the channel
             return new List<JObject>(); // Placeholder
         }
     }
