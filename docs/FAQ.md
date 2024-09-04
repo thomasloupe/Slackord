@@ -16,11 +16,13 @@ A: Visit the `docs` directory in the root of the github repository containing:
 ### How do I get started with Slackord?
 A: Start using Slackord by visiting the [README](../README.md).
 
-## Q: How do I contribute to Slackord?
+### Q: How do I contribute to Slackord?
 A: If you'd like to contribute to Slackord, you can raise an issue about the contribution, then create a PR and link it to your issue for review.
 
 ### Q: I see repeating questions in Discord, can I assist answering them?
-A: Yes, feel free to do so within the Discord code of conduct. **You can point straight to the FAQ** for repeating questions with a link.
+A: Yes, feel free to do so within the Discord code of conduct, or use a link to this FAQ when it's applicable to the question.
+
+## Technical questions     
 
 ### Q: I see `The application did not respond` in my Discord channel. What's wrong?
 A: This is either an automated timeout in discord (20 minutes) and can be ignored or, it may indicate that Discord can't reach the local Slackord client - make sure it's still running and connected. 
