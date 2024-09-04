@@ -64,7 +64,7 @@ namespace Slackord.Classes
                         if (shouldResume)
                         {
                             // Initialize from resume state using the method in ResumeData class
-                            ResumeData.InitializeChannelForResume(channel, resumeData);
+                            await ResumeData.InitializeChannelForResume(channel, resumeData);
                         }
                     }
                 }

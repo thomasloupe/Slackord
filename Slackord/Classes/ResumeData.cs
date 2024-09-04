@@ -94,7 +94,7 @@ namespace Slackord.Classes
         private static List<JObject> FetchMessagesJsonForChannel(string channelName)
         {
             // Logic to fetch raw JSON messages for the channel
-            return new List<JObject>(); // Placeholder
+            return new List<JObject>();
         }
     }
 }
