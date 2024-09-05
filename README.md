@@ -26,13 +26,14 @@ If you're looking for a great way to archive your Slack history, I recommend [Sl
 1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release and extract the contents.
 2. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
 3. Name your bot "Slackord", or any preferred custom name.
-4. Select "Bot" from the left panel, and upload an image for your bot if desired.
-5. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
-6. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
-7. Join the bot into your desired server using the link generated.
-8. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
-9. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
-10. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
+4. On the "Installation" page, uncheck "User Install", and select "None" for the "Install Link" and save your changes.
+5. Select "Bot" from the left panel, and upload an image for your bot if desired.
+6. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. In "BOT PERMISSIONS", set the bot's permissions to "Administrator". This allows Slackord to post to private channels, too.
+7. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser.
+8. Join the bot into your desired server using the link generated.
+9. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
+10. Ensure that both "PUBLIC BOT" and "REQUIRES OAUTH2 CODE GRANT" sliders are turned off.
+11. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
 
 # Running Slackord
 1. Run Slackord.
