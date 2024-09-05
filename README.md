@@ -36,7 +36,7 @@ If you're looking for a great way to archive your Slack history, I recommend [Sl
 11. In "Privileged Gateway Intents", tick the slider to enable "MESSAGE CONTENT INTENT".
 
 # Running Slackord
-1. Run Slackord.
+1. Run Slackord. You may need to install the latest .NET8 framework [here](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-8.0.8-windows-x64-installer).
 1. Click `Set Bot Token` and paste the copied token into the popup text field. Slackord will remember your token if you close it.
 1. Click `Connect` to connect the bot to your server.
 1. Click `Import Server` and select the Slack JSON chat history root folder, or `Import Channel` and select the channel folder.
