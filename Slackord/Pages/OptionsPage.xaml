@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Slackord.Pages.OptionsPage"
+             Title="Slackord Options">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15" MaximumWidthRequest="800">
+            <Label Text="Options" FontSize="24" FontAttributes="Bold" Margin="0,0,0,10"/>
+
+            <!-- UI Format Section -->
+            <Frame BorderColor="LightGray" Padding="15" Margin="0,10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Message Format Settings" FontSize="18" FontAttributes="Bold"/>
+
+                    <Label Text="User Format" Margin="0,5,0,0"/>
+                    <Picker x:Name="UserFormatPicker" Title="The order in which Slackord should prioritize users to be mentioned in posts">
+                        <Picker.Items>
+                            <x:String>Display Name > User > Real Name</x:String>
+                            <x:String>Display Name > Real Name > User</x:String>
+                            <x:String>User > Display Name > Real Name</x:String>
+                            <x:String>User > Real Name > Display Name</x:String>
+                            <x:String>Real Name > Display Name > User</x:String>
+                            <x:String>Real Name > User > Display Name</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <Label Text="Timestamp Format" Margin="0,5,0,0"/>
+                    <Picker x:Name="TimestampFormatPicker" Title="The hour format Slackord will use when recreating posts">
+                        <Picker.Items>
+                            <x:String>12 Hour</x:String>
+                            <x:String>24 Hour</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Discord Bot Settings -->
+            <Frame BorderColor="LightGray" Padding="15" Margin="0,10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Discord Bot Settings" FontSize="18" FontAttributes="Bold"/>
+
+                    <Label Text="Bot Token" Margin="0,5,0,0"/>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Entry x:Name="BotTokenEntry" Placeholder="Enter your Discord bot token" IsPassword="True" Grid.Column="0"/>
+                        <Button Text="Reveal" Clicked="ToggleTokenVisibility_Clicked" Grid.Column="1" Margin="5,0,0,0"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Update Settings -->
+            <Frame BorderColor="LightGray" Padding="15" Margin="0,10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Update Settings" FontSize="18" FontAttributes="Bold"/>
+
+                    <HorizontalStackLayout>
+                        <Label Text="Check for Updates on Startup" VerticalOptions="Center" Margin="0,0,10,0"/>
+                        <Switch x:Name="CheckUpdatesSwitch" IsToggled="True" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Button Row -->
+            <Grid ColumnDefinitions="*, *, *" Margin="0,20,0,0">
+                <Button Text="Save" Clicked="SaveButton_Clicked" BackgroundColor="#4CAF50" TextColor="White" Grid.Column="0" WidthRequest="150"/>
+                <Button Text="Reset" Clicked="ResetButton_Clicked" BackgroundColor="#FF5722" TextColor="White" Grid.Column="1" WidthRequest="150"/>
+                <Button Text="Cancel" Clicked="CancelButton_Clicked" BackgroundColor="#607D8B" TextColor="White" Grid.Column="2" WidthRequest="150"/>
+            </Grid>
+
+            <!-- Footer -->
+            <HorizontalStackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,50,0,0">
+                <Button x:Name="About" Text="About" Clicked="About_Clicked" FontAttributes="Bold" FontSize="Micro" WidthRequest="200"/>
+                <Button x:Name="Donate" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" FontSize="Micro" WidthRequest="200" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Label 
+        Text="Join the Slackord Community Discord server for support and information on future updates!" 
+        FontSize="14" 
+        HorizontalOptions="Center" 
+        TextDecorations="Underline"
+        TextColor="Orange">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer 
+                Tapped="OnLabelClicked" 
+                NumberOfTapsRequired="1" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

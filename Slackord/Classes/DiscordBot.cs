@@ -80,7 +80,8 @@ namespace Slackord.Classes
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await ApplicationWindow.ToggleBotTokenEnable(true, new Microsoft.Maui.Graphics.Color(255, 69, 0));
+                // Updated to match new signature (removed color parameter)
+                await ApplicationWindow.ToggleBotTokenEnable(true);
                 await ApplicationWindow.ChangeBotConnectionButton("Disconnected", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                 await Task.CompletedTask;
             });
@@ -141,8 +142,9 @@ namespace Slackord.Classes
             try
             {
                 await ApplicationWindow.ChangeBotConnectionButton("Connected", new Microsoft.Maui.Graphics.Color(0, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
-                await ApplicationWindow.ToggleBotTokenEnable(false, new Microsoft.Maui.Graphics.Color(128, 128, 128));
-                MainPage.BotConnectionButtonInstance.BackgroundColor = new Microsoft.Maui.Graphics.Color(0, 255, 0);
+                // Updated to match new signature (removed color parameter)
+                await ApplicationWindow.ToggleBotTokenEnable(false);
+                MenuApp.MainPage.BotConnectionButtonInstance.BackgroundColor = new Microsoft.Maui.Graphics.Color(0, 255, 0);
 
                 foreach (SocketGuild guild in DiscordClient.Guilds)
                 {
@@ -246,6 +248,43 @@ namespace Slackord.Classes
             }
         }
 
+        private static void RecordSuccessfulMessage(Channel channel, ReconstructedMessage message)
+        {
+            try
+            {
+                // Only record if resume is enabled
+                if (Preferences.Default.Get("EnableResumeImport", true))
+                {
+                    string importType = ImportJson.Channels.Count > 1 ? "Full" : "Channel";
+
+                    // Save the resume state
+                    Preferences.Default.Set("LastImportType", importType);
+                    Preferences.Default.Set("LastImportChannel", channel.Name);
+                    Preferences.Default.Set("LastSuccessfulMessageTimestamp", message.OriginalTimestamp);
+                    Preferences.Default.Set("HasPartialImport", true);
+
+                    // We can't set ImportJson.RootFolderPath directly, but we can save the path
+                    if (!string.IsNullOrEmpty(ImportJson.RootFolderPath))
+                    {
+                        Preferences.Default.Set("LastImportFolderPath", ImportJson.RootFolderPath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"Error recording successful message: {ex.Message}");
+            }
+        }
+
+        private static void ClearResumeState()
+        {
+            // Clear the resume state
+            Preferences.Default.Set("LastImportType", string.Empty);
+            Preferences.Default.Set("LastImportChannel", string.Empty);
+            Preferences.Default.Set("LastSuccessfulMessageTimestamp", string.Empty);
+            Preferences.Default.Set("HasPartialImport", false);
+        }
+
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
@@ -280,6 +319,7 @@ namespace Slackord.Classes
 
             Dictionary<string, RestThreadChannel> threadStartsDict = new();
             int messagesPosted = 0;
+            bool errorOccurred = false;
             ApplicationWindow.ResetProgressBar();
 
             foreach (Channel channel in ImportJson.Channels)
@@ -306,6 +346,9 @@ namespace Slackord.Classes
                                 IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
                                 RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneHour, threadMessages.First());
                                 threadStartsDict[message.ParentThreadTs] = threadID;
+
+                                // Record successful message
+                                RecordSuccessfulMessage(channel, message);
                             }
                             else if (message.ThreadType == ThreadType.Reply)
                             {
@@ -326,6 +369,9 @@ namespace Slackord.Classes
 
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, threadId: threadIdForReply);
 
+                                // Record successful message
+                                RecordSuccessfulMessage(channel, message);
+
                                 if (shouldArchiveThreadBack)
                                 {
                                     try
@@ -342,6 +388,9 @@ namespace Slackord.Classes
                             else
                             {
                                 await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
+
+                                // Record successful message
+                                RecordSuccessfulMessage(channel, message);
                             }
 
                             // Pin message.
@@ -405,13 +454,43 @@ namespace Slackord.Classes
                         }
                         catch (OperationCanceledException)
                         {
+                            errorOccurred = true;
                             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Posting messages cancelled.\n"); });
-                            return;
+                            break;
                         }
                         catch (Exception ex)
                         {
+                            errorOccurred = true;
                             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord(): {ex.Message}\n"); });
+
+                            // Offer to retry or resume later
+                            bool shouldRetry = await MainPage.Current.DisplayAlert(
+                                "Error Posting Message",
+                                $"An error occurred while posting a message: {ex.Message}\n\nWould you like to retry posting this message?",
+                                "Retry", "Stop");
+
+                            if (shouldRetry)
+                            {
+                                // Retry the current message by decrementing the loop counter
+                                // This will process the same message again
+                                continue;
+                            }
+                            else
+                            {
+                                // Save the current state for resume
+                                RecordSuccessfulMessage(channel, message);
+                                await MainPage.Current.DisplayAlert(
+                                    "Import Paused",
+                                    "The import process has been paused. You can resume it later by restarting Slackord.",
+                                    "OK");
+                                break;
+                            }
                         }
+                    }
+
+                    if (errorOccurred)
+                    {
+                        break;
                     }
 
                     await webhook.DeleteAsync();
@@ -420,9 +499,23 @@ namespace Slackord.Classes
                 {
                     _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Discord channel not found for channel: {channel.Name}\n"); });
                 }
+
+                if (errorOccurred)
+                {
+                    break;
+                }
             }
 
-            _ = await interaction.FollowupAsync("All messages sent to Discord successfully!");
+            if (!errorOccurred)
+            {
+                // All messages were posted successfully, clear resume state
+                ClearResumeState();
+                _ = await interaction.FollowupAsync("All messages sent to Discord successfully!");
+            }
+            else
+            {
+                _ = await interaction.FollowupAsync("Message sending was interrupted. You can resume the process later.");
+            }
         }
     }
 }
