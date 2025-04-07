@@ -101,4 +101,9 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
 	</PropertyGroup>
+	<PropertyGroup>
+	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.26100.0</TargetFrameworks>
+	  <AssemblyVersion>4.5</AssemblyVersion>
+	  <FileVersion>4.5</FileVersion>
+	</PropertyGroup>
 </Project>

@@ -19,23 +19,22 @@ namespace Slackord.Classes
             TotalHiddenFileCount = 0;
             ApplicationWindow.ResetProgressBar();
 
+            // Load resume data
+            List<ResumeData> resumeDataList = ResumeData.LoadResumeData();
+
             try
             {
                 FolderPickerResult picker = await FolderPicker.Default.PickAsync(cancellationToken);
 
-                // Check if picker is null or if its Folder property is null.
                 if (picker == null || picker.Folder == null)
                 {
-                    // Check if the cancellation was requested
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        // Log the cancellation message
-                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Folder selection was cancelled.\n"); });
+                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Folder selection was cancelled.\n"); });
                         return;
                     }
                     else
                     {
-                        // Import was cancelled
                         return;
                     }
                 }
@@ -43,6 +42,7 @@ namespace Slackord.Classes
                 string folderPath = picker.Folder.Path;
                 RootFolderPath = folderPath;
                 Dictionary<string, DeconstructedUser> usersDict = null;
+
                 if (!string.IsNullOrEmpty(folderPath))
                 {
                     (List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict) result = await ConvertAsync(isFullExport, folderPath, cancellationToken);
@@ -50,24 +50,38 @@ namespace Slackord.Classes
                     usersDict = result.UsersDict;
                 }
 
-                // Populate UsersDict in Reconstruct before calling ReconstructAsync.
+                // Initialize UsersDict in Reconstruct
                 Reconstruct.InitializeUsersDict(usersDict);
 
-                // This checks whether any folder was selected and whether any channels were deconstructed.
+                // Check for channels to resume
+                foreach (var channel in Channels)
+                {
+                    var resumeData = resumeDataList.FirstOrDefault(rd => rd.ChannelName == channel.Name);
+                    if (resumeData != null && !resumeData.ImportedToDiscord)
+                    {
+                        // Ask if we should resume channel importing to Discord
+                        bool shouldResume = await ResumeData.AskUserToResumeChannel(resumeData.ChannelName);
+                        if (shouldResume)
+                        {
+                            // Initialize from resume state using the method in ResumeData class
+                            await ResumeData.InitializeChannelForResume(channel, resumeData);
+                        }
+                    }
+                }
+
+                // Proceed with reconstruction and import to Discord
                 if (!string.IsNullOrEmpty(RootFolderPath) && Channels.Count != 0)
                 {
-                    // Call ReconstructAsync to reconstruct messages for Discord.
                     await Reconstruct.ReconstructAsync(Channels, cancellationToken);
 
-                    // Write the total count of hidden files to the debug window.
                     if (TotalHiddenFileCount > 0)
                     {
-                        _ = Application.Current.Dispatcher.Dispatch(() =>
+                        Application.Current.Dispatcher.Dispatch(() =>
                         {
                             ApplicationWindow.WriteToDebugWindow($"Total files hidden by Slack due to limits: {TotalHiddenFileCount}\n");
                         });
                     }
-
+                  
                     // Count threads per channel and display the results
                     Dictionary<string, int> channelThreadCounts = CountThreadsPerChannel();
                     DisplayThreadCounts(channelThreadCounts);
@@ -75,12 +89,11 @@ namespace Slackord.Classes
             }
             catch (OperationCanceledException)
             {
-                // Handle the cancellation exception
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Import operation was cancelled.\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Import operation was cancelled.\n"); });
             }
             catch (Exception ex)
             {
-                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ImportJsonAsync() : {ex.Message}\n"); });
+                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ImportJsonAsync() : {ex.Message}\n"); });
                 return;
             }
         }

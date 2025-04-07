@@ -5,6 +5,7 @@ using Discord.Rest;
 using Discord.Webhook;
 using Discord.WebSocket;
 using MenuApp;
+using System.Collections.Concurrent;
 
 namespace Slackord.Classes
 {
@@ -16,6 +17,7 @@ namespace Slackord.Classes
         public Dictionary<ulong, RestTextChannel> CreatedChannels { get; set; } = new Dictionary<ulong, RestTextChannel>();
         private DiscordBot() { }
         private CancellationTokenSource _cancellationTokenSource;
+        private static readonly ConcurrentDictionary<string, ResumeData> ResumeDataMap = new();
 
         public async Task StartClientAsync(string discordToken)
         {
@@ -98,6 +100,10 @@ namespace Slackord.Classes
                 ulong? guildId = command.GuildId;
                 await PostMessagesToDiscord((ulong)guildId, command);
             }
+            else if (command.Data.Name.Equals("resume"))
+            {
+                await HandleResumeCommandAsync(command);
+            }
         }
 
         public async Task MainAsync(string discordToken)
@@ -154,7 +160,13 @@ namespace Slackord.Classes
                                                 .WithName("slackord")
                                                 .WithDescription("Posts all parsed Slack JSON messages to the text channel the command came from.");
 
-                        _ = await guild.CreateApplicationCommandAsync(commandBuilder.Build());
+                        await guild.CreateApplicationCommandAsync(commandBuilder.Build());
+
+                        var resumeCommandBuilder = new SlashCommandBuilder()
+                            .WithName("resume")
+                            .WithDescription("Resume importing messages to a channel.");
+
+                        await guild.CreateApplicationCommandAsync(resumeCommandBuilder.Build());
                     }
                     catch (HttpException ex)
                     {
@@ -165,6 +177,65 @@ namespace Slackord.Classes
             catch (Exception ex)
             {
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nError encountered while creating slash command: {ex.Message}\n"); });
+            }
+        }
+
+        private async Task HandleResumeCommandAsync(SocketSlashCommand command)
+        {
+            // Find the current resume data in memory
+            var resumeData = ResumeDataMap.Values.FirstOrDefault(rd => !rd.ImportedToDiscord);
+
+            if (resumeData != null)
+            {
+                await ResumeChannelImport(command, resumeData);
+            }
+            else
+            {
+                await command.RespondAsync("No channels are pending resumption.");
+            }
+        }
+
+        private async Task ResumeChannelImport(SocketSlashCommand command, ResumeData resumeData)
+        {
+            var channel = ImportJson.Channels.FirstOrDefault(c => c.Name.Equals(resumeData.ChannelName, StringComparison.OrdinalIgnoreCase));
+            if (channel == null)
+            {
+                await command.RespondAsync($"Channel '{resumeData.ChannelName}' not found. Ensure it is imported first.");
+                return;
+            }
+
+            // Initialize the channel with the resume data
+            ResumeData.InitializeChannelForResume(channel, resumeData);
+
+            // Start posting messages from the stored position
+            int startPosition = resumeData.LastMessagePosition + 1;
+            var messagesToPost = channel.ReconstructedMessagesList.Skip(startPosition).ToList();
+
+            // Set progress bar based on the starting point
+            ApplicationWindow.UpdateProgressBar(startPosition, channel.ReconstructedMessagesList.Count, "messages");
+
+            // While posting messages
+            foreach (var message in messagesToPost)
+            {
+                // Post messages to Discord
+                await PostMessageToDiscord(channel.DiscordChannelId, message);
+
+                // Increment and update progress
+                startPosition++;
+                ApplicationWindow.UpdateProgressBar(startPosition, channel.ReconstructedMessagesList.Count, "messages");
+
+                // Update resume data
+                resumeData.LastMessagePosition = startPosition;
+            }
+
+            await command.RespondAsync($"Resumed import for channel '{resumeData.ChannelName}'.");
+        }
+
+        private async Task PostMessageToDiscord(ulong discordChannelId, ReconstructedMessage message)
+        {
+            if (DiscordClient.GetChannel(discordChannelId) is IMessageChannel discordChannel)
+            {
+                await discordChannel.SendMessageAsync(message.Content);
             }
         }
 
