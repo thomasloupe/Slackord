@@ -81,7 +81,8 @@ namespace Slackord.Classes
                             ApplicationWindow.WriteToDebugWindow($"Total files hidden by Slack due to limits: {TotalHiddenFileCount}\n");
                         });
                     }
-
+                  
+                    // Count threads per channel and display the results
                     Dictionary<string, int> channelThreadCounts = CountThreadsPerChannel();
                     DisplayThreadCounts(channelThreadCounts);
                 }

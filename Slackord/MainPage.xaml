@@ -26,23 +26,15 @@
 
                 <!-- Spacer -->
                 <Label WidthRequest="50"/>
-                
-                <Button x:Name="TimestampToggle" Text="Timestamp: " Clicked="Timestamp_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="200"/>
-                <Button x:Name="UserFormatToggle" Text="User Format: " Clicked="UserFormat_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="205"/>
+
+                <Button x:Name="Options" Text="Options" Clicked="Settings_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="200"/>
 
                 <!-- Spacer -->
                 <Label WidthRequest="50"/>
-                
-                <Button x:Name="EnterBotToken" Text="Set Bot Token" Clicked="EnterBotToken_Clicked" FontSize="Micro" FontAttributes="Bold"/>
                 <Button x:Name="BotConnectionButton" Text="Connect" Clicked="ToggleBotConnection_Clicked" FontSize="Micro" FontAttributes="Bold" WidthRequest="150"/>
 
                 <!-- Spacer -->
                 <Label WidthRequest="50"/>
-
-                <!-- Button Group 2 -->
-                <Button x:Name="CheckForUpdates" Text="Update Check" Clicked="CheckForUpdates_Clicked" FontAttributes="Bold" FontSize="Micro" />
-                <Button x:Name="About" Text="About" Clicked="About_Clicked" FontAttributes="Bold" FontSize="Micro" />
-                <Button x:Name="Donate" Text="Donate" Clicked="Donate_Clicked" FontAttributes="Bold" FontSize="Micro" />
             </StackLayout>
         </Grid>
 

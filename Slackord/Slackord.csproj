@@ -9,11 +9,12 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>11</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<ApplicationTitle>Slackord</ApplicationTitle>
 		<ApplicationId>com.thomasloupe.slackord</ApplicationId>
 		<ApplicationIdGuid>9c3974ab-37d1-4859-8f7c-aa1c453b5b00</ApplicationIdGuid>
-		<ApplicationDisplayVersion>4.3.2</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>4</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
@@ -24,6 +25,8 @@
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
+		<AssemblyVersion>4.3.6.0</AssemblyVersion>
+		<FileVersion>4.3.6.0</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -44,31 +47,34 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="8.0.0" />
-		<PackageReference Include="Discord.Net.Core" Version="3.14.1" />
-		<PackageReference Include="Discord.Net.Interactions" Version="3.14.1" />
-		<PackageReference Include="Discord.Net.Rest" Version="3.14.1" />
-		<PackageReference Include="Discord.Net.Webhook" Version="3.14.1" />
-		<PackageReference Include="Discord.Net.WebSocket" Version="3.14.1" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.0" />
+		<PackageReference Include="Discord.Net.Core" Version="3.15.0" />
+		<PackageReference Include="Discord.Net.Interactions" Version="3.15.0" />
+		<PackageReference Include="Discord.Net.Rest" Version="3.15.0" />
+		<PackageReference Include="Discord.Net.Webhook" Version="3.15.0" />
+		<PackageReference Include="Discord.Net.WebSocket" Version="3.15.0" />
 		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.14" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.14" />
-		<PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.14" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
-		<PackageReference Include="Octokit" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.40" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.40" />
+		<PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.40" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
+		<PackageReference Include="Octokit" Version="11.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">
-		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="8.0.14">
+		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="8.0.40">
 		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Update="Pages\OptionsPage.xaml.cs">
+		  <DependentUpon>OptionsPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -83,11 +89,17 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="Pages\OptionsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>4.3.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>4.3.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
 	</PropertyGroup>
 	<PropertyGroup>
 	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.26100.0</TargetFrameworks>

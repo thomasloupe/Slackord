@@ -1,5 +1,4 @@
 ﻿using Slackord.Classes;
-
 namespace MenuApp
 {
     public partial class MainPage : ContentPage
@@ -9,11 +8,7 @@ namespace MenuApp
         public static ProgressBar ProgressBarInstance { get; set; }
         public static Button BotConnectionButtonInstance { get; set; }
         public static Label ProgressBarTextInstance { get; set; }
-        public static Button EnterBotTokenButtonInstance { get; set; }
-        public static Button TimeStampButtonInstance { get; set; }
-        public static Button UserFormatButtonInstance { get; set; }
         private readonly ApplicationWindow applicationWindow;
-
         public MainPage()
         {
             InitializeComponent();
@@ -21,34 +16,41 @@ namespace MenuApp
             {
                 throw new InvalidOperationException("Too many windows.");
             }
-
             DebugWindowInstance = DebugWindow;
             ProgressBarInstance = ProgressBar;
             BotConnectionButtonInstance = BotConnectionButton;
             ProgressBarTextInstance = ProgressBarText;
-            EnterBotTokenButtonInstance = EnterBotToken;
-            TimeStampButtonInstance = TimestampToggle;
-            UserFormatButtonInstance = UserFormatToggle;
             ProgressBarTextInstance.IsVisible = false;
             ProgressBarInstance.IsVisible = false;
             Current = this;
             applicationWindow = new ApplicationWindow();
-
             Loaded += MainPage_Loaded;
         }
-
         private void MainPage_Loaded(object sender, EventArgs e)
         {
             _ = Initialize().ConfigureAwait(false);
         }
-
         private async Task Initialize()
         {
-            applicationWindow.CheckForFirstRun();
-            await ApplicationWindow.CheckForNewVersion();
+            // First run check
+            ApplicationWindow.CheckForFirstRun();
+
+            // Only check for updates if the setting is enabled
+            bool checkForUpdatesOnStartup = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
+            if (checkForUpdatesOnStartup)
+            {
+                await ApplicationWindow.CheckForNewVersion(true);
+            }
+
+            // Check for valid bot token
             await applicationWindow.CheckForValidBotToken();
+
+            // Get application settings (but don't duplicate output)
             await ApplicationWindow.GetTimeStampValue();
             await ApplicationWindow.GetUserFormatValue();
+
+            // Check for partial imports - use the static method directly
+            await ApplicationWindow.CheckForPartialImport();
         }
 
         private void ImportServer_Clicked(object sender, EventArgs e)
@@ -63,44 +65,9 @@ namespace MenuApp
             _ = applicationWindow.ImportJsonAsync(false);
         }
 
-        private void EnterBotToken_Clicked(object sender, EventArgs e)
-        {
-            _ = applicationWindow.CreateBotTokenPrompt().ConfigureAwait(false);
-        }
-
         private void ToggleBotConnection_Clicked(object sender, EventArgs e)
         {
             _ = applicationWindow.ToggleDiscordConnection().ConfigureAwait(false);
-        }
-
-        private void Timestamp_Clicked(object sender, EventArgs e)
-        {
-            _ = ApplicationWindow.SetTimestampValue().ConfigureAwait(false);
-        }
-
-        private void UserFormat_Clicked(object sender, EventArgs e)
-        {
-            _ = ApplicationWindow.SetUserFormatValue().ConfigureAwait(false);
-        }
-
-        private void CheckForUpdates_Clicked(object sender, EventArgs e)
-        {
-            _ = ApplicationWindow.CheckForNewVersion().ConfigureAwait(true);
-        }
-
-        private void About_Clicked(object sender, EventArgs e)
-        {
-            ApplicationWindow.DisplayAbout();
-        }
-
-        private void Donate_Clicked(object sender, EventArgs e)
-        {
-            _ = ApplicationWindow.CreateDonateAlert().ConfigureAwait(false);
-        }
-
-        private void Exit_Clicked(object sender, EventArgs e)
-        {
-            _ = ApplicationWindow.ExitApplication().ConfigureAwait(false);
         }
 
         private void CopyLog_Clicked(object sender, EventArgs e)
@@ -118,6 +85,11 @@ namespace MenuApp
             ImportJson.Channels.Clear();
             ImportJson.TotalHiddenFileCount = 0;
             ApplicationWindow.ResetProgressBar();
+        }
+
+        private async void Settings_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new Slackord.Pages.OptionsPage());
         }
     }
 }

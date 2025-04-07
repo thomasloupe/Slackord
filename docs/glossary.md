@@ -1,16 +1,28 @@
-# Slackord glossary
+# Slackord Glossary
 
-Slackord
-: `Slack` to Disc`ord` bridge
+`.NET`    
+.NET is a secure, reliable, and high-performance application platform. C# is the programming language for .NET. It's strongly-typed and type-safe.
 
-Discord bot
-: A program that automates tasks and interacts with users on Discord, a chat platform.
+`Discord bot`    
+: A program that automates tasks and interacts with users on Discord using [Discord.NET](https://github.com/discord-net/Discord.Net/).
 
-OAuth2
-: A security protocol that allows apps to access user data from other services, like logging in with Google.
+`Export`    
+The messages saved in JSON format you use to import into Slackord.
 
-JSON 
-: Is a text-based format used to store and exchange data, often used in web and mobile apps.
+`Import`    
+The Slack JSON export you've imported into Slackord.
 
-Slackdump
-: Make a backup of your private and public slack messages, threads, files, and users locally.
+`JSON`    
+JavaScript Object Notation (JSON) is a text-based format for representing and exchanging data that can be read and written by both humans and machines. Slack uses this format in server export files.
+
+`OAuth2`    
+A security protocol that allows apps to access user data from other services, like logging in with Google.
+
+`Slackdump`    
+An application that makes a backup of your private and public slack messages, threads, files, and users locally. Available at https://github.com/rusq/slackdump.
+
+`Slackord`    
+`Slack` to Disc`ord` bridge.
+
+`MAUI`    
+.NET MAUI is a cross-platform framework for creating native mobile and desktop apps with C# and XAML.

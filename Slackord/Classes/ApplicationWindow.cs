@@ -1,15 +1,15 @@
 using Discord;
-using Slackord.Classes;
+using MenuApp;
 using System.Text;
 
-namespace MenuApp
+namespace Slackord.Classes
 {
     public class ApplicationWindow
     {
-        private static MainPage MainPageInstance => MainPage.Current;
+        private static MainPage MainPageInstance => MenuApp.MainPage.Current;
         private readonly DiscordBot _discordBot = DiscordBot.Instance;
         private CancellationTokenSource cancellationTokenSource;
-        private bool isFirstRun;
+        // Remove the isFirstRun field completely
         private bool hasValidBotToken;
         private string DiscordToken;
         private bool hasEverBeenConnected = false;
@@ -24,7 +24,7 @@ namespace MenuApp
             RealName_User_DisplayName
         }
 
-        public void CheckForFirstRun()
+        public static void CheckForFirstRun()
         {
             if (Preferences.Default.ContainsKey("FirstRun"))
             {
@@ -32,70 +32,60 @@ namespace MenuApp
                 {
                     WriteToDebugWindow("Welcome to Slackord!\n");
                     Preferences.Default.Set("FirstRun", false);
-                    isFirstRun = true;
                 }
                 else
                 {
                     MainPage.DebugWindowInstance.Text += "Welcome back to Slackord!\n";
-                    isFirstRun = false;
                 }
             }
             else
             {
                 Preferences.Default.Set("FirstRun", true);
-                isFirstRun = true;
                 WriteToDebugWindow("Welcome to Slackord!\n");
             }
         }
 
         public async Task CheckForValidBotToken()
         {
-            if (isFirstRun)
+            DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
+            if (DiscordToken.Length > 30)
             {
-                if (Preferences.Default.ContainsKey("SlackordBotToken"))
-                {
-                    DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
-                    if (DiscordToken.Length > 30)
-                    {
-                        await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(255, 69, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                        hasValidBotToken = true;
-                        WriteToDebugWindow("Slackord found an existing valid bot token, and will use it.\n");
-                    }
-                    else
-                    {
-                        await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                        hasValidBotToken = false;
-                        WriteToDebugWindow("""
-                            Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.
-
-                            """);
-                    }
-                }
-                else
-                {
-                    Preferences.Default.Set("SlackordBotToken", string.Empty);
-                    await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                    hasValidBotToken = false;
-                    WriteToDebugWindow("Please enter a valid bot token to enable bot connection.\n");
-                }
+                await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(255, 69, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+                hasValidBotToken = true;
+                WriteToDebugWindow("Slackord found and is using an existing Discord token!\n");
             }
             else
             {
-                DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
-                if (DiscordToken.Length > 30)
+                await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
+                hasValidBotToken = false;
+                WriteToDebugWindow("Slackord needs a valid Discord bot token. Please go to Options to enter your token.\n\n");
+            }
+        }
+
+        // Make CheckForPartialImport static to match how it's called in MainPage
+        public static async Task CheckForPartialImport()
+        {
+            bool hasPartialImport = Preferences.Default.Get("HasPartialImport", false);
+            bool enableResumeImport = Preferences.Default.Get("EnableResumeImport", true);
+
+            if (hasPartialImport && enableResumeImport)
+            {
+                string lastImportType = Preferences.Default.Get("LastImportType", string.Empty);
+                string lastImportChannel = Preferences.Default.Get("LastImportChannel", string.Empty);
+
+                bool shouldResume = await MenuApp.MainPage.Current.DisplayAlert(
+                    "Resume Import",
+                    $"A previous {(lastImportType == "Full" ? "server" : "channel")} import was interrupted. Would you like to resume from where it left off?",
+                    "Resume", "Start New");
+
+                if (shouldResume)
                 {
-                    await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(255, 69, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                    hasValidBotToken = true;
-                    WriteToDebugWindow("Slackord found an existing valid bot token, and will use it.\n");
+                    await ResumeImport.CheckForPartialImport();
                 }
                 else
                 {
-                    await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                    hasValidBotToken = false;
-                    WriteToDebugWindow("""
-                        Slackord tried to load your last token, but wasn't successful. Please re-enter a new, valid token.
-
-                        """);
+                    // User chose not to resume, clear the partial import state
+                    ResumeImport.ClearResumeState();
                 }
             }
         }
@@ -108,13 +98,9 @@ namespace MenuApp
             }
 
             string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
-            
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                MainPage.TimeStampButtonInstance.Text = "Timestamp: " + timestampValue;
-            });
+            WriteToDebugWindow($"Timestamp setting: {timestampValue}\n");
 
-            WriteToDebugWindow($"Current Timestamp setting is {timestampValue}. Messages sent to Discord will use this format.\n");
+            await Task.CompletedTask;
         }
 
         public static async Task SetTimestampValue()
@@ -122,13 +108,9 @@ namespace MenuApp
             string currentSetting = Preferences.Default.Get("TimestampValue", "12 Hour");
             string newSetting = currentSetting == "12 Hour" ? "24 Hour" : "12 Hour";
             Preferences.Default.Set("TimestampValue", newSetting);
-            
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                MainPage.TimeStampButtonInstance.Text = "Timestamp: " + newSetting;
-            });
-
             WriteToDebugWindow($"Timestamp setting changed to {newSetting}. Messages sent to Discord will use this format.\n");
+
+            await Task.CompletedTask;
         }
 
         public static async Task GetUserFormatValue()
@@ -140,19 +122,11 @@ namespace MenuApp
 
             string userFormatValue = Preferences.Default.Get("UserFormatValue", CurrentUserFormatOrder.ToString());
             UserFormatOrder currentSetting = Enum.Parse<UserFormatOrder>(userFormatValue);
-            
-            string shorthand = currentSetting.ToString().Replace("_", " > ")
-                                                        .Replace("DisplayName", "D")
-                                                        .Replace("User", "U")
-                                                        .Replace("RealName", "R");
-
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                MainPage.UserFormatButtonInstance.Text = "User Format: " + shorthand;
-            });
-
+            CurrentUserFormatOrder = currentSetting;
             string fullFormat = currentSetting.ToString().Replace("_", " > ");
-            WriteToDebugWindow($"Current User Format setting is {fullFormat}. Messages sent to Discord will use this format.\n");
+            WriteToDebugWindow($"User Format setting: {fullFormat}\n");
+
+            await Task.CompletedTask;
         }
 
         public static async Task SetUserFormatValue()
@@ -176,10 +150,12 @@ namespace MenuApp
 
         public async Task ImportJsonAsync(bool isFullExport)
         {
-            cancellationTokenSource = new CancellationTokenSource();
-            using CancellationTokenSource cts = new();
-            Interlocked.Exchange(ref cancellationTokenSource, cts)?.Cancel();
-            CancellationToken cancellationToken = cts.Token;
+            // Create a new cancellation token source
+            using var cts = new CancellationTokenSource();
+            // Use proper assignment to avoid the IDE0059 warning
+            cancellationTokenSource = cts;
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
             try
             {
                 await ImportJson.ImportJsonAsync(isFullExport, cancellationToken);
@@ -195,42 +171,19 @@ namespace MenuApp
             cancellationTokenSource?.Cancel();
         }
 
-        public async Task CreateBotTokenPrompt()
-        {
-            string discordToken = await MainPageInstance.DisplayPromptAsync("Enter Bot Token", "Please enter your bot's token:", "OK", "Cancel", maxLength: 90);
-
-            if (!string.IsNullOrEmpty(discordToken))
-            {
-                if (discordToken.Length >= 30)
-                {
-                    Preferences.Default.Set("SlackordBotToken", discordToken);
-                    DiscordToken = discordToken;
-                    await CheckForValidBotToken();
-                    if (hasValidBotToken)
-                    {
-                        WriteToDebugWindow("Slackord received a valid bot token. Bot connection is enabled!\n");
-                    }
-                    else
-                    {
-                        WriteToDebugWindow("Slackord received an invalid bot token. Please enter a valid token.\n");
-                    }
-
-                }
-                else
-                {
-                    Preferences.Default.Set("SlackordBotToken", string.Empty);
-                    await CheckForValidBotToken();
-                }
-            }
-        }
-
         public async Task ToggleDiscordConnection()
         {
             // Check for valid bot token before proceeding
             if (!hasValidBotToken)
             {
                 await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
-                WriteToDebugWindow("Your bot token doesn't look valid. Please enter a new, valid token.");
+                WriteToDebugWindow("Your bot token doesn't look valid. Please go to the Options page to enter a valid token.");
+
+                // Navigate to options page
+                if (Application.Current.MainPage is NavigationPage navPage)
+                {
+                    await navPage.PushAsync(new Slackord.Pages.OptionsPage());
+                }
                 return;
             }
 
@@ -288,14 +241,14 @@ namespace MenuApp
             }
         }
 
-        public static async Task CheckForNewVersion()
+        public static async Task CheckForNewVersion(bool isStartupCheck)
         {
-            await UpdateCheck.CheckForUpdates();
+            await UpdateCheck.CheckForUpdates(isStartupCheck);
         }
 
         public static void DisplayAbout()
         {
-            string currentVersion = Slackord.Classes.Version.GetVersion();
+            string currentVersion = Version.GetVersion();
             _ = MainPageInstance.DisplayAlert("", $@"
 Slackord {currentVersion}.
 Created by Thomas Loupe.
@@ -384,29 +337,32 @@ Would you like to open the donation page now?
             {
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Button button = MainPage.BotConnectionButtonInstance;
+                    var button = MainPage.BotConnectionButtonInstance;
                     button.Text = state;
-                    if (textColor != null)
-                    {
-                        button.TextColor = textColor;
-                    }
-
+                    button.TextColor = textColor;
                     button.BackgroundColor = backgroundColor;
                 });
             }
         }
 
-        public static async Task ToggleBotTokenEnable(bool isEnabled, Microsoft.Maui.Graphics.Color color)
+        // Modified to remove unused parameter
+        public static async Task ToggleBotTokenEnable(bool isEnabled)
         {
-            if (MainPage.Current is MainPage mainPage)
+            Preferences.Default.Set("BotTokenEnabled", isEnabled);
+
+            // If the OptionsPage is currently visible, we should update its UI
+            // Fix for CA1826 warning - use indexer instead of LastOrDefault() LINQ method
+            var navigationStack = Application.Current.MainPage?.Navigation?.NavigationStack;
+            if (navigationStack != null && navigationStack.Count > 0 &&
+                navigationStack[navigationStack.Count - 1] is Pages.OptionsPage optionsPage)
             {
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    MainPage.EnterBotTokenButtonInstance.BackgroundColor = color;
-                    MainPage.EnterBotTokenButtonInstance.IsEnabled = isEnabled;
+                    optionsPage.UpdateBotTokenEditability();
                 });
             }
-            return;
+
+            await Task.CompletedTask;
         }
 
         public static void ShowProgressBar()
