@@ -210,7 +210,7 @@ namespace Slackord.Pages
             }
             catch (Exception ex)
             {
-                Application.Current.MainPage.DisplayAlert("Error", $"Unable to open link: {ex.Message}", "OK");
+                Application.Current.Windows[0].Page.DisplayAlert("Error", $"Unable to open link: {ex.Message}", "OK");
             }
         }
     }

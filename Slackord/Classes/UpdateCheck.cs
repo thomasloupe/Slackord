@@ -1,6 +1,5 @@
 ﻿using MenuApp;
 using Octokit;
-using Slackord.Classes;
 
 namespace Slackord.Classes
 {
@@ -35,43 +34,43 @@ namespace Slackord.Classes
                     {
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
-                            MenuApp.MainPage.DebugWindowInstance.Text += $"""
-                            Current Version: {_currentVersion}
-                            Latest Version: {latest.TagName}
-                            You have the latest Slackord version!
+                            MainPage.DebugWindowInstance.Text += $"""
+                                Current Version: {_currentVersion}
+                                Latest Version: {latest.TagName}
+                                You have the latest Slackord version!
 
-                            """;
+                                """;
                         });
                     }
                     else
                     {
-                        await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
+                        await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
                     }
                 }
                 else if (_currentVersion != latest.TagName)
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        MenuApp.MainPage.DebugWindowInstance.Text += $"""
-                            Your Slackord version is out of date.
-                            Current Version: {_currentVersion}
-                            Latest Version: {latest.TagName}
-                            
-                            Release Notes:
-                            {latest.Body}
-                            Please consider upgrading at https://github.com/thomasloupe/Slackord/release/{latest.TagName}.
-                            
-                            """;
+                        MainPage.DebugWindowInstance.Text += $"""
+                                Your Slackord version is out of date.
+                                Current Version: {_currentVersion}
+                                Latest Version: {latest.TagName}
+                                
+                                Release Notes:
+                                {latest.Body}
+                                Please consider upgrading at https://github.com/thomasloupe/Slackord/release/{latest.TagName}.
+                                
+                                """;
                     });
-                    bool result = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert("Slackord Update Available!",
+                    bool result = await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert("Slackord Update Available!",
                         $@"A new version of Slackord is available!
-Current version: {_currentVersion}
-Latest version: {latest.TagName}
-        
-You are missing the following features and bug fixes:
-{latest.Body}
-It is highly recommended that you always have the latest version available.    
-Would you like to visit the download page?",
+    Current version: {_currentVersion}
+    Latest version: {latest.TagName}
+            
+    You are missing the following features and bug fixes:
+    {latest.Body}
+    It is highly recommended that you always have the latest version available.    
+    Would you like to visit the download page?",
                         "Yes", "No");
                     if (result)
                     {
@@ -85,7 +84,7 @@ Would you like to visit the download page?",
                 // Handle exceptions when checking for updates (e.g., no internet connection)
                 if (!isStartupCheck) // Only show error on manual check
                 {
-                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(
+                    await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert(
                         "Update Check Failed",
                         $"Could not check for updates: {ex.Message}",
                         "OK");

@@ -1,6 +1,4 @@
-﻿using Slackord.Classes;
-
-namespace Slackord.Classes
+﻿namespace Slackord.Classes
 {
     public class AppSettings
     {

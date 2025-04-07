@@ -73,7 +73,7 @@ namespace Slackord.Classes
                 string lastImportType = Preferences.Default.Get("LastImportType", string.Empty);
                 string lastImportChannel = Preferences.Default.Get("LastImportChannel", string.Empty);
 
-                bool shouldResume = await MenuApp.MainPage.Current.DisplayAlert(
+                bool shouldResume = await MainPage.Current.DisplayAlert(
                     "Resume Import",
                     $"A previous {(lastImportType == "Full" ? "server" : "channel")} import was interrupted. Would you like to resume from where it left off?",
                     "Resume", "Start New");
@@ -134,7 +134,7 @@ namespace Slackord.Classes
             try
             {
                 UserFormatOrder currentSetting = Enum.Parse<UserFormatOrder>(Preferences.Default.Get("UserFormatValue", CurrentUserFormatOrder.ToString()));
-                int nextSettingIndex = ((int)currentSetting + 1) % Enum.GetNames(typeof(UserFormatOrder)).Length;
+                int nextSettingIndex = ((int)currentSetting + 1) % Enum.GetNames<UserFormatOrder>().Length;
                 UserFormatOrder nextSetting = (UserFormatOrder)nextSettingIndex;
 
                 Preferences.Default.Set("UserFormatValue", nextSetting.ToString());
@@ -180,9 +180,9 @@ namespace Slackord.Classes
                 WriteToDebugWindow("Your bot token doesn't look valid. Please go to the Options page to enter a valid token.");
 
                 // Navigate to options page
-                if (Application.Current.MainPage is NavigationPage navPage)
+                if (Application.Current.Windows[0].Page is NavigationPage navPage)
                 {
-                    await navPage.PushAsync(new Slackord.Pages.OptionsPage());
+                    await navPage.PushAsync(new Pages.OptionsPage());
                 }
                 return;
             }
@@ -350,9 +350,7 @@ Would you like to open the donation page now?
         {
             Preferences.Default.Set("BotTokenEnabled", isEnabled);
 
-            // If the OptionsPage is currently visible, we should update its UI
-            // Fix for CA1826 warning - use indexer instead of LastOrDefault() LINQ method
-            var navigationStack = Application.Current.MainPage?.Navigation?.NavigationStack;
+            var navigationStack = Application.Current.Windows[0].Page?.Navigation?.NavigationStack;
             if (navigationStack != null && navigationStack.Count > 0 &&
                 navigationStack[navigationStack.Count - 1] is Pages.OptionsPage optionsPage)
             {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-namespace Slackord.Classes
+﻿namespace Slackord.Classes
 {
     public class Channel
     {

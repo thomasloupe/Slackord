@@ -14,7 +14,7 @@ namespace Slackord.Classes
         public static DiscordBot Instance { get; private set; } = new DiscordBot();
         public DiscordSocketClient DiscordClient { get; set; }
         public IServiceProvider _services;
-        public Dictionary<ulong, RestTextChannel> CreatedChannels { get; set; } = new Dictionary<ulong, RestTextChannel>();
+        public Dictionary<ulong, RestTextChannel> CreatedChannels { get; set; } = [];
         private DiscordBot() { }
         private CancellationTokenSource _cancellationTokenSource;
         private static readonly ConcurrentDictionary<string, ResumeData> ResumeDataMap = new();
@@ -205,7 +205,7 @@ namespace Slackord.Classes
             }
 
             // Initialize the channel with the resume data
-            ResumeData.InitializeChannelForResume(channel, resumeData);
+            await ResumeData.InitializeChannelForResume(channel, resumeData);
 
             // Start posting messages from the stored position
             int startPosition = resumeData.LastMessagePosition + 1;
@@ -388,7 +388,7 @@ namespace Slackord.Classes
                 _ => 8 * 1024 * 1024 // Default to 8 MB for non-boosted servers
             };
 
-            Dictionary<string, RestThreadChannel> threadStartsDict = new();
+            Dictionary<string, RestThreadChannel> threadStartsDict = [];
             int messagesPosted = 0;
             bool errorOccurred = false;
             ApplicationWindow.ResetProgressBar();
@@ -476,7 +476,7 @@ namespace Slackord.Classes
                             }
 
                             // Handle file uploads.
-                            List<string> localFilePaths = message.FileURLs.ToList(); // Convert to list for easy indexing
+                            List<string> localFilePaths = [.. message.FileURLs];
 
                             for (int i = 0; i < localFilePaths.Count; i++)
                             {
