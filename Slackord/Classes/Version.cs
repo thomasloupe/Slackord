@@ -4,7 +4,7 @@
     {
         public static string GetVersion()
         {
-            string version = "v4.4";
+            string version = "v5.0.0";
 
             return version;
         }
