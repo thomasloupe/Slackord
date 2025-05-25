@@ -17,7 +17,7 @@ namespace Slackord.Classes
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Slackord_Resume_Data.json");
             if (!File.Exists(filePath))
             {
-                return new List<ResumeData>();
+                return [];
             }
 
             string jsonData = File.ReadAllText(filePath);
@@ -91,10 +91,9 @@ namespace Slackord.Classes
             }
         }
 
-        private static List<JObject> FetchMessagesJsonForChannel(string channelName)
+        private static List<JObject> FetchMessagesJsonForChannel(string _channelName)
         {
-            // Logic to fetch raw JSON messages for the channel
-            return new List<JObject>();
+            return [];
         }
     }
 }

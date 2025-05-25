@@ -17,6 +17,7 @@ namespace Slackord.Classes
         public Dictionary<ulong, RestTextChannel> CreatedChannels { get; set; } = [];
         private DiscordBot() { }
         private CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource _discordOperationsCancellationTokenSource;
         private static readonly ConcurrentDictionary<string, ResumeData> ResumeDataMap = new();
 
         public async Task StartClientAsync(string discordToken)
@@ -65,6 +66,13 @@ namespace Slackord.Classes
             {
                 ApplicationWindow.WriteToDebugWindow($"Error while stopping the Discord client: {ex.Message}");
             }
+        }
+
+        public void CancelDiscordOperations()
+        {
+            // Cancel the operations
+            _discordOperationsCancellationTokenSource?.Cancel();
+            ApplicationWindow.WriteToDebugWindow("🛑 Discord operations cancellation requested - will stop after current message.\n");
         }
 
         public ConnectionState GetClientConnectionState()
@@ -359,20 +367,43 @@ namespace Slackord.Classes
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction)
         {
-            _cancellationTokenSource = new CancellationTokenSource();
-            CancellationToken cancellationToken = _cancellationTokenSource.Token;
+            // Check if we're ready for Discord import
+            if (!ProcessingManager.Instance.CanStartDiscordImport)
+            {
+                await interaction.RespondAsync($"❌ Cannot start Discord import. Current state: {ProcessingManager.GetDisplayText(ProcessingManager.Instance.CurrentState)}. " +
+                    "Please wait for message processing to complete before using this command.");
+                return;
+            }
+
+            ProcessingManager.Instance.SetState(ProcessingState.ImportingToDiscord);
+
+            // Create cancellation token that can be cancelled from UI
+            _discordOperationsCancellationTokenSource = new CancellationTokenSource();
+            CancellationToken cancellationToken = _discordOperationsCancellationTokenSource.Token;
 
             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord called with guildID: {guildID}\n"); });
             int totalMessagesToPost = ImportJson.Channels.Sum(channel => channel.ReconstructedMessagesList.Count);
-            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Total messages to send to Discord: {totalMessagesToPost}\n"); });
+            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Total messages to send to Discord: {totalMessagesToPost:N0}\n"); });
 
             try
             {
                 await interaction.DeferAsync();
+
+                // Pass cancellation token to channel reconstruction
+                cancellationToken.ThrowIfCancellationRequested();
                 await ReconstructSlackChannelsOnDiscord(guildID);
+            }
+            catch (OperationCanceledException)
+            {
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
+                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"🛑 Operation cancelled during channel setup.\n"); });
+                _ = await interaction.FollowupAsync("❌ Message posting was cancelled.");
+                await ApplicationWindow.OnOperationCancelled();
+                return;
             }
             catch (Exception ex)
             {
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
                 _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error: {ex.Message}\n"); });
                 _ = await interaction.FollowupAsync($"An exception was encountered while sending messages! The exception was:\n{ex.Message}");
                 return;
@@ -391,201 +422,249 @@ namespace Slackord.Classes
             Dictionary<string, RestThreadChannel> threadStartsDict = [];
             int messagesPosted = 0;
             bool errorOccurred = false;
+            bool wasCancelled = false;
             ApplicationWindow.ResetProgressBar();
 
-            foreach (Channel channel in ImportJson.Channels)
+            try
             {
-                if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
+                foreach (Channel channel in ImportJson.Channels)
                 {
-                    var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
-                    string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
-                    using var webhookClient = new DiscordWebhookClient(webhookUrl);
+                    // Check cancellation before each channel
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    foreach (ReconstructedMessage message in channel.ReconstructedMessagesList)
+                    if (CreatedChannels.TryGetValue(channel.DiscordChannelId, out RestTextChannel discordChannel))
                     {
-                        try
+                        var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
+                        string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
+                        using var webhookClient = new DiscordWebhookClient(webhookUrl);
+
+                        foreach (ReconstructedMessage message in channel.ReconstructedMessagesList)
                         {
+                            // CRITICAL: Check cancellation before EVERY message
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            ulong? threadIdForReply = null;
-                            bool shouldArchiveThreadBack = false;
-
-                            if (message.ThreadType == ThreadType.Parent)
+                            try
                             {
-                                string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" : message.Message.Length <= 20 ? message.Message : message.Message[..20];
-                                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
-                                IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
-                                RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneHour, threadMessages.First());
-                                threadStartsDict[message.ParentThreadTs] = threadID;
+                                ulong? threadIdForReply = null;
+                                bool shouldArchiveThreadBack = false;
 
-                                // Record successful message
-                                RecordSuccessfulMessage(channel, message);
-                            }
-                            else if (message.ThreadType == ThreadType.Reply)
-                            {
-                                if (threadStartsDict.TryGetValue(message.ParentThreadTs, out RestThreadChannel threadID))
+                                if (message.ThreadType == ThreadType.Parent)
                                 {
-                                    if (threadID.IsArchived)
+                                    string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" : message.Message.Length <= 20 ? message.Message : message.Message[..20];
+
+                                    // Pass cancellation token to Discord API calls
+                                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, options: new RequestOptions { CancelToken = cancellationToken });
+
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    IEnumerable<RestMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
+
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    RestThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread, ThreadArchiveDuration.OneHour, threadMessages.First(), options: new RequestOptions { CancelToken = cancellationToken });
+                                    threadStartsDict[message.ParentThreadTs] = threadID;
+
+                                    // Record successful message
+                                    RecordSuccessfulMessage(channel, message);
+                                }
+                                else if (message.ThreadType == ThreadType.Reply)
+                                {
+                                    if (threadStartsDict.TryGetValue(message.ParentThreadTs, out RestThreadChannel threadID))
                                     {
-                                        await threadID.ModifyAsync(properties => properties.Archived = false);
-                                        shouldArchiveThreadBack = true;
+                                        if (threadID.IsArchived)
+                                        {
+                                            cancellationToken.ThrowIfCancellationRequested();
+                                            await threadID.ModifyAsync(properties => properties.Archived = false, options: new RequestOptions { CancelToken = cancellationToken });
+                                            shouldArchiveThreadBack = true;
+                                        }
+
+                                        threadIdForReply = threadID.Id;
+                                    }
+                                    else
+                                    {
+                                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parent message not found for thread reply: {message.Content}\n"); });
                                     }
 
-                                    threadIdForReply = threadID.Id;
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+
+                                    // Record successful message
+                                    RecordSuccessfulMessage(channel, message);
+
+                                    if (shouldArchiveThreadBack)
+                                    {
+                                        try
+                                        {
+                                            cancellationToken.ThrowIfCancellationRequested();
+                                            await threadID.ModifyAsync(properties => properties.Archived = true, options: new RequestOptions { CancelToken = cancellationToken });
+                                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Archived thread: {threadID.Name}\n"); });
+                                        }
+                                        catch (Exception archiveEx)
+                                        {
+                                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error archiving thread: {archiveEx.Message}\n"); });
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parent message not found for thread reply: {message.Content}\n"); });
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, options: new RequestOptions { CancelToken = cancellationToken });
+
+                                    // Record successful message
+                                    RecordSuccessfulMessage(channel, message);
                                 }
 
-                                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar, threadId: threadIdForReply);
-
-                                // Record successful message
-                                RecordSuccessfulMessage(channel, message);
-
-                                if (shouldArchiveThreadBack)
+                                // Pin message.
+                                if (message.IsPinned && message.ThreadType == ThreadType.None)
                                 {
-                                    try
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    IEnumerable<IMessage> recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync();
+                                    IMessage recentMessage = recentMessages.FirstOrDefault();
+                                    if (recentMessage is IUserMessage userMessage)
                                     {
-                                        await threadID.ModifyAsync(properties => properties.Archived = true);
-                                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Archived thread: {threadID.Name}\n"); });
-                                    }
-                                    catch (Exception archiveEx)
-                                    {
-                                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Error archiving thread: {archiveEx.Message}\n"); });
+                                        await userMessage.PinAsync(options: new RequestOptions { CancelToken = cancellationToken });
                                     }
                                 }
-                            }
-                            else
-                            {
-                                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar);
 
-                                // Record successful message
-                                RecordSuccessfulMessage(channel, message);
-                            }
+                                // Handle file uploads.
+                                List<string> localFilePaths = [.. message.FileURLs];
 
-                            // Pin message.
-                            if (message.IsPinned && message.ThreadType == ThreadType.None)
-                            {
-                                IEnumerable<IMessage> recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync();
-                                IMessage recentMessage = recentMessages.FirstOrDefault();
-                                if (recentMessage is IUserMessage userMessage)
+                                for (int i = 0; i < localFilePaths.Count; i++)
                                 {
-                                    await userMessage.PinAsync();
-                                }
-                            }
+                                    cancellationToken.ThrowIfCancellationRequested();
 
-                            // Handle file uploads.
-                            List<string> localFilePaths = [.. message.FileURLs];
-
-                            for (int i = 0; i < localFilePaths.Count; i++)
-                            {
-                                var localFilePath = localFilePaths[i];
-                                if (File.Exists(localFilePath))
-                                {
-                                    FileInfo fileInfo = new(localFilePath);
-                                    long fileSizeInBytes = fileInfo.Length;
-
-                                    if (fileSizeInBytes <= fileSizeLimit)
+                                    var localFilePath = localFilePaths[i];
+                                    if (File.Exists(localFilePath))
                                     {
-                                        using FileStream fs = new(localFilePath, FileMode.Open, FileAccess.Read);
-                                        try
+                                        FileInfo fileInfo = new(localFilePath);
+                                        long fileSizeInBytes = fileInfo.Length;
+
+                                        if (fileSizeInBytes <= fileSizeLimit)
                                         {
-                                            await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath));
+                                            using FileStream fs = new(localFilePath, FileMode.Open, FileAccess.Read);
+                                            try
+                                            {
+                                                await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath), options: new RequestOptions { CancelToken = cancellationToken });
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Logger.Log($"Failed to upload file {localFilePath}: {ex.Message}");
+                                            }
                                         }
-                                        catch (Exception ex)
+                                        else
                                         {
-                                            Logger.Log($"Failed to upload file {localFilePath}: {ex.Message}");
+                                            // If the file is too large, check if a fallback URL exists and send the permalink instead.
+                                            if (message.FallbackFileURLs.Count > i)
+                                            {
+                                                string downloadLink = message.FallbackFileURLs[i];
+                                                await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({downloadLink}).", options: new RequestOptions { CancelToken = cancellationToken });
+                                            }
+                                            else
+                                            {
+                                                await discordChannel.SendMessageAsync("File was too large to upload, and a download link is not available.", options: new RequestOptions { CancelToken = cancellationToken });
+                                            }
                                         }
                                     }
                                     else
                                     {
-                                        // If the file is too large, check if a fallback URL exists and send the permalink instead.
-                                        if (message.FallbackFileURLs.Count > i)
-                                        {
-                                            string downloadLink = message.FallbackFileURLs[i];
-                                            await discordChannel.SendMessageAsync($"File was too large to upload. You can download it [here]({downloadLink}).");
-                                        }
-                                        else
-                                        {
-                                            await discordChannel.SendMessageAsync("File was too large to upload, and a download link is not available.");
-                                        }
+                                        Logger.Log($"File not found: {localFilePath}");
+                                        await discordChannel.SendMessageAsync("Attachment:", options: new RequestOptions { CancelToken = cancellationToken });
                                     }
+                                }
+
+                                messagesPosted++;
+                                ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                // Don't treat this as an error - it's expected during cancellation
+                                wasCancelled = true;
+                                _ = Application.Current.Dispatcher.Dispatch(() =>
+                                {
+                                    ApplicationWindow.WriteToDebugWindow($"🛑 Operation cancelled after posting {messagesPosted} messages in channel '{channel.Name}'\n");
+                                });
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                errorOccurred = true;
+                                _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord(): {ex.Message}\n"); });
+
+                                // Offer to retry or resume later
+                                bool shouldRetry = await MainPage.Current.DisplayAlert(
+                                    "Error Posting Message",
+                                    $"An error occurred while posting a message: {ex.Message}\n\nWould you like to retry posting this message?",
+                                    "Retry", "Stop");
+
+                                if (shouldRetry)
+                                {
+                                    // Retry the current message by decrementing the loop counter
+                                    // This will process the same message again
+                                    continue;
                                 }
                                 else
                                 {
-                                    Logger.Log($"File not found: {localFilePath}");
-                                    await discordChannel.SendMessageAsync("Attachment:");
+                                    // Save the current state for resume
+                                    RecordSuccessfulMessage(channel, message);
+                                    await MainPage.Current.DisplayAlert(
+                                        "Import Paused",
+                                        "The import process has been paused. You can resume it later by restarting Slackord.",
+                                        "OK");
+                                    break;
                                 }
                             }
-
-                            messagesPosted++;
-                            // Update the progress bar.
-                            ApplicationWindow.UpdateProgressBar(messagesPosted, totalMessagesToPost, "messages");
                         }
-                        catch (OperationCanceledException)
+
+                        if (errorOccurred || wasCancelled)
                         {
-                            errorOccurred = true;
-                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Posting messages cancelled.\n"); });
+                            // Clean up webhook before breaking
+                            try
+                            {
+                                await webhook.DeleteAsync();
+                            }
+                            catch { /* Ignore cleanup errors */ }
                             break;
                         }
-                        catch (Exception ex)
-                        {
-                            errorOccurred = true;
-                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"PostMessagesToDiscord(): {ex.Message}\n"); });
 
-                            // Offer to retry or resume later
-                            bool shouldRetry = await MainPage.Current.DisplayAlert(
-                                "Error Posting Message",
-                                $"An error occurred while posting a message: {ex.Message}\n\nWould you like to retry posting this message?",
-                                "Retry", "Stop");
-
-                            if (shouldRetry)
-                            {
-                                // Retry the current message by decrementing the loop counter
-                                // This will process the same message again
-                                continue;
-                            }
-                            else
-                            {
-                                // Save the current state for resume
-                                RecordSuccessfulMessage(channel, message);
-                                await MainPage.Current.DisplayAlert(
-                                    "Import Paused",
-                                    "The import process has been paused. You can resume it later by restarting Slackord.",
-                                    "OK");
-                                break;
-                            }
-                        }
+                        await webhook.DeleteAsync();
+                    }
+                    else
+                    {
+                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Discord channel not found for channel: {channel.Name}\n"); });
                     }
 
-                    if (errorOccurred)
+                    if (errorOccurred || wasCancelled)
                     {
                         break;
                     }
-
-                    await webhook.DeleteAsync();
-                }
-                else
-                {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Discord channel not found for channel: {channel.Name}\n"); });
-                }
-
-                if (errorOccurred)
-                {
-                    break;
                 }
             }
-
-            if (!errorOccurred)
+            catch (OperationCanceledException)
             {
-                // All messages were posted successfully, clear resume state
+                wasCancelled = true;
+                _ = Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    ApplicationWindow.WriteToDebugWindow($"🛑 Operation cancelled after posting {messagesPosted} messages\n");
+                });
+            }
+
+            // Handle final states and update UI
+            if (wasCancelled)
+            {
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
+                _ = await interaction.FollowupAsync($"❌ Message posting was cancelled after {messagesPosted} messages.");
+
+                // Update the UI to show cancellation is complete
+                await ApplicationWindow.OnOperationCancelled();
+            }
+            else if (!errorOccurred)
+            {
+                ProcessingManager.Instance.SetState(ProcessingState.Completed);
                 ClearResumeState();
-                _ = await interaction.FollowupAsync("All messages sent to Discord successfully!");
+                _ = await interaction.FollowupAsync("✅ All messages sent to Discord successfully!");
             }
             else
             {
-                _ = await interaction.FollowupAsync("Message sending was interrupted. You can resume the process later.");
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
+                _ = await interaction.FollowupAsync("❌ Message sending was interrupted.");
             }
         }
     }

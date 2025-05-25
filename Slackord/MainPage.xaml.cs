@@ -9,6 +9,7 @@ namespace MenuApp
         public static Button BotConnectionButtonInstance { get; set; }
         public static Label ProgressBarTextInstance { get; set; }
         private readonly ApplicationWindow applicationWindow;
+        public static Label ProcessingStateLabelInstance { get; set; }
         public MainPage()
         {
             InitializeComponent();
@@ -20,10 +21,16 @@ namespace MenuApp
             ProgressBarInstance = ProgressBar;
             BotConnectionButtonInstance = BotConnectionButton;
             ProgressBarTextInstance = ProgressBarText;
+            ProcessingStateLabelInstance = ProcessingStateLabel;
+
             ProgressBarTextInstance.IsVisible = false;
             ProgressBarInstance.IsVisible = false;
             Current = this;
             applicationWindow = new ApplicationWindow();
+
+            // Subscribe to processing state changes
+            ProcessingManager.Instance.StateChanged += OnProcessingStateChanged;
+
             Loaded += MainPage_Loaded;
         }
         private void MainPage_Loaded(object sender, EventArgs e)
@@ -51,6 +58,21 @@ namespace MenuApp
 
             // Check for partial imports - use the static method directly
             await ApplicationWindow.CheckForPartialImport();
+
+            ProcessingManager.Instance.StateChanged += (sender, state) =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    ProcessingStateLabelInstance.Text = state.ToString().Replace("_", " ");
+                    ProcessingStateLabelInstance.TextColor = state switch
+                    {
+                        ProcessingState.ReadyForDiscordImport => Colors.Green,
+                        ProcessingState.Error => Colors.Red,
+                        ProcessingState.Completed => Colors.Blue,
+                        _ => Colors.Orange
+                    };
+                });
+            };
         }
 
         private void ImportServer_Clicked(object sender, EventArgs e)
@@ -90,6 +112,25 @@ namespace MenuApp
         private async void Settings_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new Slackord.Pages.OptionsPage());
+        }
+
+        private void OnProcessingStateChanged(object sender, ProcessingState newState)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                // Update the status label with user-friendly text
+                ProcessingStateLabelInstance.Text = ProcessingManager.GetDisplayText(newState);
+
+                // Update text color based on state
+                ProcessingStateLabelInstance.TextColor = newState switch
+                {
+                    ProcessingState.ReadyForDiscordImport => Colors.Green,
+                    ProcessingState.Completed => Colors.Blue,
+                    ProcessingState.Error => Colors.Red,
+                    ProcessingState.Idle => Colors.DodgerBlue,
+                    _ => Colors.Orange
+                };
+            });
         }
     }
 }

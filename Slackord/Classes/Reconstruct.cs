@@ -1,13 +1,12 @@
-﻿using MenuApp;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
 
 namespace Slackord.Classes
 {
     public partial class Reconstruct
     {
-        internal static readonly Dictionary<string, DeconstructedUser> UsersDict = new();
-        private static readonly Dictionary<string, ThreadInfo> threadDictionary = new();
+        internal static readonly Dictionary<string, DeconstructedUser> UsersDict = [];
+        private static readonly Dictionary<string, ThreadInfo> threadDictionary = [];
         public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary => threadDictionary;
 
         public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
@@ -41,12 +40,36 @@ namespace Slackord.Classes
         {
             try
             {
-                foreach (Channel channel in channels)
+                ProcessingManager.Instance.SetState(ProcessingState.ReconstructingMessages);
+                ApplicationWindow.ShowProgressBar();
+
+                // Calculate total messages for accurate progress tracking
+                int totalMessages = channels.Sum(c => c.DeconstructedMessagesList.Count);
+                int processedMessages = 0;
+
+                // Time-based progress tracking
+                DateTime lastProgressUpdate = DateTime.Now;
+                const int progressUpdateIntervalSeconds = 15;
+
+                Application.Current.Dispatcher.Dispatch(() =>
                 {
+                    ApplicationWindow.WriteToDebugWindow($"Starting reconstruction of {totalMessages:N0} messages across {channels.Count} channels\n");
+                });
+
+                for (int channelIndex = 0; channelIndex < channels.Count; channelIndex++)
+                {
+                    Channel channel = channels[channelIndex];
                     var resumeData = ResumeData.LoadResumeData().FirstOrDefault(rd => rd.ChannelName == channel.Name);
                     int startMessageIndex = resumeData?.LastMessagePosition + 1 ?? 0;
 
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"\nDeconstructing {channel.DeconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    // Skip messages that were already processed during resume
+                    processedMessages += startMessageIndex;
+
+                    Application.Current.Dispatcher.Dispatch(() =>
+                    {
+                        ApplicationWindow.WriteToDebugWindow($"Processing channel {channelIndex + 1}/{channels.Count}: {channel.Name} " +
+                            $"(starting from message {startMessageIndex + 1}/{channel.DeconstructedMessagesList.Count})\n");
+                    });
 
                     for (int i = startMessageIndex; i < channel.DeconstructedMessagesList.Count; i++)
                     {
@@ -55,24 +78,71 @@ namespace Slackord.Classes
                         DeconstructedMessage deconstructedMessage = channel.DeconstructedMessagesList[i];
                         await ReconstructMessage(deconstructedMessage, channel);
 
+                        processedMessages++;
+
+                        // TIME-BASED UPDATES: Only update every 15 seconds or on completion
+                        DateTime now = DateTime.Now;
+                        bool shouldUpdate = (now - lastProgressUpdate).TotalSeconds >= progressUpdateIntervalSeconds ||
+                                           i == channel.DeconstructedMessagesList.Count - 1;
+
+                        if (shouldUpdate)
+                        {
+                            double progressPercent = (double)processedMessages / totalMessages * 100;
+                            ApplicationWindow.UpdateProgressBar(processedMessages, totalMessages, "messages");
+
+                            Application.Current.Dispatcher.Dispatch(() =>
+                            {
+                                ApplicationWindow.WriteToDebugWindow($"Progress: {processedMessages:N0}/{totalMessages:N0} messages ({progressPercent:F1}%) - Current: {channel.Name}\n");
+                            });
+
+                            lastProgressUpdate = now;
+                        }
+
                         // Update resume data
-                        resumeData.LastMessagePosition = i;
-                        ResumeData.SaveResumeData(ResumeData.LoadResumeData());
+                        if (resumeData != null)
+                        {
+                            resumeData.LastMessagePosition = i;
+                            ResumeData.SaveResumeData(ResumeData.LoadResumeData());
+                        }
                     }
 
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Reconstructed {channel.ReconstructedMessagesList.Count} messages for {channel.Name}\n"); });
+                    Application.Current.Dispatcher.Dispatch(() =>
+                    {
+                        ApplicationWindow.WriteToDebugWindow($"✅ Completed channel: {channel.Name} - {channel.ReconstructedMessagesList.Count:N0} messages reconstructed\n");
+                    });
                 }
 
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"All channels have been successfully deconstructed and reconstructed for Discord!\n"); });
+                // Final update - ensure we show 100% completion
+                ApplicationWindow.UpdateProgressBar(totalMessages, totalMessages, "messages");
+                ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
+
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    ApplicationWindow.WriteToDebugWindow($"\n🎊 RECONSTRUCTION COMPLETE! 🎊\n");
+                    ApplicationWindow.WriteToDebugWindow($"📊 Summary:\n");
+                    ApplicationWindow.WriteToDebugWindow($"   • Channels processed: {channels.Count:N0}\n");
+                    ApplicationWindow.WriteToDebugWindow($"   • Total messages reconstructed: {processedMessages:N0}\n");
+                    ApplicationWindow.WriteToDebugWindow($"   • Ready for Discord import!\n\n");
+                    ApplicationWindow.WriteToDebugWindow($"🚀 Next step: Use the Discord slash command '/slackord' to begin posting messages.\n\n");
+                });
+
                 await Task.CompletedTask;
             }
             catch (OperationCanceledException)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): Reconstruction operation was cancelled.\n"); });
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    ApplicationWindow.WriteToDebugWindow($"❌ Reconstruction operation was cancelled.\n");
+                });
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ReconstructAsync(): {ex.Message}\n\n"); });
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    ApplicationWindow.WriteToDebugWindow($"❌ ReconstructAsync Error: {ex.Message}\n\n");
+                });
             }
         }
 
@@ -129,7 +199,7 @@ namespace Slackord.Classes
             }
         }
 
-        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string originalTimestamp, bool isDownloadable)
+        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string _originalTimestamp, bool isDownloadable)
         {
             if (!isDownloadable || string.IsNullOrWhiteSpace(fileUrl))
             {
@@ -145,7 +215,9 @@ namespace Slackord.Classes
 
             // Prepare directories and file path
             string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
-            Directory.CreateDirectory(downloadsFolder); // Ensure the download directory exists
+            
+            // Ensure the download directory exists
+            Directory.CreateDirectory(downloadsFolder);
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
             string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
             string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
@@ -341,7 +413,7 @@ namespace Slackord.Classes
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
-            List<string> messageParts = new();
+            List<string> messageParts = [];
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
@@ -399,8 +471,8 @@ namespace Slackord.Classes
         public string ParentThreadTs { get; set; }
         public ThreadType ThreadType { get; set; }
         public bool IsPinned { get; set; }
-        public List<string> FileURLs { get; set; } = new();
-        public List<string> FallbackFileURLs { get; set; } = new();
-        public List<bool> IsFileDownloadable { get; set; } = new();
+        public List<string> FileURLs { get; set; } = [];
+        public List<string> FallbackFileURLs { get; set; } = [];
+        public List<bool> IsFileDownloadable { get; set; } = [];
     }
 }

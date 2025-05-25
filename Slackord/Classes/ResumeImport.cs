@@ -23,9 +23,8 @@ namespace Slackord.Classes
             // Get the import details
             string lastImportType = Preferences.Default.Get("LastImportType", string.Empty);
             string lastImportChannel = Preferences.Default.Get("LastImportChannel", string.Empty);
-            string lastMessageTimestamp = Preferences.Default.Get("LastSuccessfulMessageTimestamp", string.Empty);
 
-            if (string.IsNullOrEmpty(lastImportType) || string.IsNullOrEmpty(lastMessageTimestamp))
+            if (string.IsNullOrEmpty(lastImportType))
             {
                 return;
             }
@@ -33,105 +32,56 @@ namespace Slackord.Classes
             // Ask the user if they want to resume
             bool shouldResume = await MainPage.Current.DisplayAlert(
                 "Resume Import",
-                $"A previous {(lastImportType == "Full" ? "server" : "channel")} import was interrupted. Would you like to resume from where it left off?",
+                $"A previous {(lastImportType == "Full" ? "server" : "channel")} import was interrupted during Discord posting. " +
+                $"Would you like to resume from where it left off?\n\n" +
+                $"Channel: {lastImportChannel}",
                 "Resume", "Start New");
 
             if (shouldResume)
             {
-                await ResumeImportProcess(lastImportType == "Full", lastImportChannel, lastMessageTimestamp);
+                await ResumeImportProcess(lastImportType == "Full", lastImportChannel);
             }
             else
             {
                 // Clear the resume state if user doesn't want to resume
                 ClearResumeState();
+                ApplicationWindow.WriteToDebugWindow("Previous import state cleared. Starting fresh.\n");
             }
         }
 
-        private static async Task ResumeImportProcess(bool isFullExport, string channelName, string lastMessageTimestamp)
+        private static async Task ResumeImportProcess(bool isFullExport, string channelName)
         {
             try
             {
-                // Get the root folder path from the last import
-                string rootFolderPath = Preferences.Default.Get("LastImportFolderPath", string.Empty);
-                if (string.IsNullOrEmpty(rootFolderPath) || !Directory.Exists(rootFolderPath))
-                {
-                    // If we don't have the path or it doesn't exist, we need to ask the user to select it again
-                    ApplicationWindow.WriteToDebugWindow("Previous import folder not found. Please select the import folder again.\n");
-                    await new ApplicationWindow().ImportJsonAsync(isFullExport);
-                    return;
-                }
+                ApplicationWindow.WriteToDebugWindow($"🔄 Preparing to resume {(isFullExport ? "server" : "channel")} import...\n");
 
-                // We can't set ImportJson.RootFolderPath directly, so we'll need to use ImportJsonAsync
-                // and modify our approach to handle resuming
-                ApplicationWindow.WriteToDebugWindow($"Resuming {(isFullExport ? "server" : "channel")} import from {rootFolderPath}...\n");
-
-                // Start a new import process
-                await new ApplicationWindow().ImportJsonAsync(isFullExport);
-
-                // Now we need to identify where to resume from based on the timestamp
-                foreach (Channel channel in ImportJson.Channels)
-                {
-                    // If we're resuming a specific channel import, make sure we're in the right channel
-                    if (!isFullExport && channel.Name != channelName)
-                    {
-                        continue;
-                    }
-
-                    // Find the index of the last successfully sent message
-                    int resumeIndex = -1;
-                    for (int i = 0; i < channel.ReconstructedMessagesList.Count; i++)
-                    {
-                        if (channel.ReconstructedMessagesList[i].OriginalTimestamp == lastMessageTimestamp)
-                        {
-                            resumeIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (resumeIndex >= 0)
-                    {
-                        // Remove all messages up to and including the last successful one
-                        channel.ReconstructedMessagesList.RemoveRange(0, resumeIndex + 1);
-                        ApplicationWindow.WriteToDebugWindow($"Resuming from message {resumeIndex + 1} in channel {channel.Name}\n");
-                    }
-                }
-
-                // Log the total number of remaining messages
-                int totalRemainingMessages = ImportJson.Channels.Sum(channel => channel.ReconstructedMessagesList.Count);
-                ApplicationWindow.WriteToDebugWindow($"Found {totalRemainingMessages} messages to resume sending.\n");
-
-                // Clear the partial import state now that we're resuming
+                // Clear the partial import state since we're handling it now
                 ClearResumeState();
 
-                if (totalRemainingMessages > 0)
-                {
-                    // Let the user know we're ready to post the remaining messages
-                    bool shouldPost = await MainPage.Current.DisplayAlert(
-                        "Ready to Resume",
-                        $"Ready to post {totalRemainingMessages} remaining messages. Use the Discord slash command to begin posting.",
-                        "OK", "Cancel");
+                // Show a clear message about what the user needs to do
+                bool shouldProceed = await MainPage.Current.DisplayAlert(
+                    "Resume Instructions",
+                    $"To resume your import:\n\n" +
+                    $"1. Click 'Import {(isFullExport ? "Server" : "Channel")}' button\n" +
+                    $"2. Select the same folder you used before\n" +
+                    $"3. Once processing is complete, use the Discord '/slackord' command\n\n" +
+                    $"The system will automatically skip messages that were already posted.",
+                    "OK", "Cancel");
 
-                    if (!shouldPost)
-                    {
-                        // If the user cancels, clear everything
-                        ImportJson.Channels.Clear();
-                    }
+                if (shouldProceed)
+                {
+                    ApplicationWindow.WriteToDebugWindow($"ℹ️ Ready to resume import. Please follow the instructions above.\n");
+                    ApplicationWindow.WriteToDebugWindow($"💡 Tip: The system will automatically detect and skip already-posted messages.\n\n");
                 }
                 else
                 {
-                    await MainPage.Current.DisplayAlert(
-                        "No Messages to Resume",
-                        "There are no messages to resume posting. The import process will need to be started from the beginning.",
-                        "OK");
-
-                    // Clear everything for a clean slate
-                    ImportJson.Channels.Clear();
+                    ApplicationWindow.WriteToDebugWindow("Resume cancelled by user.\n");
                 }
             }
             catch (Exception ex)
             {
-                ApplicationWindow.WriteToDebugWindow($"Error resuming import: {ex.Message}\n");
-                await MainPage.Current.DisplayAlert("Resume Error", $"An error occurred while trying to resume: {ex.Message}", "OK");
+                ApplicationWindow.WriteToDebugWindow($"Error preparing resume: {ex.Message}\n");
+                await MainPage.Current.DisplayAlert("Resume Error", $"An error occurred while preparing to resume: {ex.Message}", "OK");
             }
         }
 

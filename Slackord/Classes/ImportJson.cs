@@ -6,11 +6,12 @@ namespace Slackord.Classes
     public class ImportJson
     {
         public static string RootFolderPath { get; private set; }
-        public static List<Channel> Channels { get; set; } = new List<Channel>();
+        public static List<Channel> Channels { get; set; } = [];
         public static int TotalHiddenFileCount { get; internal set; } = 0;
 
         public static async Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
         {
+            ProcessingManager.Instance.SetState(ProcessingState.ImportingFiles);
             ApplicationWindow.HideProgressBar();
 
             // Clear existing data and reset counts
@@ -27,6 +28,7 @@ namespace Slackord.Classes
 
                 if (picker == null || picker.Folder == null)
                 {
+                    ProcessingManager.Instance.SetState(ProcessingState.Idle);
                     if (cancellationToken.IsCancellationRequested)
                     {
                         Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Folder selection was cancelled.\n"); });
@@ -58,40 +60,47 @@ namespace Slackord.Classes
                     var resumeData = resumeDataList.FirstOrDefault(rd => rd.ChannelName == channel.Name);
                     if (resumeData != null && !resumeData.ImportedToDiscord)
                     {
-                        // Ask if we should resume channel importing to Discord
                         bool shouldResume = await ResumeData.AskUserToResumeChannel(resumeData.ChannelName);
                         if (shouldResume)
                         {
-                            // Initialize from resume state using the method in ResumeData class
                             await ResumeData.InitializeChannelForResume(channel, resumeData);
                         }
                     }
                 }
 
-                // Proceed with reconstruction and import to Discord
+                // Proceed with reconstruction
                 if (!string.IsNullOrEmpty(RootFolderPath) && Channels.Count != 0)
                 {
+                    // Set state to deconstructing (file processing is done, now processing messages)
+                    ProcessingManager.Instance.SetState(ProcessingState.DeconstructingMessages);
+
                     await Reconstruct.ReconstructAsync(Channels, cancellationToken);
 
                     if (TotalHiddenFileCount > 0)
                     {
                         Application.Current.Dispatcher.Dispatch(() =>
                         {
-                            ApplicationWindow.WriteToDebugWindow($"Total files hidden by Slack due to limits: {TotalHiddenFileCount}\n");
+                            ApplicationWindow.WriteToDebugWindow($"ℹ️ Note: {TotalHiddenFileCount:N0} files were hidden by Slack due to limits\n");
                         });
                     }
-                  
+
                     // Count threads per channel and display the results
                     Dictionary<string, int> channelThreadCounts = CountThreadsPerChannel();
                     DisplayThreadCounts(channelThreadCounts);
                 }
+                else
+                {
+                    ProcessingManager.Instance.SetState(ProcessingState.Idle);
+                }
             }
             catch (OperationCanceledException)
             {
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
                 Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow("Import operation was cancelled.\n"); });
             }
             catch (Exception ex)
             {
+                ProcessingManager.Instance.SetState(ProcessingState.Error);
                 Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ImportJsonAsync() : {ex.Message}\n"); });
                 return;
             }
@@ -110,8 +119,8 @@ namespace Slackord.Classes
 
             _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users for import...\n"); });
 
-            Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : new Dictionary<string, DeconstructedUser>();
-            Dictionary<string, string> channelDescriptions = new();
+            Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : [];
+            Dictionary<string, string> channelDescriptions = [];
 
             if (channelsFile != null)
             {
@@ -123,9 +132,9 @@ namespace Slackord.Classes
                 );
             }
 
-            DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : new DirectoryInfo[] { directoryInfo };
+            DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
 
-            List<Channel> channels = new();
+            List<Channel> channels = [];
             int totalFiles = CountTotalJsonFiles(channelDirectories);
             int filesProcessed = 0;
 
@@ -187,7 +196,7 @@ namespace Slackord.Classes
 
         private static Dictionary<string, int> CountThreadsPerChannel()
         {
-            Dictionary<string, int> channelThreadCounts = new();
+            Dictionary<string, int> channelThreadCounts = [];
 
             foreach (var channel in Channels)
             {
@@ -213,7 +222,7 @@ namespace Slackord.Classes
             if (totalThreads > 1000)
             {
                 ApplicationWindow.WriteToDebugWindow("WARNING: Guild thread limit exceeds 1000. You will need to close threads on your own, manually to prevent threads from failing to create! The number of threads per channel are listed below." +
-                    "\n Please visit https://github.com/thomasloupe/Slackord/blob/main/docs/FAQ.md on how to handle this limitation.");
+                    "\n Please visit https://github.com/thomasloupe/Slackord/blob/main/docs/FAQ.md on how to handle this limitation.\n");
                 foreach (var channel in channelThreadCounts)
                 {
                     ApplicationWindow.WriteToDebugWindow($"{channel.Key} ({channel.Value})\n");

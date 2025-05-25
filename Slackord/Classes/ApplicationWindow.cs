@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using MenuApp;
 using System.Text;
 
@@ -6,10 +6,9 @@ namespace Slackord.Classes
 {
     public class ApplicationWindow
     {
-        private static MainPage MainPageInstance => MenuApp.MainPage.Current;
+        private static MainPage MainPageInstance => MainPage.Current;
         private readonly DiscordBot _discordBot = DiscordBot.Instance;
         private CancellationTokenSource cancellationTokenSource;
-        // Remove the isFirstRun field completely
         private bool hasValidBotToken;
         private string DiscordToken;
         private bool hasEverBeenConnected = false;
@@ -168,6 +167,16 @@ namespace Slackord.Classes
 
         public void CancelImport()
         {
+
+            // Cancel Discord operations
+            _discordBot.CancelDiscordOperations();
+
+            Application.Current.Dispatcher.Dispatch(() =>
+            {
+                ApplicationWindow.WriteToDebugWindow("🛑 Cancellation requested for all operations...\n");
+            });
+
+            // Cancel JSON import
             cancellationTokenSource?.Cancel();
         }
 
@@ -189,7 +198,23 @@ namespace Slackord.Classes
 
             var currentState = _discordBot.GetClientConnectionState();
 
-            // Disconnect if currently connected
+            // If currently posting messages, cancel the operation
+            if (ProcessingManager.Instance.CurrentState == ProcessingState.ImportingToDiscord)
+            {
+                await ChangeBotConnectionButton("Cancelling", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+                WriteToDebugWindow("Cancelling Discord message posting...\n");
+
+                // Just request cancellation - don't change button state immediately
+                CancelImport();
+
+                // Mark as partial import for resume
+                Preferences.Default.Set("HasPartialImport", true);
+
+                // The button state will be updated by the posting operation when it actually stops
+                return;
+            }
+
+            // Rest of the connection logic remains the same...
             if (currentState == ConnectionState.Connected)
             {
                 await ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
@@ -199,7 +224,6 @@ namespace Slackord.Classes
                 return;
             }
 
-            // Reconnect using MainAsync() if the client is not connected
             if (currentState == ConnectionState.Disconnected)
             {
                 string buttonLabel = hasEverBeenConnected ? "Reconnecting" : "Connecting";
@@ -239,6 +263,12 @@ namespace Slackord.Classes
                     await ChangeBotConnectionButton("Failed to Connect", new Microsoft.Maui.Graphics.Color(255, 0, 0), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                 }
             }
+        }
+
+        public static async Task OnOperationCancelled()
+        {
+            await ChangeBotConnectionButton("Cancelled", new Microsoft.Maui.Graphics.Color(255, 165, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
+            WriteToDebugWindow("Discord operation cancelled successfully.\n");
         }
 
         public static async Task CheckForNewVersion(bool isStartupCheck)
@@ -387,16 +417,48 @@ Would you like to open the donation page now?
             }
         }
 
-        public static void UpdateProgressBar(int current, int total, string type)
+        /// <summary>
+        /// Checks if Discord import can be started based on current processing state
+        /// </summary>
+        /// <returns>True if ready for Discord import, false otherwise</returns>
+        public static bool CanStartDiscordImport()
         {
-            double progressValue = (double)current / total;
+            return ProcessingManager.Instance.CanStartDiscordImport;
+        }
+
+        /// <summary>
+        /// Enhanced progress bar with custom text and percentage
+        /// </summary>
+        public static void UpdateProgressBarWithCustomText(int current, int total, string customText)
+        {
+            double progressValue = total > 0 ? (double)current / total : 0;
 
             if (MainPage.Current != null)
             {
                 _ = MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     MainPage.ProgressBarInstance.Progress = progressValue;
-                    MainPage.ProgressBarTextInstance.Text = $"Completed {current} out of {total} {type}.";
+                    MainPage.ProgressBarTextInstance.Text = customText;
+                });
+            }
+        }
+
+        /// <summary>
+        /// Enhanced UpdateProgressBar with percentage display
+        /// </summary>
+        public static void UpdateProgressBar(int current, int total, string type)
+        {
+            double progressValue = total > 0 ? (double)current / total : 0;
+
+            if (MainPage.Current != null)
+            {
+                _ = MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MainPage.ProgressBarInstance.Progress = progressValue;
+
+                    // Enhanced progress text with percentage
+                    double percentage = progressValue * 100;
+                    MainPage.ProgressBarTextInstance.Text = $"Completed {current:N0} out of {total:N0} {type} ({percentage:F1}%)";
                 });
             }
         }
