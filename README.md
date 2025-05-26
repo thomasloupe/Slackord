@@ -49,4 +49,4 @@ https://github.com/thomasloupe/Slackord/assets/6563450/adee8003-b51b-4859-b8d4-3
 1. If you'd like to donate, you can do so from within Slackord by opening the `Options` page and clicking the `Donate` button at the bottom of the page, sponsoring Slackord at the top of this repository by clicking the heart (sponsor) button, or donating directly to me via [PayPal](https://paypal.me/thomasloupe).
 
 # Special Mentions
-While Slackord handles migrating your Slack, archiving your Slack history is something you might want to do. Check out [Slackdump](https://github.com/rusq/slackdump)!
+While Slackord handles migrating your Slack, archiving your Slack history is something you might also want to do. Check out [Slackdump](https://github.com/rusq/slackdump) for archiving your entire Slack workspace!
