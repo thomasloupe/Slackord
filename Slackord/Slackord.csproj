@@ -48,27 +48,27 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
-		<PackageReference Include="Discord.Net.Core" Version="3.17.2" />
-		<PackageReference Include="Discord.Net.Interactions" Version="3.17.2" />
-		<PackageReference Include="Discord.Net.Rest" Version="3.17.2" />
-		<PackageReference Include="Discord.Net.Webhook" Version="3.17.2" />
-		<PackageReference Include="Discord.Net.WebSocket" Version="3.17.2" />
+		<PackageReference Include="Discord.Net.Core" Version="3.17.4" />
+		<PackageReference Include="Discord.Net.Interactions" Version="3.17.4" />
+		<PackageReference Include="Discord.Net.Rest" Version="3.17.4" />
+		<PackageReference Include="Discord.Net.Webhook" Version="3.17.4" />
+		<PackageReference Include="Discord.Net.WebSocket" Version="3.17.4" />
 		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.50" />
-		<PackageReference Include="Microsoft.Maui.Graphics" Version="9.0.50" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.70" />
+		<PackageReference Include="Microsoft.Maui.Graphics" Version="9.0.70" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250513003" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
-		<PackageReference Include="System.Text.Json" Version="9.0.3" />
+		<PackageReference Include="System.Text.Json" Version="9.0.5" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'">
-		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="9.0.50">
+		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="9.0.70">
 		</PackageReference>
 	</ItemGroup>
 
@@ -97,15 +97,19 @@
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
+		<ApplicationVersion>5</ApplicationVersion>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>4.3.6</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
+		<ApplicationVersion>5</ApplicationVersion>
 	</PropertyGroup>
 	<PropertyGroup>
 	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.26100.0</TargetFrameworks>
 	  <AssemblyVersion>5.0</AssemblyVersion>
 	  <FileVersion>5.0</FileVersion>
 	  <TargetFrameworks />
+	  <WindowsPackageType>None</WindowsPackageType>
 	</PropertyGroup>
 </Project>
