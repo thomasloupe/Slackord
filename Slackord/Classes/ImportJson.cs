@@ -3,18 +3,36 @@ using Newtonsoft.Json.Linq;
 
 namespace Slackord.Classes
 {
+    /// <summary>
+    /// Handles the import and processing of Slack JSON export data
+    /// </summary>
     public class ImportJson
     {
+        /// <summary>
+        /// Gets the root folder path of the selected Slack export
+        /// </summary>
         public static string RootFolderPath { get; private set; }
+
+        /// <summary>
+        /// Gets the current import session being processed
+        /// </summary>
         public static ImportSession CurrentSession { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the total count of files hidden by Slack due to limits
+        /// </summary>
         public static int TotalHiddenFileCount { get; internal set; } = 0;
 
+        /// <summary>
+        /// Initiates the JSON import process from a selected folder
+        /// </summary>
+        /// <param name="isFullExport">Whether this is a full Slack export or single channel export</param>
+        /// <param name="cancellationToken">Token to cancel the operation</param>
         public static async Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
         {
             ProcessingManager.Instance.SetState(ProcessingState.ImportingFiles);
             ApplicationWindow.HideProgressBar();
 
-            // Reset counts
             TotalHiddenFileCount = 0;
             ApplicationWindow.ResetProgressBar();
 
@@ -39,7 +57,6 @@ namespace Slackord.Classes
                 string folderPath = picker.Folder.Path;
                 RootFolderPath = folderPath;
 
-                // Create new import session
                 CurrentSession = ImportSession.CreateNew();
                 ApplicationWindow.WriteToDebugWindow($"📁 Created new import session: {CurrentSession.SessionId}\n");
                 ApplicationWindow.WriteToDebugWindow($"💾 Session data will be saved to: {CurrentSession.SessionPath}\n\n");
@@ -57,7 +74,6 @@ namespace Slackord.Classes
                     });
                 }
 
-                // Display completion summary
                 DisplayImportSummary();
                 ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
             }
@@ -74,12 +90,17 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Processes the Slack export data from the selected folder
+        /// </summary>
+        /// <param name="isFullExport">Whether this is a full export or single channel export</param>
+        /// <param name="folderPath">The path to the Slack export folder</param>
+        /// <param name="cancellationToken">Token to cancel the operation</param>
         private static async Task ProcessSlackDataAsync(bool isFullExport, string folderPath, CancellationToken cancellationToken)
         {
             DirectoryInfo directoryInfo = new(folderPath);
             DirectoryInfo rootDirectory = isFullExport ? directoryInfo : directoryInfo.Parent;
 
-            // Load users and channel descriptions
             FileInfo usersFile = rootDirectory.GetFiles("users.json").FirstOrDefault();
             FileInfo channelsFile = rootDirectory.GetFiles("channels.json").FirstOrDefault();
 
@@ -98,7 +119,6 @@ namespace Slackord.Classes
                 );
             }
 
-            // Initialize UsersDict in Reconstruct
             Reconstruct.InitializeUsersDict(usersDict);
 
             DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
@@ -123,6 +143,16 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Processes all JSON files within a single channel directory
+        /// </summary>
+        /// <param name="channelDirectory">The channel directory to process</param>
+        /// <param name="channelDescriptions">Dictionary of channel descriptions</param>
+        /// <param name="usersDict">Dictionary of user information</param>
+        /// <param name="currentFilesProcessed">Number of files already processed</param>
+        /// <param name="totalFiles">Total number of files to process</param>
+        /// <param name="cancellationToken">Token to cancel the operation</param>
+        /// <returns>The number of files processed in this channel</returns>
         private static async Task<int> ProcessChannelAsync(DirectoryInfo channelDirectory, Dictionary<string, string> channelDescriptions,
                     Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
         {
@@ -141,7 +171,7 @@ namespace Slackord.Classes
                     ApplicationWindow.WriteToDebugWindow($"Large import detected for {channelName}. This may take some time...\n");
                 });
             }
-            // Deconstruct all messages first
+
             var deconstructedMessages = new List<DeconstructedMessage>();
             foreach (FileInfo jsonFile in jsonFiles)
             {
@@ -165,7 +195,7 @@ namespace Slackord.Classes
                     });
                 }
             }
-            // Now reconstruct messages and save to .slackord file
+
             if (deconstructedMessages.Count > 0)
             {
                 ProcessingManager.Instance.SetState(ProcessingState.ReconstructingMessages);
@@ -180,49 +210,98 @@ namespace Slackord.Classes
             return localFilesProcessed;
         }
 
+        /// <summary>
+        /// Reconstructs messages for a channel and saves them to a .slackord file
+        /// </summary>
+        /// <param name="channelName">The name of the channel being processed</param>
+        /// <param name="deconstructedMessages">The list of deconstructed messages</param>
+        /// <param name="channelProgress">The progress tracker for this channel</param>
+        /// <param name="cancellationToken">Token to cancel the operation</param>
         private static async Task ReconstructAndSaveChannelAsync(string channelName, List<DeconstructedMessage> deconstructedMessages,
             ChannelProgress channelProgress, CancellationToken cancellationToken)
         {
             try
             {
                 Application.Current.Dispatcher.Dispatch(() => {
-                    ApplicationWindow.WriteToDebugWindow($"🔨 Reconstructing {deconstructedMessages.Count:N0} messages for {channelName}...\n");
+                    ApplicationWindow.WriteToDebugWindow($"🔨 Reconstructing for Discord...\n");
                 });
 
                 var reconstructedMessages = new List<ReconstructedMessage>();
                 int processedCount = 0;
+                var loggedPercents = new HashSet<int>();
+                int totalMessages = deconstructedMessages.Count;
 
-                foreach (var deconstructedMessage in deconstructedMessages)
+                if (totalMessages > 100)
+                {
+                    Application.Current.Dispatcher.Dispatch(() => {
+                        ApplicationWindow.WriteToDebugWindow($"🔨 Reconstructing {totalMessages:N0} messages for {channelName}...\n");
+                    });
+                }
+
+                const int batchSize = 50;
+                for (int i = 0; i < deconstructedMessages.Count; i += batchSize)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    // Create a temporary channel object for the reconstruction process
-                    var tempChannel = new Channel { Name = channelName };
-                    await Reconstruct.ReconstructMessage(deconstructedMessage, tempChannel);
+                    var batch = deconstructedMessages.Skip(i).Take(batchSize).ToList();
 
-                    // Add the reconstructed messages to our list
-                    reconstructedMessages.AddRange(tempChannel.ReconstructedMessagesList);
-
-                    processedCount++;
-
-                    // Update progress every 100 messages to avoid UI spam
-                    if (processedCount % 100 == 0 || processedCount == deconstructedMessages.Count)
+                    await Task.Run(async () =>
                     {
-                        Application.Current.Dispatcher.Dispatch(() => {
-                            ApplicationWindow.WriteToDebugWindow($"  📋 Processed {processedCount:N0}/{deconstructedMessages.Count:N0} messages for {channelName}\n");
-                        });
+                        foreach (var deconstructedMessage in batch)
+                        {
+                            var tempChannel = new Channel { Name = channelName };
+                            await Reconstruct.ReconstructMessage(deconstructedMessage, tempChannel);
+                            reconstructedMessages.AddRange(tempChannel.ReconstructedMessagesList);
+                        }
+                    }, cancellationToken);
+
+                    processedCount += batch.Count;
+
+                    if (totalMessages >= 100)
+                    {
+                        double progress = (double)processedCount / totalMessages;
+                        int percent = (int)(progress * 100);
+                        int roundedPercent = (percent / 10) * 10;
+
+                        if (!loggedPercents.Contains(roundedPercent) && processedCount < totalMessages)
+                        {
+                            loggedPercents.Add(roundedPercent);
+                            Application.Current.Dispatcher.Dispatch(() => {
+                                ApplicationWindow.WriteToDebugWindow(
+                                    $"  📋 Processed {processedCount:N0}/{totalMessages:N0} messages for {channelName} ({roundedPercent}%)\n"
+                                );
+                            });
+                        }
                     }
+
+                    await Task.Yield();
                 }
 
-                // Update the channel progress with actual reconstructed count
+                if (totalMessages >= 100 && !loggedPercents.Contains(100))
+                {
+                    Application.Current.Dispatcher.Dispatch(() => {
+                        ApplicationWindow.WriteToDebugWindow(
+                            $"  📋 Processed {totalMessages:N0}/{totalMessages:N0} messages for {channelName} (100%)\n"
+                        );
+                    });
+                }
+
                 channelProgress.TotalMessages = reconstructedMessages.Count;
 
-                // Save to .slackord file
+                // Save to file
                 string channelFilePath = CurrentSession.GetChannelFilePath(channelName);
-                await SlackordFileManager.SaveChannelMessagesAsync(channelFilePath, reconstructedMessages);
+                await Task.Run(async () =>
+                {
+                    await SlackordFileManager.SaveChannelMessagesAsync(channelFilePath, reconstructedMessages);
+                }, cancellationToken);
 
                 channelProgress.FileCreated = true;
                 CurrentSession.Save();
+
+                // Show saved message count
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"💾 Saved {reconstructedMessages.Count:N0} messages to {channelName}.slackord\n");
+                });
 
                 Application.Current.Dispatcher.Dispatch(() => {
                     ApplicationWindow.WriteToDebugWindow($"✅ Completed {channelName}: {reconstructedMessages.Count:N0} messages saved\n\n");
@@ -238,6 +317,9 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Displays a summary of the completed import operation
+        /// </summary>
         private static void DisplayImportSummary()
         {
             if (CurrentSession == null || CurrentSession.Channels.Count == 0)
@@ -262,20 +344,25 @@ namespace Slackord.Classes
                 ApplicationWindow.WriteToDebugWindow($"\n🚀 Ready for Discord import! Use the '/slackord' command to begin.\n\n");
             });
 
-            // Count threads per channel for the thread warning
             DisplayThreadWarning();
         }
 
+        /// <summary>
+        /// Displays information about thread handling during import
+        /// </summary>
         private static void DisplayThreadWarning()
         {
-            // This would need to be updated to work with the file-based system
-            // For now, we'll skip the thread count since we don't keep everything in memory
             Application.Current.Dispatcher.Dispatch(() => {
                 ApplicationWindow.WriteToDebugWindow($"ℹ️ Thread counts will be calculated during Discord import.\n");
                 ApplicationWindow.WriteToDebugWindow($"💡 If you have many threads, you may need to manage Discord's 1000 thread limit.\n\n");
             });
         }
 
+        /// <summary>
+        /// Counts the total number of JSON files across all channel directories
+        /// </summary>
+        /// <param name="channelDirectories">Array of channel directories to count files in</param>
+        /// <returns>The total number of JSON files</returns>
         private static int CountTotalJsonFiles(DirectoryInfo[] channelDirectories)
         {
             int totalFiles = 0;
@@ -292,6 +379,7 @@ namespace Slackord.Classes
         /// <summary>
         /// Gets the current session or loads an existing one
         /// </summary>
+        /// <returns>The current import session</returns>
         public static ImportSession GetCurrentSession()
         {
             return CurrentSession;
@@ -300,6 +388,7 @@ namespace Slackord.Classes
         /// <summary>
         /// Sets the current session (used for resume operations)
         /// </summary>
+        /// <param name="session">The import session to set as current</param>
         public static void SetCurrentSession(ImportSession session)
         {
             CurrentSession = session;

@@ -7,16 +7,50 @@ using MenuApp;
 
 namespace Slackord.Classes
 {
+    /// <summary>
+    /// Manages Discord bot functionality including connection, message posting, and slash commands
+    /// </summary>
     internal class DiscordBot
     {
+        /// <summary>
+        /// Gets the singleton instance of DiscordBot
+        /// </summary>
         public static DiscordBot Instance { get; private set; } = new DiscordBot();
+
+        /// <summary>
+        /// Gets or sets the Discord socket client instance
+        /// </summary>
         public DiscordSocketClient DiscordClient { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service provider for dependency injection
+        /// </summary>
         public IServiceProvider _services;
+
+        /// <summary>
+        /// Gets or sets the dictionary of created Discord channels indexed by channel ID
+        /// </summary>
         public Dictionary<ulong, ITextChannel> CreatedChannels { get; set; } = [];
-        private DiscordBot() { }
+
+        /// <summary>
+        /// Cancellation token source for Discord operations
+        /// </summary>
         private CancellationTokenSource _discordOperationsCancellationTokenSource;
+
+        /// <summary>
+        /// Current log level for Discord bot logging
+        /// </summary>
         private LogSeverity _currentLogLevel = LogSeverity.Info;
 
+        /// <summary>
+        /// Private constructor for singleton pattern
+        /// </summary>
+        private DiscordBot() { }
+
+        /// <summary>
+        /// Starts the Discord client with retry logic for connection failures
+        /// </summary>
+        /// <param name="discordToken">The Discord bot token for authentication</param>
         public async Task StartClientAsync(string discordToken)
         {
             bool isConnected = false;
@@ -53,6 +87,9 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Logs out the Discord client gracefully
+        /// </summary>
         public async Task LogoutClientAsync()
         {
             try
@@ -65,12 +102,19 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Cancels ongoing Discord operations
+        /// </summary>
         public void CancelDiscordOperations()
         {
             _discordOperationsCancellationTokenSource?.Cancel();
             ApplicationWindow.WriteToDebugWindow("🛑 Discord operations cancellation requested - will stop after current message.\n");
         }
 
+        /// <summary>
+        /// Gets the current connection state of the Discord client
+        /// </summary>
+        /// <returns>The current connection state</returns>
         public ConnectionState GetClientConnectionState()
         {
             return DiscordClient?.ConnectionState ?? ConnectionState.Disconnected;
@@ -79,6 +123,7 @@ namespace Slackord.Classes
         /// <summary>
         /// Updates the current log level for Discord bot logging
         /// </summary>
+        /// <param name="logLevel">The new log level to apply</param>
         public void UpdateLogLevel(LogSeverity logLevel)
         {
             _currentLogLevel = logLevel;
@@ -88,6 +133,8 @@ namespace Slackord.Classes
         /// <summary>
         /// Gets a user-friendly name for the log level
         /// </summary>
+        /// <param name="severity">The LogSeverity enum value</param>
+        /// <returns>A human-readable log level name</returns>
         private static string GetLogLevelName(LogSeverity severity)
         {
             return severity switch
@@ -102,9 +149,13 @@ namespace Slackord.Classes
             };
         }
 
+        /// <summary>
+        /// Gets the log level setting from application preferences
+        /// </summary>
+        /// <returns>The LogSeverity value from preferences</returns>
         private static LogSeverity GetLogLevelFromPreferences()
         {
-            int logLevel = Preferences.Default.Get("DiscordLogLevel", 3); // Default to Info
+            int logLevel = Preferences.Default.Get("DiscordLogLevel", 3);
             return logLevel switch
             {
                 0 => LogSeverity.Critical,
@@ -117,11 +168,13 @@ namespace Slackord.Classes
             };
         }
 
+        /// <summary>
+        /// Handles Discord client log messages and filters based on current log level
+        /// </summary>
+        /// <param name="arg">The log message from Discord.NET</param>
+        /// <returns>A completed task</returns>
         private Task DiscordClient_Log(LogMessage arg)
         {
-            // Only log messages that meet or exceed the current log level
-            // LogSeverity enum: Critical=0, Error=1, Warning=2, Info=3, Debug=4, Verbose=5
-            // Lower numbers = higher severity, so we check if message severity <= current level
             if (arg.Severity <= _currentLogLevel)
             {
                 string logPrefix = GetLogLevelName(arg.Severity).ToUpper();
@@ -131,6 +184,10 @@ namespace Slackord.Classes
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Handles Discord client disconnection events
+        /// </summary>
+        /// <returns>A completed task</returns>
         private async Task OnClientDisconnect()
         {
             MainThread.BeginInvokeOnMainThread(async () =>
@@ -142,6 +199,11 @@ namespace Slackord.Classes
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Handles incoming slash commands from Discord
+        /// </summary>
+        /// <param name="command">The slash command that was executed</param>
+        /// <returns>A completed task</returns>
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
             ApplicationWindow.ResetProgressBar();
@@ -158,6 +220,10 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Initializes and starts the Discord bot with proper configuration
+        /// </summary>
+        /// <param name="discordToken">The Discord bot token for authentication</param>
         public async Task MainAsync(string discordToken)
         {
             if (DiscordClient is not null)
@@ -165,7 +231,6 @@ namespace Slackord.Classes
                 throw new InvalidOperationException("DiscordClient is already initialized.");
             }
 
-            // Load log level from preferences
             _currentLogLevel = GetLogLevelFromPreferences();
             ApplicationWindow.WriteToDebugWindow($"🔧 Discord log level set to: {GetLogLevelName(_currentLogLevel)}\n");
             ApplicationWindow.WriteToDebugWindow("Starting Slackord Bot..." + "\n");
@@ -174,7 +239,7 @@ namespace Slackord.Classes
             {
                 GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds,
                 UseInteractionSnowflakeDate = false,
-                LogLevel = _currentLogLevel // Set the Discord.NET internal log level
+                LogLevel = _currentLogLevel
             };
 
             DiscordClient = new DiscordSocketClient(_config);
@@ -194,6 +259,10 @@ namespace Slackord.Classes
             await DiscordClient.SetActivityAsync(new Game("for the Slackord command!", ActivityType.Watching));
         }
 
+        /// <summary>
+        /// Handles the Discord client ready event and sets up slash commands
+        /// </summary>
+        /// <returns>A completed task</returns>
         private async Task ClientReady()
         {
             try
@@ -230,6 +299,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Handles the resume slash command to continue incomplete import sessions
+        /// </summary>
+        /// <param name="command">The resume slash command</param>
+        /// <returns>A completed task</returns>
         private async Task HandleResumeCommandAsync(SocketSlashCommand command)
         {
             var incompleteSessions = ImportSession.GetIncompleteImports();
@@ -240,7 +314,6 @@ namespace Slackord.Classes
                 return;
             }
 
-            // Get the most recent incomplete session
             var sessionToResume = incompleteSessions.First();
             ImportJson.SetCurrentSession(sessionToResume);
 
@@ -264,11 +337,17 @@ namespace Slackord.Classes
                                      $"📁 Channels: {incompleteChannels.Count} incomplete\n" +
                                      $"📨 Messages: {totalRemainingMessages:N0} remaining");
 
-            // Continue with the Discord import
             ulong? guildId = command.GuildId;
             await PostMessagesToDiscord((ulong)guildId, command, isResume: true);
         }
 
+        /// <summary>
+        /// Posts messages from the current import session to Discord channels
+        /// </summary>
+        /// <param name="guildID">The Discord guild ID where messages will be posted</param>
+        /// <param name="interaction">The Discord interaction that triggered this operation</param>
+        /// <param name="isResume">Whether this is resuming an existing import</param>
+        /// <returns>A completed task</returns>
         [SlashCommand("slackord", "Posts all parsed Slack JSON messages to the text channel the command came from.")]
         public async Task PostMessagesToDiscord(ulong guildID, SocketInteraction interaction, bool isResume = false)
         {
@@ -295,7 +374,6 @@ namespace Slackord.Classes
                 ? currentSession.Channels.Where(c => !c.IsCompleted).ToList()
                 : [.. currentSession.Channels];
 
-            // Calculate totals for progress tracking
             int totalMessagesToPost = channelsToProcess.Sum(c => c.TotalMessages - c.MessagesSent);
             int totalMessagesAcrossAllChannels = currentSession.Channels.Sum(c => c.TotalMessages);
             int totalMessagesSentPreviously = currentSession.Channels.Sum(c => c.MessagesSent);
@@ -318,7 +396,6 @@ namespace Slackord.Classes
                     await interaction.DeferAsync();
                 }
 
-                // Create Discord channels if needed
                 cancellationToken.ThrowIfCancellationRequested();
                 await CreateDiscordChannelsForSession(guildID, currentSession, cancellationToken);
             }
@@ -347,7 +424,6 @@ namespace Slackord.Classes
                 return;
             }
 
-            // Determine file size limit based on server boost level
             SocketGuild guild = DiscordClient.GetGuild(guildID);
             long fileSizeLimit = guild.PremiumTier switch
             {
@@ -359,12 +435,11 @@ namespace Slackord.Classes
 
             Dictionary<string, IThreadChannel> threadStartsDict = [];
             int messagesPosted = 0;
-            int cumulativeMessagesPosted = totalMessagesSentPreviously; // Start with previously sent messages
+            int cumulativeMessagesPosted = totalMessagesSentPreviously;
             bool errorOccurred = false;
             bool wasCancelled = false;
             ApplicationWindow.ResetProgressBar();
 
-            // Set initial progress for resume operations
             if (isResume && totalMessagesSentPreviously > 0)
             {
                 ApplicationWindow.UpdateProgressBar(totalMessagesSentPreviously, totalMessagesAcrossAllChannels, "messages");
@@ -388,10 +463,9 @@ namespace Slackord.Classes
                         }
                         catch (OperationCanceledException)
                         {
-                            // Update cumulative count even on cancellation by checking current session progress
                             int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
                             cumulativeMessagesPosted = totalMessagesSentPreviously + currentSessionProgress;
-                            throw; // Re-throw to exit the processing loop
+                            throw;
                         }
                     }
                     else
@@ -408,7 +482,6 @@ namespace Slackord.Classes
             catch (OperationCanceledException)
             {
                 wasCancelled = true;
-                // Update cumulative count on cancellation
                 int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
                 cumulativeMessagesPosted = totalMessagesSentPreviously + currentSessionProgress;
 
@@ -420,7 +493,6 @@ namespace Slackord.Classes
             catch (Exception ex)
             {
                 errorOccurred = true;
-                // Update cumulative count on error
                 int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
                 cumulativeMessagesPosted = totalMessagesSentPreviously + currentSessionProgress;
 
@@ -429,11 +501,10 @@ namespace Slackord.Classes
                 });
             }
 
-            // Handle final states
             if (wasCancelled)
             {
                 ProcessingManager.Instance.SetState(ProcessingState.Error);
-                currentSession.Save(); // Save progress even on cancellation
+                currentSession.Save();
 
                 int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
 
@@ -462,7 +533,7 @@ namespace Slackord.Classes
             else
             {
                 ProcessingManager.Instance.SetState(ProcessingState.Error);
-                currentSession.Save(); // Save progress even on error
+                currentSession.Save();
 
                 int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
 
@@ -473,6 +544,19 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Processes and posts messages for a specific channel
+        /// </summary>
+        /// <param name="channelProgress">The channel progress tracker</param>
+        /// <param name="discordChannel">The Discord channel to post to</param>
+        /// <param name="session">The current import session</param>
+        /// <param name="threadStartsDict">Dictionary tracking thread starts</param>
+        /// <param name="fileSizeLimit">Maximum file size for uploads</param>
+        /// <param name="currentSessionMessagesPosted">Messages posted in current session</param>
+        /// <param name="totalMessagesAcrossAllChannels">Total messages across all channels</param>
+        /// <param name="totalMessagesSentPreviously">Messages sent in previous sessions</param>
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        /// <returns>The number of messages posted for this channel</returns>
         private static async Task<int> ProcessChannelMessages(ChannelProgress channelProgress, ITextChannel discordChannel,
             ImportSession session, Dictionary<string, IThreadChannel> threadStartsDict, long fileSizeLimit,
             int currentSessionMessagesPosted, int totalMessagesAcrossAllChannels, int totalMessagesSentPreviously, CancellationToken cancellationToken)
@@ -485,7 +569,6 @@ namespace Slackord.Classes
                     ApplicationWindow.WriteToDebugWindow($"📤 Processing channel: {channelProgress.Name} ({channelProgress.GetProgressDisplay()})\n");
                 });
 
-                // Load messages from .slackord file
                 string channelFilePath = session.GetChannelFilePath(channelProgress.Name);
                 var allMessages = await SlackordFileManager.LoadChannelMessagesAsync(channelFilePath);
 
@@ -494,10 +577,9 @@ namespace Slackord.Classes
                     Application.Current.Dispatcher.Dispatch(() => {
                         ApplicationWindow.WriteToDebugWindow($"⚠️ No messages found for {channelProgress.Name}\n");
                     });
-                    return 0;  // FIXED: was "return;"
+                    return 0;
                 }
 
-                // Skip already sent messages
                 var messagesToSend = allMessages.Skip(channelProgress.MessagesSent).ToList();
 
                 if (messagesToSend.Count == 0)
@@ -506,7 +588,7 @@ namespace Slackord.Classes
                         ApplicationWindow.WriteToDebugWindow($"✅ {channelProgress.Name} already completed\n");
                     });
                     channelProgress.IsCompleted = true;
-                    return 0;  // FIXED: was "return;"
+                    return 0;
                 }
 
                 var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
@@ -524,26 +606,22 @@ namespace Slackord.Classes
                         {
                             await PostSingleMessage(message, webhookClient, discordChannel, threadStartsDict, fileSizeLimit, cancellationToken);
 
-                            // Update progress
                             channelProgress.RecordMessageSent(message.OriginalTimestamp);
-                            localMessagesPosted++;  // FIXED: was "messagesPosted++"
+                            localMessagesPosted++;
 
-                            // Save progress every 25 messages to reduce I/O
-                            if ((currentSessionMessagesPosted + localMessagesPosted) % 25 == 0)  // FIXED: was "messagesPosted % 25"
+                            if ((currentSessionMessagesPosted + localMessagesPosted) % 25 == 0)
                             {
                                 session.Save();
                             }
 
-                            // Calculate cumulative progress: previously sent + current session
                             int cumulativeProgress = totalMessagesSentPreviously + currentSessionMessagesPosted + localMessagesPosted;
                             ApplicationWindow.UpdateProgressBar(cumulativeProgress, totalMessagesAcrossAllChannels, "messages");
 
-                            // Brief delay to avoid rate limits
                             await Task.Delay(50, cancellationToken);
                         }
                         catch (OperationCanceledException)
                         {
-                            throw; // Re-throw cancellation
+                            throw;
                         }
                         catch (Exception ex)
                         {
@@ -551,7 +629,6 @@ namespace Slackord.Classes
                                 ApplicationWindow.WriteToDebugWindow($"❌ Error posting message in {channelProgress.Name}: {ex.Message}\n");
                             });
 
-                            // Ask user if they want to continue
                             bool shouldContinue = await MainPage.Current.DisplayAlert(
                                 "Error Posting Message",
                                 $"An error occurred while posting a message to {channelProgress.Name}: {ex.Message}\n\nWould you like to continue with the next message?",
@@ -563,11 +640,9 @@ namespace Slackord.Classes
                                 throw new Exception("User chose to stop import");
                             }
 
-                            // If continuing, still count this as a "sent" message to avoid getting stuck
                             channelProgress.RecordMessageSent(message.OriginalTimestamp);
-                            localMessagesPosted++;  // FIXED: was "messagesPosted++"
+                            localMessagesPosted++;
 
-                            // Update progress bar even for failed messages
                             int cumulativeProgress = totalMessagesSentPreviously + currentSessionMessagesPosted + localMessagesPosted;
                             ApplicationWindow.UpdateProgressBar(cumulativeProgress, totalMessagesAcrossAllChannels, "messages");
                         }
@@ -575,7 +650,6 @@ namespace Slackord.Classes
                 }
                 finally
                 {
-                    // Always clean up webhook
                     try
                     {
                         await webhook.DeleteAsync();
@@ -588,7 +662,6 @@ namespace Slackord.Classes
                     }
                 }
 
-                // Mark channel as completed if all messages sent
                 if (channelProgress.IsCompleted)
                 {
                     Application.Current.Dispatcher.Dispatch(() => {
@@ -597,7 +670,7 @@ namespace Slackord.Classes
                 }
 
                 session.Save();
-                return localMessagesPosted;  // ADDED: Missing return statement
+                return localMessagesPosted;
             }
             catch (Exception ex)
             {
@@ -608,6 +681,16 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Posts a single message to Discord with proper thread and attachment handling
+        /// </summary>
+        /// <param name="message">The reconstructed message to post</param>
+        /// <param name="webhookClient">The Discord webhook client</param>
+        /// <param name="discordChannel">The Discord channel to post to</param>
+        /// <param name="threadStartsDict">Dictionary tracking thread starts</param>
+        /// <param name="fileSizeLimit">Maximum file size for uploads</param>
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        /// <returns>A completed task</returns>
         private static async Task PostSingleMessage(ReconstructedMessage message, DiscordWebhookClient webhookClient,
             ITextChannel discordChannel, Dictionary<string, IThreadChannel> threadStartsDict,
             long fileSizeLimit, CancellationToken cancellationToken)
@@ -624,11 +707,9 @@ namespace Slackord.Classes
                     options: new RequestOptions { CancelToken = cancellationToken });
 
                 cancellationToken.ThrowIfCancellationRequested();
-                // FIXED: Changed from IEnumerable<RestMessage> to IEnumerable<IMessage>
                 IEnumerable<IMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
 
                 cancellationToken.ThrowIfCancellationRequested();
-                // FIXED: Changed from RestThreadChannel to IThreadChannel
                 IThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread,
                     ThreadArchiveDuration.OneHour, threadMessages.First(), options: new RequestOptions { CancelToken = cancellationToken });
                 threadStartsDict[message.ParentThreadTs] = threadID;
@@ -674,15 +755,20 @@ namespace Slackord.Classes
                     options: new RequestOptions { CancelToken = cancellationToken });
             }
 
-            // Handle pinning and file uploads
             await HandleMessageExtras(message, discordChannel, fileSizeLimit, cancellationToken);
         }
 
-        // FIXED: Changed parameter type from RestTextChannel to ITextChannel
+        /// <summary>
+        /// Handles message pinning and file uploads for a posted message
+        /// </summary>
+        /// <param name="message">The reconstructed message with extras to handle</param>
+        /// <param name="discordChannel">The Discord channel the message was posted to</param>
+        /// <param name="fileSizeLimit">Maximum file size for uploads</param>
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        /// <returns>A completed task</returns>
         private static async Task HandleMessageExtras(ReconstructedMessage message, ITextChannel discordChannel,
             long fileSizeLimit, CancellationToken cancellationToken)
         {
-            // Pin message if needed
             if (message.IsPinned && message.ThreadType == ThreadType.None)
             {
                 try
@@ -703,7 +789,6 @@ namespace Slackord.Classes
                 }
             }
 
-            // Handle file uploads
             foreach (string localFilePath in message.FileURLs)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -744,6 +829,13 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Creates Discord channels for all channels in the import session
+        /// </summary>
+        /// <param name="guildID">The Discord guild ID to create channels in</param>
+        /// <param name="session">The import session containing channel information</param>
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        /// <returns>A completed task</returns>
         private async Task CreateDiscordChannelsForSession(ulong guildID, ImportSession session, CancellationToken cancellationToken)
         {
             try
@@ -751,7 +843,6 @@ namespace Slackord.Classes
                 SocketGuild guild = DiscordClient.GetGuild(guildID);
                 string baseCategoryName = "Slackord Import";
 
-                // First, try to populate CreatedChannels with existing Discord channels (for resume scenarios)
                 foreach (var channelProgress in session.Channels.Where(c => c.DiscordChannelId > 0))
                 {
                     var existingChannel = guild.GetTextChannel(channelProgress.DiscordChannelId);
@@ -767,12 +858,10 @@ namespace Slackord.Classes
                         Application.Current.Dispatcher.Dispatch(() => {
                             ApplicationWindow.WriteToDebugWindow($"⚠️ Could not find Discord channel with ID {channelProgress.DiscordChannelId} for {channelProgress.Name}\n");
                         });
-                        // Reset the Discord channel ID so it gets recreated
                         channelProgress.SetDiscordChannelId(0);
                     }
                 }
 
-                // Now create any channels that don't exist yet
                 var channelsNeedingCreation = session.Channels.Where(c => c.NeedsDiscordChannel).ToList();
 
                 if (channelsNeedingCreation.Count == 0)
@@ -815,7 +904,6 @@ namespace Slackord.Classes
 
                     string channelName = channelProgress.Name.ToLower();
 
-                    // Handle channel name conflicts
                     if (guild.TextChannels.Any(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId))
                     {
                         int suffix = 1;

@@ -11,18 +11,17 @@ namespace Slackord.Classes
         /// <summary>
         /// Saves reconstructed messages to a .slackord file
         /// </summary>
+        /// <param name="filePath">The path where the file should be saved</param>
+        /// <param name="messages">The list of reconstructed messages to save</param>
         public static async Task SaveChannelMessagesAsync(string filePath, List<ReconstructedMessage> messages)
         {
             try
             {
-                // Ensure directory exists
                 string directory = Path.GetDirectoryName(filePath);
                 Directory.CreateDirectory(directory);
 
-                // Serialize messages to JSON
                 string json = JsonConvert.SerializeObject(messages, Formatting.Indented);
 
-                // Write to file
                 await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
 
                 ApplicationWindow.WriteToDebugWindow($"💾 Saved {messages.Count:N0} messages to {Path.GetFileName(filePath)}\n");
@@ -38,6 +37,8 @@ namespace Slackord.Classes
         /// <summary>
         /// Loads reconstructed messages from a .slackord file
         /// </summary>
+        /// <param name="filePath">The path to the .slackord file to load</param>
+        /// <returns>A list of reconstructed messages, or empty list if file doesn't exist</returns>
         public static async Task<List<ReconstructedMessage>> LoadChannelMessagesAsync(string filePath)
         {
             try
@@ -65,12 +66,12 @@ namespace Slackord.Classes
         /// <summary>
         /// Appends a single message to an existing .slackord file (for incremental saves)
         /// </summary>
+        /// <param name="filePath">The path to the .slackord file</param>
+        /// <param name="message">The message to append</param>
         public static async Task AppendMessageAsync(string filePath, ReconstructedMessage message)
         {
             try
             {
-                // For now, we'll load all messages, add the new one, and save back
-                // This could be optimized in the future with true append operations
                 var messages = await LoadChannelMessagesAsync(filePath);
                 messages.Add(message);
                 await SaveChannelMessagesAsync(filePath, messages);
@@ -86,6 +87,8 @@ namespace Slackord.Classes
         /// <summary>
         /// Gets the number of messages in a .slackord file without loading all data
         /// </summary>
+        /// <param name="filePath">The path to the .slackord file</param>
+        /// <returns>The number of messages in the file, or 0 if file doesn't exist</returns>
         public static async Task<int> GetMessageCountAsync(string filePath)
         {
             try
@@ -93,8 +96,6 @@ namespace Slackord.Classes
                 if (!File.Exists(filePath))
                     return 0;
 
-                // For a quick count, we could parse just the array structure
-                // For now, we'll load and count (can be optimized later)
                 var messages = await LoadChannelMessagesAsync(filePath);
                 return messages.Count;
             }
@@ -109,6 +110,10 @@ namespace Slackord.Classes
         /// <summary>
         /// Loads a range of messages from a .slackord file (for pagination/resume)
         /// </summary>
+        /// <param name="filePath">The path to the .slackord file</param>
+        /// <param name="startIndex">The starting index of messages to load</param>
+        /// <param name="count">The number of messages to load</param>
+        /// <returns>A list of messages in the specified range</returns>
         public static async Task<List<ReconstructedMessage>> LoadMessageRangeAsync(string filePath, int startIndex, int count)
         {
             try
@@ -132,6 +137,7 @@ namespace Slackord.Classes
         /// <summary>
         /// Deletes a channel's .slackord file
         /// </summary>
+        /// <param name="filePath">The path to the .slackord file to delete</param>
         public static void DeleteChannelFile(string filePath)
         {
             try
@@ -152,6 +158,8 @@ namespace Slackord.Classes
         /// <summary>
         /// Validates that a .slackord file contains valid data
         /// </summary>
+        /// <param name="filePath">The path to the .slackord file to validate</param>
+        /// <returns>True if the file exists and contains valid message data</returns>
         public static async Task<bool> ValidateChannelFileAsync(string filePath)
         {
             try
@@ -171,6 +179,8 @@ namespace Slackord.Classes
         /// <summary>
         /// Gets file size in a human-readable format
         /// </summary>
+        /// <param name="filePath">The path to the file</param>
+        /// <returns>A formatted string showing the file size (e.g., "1.5 MB")</returns>
         public static string GetFileSizeDisplay(string filePath)
         {
             try

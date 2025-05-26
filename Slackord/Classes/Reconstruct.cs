@@ -3,12 +3,30 @@ using Application = Microsoft.Maui.Controls.Application;
 
 namespace Slackord.Classes
 {
+    /// <summary>
+    /// Handles the reconstruction of Slack messages into Discord-compatible format
+    /// </summary>
     public partial class Reconstruct
     {
+        /// <summary>
+        /// Dictionary of users indexed by user ID for message reconstruction
+        /// </summary>
         internal static readonly Dictionary<string, DeconstructedUser> UsersDict = [];
+
+        /// <summary>
+        /// Dictionary to track thread information during reconstruction
+        /// </summary>
         private static readonly Dictionary<string, ThreadInfo> threadDictionary = [];
+
+        /// <summary>
+        /// Gets a read-only view of the thread dictionary
+        /// </summary>
         public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary => threadDictionary;
 
+        /// <summary>
+        /// Initializes the users dictionary with parsed user data
+        /// </summary>
+        /// <param name="usersDict">Dictionary of user data from Slack export</param>
         public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
         {
             foreach (KeyValuePair<string, DeconstructedUser> kvp in usersDict)
@@ -17,26 +35,47 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Regular expression for matching bold text formatting
+        /// </summary>
         [GeneratedRegex(@"\*\*((?:[^*]|(?:\*(?!\*)))*)\*\*")]
         private static partial Regex Bold();
 
+        /// <summary>
+        /// Regular expression for matching italic text formatting
+        /// </summary>
         [GeneratedRegex(@"\*((?:[^*]|(?:\*(?!\*)))*)\*")]
         private static partial Regex Italics();
 
+        /// <summary>
+        /// Regular expression for matching underlined text formatting
+        /// </summary>
         [GeneratedRegex(@"__((?:[^_]|(?:_(?!_)))*)__")]
         private static partial Regex Underline();
 
+        /// <summary>
+        /// Regular expression for matching strikethrough text formatting
+        /// </summary>
         [GeneratedRegex(@"~~((?:[^~]|(?:~(?!~)))*)~~")]
         private static partial Regex Strikethrough();
 
+        /// <summary>
+        /// Regular expression for matching masked links in Slack format
+        /// </summary>
         [GeneratedRegex(@"<(https?://[^|]+)\|(.*?)>")]
         private static partial Regex MaskedLinks();
 
+        /// <summary>
+        /// Regular expression for matching block quotes
+        /// </summary>
         [GeneratedRegex(@"&gt; (.+?)(?=\n|$)")]
         private static partial Regex BlockQuotes();
 
-
-
+        /// <summary>
+        /// Reconstructs all messages across multiple channels with progress tracking
+        /// </summary>
+        /// <param name="channels">List of channels to reconstruct</param>
+        /// <param name="cancellationToken">Token to cancel the operation</param>
         public static async Task ReconstructAsync(List<Channel> channels, CancellationToken cancellationToken)
         {
             try
@@ -44,11 +83,9 @@ namespace Slackord.Classes
                 ProcessingManager.Instance.SetState(ProcessingState.ReconstructingMessages);
                 ApplicationWindow.ShowProgressBar();
 
-                // Calculate total messages for accurate progress tracking
                 int totalMessages = channels.Sum(c => c.DeconstructedMessagesList.Count);
                 int processedMessages = 0;
 
-                // Time-based progress tracking
                 DateTime lastProgressUpdate = DateTime.Now;
                 const int progressUpdateIntervalSeconds = 15;
 
@@ -76,7 +113,6 @@ namespace Slackord.Classes
 
                         processedMessages++;
 
-                        // TIME-BASED UPDATES: Only update every 15 seconds or on completion
                         DateTime now = DateTime.Now;
                         bool shouldUpdate = (now - lastProgressUpdate).TotalSeconds >= progressUpdateIntervalSeconds ||
                                            i == channel.DeconstructedMessagesList.Count - 1;
@@ -101,7 +137,6 @@ namespace Slackord.Classes
                     });
                 }
 
-                // Final update - ensure we show 100% completion
                 ApplicationWindow.UpdateProgressBar(totalMessages, totalMessages, "messages");
                 ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
 
@@ -135,6 +170,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Reconstructs a single Slack message into Discord-compatible format
+        /// </summary>
+        /// <param name="deconstructedMessage">The deconstructed Slack message</param>
+        /// <param name="channel">The channel this message belongs to</param>
         public static async Task ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
         {
             try
@@ -188,27 +228,33 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Downloads a file from Slack and saves it locally
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file to download</param>
+        /// <param name="channelName">The name of the channel (for organizing downloads)</param>
+        /// <param name="isDownloadable">Whether the file is downloadable</param>
+        /// <returns>A tuple containing the local file path and permalink</returns>
         public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, bool isDownloadable)
         {
             if (!isDownloadable || string.IsNullOrWhiteSpace(fileUrl))
             {
                 return (null, null);
             }
-            // Normalize the file URL and check if it's a valid URI
+
             if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
             {
                 Logger.Log($"Invalid URL provided: {fileUrl}");
                 return (null, null);
             }
-            // Prepare directories and file path
+
             string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
 
-            // Ensure the download directory exists
             Directory.CreateDirectory(downloadsFolder);
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
             string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
             string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
-            // Download the file
+
             try
             {
                 using HttpClient httpClient = new();
@@ -238,11 +284,15 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Converts a Unix timestamp string to a localized date/time string
+        /// </summary>
+        /// <param name="timestampString">The Unix timestamp string to convert</param>
+        /// <returns>A formatted local date/time string</returns>
         private static string ConvertTimestampToLocalizedString(string timestampString)
         {
             try
             {
-                // Split the timestamp into whole and fractional seconds.
                 string[] parts = timestampString.Split('.');
                 if (parts.Length != 2)
                 {
@@ -250,15 +300,12 @@ namespace Slackord.Classes
                 }
 
                 long wholeSeconds = long.Parse(parts[0]);
-                long fractionalTicks = long.Parse(parts[1]) * (TimeSpan.TicksPerSecond / 1_000_000); // Convert microseconds to ticks.
+                long fractionalTicks = long.Parse(parts[1]) * (TimeSpan.TicksPerSecond / 1_000_000);
 
-                // Create a DateTimeOffset from the Unix timestamp.
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(wholeSeconds).AddTicks(fractionalTicks);
 
-                // Retrieve the current timestamp setting.
                 string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
 
-                // Determine the format string.
                 string format = timestampValue == "24 Hour" ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd hh:mm:ss tt";
 
                 return dateTimeOffset.ToLocalTime().ToString(format);
@@ -270,17 +317,21 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Converts Slack formatting to Discord markdown
+        /// </summary>
+        /// <param name="input">The text with Slack formatting</param>
+        /// <returns>Text with Discord markdown formatting</returns>
         private static string ConvertToDiscordMarkdown(string input)
         {
             try
             {
-                // Rich text conversions.
-                input = Bold().Replace(input, "**$1**");       // Bold.
-                input = Italics().Replace(input, "*$1*");      // Italics.
-                input = Underline().Replace(input, "__$1__");  // Underline.
-                input = Strikethrough().Replace(input, "~~$1~~"); // Strikethrough.
-                input = MaskedLinks().Replace(input, "[$2]($1)");  // Masked Links.
-                input = BlockQuotes().Replace(input, "> $1\n");    // Blockquotes.
+                input = Bold().Replace(input, "**$1**");
+                input = Italics().Replace(input, "*$1*");
+                input = Underline().Replace(input, "__$1__");
+                input = Strikethrough().Replace(input, "~~$1~~");
+                input = MaskedLinks().Replace(input, "[$2]($1)");
+                input = BlockQuotes().Replace(input, "> $1\n");
 
                 return input;
             }
@@ -291,6 +342,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Converts a user ID to a display name based on current format settings
+        /// </summary>
+        /// <param name="userId">The Slack user ID</param>
+        /// <returns>The formatted display name</returns>
         private static string ConvertUserToDisplayName(string userId)
         {
             try
@@ -322,21 +378,23 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Replaces Slack user mentions with formatted names
+        /// </summary>
+        /// <param name="messageText">The message text containing user mentions</param>
+        /// <returns>Message text with replaced user mentions</returns>
         private static string ReplaceUserMentions(string messageText)
         {
             string replacedText = messageText;
 
-            // Regular expression pattern to match user ID mentions
             string mentionPattern = @"<@(U[A-Z0-9]+)>";
 
-            // Find all user ID mentions in the message text
             MatchCollection matches = Regex.Matches(messageText, mentionPattern);
 
             foreach (Match match in matches.Cast<Match>())
             {
                 string userId = match.Groups[1].Value;
 
-                // Find the corresponding user in the UsersDict dictionary
                 if (UsersDict.TryGetValue(userId, out DeconstructedUser user))
                 {
                     string replacementName = GetUserReplacementName(user);
@@ -347,6 +405,11 @@ namespace Slackord.Classes
             return replacedText;
         }
 
+        /// <summary>
+        /// Gets the replacement name for a user mention based on format settings
+        /// </summary>
+        /// <param name="user">The deconstructed user object</param>
+        /// <returns>The formatted replacement name</returns>
         private static string GetUserReplacementName(DeconstructedUser user)
         {
             string displayName = user.Profile.DisplayName;
@@ -365,11 +428,25 @@ namespace Slackord.Classes
             };
         }
 
+        /// <summary>
+        /// Formats a message with timestamp
+        /// </summary>
+        /// <param name="messageContent">The message content</param>
+        /// <param name="timestamp">The formatted timestamp</param>
+        /// <returns>The formatted message string</returns>
         private static string FormatMessage(string messageContent, string timestamp)
         {
             return $"[{timestamp}] : {messageContent}";
         }
 
+        /// <summary>
+        /// Splits long messages and adds them to the channel's reconstructed messages list
+        /// </summary>
+        /// <param name="formattedMessage">The formatted message to split if necessary</param>
+        /// <param name="deconstructedMessage">The original deconstructed message</param>
+        /// <param name="channel">The channel to add messages to</param>
+        /// <param name="userName">The user name for the message</param>
+        /// <param name="userAvatar">The user avatar URL</param>
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
         {
             List<string> messageParts = SplitMessageIntoParts(formattedMessage);
@@ -396,6 +473,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Splits a message into parts that fit Discord's character limits
+        /// </summary>
+        /// <param name="message">The message to split</param>
+        /// <returns>A list of message parts</returns>
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
@@ -407,7 +489,6 @@ namespace Slackord.Classes
             {
                 int bestSplitIndex = Math.Min(currentIndex + maxMessageLength, message.Length);
 
-                // Ensure we're not splitting in the middle of a word.
                 while (bestSplitIndex > currentIndex &&
                        bestSplitIndex < message.Length &&
                        !char.IsWhiteSpace(message[bestSplitIndex]))
@@ -415,7 +496,6 @@ namespace Slackord.Classes
                     bestSplitIndex--;
                 }
 
-                // Check for URLs and ensure we're not splitting a URL.
                 MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
                 if (matches.Count > 0)
                 {
@@ -426,14 +506,12 @@ namespace Slackord.Classes
                     }
                 }
 
-                // Ensure we're not splitting in the middle of markdown syntax.
                 int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
                 if (boldSyntax > -1 && boldSyntax == bestSplitIndex - 2)
                 {
                     bestSplitIndex -= 2;
                 }
 
-                // Use the range operator for substring
                 string part = message[currentIndex..bestSplitIndex];
                 messageParts.Add(part);
 
@@ -443,22 +521,71 @@ namespace Slackord.Classes
             return messageParts;
         }
 
+        /// <summary>
+        /// Regular expression for matching URLs
+        /// </summary>
         [GeneratedRegex(@"https?://\S+")]
         private static partial Regex URLPattern();
     }
 
+    /// <summary>
+    /// Represents a reconstructed message ready for Discord posting
+    /// </summary>
     public class ReconstructedMessage
     {
+        /// <summary>
+        /// Gets or sets the original timestamp from Slack
+        /// </summary>
         public string OriginalTimestamp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user name for display
+        /// </summary>
         public string User { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user avatar URL
+        /// </summary>
         public string Avatar { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original message content
+        /// </summary>
         public string Message { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formatted content ready for Discord
+        /// </summary>
         public string Content { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent thread timestamp
+        /// </summary>
         public string ParentThreadTs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the thread type (None, Parent, Reply)
+        /// </summary>
         public ThreadType ThreadType { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this message should be pinned
+        /// </summary>
         public bool IsPinned { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of local file paths for attachments
+        /// </summary>
         public List<string> FileURLs { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the list of fallback file URLs
+        /// </summary>
         public List<string> FallbackFileURLs { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the list indicating which files are downloadable
+        /// </summary>
         public List<bool> IsFileDownloadable { get; set; } = [];
     }
 }

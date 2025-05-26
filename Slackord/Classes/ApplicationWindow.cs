@@ -4,16 +4,50 @@ using System.Text;
 
 namespace Slackord.Classes
 {
+    /// <summary>
+    /// Main application window class responsible for managing UI interactions, Discord bot connection, 
+    /// and coordinating import/export operations
+    /// </summary>
     public class ApplicationWindow
     {
+        /// <summary>
+        /// Gets the current MainPage instance
+        /// </summary>
         private static MainPage MainPageInstance => MainPage.Current;
+
+        /// <summary>
+        /// Discord bot instance for handling Discord operations
+        /// </summary>
         private readonly DiscordBot _discordBot = DiscordBot.Instance;
+
+        /// <summary>
+        /// Cancellation token source for managing operation cancellation
+        /// </summary>
         private CancellationTokenSource cancellationTokenSource;
+
+        /// <summary>
+        /// Indicates whether the stored bot token is valid
+        /// </summary>
         private bool hasValidBotToken;
+
+        /// <summary>
+        /// The Discord bot token for authentication
+        /// </summary>
         private string DiscordToken;
+
+        /// <summary>
+        /// Tracks whether the bot has ever been connected to prevent UI confusion
+        /// </summary>
         private bool hasEverBeenConnected = false;
+
+        /// <summary>
+        /// Gets or sets the current user format order for displaying user names
+        /// </summary>
         public static UserFormatOrder CurrentUserFormatOrder { get; set; } = UserFormatOrder.DisplayName_User_RealName;
 
+        /// <summary>
+        /// Defines the order in which user name components are displayed
+        /// </summary>
         public enum UserFormatOrder
         {
             DisplayName_User_RealName,
@@ -24,6 +58,9 @@ namespace Slackord.Classes
             RealName_User_DisplayName
         }
 
+        /// <summary>
+        /// Checks if this is the first run of the application and displays appropriate welcome message
+        /// </summary>
         public static void CheckForFirstRun()
         {
             if (Preferences.Default.ContainsKey("FirstRun"))
@@ -45,6 +82,9 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Validates the stored Discord bot token and updates the connection button state accordingly
+        /// </summary>
         public async Task CheckForValidBotToken()
         {
             DiscordToken = Preferences.Default.Get("SlackordBotToken", string.Empty).Trim();
@@ -81,12 +121,11 @@ namespace Slackord.Classes
                     return;
                 }
 
-                // Show summary of incomplete imports
                 var sb = new StringBuilder();
                 sb.AppendLine("Found incomplete import sessions:");
                 sb.AppendLine();
 
-                for (int i = 0; i < Math.Min(incompleteSessions.Count, 3); i++) // Show max 3 recent sessions
+                for (int i = 0; i < Math.Min(incompleteSessions.Count, 3); i++)
                 {
                     var session = incompleteSessions[i];
                     var incompleteChannels = session.Channels.Where(c => !c.IsCompleted).Count();
@@ -135,6 +174,7 @@ namespace Slackord.Classes
         /// <summary>
         /// Resumes the most recent incomplete import session
         /// </summary>
+        /// <param name="sessionToResume">The import session to resume</param>
         private static async Task ResumeRecentImport(ImportSession sessionToResume)
         {
             try
@@ -149,7 +189,7 @@ namespace Slackord.Classes
                 WriteToDebugWindow($"   • Incomplete channels: {incompleteChannels.Count}\n");
                 WriteToDebugWindow($"   • Messages remaining: {totalMessages:N0}\n\n");
 
-                foreach (var channel in incompleteChannels.Take(5)) // Show first 5 channels
+                foreach (var channel in incompleteChannels.Take(5))
                 {
                     WriteToDebugWindow($"   📁 {channel.GetProgressDisplay()}\n");
                 }
@@ -161,13 +201,11 @@ namespace Slackord.Classes
 
                 WriteToDebugWindow($"\n");
 
-                // Set this as the current session
                 ImportJson.SetCurrentSession(sessionToResume);
 
                 WriteToDebugWindow($"✅ Session loaded! Ready to resume Discord import.\n");
                 WriteToDebugWindow($"🚀 Use the Discord '/slackord' or '/resume' command to continue posting messages.\n\n");
 
-                // Update processing state
                 ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
 
                 bool shouldShowInstructions = await MainPage.Current.DisplayAlert(
@@ -195,6 +233,7 @@ namespace Slackord.Classes
         /// <summary>
         /// Shows detailed information about what will be resumed
         /// </summary>
+        /// <param name="session">The import session to show details for</param>
         private static void ShowResumeDetails(ImportSession session)
         {
             WriteToDebugWindow($"📋 Detailed Resume Information:\n");
@@ -223,6 +262,9 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Retrieves and displays the current timestamp setting
+        /// </summary>
         public static async Task GetTimeStampValue()
         {
             if (!Preferences.Default.ContainsKey("TimestampValue"))
@@ -236,6 +278,9 @@ namespace Slackord.Classes
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Toggles the timestamp format between 12-hour and 24-hour
+        /// </summary>
         public static async Task SetTimestampValue()
         {
             string currentSetting = Preferences.Default.Get("TimestampValue", "12 Hour");
@@ -246,6 +291,9 @@ namespace Slackord.Classes
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Retrieves and displays the current user format setting
+        /// </summary>
         public static async Task GetUserFormatValue()
         {
             if (!Preferences.Default.ContainsKey("UserFormatValue"))
@@ -262,6 +310,9 @@ namespace Slackord.Classes
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Cycles to the next user format setting
+        /// </summary>
         public static async Task SetUserFormatValue()
         {
             try
@@ -281,11 +332,14 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Retrieves and displays the current Discord log level setting
+        /// </summary>
         public static async Task GetDiscordLogLevelValue()
         {
             if (!Preferences.Default.ContainsKey("DiscordLogLevel"))
             {
-                Preferences.Default.Set("DiscordLogLevel", 3); // Default to Info
+                Preferences.Default.Set("DiscordLogLevel", 3);
             }
 
             int logLevel = Preferences.Default.Get("DiscordLogLevel", 3);
@@ -295,16 +349,18 @@ namespace Slackord.Classes
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Cycles to the next Discord log level setting
+        /// </summary>
         public static async Task SetDiscordLogLevelValue()
         {
             try
             {
                 int currentLogLevel = Preferences.Default.Get("DiscordLogLevel", 3);
-                int nextLogLevel = (currentLogLevel + 1) % 6; // 0-5 (Critical to Verbose)
+                int nextLogLevel = (currentLogLevel + 1) % 6;
 
                 Preferences.Default.Set("DiscordLogLevel", nextLogLevel);
 
-                // Update the Discord bot log level immediately
                 LogSeverity newSeverity = GetLogSeverityFromLevel(nextLogLevel);
                 DiscordBot.Instance.UpdateLogLevel(newSeverity);
 
@@ -316,6 +372,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Converts a numeric log level to a human-readable name
+        /// </summary>
+        /// <param name="logLevel">The numeric log level (0-5)</param>
+        /// <returns>The human-readable log level name</returns>
         private static string GetDiscordLogLevelName(int logLevel)
         {
             return logLevel switch
@@ -330,6 +391,11 @@ namespace Slackord.Classes
             };
         }
 
+        /// <summary>
+        /// Converts a numeric log level to a LogSeverity enum value
+        /// </summary>
+        /// <param name="logLevel">The numeric log level (0-5)</param>
+        /// <returns>The corresponding LogSeverity enum value</returns>
         private static LogSeverity GetLogSeverityFromLevel(int logLevel)
         {
             return logLevel switch
@@ -344,11 +410,13 @@ namespace Slackord.Classes
             };
         }
 
+        /// <summary>
+        /// Initiates the JSON import process for Slack data
+        /// </summary>
+        /// <param name="isFullExport">Whether this is a full export or single channel export</param>
         public async Task ImportJsonAsync(bool isFullExport)
         {
-            // Create a new cancellation token source
             using var cts = new CancellationTokenSource();
-            // Use proper assignment to avoid the IDE0059 warning
             cancellationTokenSource = cts;
             CancellationToken cancellationToken = cancellationTokenSource.Token;
 
@@ -362,10 +430,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Cancels all ongoing import and Discord operations
+        /// </summary>
         public void CancelImport()
         {
-
-            // Cancel Discord operations
             _discordBot.CancelDiscordOperations();
 
             Application.Current.Dispatcher.Dispatch(() =>
@@ -373,19 +442,19 @@ namespace Slackord.Classes
                 ApplicationWindow.WriteToDebugWindow("🛑 Cancellation requested for all operations...\n");
             });
 
-            // Cancel JSON import
             cancellationTokenSource?.Cancel();
         }
 
+        /// <summary>
+        /// Toggles the Discord bot connection state and handles various connection scenarios
+        /// </summary>
         public async Task ToggleDiscordConnection()
         {
-            // Check for valid bot token before proceeding
             if (!hasValidBotToken)
             {
                 await ChangeBotConnectionButton("Connect", new Microsoft.Maui.Graphics.Color(128, 128, 128), new Microsoft.Maui.Graphics.Color(255, 255, 255));
                 WriteToDebugWindow("Your bot token doesn't look valid. Please go to the Options page to enter a valid token.");
 
-                // Navigate to options page
                 if (Application.Current.Windows[0].Page is NavigationPage navPage)
                 {
                     await navPage.PushAsync(new Pages.OptionsPage());
@@ -395,23 +464,18 @@ namespace Slackord.Classes
 
             var currentState = _discordBot.GetClientConnectionState();
 
-            // If currently posting messages, cancel the operation
             if (ProcessingManager.Instance.CurrentState == ProcessingState.ImportingToDiscord)
             {
                 await ChangeBotConnectionButton("Cancelling", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
                 WriteToDebugWindow("Cancelling Discord message posting...\n");
 
-                // Just request cancellation - don't change button state immediately
                 CancelImport();
 
-                // Mark as partial import for resume
                 Preferences.Default.Set("HasPartialImport", true);
 
-                // The button state will be updated by the posting operation when it actually stops
                 return;
             }
 
-            // Rest of the connection logic remains the same...
             if (currentState == ConnectionState.Connected)
             {
                 await ChangeBotConnectionButton("Disconnecting", new Microsoft.Maui.Graphics.Color(255, 255, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
@@ -436,12 +500,11 @@ namespace Slackord.Classes
                     await _discordBot.StartClientAsync(DiscordToken);
                 }
 
-                // Poll the connection state until it resolves to either Connected or it fails to connect
                 int maxAttempts = 10;
                 int attempt = 0;
                 do
                 {
-                    await Task.Delay(1000); // Poll every second
+                    await Task.Delay(1000);
                     currentState = _discordBot.GetClientConnectionState();
                     attempt++;
                 } while (currentState != ConnectionState.Connected && currentState != ConnectionState.Disconnected && attempt < maxAttempts);
@@ -462,17 +525,27 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Handles UI updates when an operation is cancelled
+        /// </summary>
         public static async Task OnOperationCancelled()
         {
             await ChangeBotConnectionButton("Cancelled", new Microsoft.Maui.Graphics.Color(255, 165, 0), new Microsoft.Maui.Graphics.Color(0, 0, 0));
             WriteToDebugWindow("Discord operation cancelled successfully.\n");
         }
 
+        /// <summary>
+        /// Checks for application updates from GitHub
+        /// </summary>
+        /// <param name="isStartupCheck">Whether this is an automatic startup check or manual check</param>
         public static async Task CheckForNewVersion(bool isStartupCheck)
         {
             await UpdateCheck.CheckForUpdates(isStartupCheck);
         }
 
+        /// <summary>
+        /// Displays the application about dialog with version and author information
+        /// </summary>
         public static void DisplayAbout()
         {
             string currentVersion = Version.GetVersion();
@@ -485,6 +558,9 @@ Website: https://thomasloupe.com
 ", "OK");
         }
 
+        /// <summary>
+        /// Creates and displays a donation request dialog
+        /// </summary>
         public static async Task CreateDonateAlert()
         {
             string url = "https://paypal.me/thomasloupe";
@@ -502,6 +578,9 @@ Would you like to open the donation page now?
             }
         }
 
+        /// <summary>
+        /// Prompts user for confirmation and exits the application
+        /// </summary>
         public static async Task ExitApplication()
         {
             bool result = await MainPageInstance.DisplayAlert("Confirm Exit", "Are you sure you want to quit Slackord?", "Yes", "No");
@@ -520,6 +599,9 @@ Would you like to open the donation page now?
             }
         }
 
+        /// <summary>
+        /// Copies the entire debug log content to the system clipboard
+        /// </summary>
         public static void CopyLog()
         {
             _ = MainPage.DebugWindowInstance.Focus();
@@ -534,18 +616,32 @@ Would you like to open the donation page now?
             }
         }
 
+        /// <summary>
+        /// Clears all content from the debug window
+        /// </summary>
         public static void ClearLog()
         {
             MainPage.DebugWindowInstance.Text = string.Empty;
         }
 
+        /// <summary>
+        /// StringBuilder for accumulating debug output before pushing to UI
+        /// </summary>
         private static readonly StringBuilder debugOutput = new();
+
+        /// <summary>
+        /// Writes text to the debug window, handling thread safety
+        /// </summary>
+        /// <param name="text">The text to write to the debug window</param>
         public static void WriteToDebugWindow(string text)
         {
             _ = debugOutput.Append(text);
             PushDebugText();
         }
 
+        /// <summary>
+        /// Pushes accumulated debug text to the UI thread-safely
+        /// </summary>
         public static void PushDebugText()
         {
             if (!MainThread.IsMainThread)
@@ -558,6 +654,12 @@ Would you like to open the donation page now?
             _ = debugOutput.Clear();
         }
 
+        /// <summary>
+        /// Updates the Discord connection button appearance and text
+        /// </summary>
+        /// <param name="state">The text to display on the button</param>
+        /// <param name="backgroundColor">The background color of the button</param>
+        /// <param name="textColor">The text color of the button</param>
         public static async Task ChangeBotConnectionButton(string state, Microsoft.Maui.Graphics.Color backgroundColor, Microsoft.Maui.Graphics.Color textColor)
         {
             if (MainPage.Current != null)
@@ -572,7 +674,10 @@ Would you like to open the donation page now?
             }
         }
 
-        // Modified to remove unused parameter
+        /// <summary>
+        /// Toggles the bot token input field enabled state and updates the options page if visible
+        /// </summary>
+        /// <param name="isEnabled">Whether the bot token field should be enabled</param>
         public static async Task ToggleBotTokenEnable(bool isEnabled)
         {
             Preferences.Default.Set("BotTokenEnabled", isEnabled);
@@ -590,6 +695,9 @@ Would you like to open the donation page now?
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Makes the progress bar visible in the UI
+        /// </summary>
         public static void ShowProgressBar()
         {
             if (MainPage.Current != null)
@@ -602,6 +710,9 @@ Would you like to open the donation page now?
             }
         }
 
+        /// <summary>
+        /// Hides the progress bar from the UI
+        /// </summary>
         public static void HideProgressBar()
         {
             if (MainPage.Current != null)
@@ -624,8 +735,11 @@ Would you like to open the donation page now?
         }
 
         /// <summary>
-        /// Enhanced progress bar with custom text and percentage
+        /// Updates the progress bar with custom text and percentage
         /// </summary>
+        /// <param name="current">Current progress value</param>
+        /// <param name="total">Total expected value</param>
+        /// <param name="customText">Custom text to display</param>
         public static void UpdateProgressBarWithCustomText(int current, int total, string customText)
         {
             double progressValue = total > 0 ? (double)current / total : 0;
@@ -641,8 +755,11 @@ Would you like to open the donation page now?
         }
 
         /// <summary>
-        /// Enhanced UpdateProgressBar with percentage display
+        /// Updates the progress bar with percentage display
         /// </summary>
+        /// <param name="current">Current progress value</param>
+        /// <param name="total">Total expected value</param>
+        /// <param name="type">Type of items being processed (e.g., "messages", "files")</param>
         public static void UpdateProgressBar(int current, int total, string type)
         {
             double progressValue = total > 0 ? (double)current / total : 0;
@@ -653,16 +770,17 @@ Would you like to open the donation page now?
                 {
                     MainPage.ProgressBarInstance.Progress = progressValue;
 
-                    // Enhanced progress text with percentage
                     double percentage = progressValue * 100;
                     MainPage.ProgressBarTextInstance.Text = $"Completed {current:N0} out of {total:N0} {type} ({percentage:F1}%)";
                 });
             }
         }
 
+        /// <summary>
+        /// Resets the progress bar to its initial state
+        /// </summary>
         public static void ResetProgressBar()
         {
-            // Reset the progress bar value to 0.
             if (MainPage.Current != null)
             {
                 _ = MainThread.InvokeOnMainThreadAsync(() =>

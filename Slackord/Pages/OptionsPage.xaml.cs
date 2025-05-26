@@ -7,52 +7,57 @@ namespace Slackord.Pages
     {
         private bool _isPasswordVisible = false;
 
+        /// <summary>
+        /// Initializes the Options page and loads settings
+        /// </summary>
         public OptionsPage()
         {
             InitializeComponent();
-
-            // Load settings from preferences
             LoadSettings();
-
-            // Check bot connection status and update UI
             UpdateBotTokenEditability();
         }
 
+        /// <summary>
+        /// Loads saved settings from preferences and updates UI controls
+        /// </summary>
         private void LoadSettings()
         {
-            // Load User Format setting
             string userFormatValue = Preferences.Default.Get("UserFormatValue", ApplicationWindow.CurrentUserFormatOrder.ToString());
             int userFormatIndex = (int)Enum.Parse<ApplicationWindow.UserFormatOrder>(userFormatValue);
             UserFormatPicker.SelectedIndex = userFormatIndex;
 
-            // Load Timestamp Format setting
             string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
             TimestampFormatPicker.SelectedIndex = timestampValue == "12 Hour" ? 0 : 1;
 
-            // Load Bot Token
             BotTokenEntry.Text = Preferences.Default.Get("SlackordBotToken", string.Empty);
 
-            // Load Log Level setting (default to Info = 3)
-            int logLevel = Preferences.Default.Get("DiscordLogLevel", 3); // Default to Info
+            int logLevel = Preferences.Default.Get("DiscordLogLevel", 3);
             LogLevelPicker.SelectedIndex = logLevel;
 
-            // Load Check for Updates setting (default to true if not set)
             bool checkForUpdates = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
             CheckUpdatesSwitch.IsToggled = checkForUpdates;
         }
 
-        // Removed unused parameter from method signature
+        /// <summary>
+        /// Called when the bot connection state changes, updates token field editability
+        /// </summary>
         public void OnBotConnectionStateChanged()
         {
             UpdateBotTokenEditability();
         }
 
+        /// <summary>
+        /// Called when the page is appearing, updates token field editability
+        /// </summary>
         protected override void OnAppearing()
         {
             base.OnAppearing();
             UpdateBotTokenEditability();
         }
 
+        /// <summary>
+        /// Toggles password visibility of the bot token entry
+        /// </summary>
         private void ToggleTokenVisibility_Clicked(object sender, EventArgs e)
         {
             _isPasswordVisible = !_isPasswordVisible;
@@ -60,12 +65,14 @@ namespace Slackord.Pages
             ((Button)sender).Text = _isPasswordVisible ? "Hide" : "Reveal";
         }
 
+        /// <summary>
+        /// Saves the settings entered on the Options page
+        /// </summary>
         private async void SaveButton_Clicked(object sender, EventArgs e)
         {
             bool tokenChanged = false;
             string currentToken = Preferences.Default.Get("SlackordBotToken", string.Empty);
 
-            // Save User Format
             if (UserFormatPicker.SelectedIndex >= 0)
             {
                 var selectedUserFormat = (ApplicationWindow.UserFormatOrder)UserFormatPicker.SelectedIndex;
@@ -73,69 +80,55 @@ namespace Slackord.Pages
                 ApplicationWindow.CurrentUserFormatOrder = selectedUserFormat;
             }
 
-            // Save Timestamp Format
             if (TimestampFormatPicker.SelectedIndex >= 0)
             {
                 string timestampValue = TimestampFormatPicker.SelectedIndex == 0 ? "12 Hour" : "24 Hour";
                 Preferences.Default.Set("TimestampValue", timestampValue);
             }
 
-            // Save and validate Bot Token
             if (BotTokenEntry.Text?.Trim() != currentToken)
             {
                 tokenChanged = true;
-
                 if (!string.IsNullOrEmpty(BotTokenEntry.Text))
                 {
                     string token = BotTokenEntry.Text.Trim();
                     if (ValidateBotToken(token))
                     {
                         Preferences.Default.Set("SlackordBotToken", token);
-                        // Token is valid
                     }
                     else
                     {
-                        // Show warning about invalid token, but still save it
                         await DisplayAlert("Warning", "The bot token you entered appears to be invalid. A valid Discord bot token is typically at least 30 characters long.", "OK");
                         Preferences.Default.Set("SlackordBotToken", token);
                     }
                 }
                 else
                 {
-                    // Clear the token if field is empty
                     Preferences.Default.Set("SlackordBotToken", string.Empty);
                 }
             }
 
-            // Save Log Level setting
             if (LogLevelPicker.SelectedIndex >= 0)
             {
                 Preferences.Default.Set("DiscordLogLevel", LogLevelPicker.SelectedIndex);
-
-                // Update the current Discord client if it exists
                 DiscordBot.Instance.UpdateLogLevel(GetLogSeverityFromIndex(LogLevelPicker.SelectedIndex));
             }
 
-            // Save Check for Updates setting
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckUpdatesSwitch.IsToggled);
-
-            // Update UI components that display these settings
             await UpdateMainPageUISettings();
 
-            // If token changed, refresh the bot connection status
             if (tokenChanged)
             {
-                // Create a new instance to check the token validity
                 await new ApplicationWindow().CheckForValidBotToken();
             }
 
-            // Show confirmation
             await DisplayAlert("Success", "Settings saved successfully!", "OK");
-
-            // Close the options page
             await Navigation.PopAsync();
         }
 
+        /// <summary>
+        /// Resets all settings on the Options page to default values
+        /// </summary>
         private async void ResetButton_Clicked(object sender, EventArgs e)
         {
             bool confirm = await DisplayAlert("Confirm Reset",
@@ -144,47 +137,51 @@ namespace Slackord.Pages
 
             if (confirm)
             {
-                // Reset to default values
-                UserFormatPicker.SelectedIndex = 0; // DisplayName_User_RealName
-                TimestampFormatPicker.SelectedIndex = 0; // 12 Hour
+                UserFormatPicker.SelectedIndex = 0;
+                TimestampFormatPicker.SelectedIndex = 0;
                 BotTokenEntry.Text = string.Empty;
-                LogLevelPicker.SelectedIndex = 3; // Info (default)
+                LogLevelPicker.SelectedIndex = 3;
                 CheckUpdatesSwitch.IsToggled = true;
 
                 await DisplayAlert("Reset Complete", "All settings have been reset to default values.", "OK");
             }
         }
 
+        /// <summary>
+        /// Cancels the settings edit and returns to the previous page
+        /// </summary>
         private async void CancelButton_Clicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // Add the handler for About button
+        /// <summary>
+        /// Displays the about dialog
+        /// </summary>
         private void About_Clicked(object sender, EventArgs e)
         {
             ApplicationWindow.DisplayAbout();
         }
 
-        // Add the handler for Donate button
+        /// <summary>
+        /// Displays the donation prompt and opens the donation URL if accepted
+        /// </summary>
         private async void Donate_Clicked(object sender, EventArgs e)
         {
             await ApplicationWindow.CreateDonateAlert();
         }
 
+        /// <summary>
+        /// Enables or disables bot token editing based on connection state
+        /// </summary>
         public void UpdateBotTokenEditability()
         {
-            // Get the current bot connection state
             ConnectionState connectionState = DiscordBot.Instance.GetClientConnectionState();
-
-            // Disable token editing if the bot is connected
             bool isDisconnected = connectionState == ConnectionState.Disconnected;
             BotTokenEntry.IsEnabled = isDisconnected;
 
-            // Update UI to show why it's disabled
             if (!isDisconnected)
             {
-                // Add a label or some visual indication that token can't be edited while connected
                 BotTokenEntry.Placeholder = "Disconnect bot before changing token";
             }
             else
@@ -193,28 +190,30 @@ namespace Slackord.Pages
             }
         }
 
-        // This method is marked static to address the CA1822 warning
+        /// <summary>
+        /// Updates UI settings on the main page based on saved preferences
+        /// </summary>
         private static async Task UpdateMainPageUISettings()
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                // Update the user format settings
                 await ApplicationWindow.GetUserFormatValue();
-
-                // Update the timestamp settings
                 await ApplicationWindow.GetTimeStampValue();
-
-                // Since we can't directly access applicationWindow, create a new instance for token check
                 await new ApplicationWindow().CheckForValidBotToken();
             });
         }
 
+        /// <summary>
+        /// Validates the format and length of a Discord bot token
+        /// </summary>
         private static bool ValidateBotToken(string token)
         {
-            // Simple validation: Token should be at least 30 characters
             return !string.IsNullOrEmpty(token) && token.Trim().Length >= 30;
         }
 
+        /// <summary>
+        /// Opens the Discord invite link
+        /// </summary>
         private void OnLabelClicked(object sender, TappedEventArgs e)
         {
             try
@@ -229,7 +228,7 @@ namespace Slackord.Pages
         }
 
         /// <summary>
-        /// Converts picker index to Discord.NET LogSeverity
+        /// Maps the selected log level index to the corresponding Discord LogSeverity
         /// </summary>
         private static LogSeverity GetLogSeverityFromIndex(int index)
         {
@@ -241,12 +240,12 @@ namespace Slackord.Pages
                 3 => LogSeverity.Info,
                 4 => LogSeverity.Debug,
                 5 => LogSeverity.Verbose,
-                _ => LogSeverity.Info // Default fallback
+                _ => LogSeverity.Info
             };
         }
 
         /// <summary>
-        /// Gets a user-friendly description of the current log level
+        /// Returns a human-readable description of a log level
         /// </summary>
         public static string GetLogLevelDescription(int logLevel)
         {

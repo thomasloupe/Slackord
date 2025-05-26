@@ -3,19 +3,27 @@ using Octokit;
 
 namespace Slackord.Classes
 {
+    /// <summary>
+    /// Handles checking for application updates from GitHub releases
+    /// </summary>
     internal class UpdateCheck
     {
+        /// <summary>
+        /// GitHub API client for accessing release information
+        /// </summary>
         private static GitHubClient _octoClient;
 
+        /// <summary>
+        /// Checks for available updates from the GitHub repository
+        /// </summary>
+        /// <param name="isStartupCheck">Whether this is an automatic startup check or manual check</param>
         public static async Task CheckForUpdates(bool isStartupCheck)
         {
-            // If it's a startup check, respect the user's preference
             if (isStartupCheck)
             {
                 bool checkForUpdatesOnStartup = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
                 if (!checkForUpdatesOnStartup)
                 {
-                    // If updates are disabled, don't check
                     return;
                 }
             }
@@ -82,15 +90,14 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                // Handle exceptions when checking for updates (e.g., no internet connection)
-                if (!isStartupCheck) // Only show error on manual check
+                if (!isStartupCheck)
                 {
                     await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert(
                         "Update Check Failed",
                         $"Could not check for updates: {ex.Message}",
                         "OK");
                 }
-                // Log the error
+
                 ApplicationWindow.WriteToDebugWindow($"Failed to check for updates: {ex.Message}\n");
             }
         }
