@@ -13,6 +13,7 @@
         // Discord Bot Settings
         public string BotToken { get; set; }
         public string GuildId { get; set; }
+        public int DiscordLogLevel { get; set; }
 
         // Import Settings
         public int RateLimitDelay { get; set; }
@@ -50,6 +51,7 @@
             // Discord Bot Settings
             BotToken = Preferences.Default.Get("SlackordBotToken", string.Empty);
             GuildId = Preferences.Default.Get("SlackordGuildId", string.Empty);
+            DiscordLogLevel = Preferences.Default.Get("DiscordLogLevel", 3); // Default to Info
 
             // Update Settings
             CheckForUpdatesOnStartup = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
@@ -74,6 +76,7 @@
             // Discord Bot Settings
             Preferences.Default.Set("SlackordBotToken", BotToken);
             Preferences.Default.Set("SlackordGuildId", GuildId);
+            Preferences.Default.Set("DiscordLogLevel", DiscordLogLevel);
 
             // Update Settings
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckForUpdatesOnStartup);
@@ -111,6 +114,7 @@
             // Discord Bot Settings
             // We don't reset BotToken for user convenience
             GuildId = string.Empty;
+            DiscordLogLevel = 3; // Default to Info
 
             // Update Settings
             CheckForUpdatesOnStartup = true;
@@ -143,6 +147,23 @@
             Preferences.Default.Set("LastImportChannel", LastImportChannel);
             Preferences.Default.Set("LastSuccessfulMessageTimestamp", LastSuccessfulMessageTimestamp);
             Preferences.Default.Set("HasPartialImport", HasPartialImport);
+        }
+
+        /// <summary>
+        /// Gets a user-friendly description of the Discord log level
+        /// </summary>
+        public string GetLogLevelDescription()
+        {
+            return DiscordLogLevel switch
+            {
+                0 => "Critical - Only the most severe errors",
+                1 => "Error - Recoverable errors and issues",
+                2 => "Warning - Non-critical issues and warnings",
+                3 => "Info - General operational information",
+                4 => "Debug - Detailed debugging information",
+                5 => "Verbose - All possible log messages",
+                _ => "Info - General operational information"
+            };
         }
     }
 }

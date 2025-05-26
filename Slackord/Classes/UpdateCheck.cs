@@ -60,6 +60,7 @@ namespace Slackord.Classes
                                 {latest.Body}
                                 Please consider upgrading at https://github.com/thomasloupe/Slackord/release/{latest.TagName}.
                                 
+
                                 """;
                     });
                     bool result = await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert("Slackord Update Available!",

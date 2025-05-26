@@ -32,6 +32,10 @@ namespace Slackord.Pages
             // Load Bot Token
             BotTokenEntry.Text = Preferences.Default.Get("SlackordBotToken", string.Empty);
 
+            // Load Log Level setting (default to Info = 3)
+            int logLevel = Preferences.Default.Get("DiscordLogLevel", 3); // Default to Info
+            LogLevelPicker.SelectedIndex = logLevel;
+
             // Load Check for Updates setting (default to true if not set)
             bool checkForUpdates = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
             CheckUpdatesSwitch.IsToggled = checkForUpdates;
@@ -103,6 +107,15 @@ namespace Slackord.Pages
                 }
             }
 
+            // Save Log Level setting
+            if (LogLevelPicker.SelectedIndex >= 0)
+            {
+                Preferences.Default.Set("DiscordLogLevel", LogLevelPicker.SelectedIndex);
+
+                // Update the current Discord client if it exists
+                DiscordBot.Instance.UpdateLogLevel(GetLogSeverityFromIndex(LogLevelPicker.SelectedIndex));
+            }
+
             // Save Check for Updates setting
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckUpdatesSwitch.IsToggled);
 
@@ -135,6 +148,7 @@ namespace Slackord.Pages
                 UserFormatPicker.SelectedIndex = 0; // DisplayName_User_RealName
                 TimestampFormatPicker.SelectedIndex = 0; // 12 Hour
                 BotTokenEntry.Text = string.Empty;
+                LogLevelPicker.SelectedIndex = 3; // Info (default)
                 CheckUpdatesSwitch.IsToggled = true;
 
                 await DisplayAlert("Reset Complete", "All settings have been reset to default values.", "OK");
@@ -212,6 +226,40 @@ namespace Slackord.Pages
             {
                 Application.Current.Windows[0].Page.DisplayAlert("Error", $"Unable to open link: {ex.Message}", "OK");
             }
+        }
+
+        /// <summary>
+        /// Converts picker index to Discord.NET LogSeverity
+        /// </summary>
+        private static LogSeverity GetLogSeverityFromIndex(int index)
+        {
+            return index switch
+            {
+                0 => LogSeverity.Critical,
+                1 => LogSeverity.Error,
+                2 => LogSeverity.Warning,
+                3 => LogSeverity.Info,
+                4 => LogSeverity.Debug,
+                5 => LogSeverity.Verbose,
+                _ => LogSeverity.Info // Default fallback
+            };
+        }
+
+        /// <summary>
+        /// Gets a user-friendly description of the current log level
+        /// </summary>
+        public static string GetLogLevelDescription(int logLevel)
+        {
+            return logLevel switch
+            {
+                0 => "Critical - Only the most severe errors",
+                1 => "Error - Recoverable errors and issues",
+                2 => "Warning - Non-critical issues and warnings",
+                3 => "Info - General operational information",
+                4 => "Debug - Detailed debugging information",
+                5 => "Verbose - All possible log messages",
+                _ => "Info - General operational information"
+            };
         }
     }
 }

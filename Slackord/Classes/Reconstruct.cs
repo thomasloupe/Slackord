@@ -36,6 +36,7 @@ namespace Slackord.Classes
         private static partial Regex BlockQuotes();
 
 
+
         public static async Task ReconstructAsync(List<Channel> channels, CancellationToken cancellationToken)
         {
             try
@@ -59,19 +60,14 @@ namespace Slackord.Classes
                 for (int channelIndex = 0; channelIndex < channels.Count; channelIndex++)
                 {
                     Channel channel = channels[channelIndex];
-                    var resumeData = ResumeData.LoadResumeData().FirstOrDefault(rd => rd.ChannelName == channel.Name);
-                    int startMessageIndex = resumeData?.LastMessagePosition + 1 ?? 0;
-
-                    // Skip messages that were already processed during resume
-                    processedMessages += startMessageIndex;
 
                     Application.Current.Dispatcher.Dispatch(() =>
                     {
                         ApplicationWindow.WriteToDebugWindow($"Processing channel {channelIndex + 1}/{channels.Count}: {channel.Name} " +
-                            $"(starting from message {startMessageIndex + 1}/{channel.DeconstructedMessagesList.Count})\n");
+                            $"({channel.DeconstructedMessagesList.Count} messages)\n");
                     });
 
-                    for (int i = startMessageIndex; i < channel.DeconstructedMessagesList.Count; i++)
+                    for (int i = 0; i < channel.DeconstructedMessagesList.Count; i++)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -96,13 +92,6 @@ namespace Slackord.Classes
                             });
 
                             lastProgressUpdate = now;
-                        }
-
-                        // Update resume data
-                        if (resumeData != null)
-                        {
-                            resumeData.LastMessagePosition = i;
-                            ResumeData.SaveResumeData(ResumeData.LoadResumeData());
                         }
                     }
 
@@ -173,7 +162,7 @@ namespace Slackord.Classes
                         bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
                         if (isDownloadable)
                         {
-                            var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, deconstructedMessage.OriginalTimestamp, isDownloadable);
+                            var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, isDownloadable);
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
                                 int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
@@ -199,29 +188,26 @@ namespace Slackord.Classes
             }
         }
 
-        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, string _originalTimestamp, bool isDownloadable)
+        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, bool isDownloadable)
         {
             if (!isDownloadable || string.IsNullOrWhiteSpace(fileUrl))
             {
                 return (null, null);
             }
-
             // Normalize the file URL and check if it's a valid URI
             if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
             {
                 Logger.Log($"Invalid URL provided: {fileUrl}");
                 return (null, null);
             }
-
             // Prepare directories and file path
             string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
-            
+
             // Ensure the download directory exists
             Directory.CreateDirectory(downloadsFolder);
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
             string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
             string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
-
             // Download the file
             try
             {

@@ -6,7 +6,7 @@ namespace Slackord.Classes
 {
     public class Deconstruct
     {
-        private static readonly Dictionary<string, ThreadInfo> threadDictionary = new();
+        private static readonly Dictionary<string, ThreadInfo> threadDictionary = [];
 
         public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary
         {
@@ -66,7 +66,7 @@ namespace Slackord.Classes
 
                 currentProperty = "reactions";
                 currentValue = slackMessage[currentProperty];
-                deconstructedMessage.Reactions = currentValue?.ToObject<List<Reaction>>() ?? new List<Reaction>();
+                deconstructedMessage.Reactions = currentValue?.ToObject<List<Reaction>>() ?? [];
 
                 deconstructedMessage.ThreadTs = threadTs;
 
@@ -233,7 +233,7 @@ namespace Slackord.Classes
         {
             try
             {
-                Dictionary<string, DeconstructedUser> usersDict = new();
+                Dictionary<string, DeconstructedUser> usersDict = [];
 
                 if (usersFile != null)
                 {
@@ -308,8 +308,8 @@ namespace Slackord.Classes
         public string OriginalTimestamp { get; set; }
         public string Subtype { get; set; }
         public string EditorId { get; set; }
-        public List<string> FileURLs { get; set; } = new();
-        public List<bool> IsFileDownloadable { get; set; } = new();
+        public List<string> FileURLs { get; set; } = [];
+        public List<bool> IsFileDownloadable { get; set; } = [];
     }
 
     public class Reaction

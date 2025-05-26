@@ -13,6 +13,7 @@ namespace Slackord.Classes
         private string DiscordToken;
         private bool hasEverBeenConnected = false;
         public static UserFormatOrder CurrentUserFormatOrder { get; set; } = UserFormatOrder.DisplayName_User_RealName;
+
         public enum UserFormatOrder
         {
             DisplayName_User_RealName,
@@ -61,31 +62,164 @@ namespace Slackord.Classes
             }
         }
 
-        // Make CheckForPartialImport static to match how it's called in MainPage
+        /// <summary>
+        /// Checks for incomplete import sessions and asks user if they want to resume
+        /// </summary>
         public static async Task CheckForPartialImport()
         {
-            bool hasPartialImport = Preferences.Default.Get("HasPartialImport", false);
-            bool enableResumeImport = Preferences.Default.Get("EnableResumeImport", true);
-
-            if (hasPartialImport && enableResumeImport)
+            try
             {
-                string lastImportType = Preferences.Default.Get("LastImportType", string.Empty);
-                string lastImportChannel = Preferences.Default.Get("LastImportChannel", string.Empty);
+                bool enableResumeImport = Preferences.Default.Get("EnableResumeImport", true);
+                if (!enableResumeImport)
+                {
+                    return;
+                }
+
+                var incompleteSessions = ImportSession.GetIncompleteImports();
+                if (incompleteSessions.Count == 0)
+                {
+                    return;
+                }
+
+                // Show summary of incomplete imports
+                var sb = new StringBuilder();
+                sb.AppendLine("Found incomplete import sessions:");
+                sb.AppendLine();
+
+                for (int i = 0; i < Math.Min(incompleteSessions.Count, 3); i++) // Show max 3 recent sessions
+                {
+                    var session = incompleteSessions[i];
+                    var incompleteChannels = session.Channels.Where(c => !c.IsCompleted).Count();
+                    var totalChannels = session.Channels.Count;
+
+                    sb.AppendLine($"📅 {session.SessionId}:");
+                    sb.AppendLine($"   • {incompleteChannels}/{totalChannels} channels incomplete");
+
+                    if (incompleteChannels > 0)
+                    {
+                        var firstIncomplete = session.Channels.FirstOrDefault(c => !c.IsCompleted);
+                        if (firstIncomplete != null)
+                        {
+                            sb.AppendLine($"   • Next: {firstIncomplete.GetProgressDisplay()}");
+                        }
+                    }
+                    sb.AppendLine();
+                }
+
+                if (incompleteSessions.Count > 3)
+                {
+                    sb.AppendLine($"... and {incompleteSessions.Count - 3} more sessions");
+                }
 
                 bool shouldResume = await MainPage.Current.DisplayAlert(
-                    "Resume Import",
-                    $"A previous {(lastImportType == "Full" ? "server" : "channel")} import was interrupted. Would you like to resume from where it left off?",
+                    "Resume Import Sessions",
+                    sb.ToString() + "Would you like to resume the most recent incomplete import?",
                     "Resume", "Start New");
 
                 if (shouldResume)
                 {
-                    await ResumeImport.CheckForPartialImport();
+                    await ResumeRecentImport(incompleteSessions.First());
                 }
                 else
                 {
-                    // User chose not to resume, clear the partial import state
-                    ResumeImport.ClearResumeState();
+                    WriteToDebugWindow("💡 You can resume imports later using the '/resume' Discord command.\n\n");
                 }
+            }
+            catch (Exception ex)
+            {
+                WriteToDebugWindow($"❌ Error checking for partial imports: {ex.Message}\n");
+                Logger.Log($"CheckForPartialImport error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Resumes the most recent incomplete import session
+        /// </summary>
+        private static async Task ResumeRecentImport(ImportSession sessionToResume)
+        {
+            try
+            {
+                WriteToDebugWindow($"🔄 Preparing to resume import session: {sessionToResume.SessionId}\n");
+
+                var incompleteChannels = sessionToResume.Channels.Where(c => !c.IsCompleted).ToList();
+                var totalMessages = incompleteChannels.Sum(c => c.MessagesRemaining);
+
+                WriteToDebugWindow($"📊 Resume Summary:\n");
+                WriteToDebugWindow($"   • Session: {sessionToResume.SessionId}\n");
+                WriteToDebugWindow($"   • Incomplete channels: {incompleteChannels.Count}\n");
+                WriteToDebugWindow($"   • Messages remaining: {totalMessages:N0}\n\n");
+
+                foreach (var channel in incompleteChannels.Take(5)) // Show first 5 channels
+                {
+                    WriteToDebugWindow($"   📁 {channel.GetProgressDisplay()}\n");
+                }
+
+                if (incompleteChannels.Count > 5)
+                {
+                    WriteToDebugWindow($"   ... and {incompleteChannels.Count - 5} more channels\n");
+                }
+
+                WriteToDebugWindow($"\n");
+
+                // Set this as the current session
+                ImportJson.SetCurrentSession(sessionToResume);
+
+                WriteToDebugWindow($"✅ Session loaded! Ready to resume Discord import.\n");
+                WriteToDebugWindow($"🚀 Use the Discord '/slackord' or '/resume' command to continue posting messages.\n\n");
+
+                // Update processing state
+                ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
+
+                bool shouldShowInstructions = await MainPage.Current.DisplayAlert(
+                    "Resume Ready",
+                    $"Session {sessionToResume.SessionId} is now loaded and ready to resume.\n\n" +
+                    $"To continue:\n" +
+                    $"1. Connect to Discord if not already connected\n" +
+                    $"2. Use the '/slackord' or '/resume' slash command in Discord\n\n" +
+                    $"The system will automatically continue from where it left off.",
+                    "Got it", "Show Details");
+
+                if (shouldShowInstructions)
+                {
+                    ShowResumeDetails(sessionToResume);
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteToDebugWindow($"❌ Error resuming import: {ex.Message}\n");
+                Logger.Log($"ResumeRecentImport error: {ex.Message}");
+                await MainPage.Current.DisplayAlert("Resume Error", $"An error occurred while resuming: {ex.Message}", "OK");
+            }
+        }
+
+        /// <summary>
+        /// Shows detailed information about what will be resumed
+        /// </summary>
+        private static void ShowResumeDetails(ImportSession session)
+        {
+            WriteToDebugWindow($"📋 Detailed Resume Information:\n");
+            WriteToDebugWindow($"Session Path: {session.SessionPath}\n\n");
+
+            foreach (var channel in session.Channels)
+            {
+                WriteToDebugWindow($"📁 {channel.Name}:\n");
+                WriteToDebugWindow($"   • Status: {(channel.IsCompleted ? "✅ Complete" : "🔄 In Progress")}\n");
+                WriteToDebugWindow($"   • Progress: {channel.MessagesSent:N0}/{channel.TotalMessages:N0} messages\n");
+
+                if (!channel.IsCompleted)
+                {
+                    WriteToDebugWindow($"   • Remaining: {channel.MessagesRemaining:N0} messages\n");
+                }
+
+                if (channel.DiscordChannelId > 0)
+                {
+                    WriteToDebugWindow($"   • Discord Channel ID: {channel.DiscordChannelId}\n");
+                }
+
+                WriteToDebugWindow($"   • File: {Path.GetFileName(session.GetChannelFilePath(channel.Name))}\n");
+
+                string fileSize = SlackordFileManager.GetFileSizeDisplay(session.GetChannelFilePath(channel.Name));
+                WriteToDebugWindow($"   • File Size: {fileSize}\n\n");
             }
         }
 
@@ -145,6 +279,69 @@ namespace Slackord.Classes
             {
                 WriteToDebugWindow($"Error in SetUserFormatValue: {ex.Message}");
             }
+        }
+
+        public static async Task GetDiscordLogLevelValue()
+        {
+            if (!Preferences.Default.ContainsKey("DiscordLogLevel"))
+            {
+                Preferences.Default.Set("DiscordLogLevel", 3); // Default to Info
+            }
+
+            int logLevel = Preferences.Default.Get("DiscordLogLevel", 3);
+            string logLevelName = GetDiscordLogLevelName(logLevel);
+            WriteToDebugWindow($"Discord Log Level: {logLevelName}\n");
+
+            await Task.CompletedTask;
+        }
+
+        public static async Task SetDiscordLogLevelValue()
+        {
+            try
+            {
+                int currentLogLevel = Preferences.Default.Get("DiscordLogLevel", 3);
+                int nextLogLevel = (currentLogLevel + 1) % 6; // 0-5 (Critical to Verbose)
+
+                Preferences.Default.Set("DiscordLogLevel", nextLogLevel);
+
+                // Update the Discord bot log level immediately
+                LogSeverity newSeverity = GetLogSeverityFromLevel(nextLogLevel);
+                DiscordBot.Instance.UpdateLogLevel(newSeverity);
+
+                await GetDiscordLogLevelValue();
+            }
+            catch (Exception ex)
+            {
+                WriteToDebugWindow($"Error in SetDiscordLogLevelValue: {ex.Message}");
+            }
+        }
+
+        private static string GetDiscordLogLevelName(int logLevel)
+        {
+            return logLevel switch
+            {
+                0 => "Critical",
+                1 => "Error",
+                2 => "Warning",
+                3 => "Info",
+                4 => "Debug",
+                5 => "Verbose",
+                _ => "Info"
+            };
+        }
+
+        private static LogSeverity GetLogSeverityFromLevel(int logLevel)
+        {
+            return logLevel switch
+            {
+                0 => LogSeverity.Critical,
+                1 => LogSeverity.Error,
+                2 => LogSeverity.Warning,
+                3 => LogSeverity.Info,
+                4 => LogSeverity.Debug,
+                5 => LogSeverity.Verbose,
+                _ => LogSeverity.Info
+            };
         }
 
         public async Task ImportJsonAsync(bool isFullExport)

@@ -1,10 +1,4 @@
-﻿using CommunityToolkit.Maui.Storage;
-using Discord.Interactions;
-using Discord.WebSocket;
-using MenuApp;
-using System.Threading;
-
-namespace Slackord.Classes
+﻿namespace Slackord.Classes
 {
     public enum ProcessingState
     {

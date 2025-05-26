@@ -102,9 +102,11 @@ namespace MenuApp
             ApplicationWindow.ClearLog();
         }
 
+
         private static void ResetSlackordImportedData()
         {
-            ImportJson.Channels.Clear();
+            // Reset the current session (if any)
+            ImportJson.SetCurrentSession(null);
             ImportJson.TotalHiddenFileCount = 0;
             ApplicationWindow.ResetProgressBar();
         }

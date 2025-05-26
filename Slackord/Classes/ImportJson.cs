@@ -6,7 +6,7 @@ namespace Slackord.Classes
     public class ImportJson
     {
         public static string RootFolderPath { get; private set; }
-        public static List<Channel> Channels { get; set; } = [];
+        public static ImportSession CurrentSession { get; private set; }
         public static int TotalHiddenFileCount { get; internal set; } = 0;
 
         public static async Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
@@ -14,13 +14,9 @@ namespace Slackord.Classes
             ProcessingManager.Instance.SetState(ProcessingState.ImportingFiles);
             ApplicationWindow.HideProgressBar();
 
-            // Clear existing data and reset counts
-            Channels.Clear();
+            // Reset counts
             TotalHiddenFileCount = 0;
             ApplicationWindow.ResetProgressBar();
-
-            // Load resume data
-            List<ResumeData> resumeDataList = ResumeData.LoadResumeData();
 
             try
             {
@@ -42,56 +38,28 @@ namespace Slackord.Classes
 
                 string folderPath = picker.Folder.Path;
                 RootFolderPath = folderPath;
-                Dictionary<string, DeconstructedUser> usersDict = null;
+
+                // Create new import session
+                CurrentSession = ImportSession.CreateNew();
+                ApplicationWindow.WriteToDebugWindow($"📁 Created new import session: {CurrentSession.SessionId}\n");
+                ApplicationWindow.WriteToDebugWindow($"💾 Session data will be saved to: {CurrentSession.SessionPath}\n\n");
 
                 if (!string.IsNullOrEmpty(folderPath))
                 {
-                    (List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict) result = await ConvertAsync(isFullExport, folderPath, cancellationToken);
-                    Channels = result.Channels;
-                    usersDict = result.UsersDict;
+                    await ProcessSlackDataAsync(isFullExport, folderPath, cancellationToken);
                 }
 
-                // Initialize UsersDict in Reconstruct
-                Reconstruct.InitializeUsersDict(usersDict);
-
-                // Check for channels to resume
-                foreach (var channel in Channels)
+                if (TotalHiddenFileCount > 0)
                 {
-                    var resumeData = resumeDataList.FirstOrDefault(rd => rd.ChannelName == channel.Name);
-                    if (resumeData != null && !resumeData.ImportedToDiscord)
+                    Application.Current.Dispatcher.Dispatch(() =>
                     {
-                        bool shouldResume = await ResumeData.AskUserToResumeChannel(resumeData.ChannelName);
-                        if (shouldResume)
-                        {
-                            await ResumeData.InitializeChannelForResume(channel, resumeData);
-                        }
-                    }
+                        ApplicationWindow.WriteToDebugWindow($"ℹ️ Note: {TotalHiddenFileCount:N0} files were hidden by Slack due to limits\n");
+                    });
                 }
 
-                // Proceed with reconstruction
-                if (!string.IsNullOrEmpty(RootFolderPath) && Channels.Count != 0)
-                {
-                    // Set state to deconstructing (file processing is done, now processing messages)
-                    ProcessingManager.Instance.SetState(ProcessingState.DeconstructingMessages);
-
-                    await Reconstruct.ReconstructAsync(Channels, cancellationToken);
-
-                    if (TotalHiddenFileCount > 0)
-                    {
-                        Application.Current.Dispatcher.Dispatch(() =>
-                        {
-                            ApplicationWindow.WriteToDebugWindow($"ℹ️ Note: {TotalHiddenFileCount:N0} files were hidden by Slack due to limits\n");
-                        });
-                    }
-
-                    // Count threads per channel and display the results
-                    Dictionary<string, int> channelThreadCounts = CountThreadsPerChannel();
-                    DisplayThreadCounts(channelThreadCounts);
-                }
-                else
-                {
-                    ProcessingManager.Instance.SetState(ProcessingState.Idle);
-                }
+                // Display completion summary
+                DisplayImportSummary();
+                ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
             }
             catch (OperationCanceledException)
             {
@@ -106,18 +74,16 @@ namespace Slackord.Classes
             }
         }
 
-        private static async Task<(List<Channel> Channels, Dictionary<string, DeconstructedUser> UsersDict)> ConvertAsync(bool isFullExport, string folderPath, CancellationToken cancellationToken)
+        private static async Task ProcessSlackDataAsync(bool isFullExport, string folderPath, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             DirectoryInfo directoryInfo = new(folderPath);
             DirectoryInfo rootDirectory = isFullExport ? directoryInfo : directoryInfo.Parent;
 
-            // Fetch users.json and channels.json from the appropriate root directory.
+            // Load users and channel descriptions
             FileInfo usersFile = rootDirectory.GetFiles("users.json").FirstOrDefault();
             FileInfo channelsFile = rootDirectory.GetFiles("channels.json").FirstOrDefault();
 
-            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users for import...\n"); });
+            Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Parsing Users for import...\n"); });
 
             Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : [];
             Dictionary<string, string> channelDescriptions = [];
@@ -132,102 +98,182 @@ namespace Slackord.Classes
                 );
             }
 
-            DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
+            // Initialize UsersDict in Reconstruct
+            Reconstruct.InitializeUsersDict(usersDict);
 
-            List<Channel> channels = [];
+            DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
             int totalFiles = CountTotalJsonFiles(channelDirectories);
             int filesProcessed = 0;
+
+            ApplicationWindow.ShowProgressBar();
+            ProcessingManager.Instance.SetState(ProcessingState.DeconstructingMessages);
 
             foreach (DirectoryInfo channelDirectory in channelDirectories)
             {
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-
-                    Channel channel = new() { Name = channelDirectory.Name };
-                    FileInfo[] jsonFiles = channelDirectory.GetFiles("*.json");
-                    int jsonFileCount = jsonFiles.Length;
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Begin parsing JSON data for {channel.Name} with {jsonFileCount} JSON files...\n"); });
-
-                    if (jsonFileCount > 400)
-                    {
-                        _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"This import appears to be quite large. Reconstructing will take a very long time and the UI may freeze until completed. Please be patient!\nDeconstruction/Reconstruction process started...\n"); });
-                    }
-
-                    foreach (FileInfo jsonFile in jsonFiles)
-                    {
-                        try
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-
-                            string jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken).ConfigureAwait(false);
-                            JArray messagesArray = JArray.Parse(jsonContent);
-
-                            foreach (JObject slackMessage in messagesArray.Cast<JObject>())
-                            {
-                                DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
-                                channel.DeconstructedMessagesList.Add(deconstructedMessage);
-                            }
-
-                            filesProcessed++;
-                            ApplicationWindow.UpdateProgressBar(filesProcessed, totalFiles, "files");
-                        }
-                        catch (Exception ex)
-                        {
-                            _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n"); });
-                        }
-                    }
-
-                    if (channelDescriptions != null && channelDescriptions.TryGetValue(channel.Name, out string description))
-                    {
-                        channel.Description = description;
-                    }
-                    channels.Add(channel);
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Completed importing channel {channel.Name}.\n\n"); });
+                    int channelFilesProcessed = await ProcessChannelAsync(channelDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                    filesProcessed += channelFilesProcessed;
                 }
                 catch (Exception ex)
                 {
-                    _ = Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
                 }
             }
-
-            return (channels, usersDict);
         }
 
-        private static Dictionary<string, int> CountThreadsPerChannel()
+        private static async Task<int> ProcessChannelAsync(DirectoryInfo channelDirectory, Dictionary<string, string> channelDescriptions,
+                    Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
         {
-            Dictionary<string, int> channelThreadCounts = [];
+            ArgumentNullException.ThrowIfNull(usersDict);
+            string channelName = channelDirectory.Name;
+            FileInfo[] jsonFiles = channelDirectory.GetFiles("*.json");
+            int jsonFileCount = jsonFiles.Length;
+            int localFilesProcessed = 0;
 
-            foreach (var channel in Channels)
+            Application.Current.Dispatcher.Dispatch(() => {
+                ApplicationWindow.WriteToDebugWindow($"Begin processing {channelName} with {jsonFileCount} JSON files...\n");
+            });
+            if (jsonFileCount > 400)
             {
-                int threadCount = channel.DeconstructedMessagesList
-                    .Where(m => !string.IsNullOrEmpty(m.ThreadTs))
-                    .GroupBy(m => m.ThreadTs)
-                    .Count();
-                channelThreadCounts[channel.Name] = threadCount;
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"Large import detected for {channelName}. This may take some time...\n");
+                });
             }
-
-            return channelThreadCounts;
-        }
-
-        private static void DisplayThreadCounts(Dictionary<string, int> channelThreadCounts)
-        {
-            int totalThreads = channelThreadCounts.Values.Sum();
-
-            foreach (var channel in channelThreadCounts)
+            // Deconstruct all messages first
+            var deconstructedMessages = new List<DeconstructedMessage>();
+            foreach (FileInfo jsonFile in jsonFiles)
             {
-                ApplicationWindow.WriteToDebugWindow($"Found {channel.Value} threads in {channel.Key}.\n");
-            }
-
-            if (totalThreads > 1000)
-            {
-                ApplicationWindow.WriteToDebugWindow("WARNING: Guild thread limit exceeds 1000. You will need to close threads on your own, manually to prevent threads from failing to create! The number of threads per channel are listed below." +
-                    "\n Please visit https://github.com/thomasloupe/Slackord/blob/main/docs/FAQ.md on how to handle this limitation.\n");
-                foreach (var channel in channelThreadCounts)
+                try
                 {
-                    ApplicationWindow.WriteToDebugWindow($"{channel.Key} ({channel.Value})\n");
+                    cancellationToken.ThrowIfCancellationRequested();
+                    string jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken).ConfigureAwait(false);
+                    JArray messagesArray = JArray.Parse(jsonContent);
+                    foreach (JObject slackMessage in messagesArray.Cast<JObject>())
+                    {
+                        DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
+                        deconstructedMessages.Add(deconstructedMessage);
+                    }
+                    localFilesProcessed++;
+                    ApplicationWindow.UpdateProgressBar(currentFilesProcessed + localFilesProcessed, totalFiles, "files");
+                }
+                catch (Exception ex)
+                {
+                    Application.Current.Dispatcher.Dispatch(() => {
+                        ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n");
+                    });
                 }
             }
+            // Now reconstruct messages and save to .slackord file
+            if (deconstructedMessages.Count > 0)
+            {
+                ProcessingManager.Instance.SetState(ProcessingState.ReconstructingMessages);
+                var channelProgress = CurrentSession.AddChannel(channelName, deconstructedMessages.Count);
+                if (channelDescriptions.TryGetValue(channelName, out string description))
+                {
+                    channelProgress.Description = description;
+                }
+                await ReconstructAndSaveChannelAsync(channelName, deconstructedMessages, channelProgress, cancellationToken);
+            }
+
+            return localFilesProcessed;
+        }
+
+        private static async Task ReconstructAndSaveChannelAsync(string channelName, List<DeconstructedMessage> deconstructedMessages,
+            ChannelProgress channelProgress, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"🔨 Reconstructing {deconstructedMessages.Count:N0} messages for {channelName}...\n");
+                });
+
+                var reconstructedMessages = new List<ReconstructedMessage>();
+                int processedCount = 0;
+
+                foreach (var deconstructedMessage in deconstructedMessages)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // Create a temporary channel object for the reconstruction process
+                    var tempChannel = new Channel { Name = channelName };
+                    await Reconstruct.ReconstructMessage(deconstructedMessage, tempChannel);
+
+                    // Add the reconstructed messages to our list
+                    reconstructedMessages.AddRange(tempChannel.ReconstructedMessagesList);
+
+                    processedCount++;
+
+                    // Update progress every 100 messages to avoid UI spam
+                    if (processedCount % 100 == 0 || processedCount == deconstructedMessages.Count)
+                    {
+                        Application.Current.Dispatcher.Dispatch(() => {
+                            ApplicationWindow.WriteToDebugWindow($"  📋 Processed {processedCount:N0}/{deconstructedMessages.Count:N0} messages for {channelName}\n");
+                        });
+                    }
+                }
+
+                // Update the channel progress with actual reconstructed count
+                channelProgress.TotalMessages = reconstructedMessages.Count;
+
+                // Save to .slackord file
+                string channelFilePath = CurrentSession.GetChannelFilePath(channelName);
+                await SlackordFileManager.SaveChannelMessagesAsync(channelFilePath, reconstructedMessages);
+
+                channelProgress.FileCreated = true;
+                CurrentSession.Save();
+
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"✅ Completed {channelName}: {reconstructedMessages.Count:N0} messages saved\n\n");
+                });
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"❌ Error reconstructing {channelName}: {ex.Message}\n");
+                });
+                Logger.Log($"ReconstructAndSaveChannelAsync error for {channelName}: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static void DisplayImportSummary()
+        {
+            if (CurrentSession == null || CurrentSession.Channels.Count == 0)
+                return;
+
+            int totalChannels = CurrentSession.Channels.Count;
+            int totalMessages = CurrentSession.Channels.Sum(c => c.TotalMessages);
+
+            Application.Current.Dispatcher.Dispatch(() => {
+                ApplicationWindow.WriteToDebugWindow($"\n🎊 IMPORT COMPLETE! 🎊\n");
+                ApplicationWindow.WriteToDebugWindow($"📊 Summary:\n");
+                ApplicationWindow.WriteToDebugWindow($"   • Session: {CurrentSession.SessionId}\n");
+                ApplicationWindow.WriteToDebugWindow($"   • Channels processed: {totalChannels:N0}\n");
+                ApplicationWindow.WriteToDebugWindow($"   • Total messages ready: {totalMessages:N0}\n");
+                ApplicationWindow.WriteToDebugWindow($"   • Data saved to: {CurrentSession.SessionPath}\n\n");
+
+                foreach (var channel in CurrentSession.Channels)
+                {
+                    ApplicationWindow.WriteToDebugWindow($"   📁 {channel.Name}: {channel.TotalMessages:N0} messages\n");
+                }
+
+                ApplicationWindow.WriteToDebugWindow($"\n🚀 Ready for Discord import! Use the '/slackord' command to begin.\n\n");
+            });
+
+            // Count threads per channel for the thread warning
+            DisplayThreadWarning();
+        }
+
+        private static void DisplayThreadWarning()
+        {
+            // This would need to be updated to work with the file-based system
+            // For now, we'll skip the thread count since we don't keep everything in memory
+            Application.Current.Dispatcher.Dispatch(() => {
+                ApplicationWindow.WriteToDebugWindow($"ℹ️ Thread counts will be calculated during Discord import.\n");
+                ApplicationWindow.WriteToDebugWindow($"💡 If you have many threads, you may need to manage Discord's 1000 thread limit.\n\n");
+            });
         }
 
         private static int CountTotalJsonFiles(DirectoryInfo[] channelDirectories)
@@ -241,6 +287,22 @@ namespace Slackord.Classes
             ApplicationWindow.ResetProgressBar();
             ApplicationWindow.ShowProgressBar();
             return totalFiles;
+        }
+
+        /// <summary>
+        /// Gets the current session or loads an existing one
+        /// </summary>
+        public static ImportSession GetCurrentSession()
+        {
+            return CurrentSession;
+        }
+
+        /// <summary>
+        /// Sets the current session (used for resume operations)
+        /// </summary>
+        public static void SetCurrentSession(ImportSession session)
+        {
+            CurrentSession = session;
         }
     }
 }
