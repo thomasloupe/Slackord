@@ -127,6 +127,16 @@ namespace Slackord.Classes
                 {
                     foreach (var file in files)
                     {
+                        currentProperty = "mode";
+                        currentValue = file[currentProperty];
+                        if (currentValue?.ToString() == "hidden_by_limit")
+                        {
+                            deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
+                            deconstructedMessage.IsFileDownloadable.Add(false);
+                            ImportJson.TotalHiddenFileCount++;
+                            continue;
+                        }
+
                         currentProperty = "url_private_download";
                         currentValue = file[currentProperty];
                         var fileUrl = currentValue?.ToString();
@@ -140,15 +150,6 @@ namespace Slackord.Classes
                         {
                             deconstructedMessage.FileURLs.Add(fileUrl);
                             deconstructedMessage.IsFileDownloadable.Add(true);
-                        }
-
-                        currentProperty = "mode";
-                        currentValue = file[currentProperty];
-                        if (currentValue?.ToString() == "hidden_by_limit")
-                        {
-                            deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
-                            deconstructedMessage.IsFileDownloadable.Add(false);
-                            ImportJson.TotalHiddenFileCount++;
                         }
                     }
                 }
