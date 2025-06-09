@@ -137,6 +137,17 @@ namespace Slackord.Classes
                             continue;
                         }
 
+                        // Prefer Slackdump local path if available
+                        currentProperty = "local_path";
+                        currentValue = file[currentProperty];
+                        string localPath = currentValue?.ToString();
+                        if (!string.IsNullOrEmpty(localPath))
+                        {
+                            deconstructedMessage.FileURLs.Add(localPath);
+                            deconstructedMessage.IsFileDownloadable.Add(true);
+                            continue;
+                        }
+
                         currentProperty = "url_private_download";
                         currentValue = file[currentProperty];
                         var fileUrl = currentValue?.ToString();
