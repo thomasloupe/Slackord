@@ -63,7 +63,17 @@ namespace Slackord.Classes
 
                 if (!string.IsNullOrEmpty(folderPath))
                 {
-                    await ProcessSlackDataAsync(isFullExport, folderPath, cancellationToken);
+                    bool isSlackdump = File.Exists(Path.Combine(folderPath, "meta.json")) ||
+                                       File.Exists(Path.Combine(folderPath, "files", "slackdump.json"));
+
+                    if (isSlackdump)
+                    {
+                        await ProcessSlackdumpDataAsync(folderPath, cancellationToken);
+                    }
+                    else
+                    {
+                        await ProcessSlackDataAsync(isFullExport, folderPath, cancellationToken);
+                    }
                 }
 
                 if (TotalHiddenFileCount > 0)
@@ -141,6 +151,171 @@ namespace Slackord.Classes
                     Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
                 }
             }
+        }
+
+        /// <summary>
+        /// Processes Slackdump export data
+        /// </summary>
+        /// <param name="folderPath">Path to the Slackdump root folder</param>
+        /// <param name="cancellationToken">Token to cancel the operation</param>
+        private static async Task ProcessSlackdumpDataAsync(string folderPath, CancellationToken cancellationToken)
+        {
+            DirectoryInfo rootDirectory = new(folderPath);
+
+            FileInfo metaFile = rootDirectory.GetFiles("meta.json").FirstOrDefault();
+            JObject metaJson = new();
+            if (metaFile != null)
+            {
+                string metaContent = await File.ReadAllTextAsync(metaFile.FullName, cancellationToken).ConfigureAwait(false);
+                metaJson = JObject.Parse(metaContent);
+            }
+
+            Dictionary<string, DeconstructedUser> usersDict = [];
+            if (metaJson["users"] is JArray usersArray)
+            {
+                foreach (JObject userObject in usersArray.Cast<JObject>())
+                {
+                    DeconstructedUser deconstructedUser = userObject.ToObject<DeconstructedUser>();
+                    if (deconstructedUser != null && deconstructedUser.Id != null)
+                    {
+                        usersDict[deconstructedUser.Id] = deconstructedUser;
+                    }
+                }
+            }
+
+            Dictionary<string, string> channelIdToName = [];
+            Dictionary<string, string> channelDescriptions = [];
+            foreach (string section in new[] { "channels", "groups", "ims", "mpims" })
+            {
+                if (metaJson[section] is JArray channelsArray)
+                {
+                    foreach (JObject channelObject in channelsArray.Cast<JObject>())
+                    {
+                        string id = channelObject["id"]?.ToString();
+                        string name = channelObject["name"]?.ToString();
+                        string purpose = channelObject["purpose"]?["value"]?.ToString() ?? string.Empty;
+                        if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(name))
+                        {
+                            channelIdToName[id] = name;
+                            channelDescriptions[name] = purpose;
+                        }
+                    }
+                }
+            }
+
+            Reconstruct.InitializeUsersDict(usersDict);
+
+            var channelDirectories = new List<DirectoryInfo>();
+            foreach (string dirName in new[] { "channels", "groups", "ims", "mpims" })
+            {
+                DirectoryInfo container = rootDirectory.GetDirectories(dirName).FirstOrDefault();
+                if (container != null)
+                {
+                    channelDirectories.AddRange(container.GetDirectories());
+                }
+            }
+
+            if (channelDirectories.Count == 0)
+            {
+                channelDirectories.AddRange(rootDirectory.GetDirectories());
+            }
+
+            int totalFiles = CountTotalJsonFiles(channelDirectories.ToArray());
+            int filesProcessed = 0;
+
+            ApplicationWindow.ShowProgressBar();
+            ProcessingManager.Instance.SetState(ProcessingState.DeconstructingMessages);
+
+            foreach (DirectoryInfo channelDirectory in channelDirectories)
+            {
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    string channelId = channelDirectory.Name;
+                    string channelName = channelIdToName.TryGetValue(channelId, out string name) ? name : channelId;
+                    int channelFilesProcessed = await ProcessSlackdumpChannelAsync(channelDirectory, channelName, channelDescriptions, filesProcessed, totalFiles, cancellationToken);
+                    filesProcessed += channelFilesProcessed;
+                }
+                catch (Exception ex)
+                {
+                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
+                }
+            }
+        }
+
+        /// <summary>
+        /// Processes all JSON files within a Slackdump channel directory
+        /// </summary>
+        private static async Task<int> ProcessSlackdumpChannelAsync(DirectoryInfo channelDirectory, string channelName,
+                    Dictionary<string, string> channelDescriptions, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
+        {
+            FileInfo[] jsonFiles = channelDirectory.GetFiles("*.json");
+            int jsonFileCount = jsonFiles.Length;
+            int localFilesProcessed = 0;
+
+            Application.Current.Dispatcher.Dispatch(() =>
+            {
+                ApplicationWindow.WriteToDebugWindow($"Begin processing {channelName} with {jsonFileCount} JSON files...\n");
+            });
+            if (jsonFileCount > 400)
+            {
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    ApplicationWindow.WriteToDebugWindow($"Large import detected for {channelName}. This may take some time...\n");
+                });
+            }
+
+            var deconstructedMessages = new List<DeconstructedMessage>();
+            foreach (FileInfo jsonFile in jsonFiles)
+            {
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    string jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken).ConfigureAwait(false);
+                    JArray messagesArray = JArray.Parse(jsonContent);
+                    foreach (JObject slackMessage in messagesArray.Cast<JObject>())
+                    {
+                        if (slackMessage["files"] is JArray filesArray)
+                        {
+                            foreach (JObject fileObj in filesArray.Cast<JObject>())
+                            {
+                                if (fileObj["url_private_download"] == null && fileObj["id"] != null)
+                                {
+                                    string fileId = fileObj["id"].ToString();
+                                    string fileName = fileObj["name"]?.ToString() ?? fileId;
+                                    string localPath = Path.Combine(RootFolderPath, "files", fileId, fileName);
+                                    fileObj["url_private_download"] = localPath;
+                                }
+                            }
+                        }
+
+                        DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
+                        deconstructedMessages.Add(deconstructedMessage);
+                    }
+                    localFilesProcessed++;
+                    ApplicationWindow.UpdateProgressBar(currentFilesProcessed + localFilesProcessed, totalFiles, "files");
+                }
+                catch (Exception ex)
+                {
+                    Application.Current.Dispatcher.Dispatch(() =>
+                    {
+                        ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n");
+                    });
+                }
+            }
+
+            if (deconstructedMessages.Count > 0)
+            {
+                ProcessingManager.Instance.SetState(ProcessingState.ReconstructingMessages);
+                var channelProgress = CurrentSession.AddChannel(channelName, deconstructedMessages.Count);
+                if (channelDescriptions.TryGetValue(channelName, out string description))
+                {
+                    channelProgress.Description = description;
+                }
+                await ReconstructAndSaveChannelAsync(channelName, deconstructedMessages, channelProgress, cancellationToken);
+            }
+
+            return localFilesProcessed;
         }
 
         /// <summary>
