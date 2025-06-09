@@ -122,23 +122,52 @@ namespace Slackord.Classes
             Reconstruct.InitializeUsersDict(usersDict);
 
             DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
-            int totalFiles = CountTotalJsonFiles(channelDirectories);
+            FileInfo[] rootJsonFiles = rootDirectory.GetFiles("*.json")
+                .Where(f => f.Name != "users.json" && f.Name != "channels.json")
+                .ToArray();
+
+            bool useRootFiles = channelDirectories.Length == 0 && rootJsonFiles.Length > 0;
+
+            int totalFiles = useRootFiles ? rootJsonFiles.Length : CountTotalJsonFiles(channelDirectories);
             int filesProcessed = 0;
 
             ApplicationWindow.ShowProgressBar();
             ProcessingManager.Instance.SetState(ProcessingState.DeconstructingMessages);
 
-            foreach (DirectoryInfo channelDirectory in channelDirectories)
+            if (useRootFiles)
             {
-                try
+                foreach (FileInfo jsonFile in rootJsonFiles)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    int channelFilesProcessed = await ProcessChannelAsync(channelDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
-                    filesProcessed += channelFilesProcessed;
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        DirectoryInfo fakeDirectory = new(jsonFile.FullName);
+                        int channelFilesProcessed = await ProcessChannelAsync(fakeDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                        filesProcessed += channelFilesProcessed;
+                    }
+                    catch (Exception ex)
+                    {
+                        Application.Current.Dispatcher.Dispatch(() =>
+                        {
+                            ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n");
+                        });
+                    }
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+                foreach (DirectoryInfo channelDirectory in channelDirectories)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        int channelFilesProcessed = await ProcessChannelAsync(channelDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                        filesProcessed += channelFilesProcessed;
+                    }
+                    catch (Exception ex)
+                    {
+                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
+                    }
                 }
             }
         }
@@ -157,8 +186,25 @@ namespace Slackord.Classes
                     Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(usersDict);
-            string channelName = channelDirectory.Name;
-            FileInfo[] jsonFiles = channelDirectory.GetFiles("*.json");
+
+            FileInfo[] jsonFiles;
+            string channelName;
+
+            if (channelDirectory.Exists)
+            {
+                channelName = channelDirectory.Name;
+                jsonFiles = channelDirectory.GetFiles("*.json");
+            }
+            else if (File.Exists(channelDirectory.FullName))
+            {
+                channelName = Path.GetFileNameWithoutExtension(channelDirectory.Name);
+                jsonFiles = [new FileInfo(channelDirectory.FullName)];
+            }
+            else
+            {
+                return 0;
+            }
+
             int jsonFileCount = jsonFiles.Length;
             int localFilesProcessed = 0;
 
@@ -368,7 +414,14 @@ namespace Slackord.Classes
             int totalFiles = 0;
             foreach (DirectoryInfo channelDirectory in channelDirectories)
             {
-                totalFiles += channelDirectory.GetFiles("*.json").Length;
+                if (channelDirectory.Exists)
+                {
+                    totalFiles += channelDirectory.GetFiles("*.json").Length;
+                }
+                else if (File.Exists(channelDirectory.FullName))
+                {
+                    totalFiles += 1;
+                }
             }
 
             ApplicationWindow.ResetProgressBar();
