@@ -242,15 +242,33 @@ namespace Slackord.Classes
                 return (null, null);
             }
 
+            string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
+
+            Directory.CreateDirectory(downloadsFolder);
+
+            if (File.Exists(fileUrl))
+            {
+                string localFileName = Path.GetFileName(fileUrl);
+                string sanitizedLocalFileName = string.Concat(localFileName.Split(Path.GetInvalidFileNameChars()));
+                string destinationPath = Path.Combine(downloadsFolder, sanitizedLocalFileName);
+
+                if (File.Exists(destinationPath))
+                {
+                    string fileExtension = Path.GetExtension(sanitizedLocalFileName);
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sanitizedLocalFileName);
+                    destinationPath = Path.Combine(downloadsFolder, $"{fileNameWithoutExtension}_{Guid.NewGuid()}{fileExtension}");
+                }
+
+                File.Copy(fileUrl, destinationPath);
+                return (destinationPath, fileUrl);
+            }
+
             if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
             {
                 Logger.Log($"Invalid URL provided: {fileUrl}");
                 return (null, null);
             }
 
-            string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
-
-            Directory.CreateDirectory(downloadsFolder);
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
             string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
             string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
