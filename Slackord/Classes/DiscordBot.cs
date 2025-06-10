@@ -4,7 +4,7 @@ using Discord.Net;
 using Discord.Webhook;
 using Discord.WebSocket;
 using MenuApp;
-using static Slackord.Classes.Reconstruct;
+using System.Text.RegularExpressions;
 
 namespace Slackord.Classes
 {
@@ -598,7 +598,7 @@ namespace Slackord.Classes
 
                     try
                     {
-                        await PostSingleMessage(message, webhookClient, discordChannel, threadStartsDict, fileSizeLimit, cancellationToken);
+                        await PostSingleMessage(message, webhookClient, discordChannel, threadStartsDict, fileSizeLimit, session, cancellationToken);
 
                         channelProgress.RecordMessageSent(message.OriginalTimestamp);
                         localMessagesPosted++;
@@ -702,11 +702,12 @@ namespace Slackord.Classes
         /// <param name="discordChannel">The Discord channel to post to</param>
         /// <param name="threadStartsDict">Dictionary tracking thread starts</param>
         /// <param name="fileSizeLimit">Maximum file size for uploads</param>
+        /// <param name="session">The current import session</param>
         /// <param name="cancellationToken">Cancellation token for the operation</param>
         /// <returns>A completed task</returns>
         private static async Task PostSingleMessage(ReconstructedMessage message, DiscordWebhookClient webhookClient,
             ITextChannel discordChannel, Dictionary<string, IThreadChannel> threadStartsDict,
-            long fileSizeLimit, CancellationToken cancellationToken)
+            long fileSizeLimit, ImportSession session, CancellationToken cancellationToken)
         {
             try
             {
@@ -720,7 +721,9 @@ namespace Slackord.Classes
 
                     if (!string.IsNullOrWhiteSpace(message.Content))
                     {
-                        await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                        string contentWithChannelMentions = ReplaceChannelMentions(message.Content, session);
+
+                        await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
 
@@ -753,8 +756,10 @@ namespace Slackord.Classes
 
                     if (!string.IsNullOrWhiteSpace(message.Content))
                     {
+                        string contentWithChannelMentions = ReplaceChannelMentions(message.Content, session);
+
                         cancellationToken.ThrowIfCancellationRequested();
-                        await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                        await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
 
@@ -776,8 +781,10 @@ namespace Slackord.Classes
                 {
                     if (!string.IsNullOrWhiteSpace(message.Content))
                     {
+                        string contentWithChannelMentions = ReplaceChannelMentions(message.Content, session);
+
                         cancellationToken.ThrowIfCancellationRequested();
-                        await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                        await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
                 }
@@ -1047,6 +1054,35 @@ namespace Slackord.Classes
                 ApplicationWindow.WriteToDebugWindow($"❌ CreateDiscordChannelsForSession: {ex.Message}\n");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Replaces Slack channel mentions with Discord channel mentions
+        /// </summary>
+        /// <param name="content">The message content containing Slack channel mentions</param>
+        /// <param name="session">The current import session containing channel mappings</param>
+        /// <returns>Content with Discord channel mentions</returns>
+        private static string ReplaceChannelMentions(string content, ImportSession session)
+        {
+            if (string.IsNullOrEmpty(content) || session == null)
+                return content;
+
+            string channelMentionPattern = @"<#[A-Z0-9]+\|([^>]+)>";
+
+            return Regex.Replace(content, channelMentionPattern, match =>
+            {
+                string slackChannelName = match.Groups[1].Value;
+
+                var channelProgress = session.Channels.FirstOrDefault(c =>
+                    c.Name.Equals(slackChannelName, StringComparison.OrdinalIgnoreCase));
+
+                if (channelProgress != null && channelProgress.DiscordChannelId > 0)
+                {
+                    return $"<#{channelProgress.DiscordChannelId}>";
+                }
+
+                return $"#{slackChannelName}";
+            });
         }
 
         /// <summary>

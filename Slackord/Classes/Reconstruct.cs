@@ -179,7 +179,20 @@ namespace Slackord.Classes
         {
             try
             {
-                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? "File hidden by Slack limit" : ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text));
+                string messageContent;
+                if (!string.IsNullOrEmpty(deconstructedMessage.Text))
+                {
+                    messageContent = ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text));
+                }
+                else if (deconstructedMessage.FileURLs.Count > 0 && deconstructedMessage.IsFileDownloadable.Any(x => x))
+                {
+                    messageContent = "";
+                }
+                else
+                {
+                    messageContent = "File hidden by Slack limit";
+                }
+
                 string timestampString = deconstructedMessage.Timestamp?.ToString();
                 if (string.IsNullOrEmpty(timestampString))
                 {
