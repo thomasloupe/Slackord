@@ -279,9 +279,6 @@ namespace Slackord.Classes
         {
             try
             {
-                Application.Current.Dispatcher.Dispatch(() => {
-                    ApplicationWindow.WriteToDebugWindow($"🔨 Reconstructing for Discord...\n");
-                });
 
                 var reconstructedMessages = new List<ReconstructedMessage>();
                 int processedCount = 0;

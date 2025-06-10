@@ -23,8 +23,6 @@ namespace Slackord.Classes
                 string json = JsonConvert.SerializeObject(messages, Formatting.Indented);
 
                 await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
-
-                ApplicationWindow.WriteToDebugWindow($"💾 Saved {messages.Count:N0} messages to {Path.GetFileName(filePath)}\n");
             }
             catch (Exception ex)
             {

@@ -200,13 +200,15 @@ namespace Slackord.Classes
                     {
                         string fileUrl = deconstructedMessage.FileURLs[i];
                         bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
+                        int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
+
                         if (isDownloadable)
                         {
-                            var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, isDownloadable);
+                            var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable);
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
-                                int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
                                 channel.ReconstructedMessagesList[lastMessageIndex].FileURLs.Add(localFilePath);
+                                channel.ReconstructedMessagesList[lastMessageIndex].FallbackFileURLs.Remove(fileUrl);
                             }
                             else
                             {
@@ -215,7 +217,6 @@ namespace Slackord.Classes
                         }
                         else
                         {
-                            int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
                             channel.ReconstructedMessagesList[lastMessageIndex].Content += " [File hidden by Slack limit]";
                         }
                     }
@@ -468,8 +469,9 @@ namespace Slackord.Classes
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
         {
             List<string> messageParts = SplitMessageIntoParts(formattedMessage);
-            foreach (string part in messageParts)
+            for (int i = 0; i < messageParts.Count; i++)
             {
+                string part = messageParts[i];
                 ReconstructedMessage reconstructedMessage = new()
                 {
                     User = userName,
@@ -482,9 +484,16 @@ namespace Slackord.Classes
                     OriginalTimestamp = deconstructedMessage.OriginalTimestamp
                 };
 
-                foreach (var url in deconstructedMessage.FileURLs)
+                if (i == messageParts.Count - 1)
                 {
-                    reconstructedMessage.FileURLs.Add(url);
+                    foreach (var url in deconstructedMessage.FileURLs)
+                    {
+                        reconstructedMessage.FallbackFileURLs.Add(url);
+                    }
+                    foreach (var flag in deconstructedMessage.IsFileDownloadable)
+                    {
+                        reconstructedMessage.IsFileDownloadable.Add(flag);
+                    }
                 }
 
                 channel.ReconstructedMessagesList.Add(reconstructedMessage);
