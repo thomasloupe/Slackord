@@ -703,8 +703,7 @@ namespace Slackord.Classes
                 string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" :
                     message.Message.Length <= 20 ? message.Message : message.Message[..20];
 
-                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                    options: new RequestOptions { CancelToken = cancellationToken });
+                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply: null, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
                 IEnumerable<IMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
@@ -729,8 +728,7 @@ namespace Slackord.Classes
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
-                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                    threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply, cancellationToken);
 
                 if (shouldArchiveThreadBack && threadID != null)
                 {
@@ -751,23 +749,88 @@ namespace Slackord.Classes
             else
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                    options: new RequestOptions { CancelToken = cancellationToken });
+                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply: null, cancellationToken);
             }
 
-            await HandleMessageExtras(message, discordChannel, fileSizeLimit, cancellationToken);
+            await HandleMessageExtras(message, discordChannel, cancellationToken);
         }
 
         /// <summary>
-        /// Handles message pinning and file uploads for a posted message
+        /// Sends a message via webhook including any attachments
+        /// </summary>
+        private static async Task SendMessageWithAttachments(ReconstructedMessage message, DiscordWebhookClient webhookClient,
+            long fileSizeLimit, ulong? threadIdForReply, CancellationToken cancellationToken)
+        {
+            List<FileAttachment> attachments = [];
+            List<string> tooLarge = [];
+            List<string> missing = [];
+
+            for (int i = 0; i < message.FileURLs.Count; i++)
+            {
+                string path = message.FileURLs[i];
+
+                if (File.Exists(path))
+                {
+                    long size = new FileInfo(path).Length;
+                    if (size <= fileSizeLimit)
+                    {
+                        attachments.Add(new FileAttachment(path, Path.GetFileName(path)));
+                    }
+                    else
+                    {
+                        tooLarge.Add(Path.GetFileName(path));
+                    }
+                }
+                else
+                {
+                    missing.Add(Path.GetFileName(path));
+                }
+            }
+
+            if (attachments.Count > 0)
+            {
+                await webhookClient.SendFilesAsync(attachments, message.Content, username: message.User, avatarUrl: message.Avatar,
+                    threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+            }
+            else
+            {
+                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                    threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+            }
+
+            foreach (string fileName in tooLarge)
+            {
+                await webhookClient.SendMessageAsync($"📎 File too large to upload: {fileName}", false, null, message.User, message.Avatar,
+                    threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+            }
+
+            for (int i = 0; i < missing.Count; i++)
+            {
+                string fileName = missing[i];
+                await webhookClient.SendMessageAsync($"📎 Attachment not found: {fileName}", false, null, message.User, message.Avatar,
+                    threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+
+                if (i < message.FallbackFileURLs.Count)
+                {
+                    string url = message.FallbackFileURLs[i];
+                    if (!string.IsNullOrWhiteSpace(url))
+                    {
+                        await webhookClient.SendMessageAsync(url, false, null, message.User, message.Avatar,
+                            threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles message pinning for a posted message
         /// </summary>
         /// <param name="message">The reconstructed message with extras to handle</param>
         /// <param name="discordChannel">The Discord channel the message was posted to</param>
-        /// <param name="fileSizeLimit">Maximum file size for uploads</param>
         /// <param name="cancellationToken">Cancellation token for the operation</param>
         /// <returns>A completed task</returns>
         private static async Task HandleMessageExtras(ReconstructedMessage message, ITextChannel discordChannel,
-            long fileSizeLimit, CancellationToken cancellationToken)
+            CancellationToken cancellationToken)
         {
             if (message.IsPinned && message.ThreadType == ThreadType.None)
             {
@@ -788,7 +851,7 @@ namespace Slackord.Classes
                     });
                 }
             }
-
+        }
             for (int i = 0; i < message.FileURLs.Count; i++)
             {
                 string localFilePath = message.FileURLs[i];

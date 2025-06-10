@@ -512,6 +512,7 @@ namespace Slackord.Classes
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
+            bool inCodeBlock = false;
             while (currentIndex < message.Length)
             {
                 int bestSplitIndex = Math.Min(currentIndex + maxMessageLength, message.Length);
@@ -540,6 +541,19 @@ namespace Slackord.Classes
                 }
 
                 string part = message[currentIndex..bestSplitIndex];
+
+                if (inCodeBlock)
+                {
+                    part = $"```{part}";
+                }
+
+                int backtickCount = Regex.Matches(part, "```").Count;
+                if (backtickCount % 2 != 0)
+                {
+                    inCodeBlock = !inCodeBlock;
+                    part += "```";
+                }
+
                 messageParts.Add(part);
 
                 currentIndex = bestSplitIndex;
