@@ -501,7 +501,7 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Splits a message into parts that fit Discord's character limits while preserving code block formatting
+        /// Splits a message into parts that fit Discord's character limits while preserving code block formatting and supporting multi-part code block splits
         /// </summary>
         /// <param name="message">The message to split</param>
         /// <returns>A list of message parts</returns>
@@ -514,10 +514,23 @@ namespace Slackord.Classes
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
+            bool inMultiPartCodeBlock = false;
+            string codeBlockLanguage = "";
 
             while (currentIndex < message.Length)
             {
-                int bestSplitIndex = Math.Min(currentIndex + maxMessageLength, message.Length);
+                int availableLength = maxMessageLength;
+                string openingMarker = "";
+                string closingMarker = "";
+
+                if (inMultiPartCodeBlock)
+                {
+                    openingMarker = codeBlockMarker + codeBlockLanguage + "\n";
+                    closingMarker = "\n" + codeBlockMarker;
+                    availableLength = maxMessageLength - openingMarker.Length - closingMarker.Length;
+                }
+
+                int bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
 
                 while (bestSplitIndex > currentIndex &&
                        bestSplitIndex < message.Length &&
@@ -526,79 +539,82 @@ namespace Slackord.Classes
                     bestSplitIndex--;
                 }
 
-                MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
-                if (matches.Count > 0)
+                if (!inMultiPartCodeBlock)
                 {
-                    Match lastMatch = matches[^1];
-                    if (lastMatch.Index + lastMatch.Length > bestSplitIndex - currentIndex - 20)
+                    MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
+                    if (matches.Count > 0)
                     {
-                        bestSplitIndex = currentIndex + lastMatch.Index;
+                        Match lastMatch = matches[^1];
+                        if (lastMatch.Index + lastMatch.Length > bestSplitIndex - currentIndex - 20)
+                        {
+                            bestSplitIndex = currentIndex + lastMatch.Index;
+                        }
                     }
-                }
 
-                int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
-                if (boldSyntax > -1 && boldSyntax >= bestSplitIndex - 3)
-                {
-                    bestSplitIndex = boldSyntax;
+                    int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
+                    if (boldSyntax > -1 && boldSyntax >= bestSplitIndex - 3)
+                    {
+                        bestSplitIndex = boldSyntax;
+                    }
                 }
 
                 string part = message[currentIndex..bestSplitIndex];
 
                 if (bestSplitIndex < message.Length)
                 {
-                    bool insideCodeBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
-
-                    if (insideCodeBlock)
+                    if (!inMultiPartCodeBlock)
                     {
-                        string language = GetCodeBlockLanguage(message, currentIndex);
+                        bool insideCodeBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
 
-                        part = part.TrimEnd() + "\n" + codeBlockMarker;
-                        messageParts.Add(part);
-
-                        while (bestSplitIndex < message.Length && char.IsWhiteSpace(message[bestSplitIndex]))
+                        if (insideCodeBlock)
                         {
-                            bestSplitIndex++;
-                        }
+                            codeBlockLanguage = GetCodeBlockLanguage(message, currentIndex);
+                            inMultiPartCodeBlock = true;
 
-                        if (bestSplitIndex < message.Length)
-                        {
-                            string codeBlockStart = codeBlockMarker + language + "\n";
+                            part = part.TrimEnd() + "\n" + codeBlockMarker;
+                            messageParts.Add(part);
 
-                            int nextMaxLength = maxMessageLength - codeBlockStart.Length;
-                            int nextSplit = Math.Min(bestSplitIndex + nextMaxLength, message.Length);
-
-                            while (nextSplit > bestSplitIndex &&
-                                   nextSplit < message.Length &&
-                                   !char.IsWhiteSpace(message[nextSplit]))
+                            while (bestSplitIndex < message.Length && char.IsWhiteSpace(message[bestSplitIndex]))
                             {
-                                nextSplit--;
+                                bestSplitIndex++;
                             }
 
-                            string nextContent = message[bestSplitIndex..nextSplit];
-                            bool nextPartStillInBlock = IsInsideCodeBlock(message, bestSplitIndex, nextSplit);
-
-                            string nextPart = codeBlockStart + nextContent;
-                            if (nextPartStillInBlock && nextSplit < message.Length)
-                            {
-                                nextPart += "\n" + codeBlockMarker;
-                            }
-
-                            messageParts.Add(nextPart);
-                            currentIndex = nextSplit;
+                            currentIndex = bestSplitIndex;
+                            continue;
                         }
                         else
                         {
+                            messageParts.Add(part);
                             currentIndex = bestSplitIndex;
                         }
                     }
                     else
                     {
-                        messageParts.Add(part);
+                        bool stillInBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
+
+                        string nextPart = openingMarker + part;
+                        if (stillInBlock && bestSplitIndex < message.Length)
+                        {
+                            nextPart += closingMarker;
+                        }
+                        else
+                        {
+                            inMultiPartCodeBlock = false;
+                            codeBlockLanguage = "";
+                        }
+
+                        messageParts.Add(nextPart);
                         currentIndex = bestSplitIndex;
                     }
                 }
                 else
                 {
+                    if (inMultiPartCodeBlock)
+                    {
+                        part = openingMarker + part;
+                        inMultiPartCodeBlock = false;
+                    }
+
                     messageParts.Add(part);
                     currentIndex = bestSplitIndex;
                 }

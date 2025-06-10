@@ -563,21 +563,19 @@ namespace Slackord.Classes
             int currentSessionMessagesPosted, int totalMessagesAcrossAllChannels, int totalMessagesSentPreviously, CancellationToken cancellationToken)
         {
             int localMessagesPosted = 0;
+            DiscordWebhookClient webhookClient = null;
+            IWebhook webhook = null;
 
             try
             {
-                Application.Current.Dispatcher.Dispatch(() => {
-                    ApplicationWindow.WriteToDebugWindow($"📤 Processing channel: {channelProgress.Name} ({channelProgress.GetProgressDisplay()})\n");
-                });
+                SafeLogToDebugWindow($"📤 Processing channel: {channelProgress.Name} ({channelProgress.GetProgressDisplay()})");
 
                 string channelFilePath = session.GetChannelFilePath(channelProgress.Name);
                 var allMessages = await SlackordFileManager.LoadChannelMessagesAsync(channelFilePath);
 
                 if (allMessages.Count == 0)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => {
-                        ApplicationWindow.WriteToDebugWindow($"⚠️ No messages found for {channelProgress.Name}\n");
-                    });
+                    SafeLogToDebugWindow($"⚠️ No messages found for {channelProgress.Name}");
                     return 0;
                 }
 
@@ -585,89 +583,79 @@ namespace Slackord.Classes
 
                 if (messagesToSend.Count == 0)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => {
-                        ApplicationWindow.WriteToDebugWindow($"✅ {channelProgress.Name} already completed\n");
-                    });
+                    SafeLogToDebugWindow($"✅ {channelProgress.Name} already completed");
                     channelProgress.IsCompleted = true;
                     return 0;
                 }
 
-                var webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
+                webhook = await discordChannel.CreateWebhookAsync("Slackord Temp Webhook");
                 string webhookUrl = $"https://discord.com/api/webhooks/{webhook.Id}/{webhook.Token}";
+                webhookClient = new DiscordWebhookClient(webhookUrl);
 
-                try
+                foreach (var message in messagesToSend)
                 {
-                    using var webhookClient = new DiscordWebhookClient(webhookUrl);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    foreach (var message in messagesToSend)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        try
-                        {
-                            await PostSingleMessage(message, webhookClient, discordChannel, threadStartsDict, fileSizeLimit, cancellationToken);
-
-                            channelProgress.RecordMessageSent(message.OriginalTimestamp);
-                            localMessagesPosted++;
-
-                            if ((currentSessionMessagesPosted + localMessagesPosted) % 25 == 0)
-                            {
-                                session.Save();
-                            }
-
-                            int cumulativeProgress = totalMessagesSentPreviously + currentSessionMessagesPosted + localMessagesPosted;
-                            ApplicationWindow.UpdateProgressBar(cumulativeProgress, totalMessagesAcrossAllChannels, "messages");
-
-                            await Task.Delay(50, cancellationToken);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            throw;
-                        }
-                        catch (Exception ex)
-                        {
-                            Application.Current.Dispatcher.Dispatch(() => {
-                                ApplicationWindow.WriteToDebugWindow($"❌ Error posting message in {channelProgress.Name}: {ex.Message}\n");
-                            });
-
-                            bool shouldContinue = await MainPage.Current.DisplayAlert(
-                                "Error Posting Message",
-                                $"An error occurred while posting a message to {channelProgress.Name}: {ex.Message}\n\nWould you like to continue with the next message?",
-                                "Continue", "Stop");
-
-                            if (!shouldContinue)
-                            {
-                                session.Save();
-                                throw new Exception("User chose to stop import");
-                            }
-
-                            channelProgress.RecordMessageSent(message.OriginalTimestamp);
-                            localMessagesPosted++;
-
-                            int cumulativeProgress = totalMessagesSentPreviously + currentSessionMessagesPosted + localMessagesPosted;
-                            ApplicationWindow.UpdateProgressBar(cumulativeProgress, totalMessagesAcrossAllChannels, "messages");
-                        }
-                    }
-                }
-                finally
-                {
                     try
                     {
-                        await webhook.DeleteAsync();
+                        await PostSingleMessage(message, webhookClient, discordChannel, threadStartsDict, fileSizeLimit, cancellationToken);
+
+                        channelProgress.RecordMessageSent(message.OriginalTimestamp);
+                        localMessagesPosted++;
+
+                        if ((currentSessionMessagesPosted + localMessagesPosted) % 25 == 0)
+                        {
+                            session.Save();
+                        }
+
+                        int cumulativeProgress = totalMessagesSentPreviously + currentSessionMessagesPosted + localMessagesPosted;
+
+                        // Thread-safe progress update
+                        SafeUpdateProgressBar(cumulativeProgress, totalMessagesAcrossAllChannels);
+
+                        await Task.Delay(50, cancellationToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
                     }
                     catch (Exception ex)
                     {
-                        Application.Current.Dispatcher.Dispatch(() => {
-                            ApplicationWindow.WriteToDebugWindow($"⚠️ Error deleting webhook: {ex.Message}\n");
-                        });
+                        SafeLogToDebugWindow($"❌ Error posting message in {channelProgress.Name}: {ex.Message}");
+
+                        bool shouldContinue = false;
+                        try
+                        {
+                            // Use ConfigureAwait(false) to avoid deadlocks
+                            shouldContinue = await MainPage.Current.DisplayAlert(
+                                "Error Posting Message",
+                                $"An error occurred while posting a message to {channelProgress.Name}: {ex.Message}\n\nWould you like to continue with the next message?",
+                                "Continue", "Stop").ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // If we can't show the dialog, default to continue
+                            shouldContinue = true;
+                            SafeLogToDebugWindow("⚠️ Could not show error dialog, continuing with next message");
+                        }
+
+                        if (!shouldContinue)
+                        {
+                            session.Save();
+                            throw new Exception("User chose to stop import");
+                        }
+
+                        channelProgress.RecordMessageSent(message.OriginalTimestamp);
+                        localMessagesPosted++;
+
+                        int cumulativeProgress = totalMessagesSentPreviously + currentSessionMessagesPosted + localMessagesPosted;
+                        SafeUpdateProgressBar(cumulativeProgress, totalMessagesAcrossAllChannels);
                     }
                 }
 
                 if (channelProgress.IsCompleted)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => {
-                        ApplicationWindow.WriteToDebugWindow($"✅ Completed channel: {channelProgress.Name}\n");
-                    });
+                    SafeLogToDebugWindow($"✅ Completed channel: {channelProgress.Name}");
                 }
 
                 session.Save();
@@ -675,10 +663,34 @@ namespace Slackord.Classes
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Dispatch(() => {
-                    ApplicationWindow.WriteToDebugWindow($"❌ Error processing channel {channelProgress.Name}: {ex.Message}\n");
-                });
+                SafeLogToDebugWindow($"❌ Error processing channel {channelProgress.Name}: {ex.Message}");
+                Logger.Log($"ProcessChannelMessages error: {ex}");
                 throw;
+            }
+            finally
+            {
+                // Cleanup resources in proper order
+                try
+                {
+                    webhookClient?.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Error disposing webhook client: {ex.Message}");
+                }
+
+                try
+                {
+                    if (webhook != null)
+                    {
+                        await webhook.DeleteAsync(new RequestOptions { Timeout = 10000 });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SafeLogToDebugWindow($"⚠️ Error deleting webhook: {ex.Message}");
+                    Logger.Log($"Error deleting webhook: {ex.Message}");
+                }
             }
         }
 
@@ -696,80 +708,92 @@ namespace Slackord.Classes
             ITextChannel discordChannel, Dictionary<string, IThreadChannel> threadStartsDict,
             long fileSizeLimit, CancellationToken cancellationToken)
         {
-            ulong? threadIdForReply = null;
-            bool shouldArchiveThreadBack = false;
-
-            if (message.ThreadType == ThreadType.Parent)
+            try
             {
-                string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" :
-                    message.Message.Length <= 20 ? message.Message : message.Message[..20];
+                ulong? threadIdForReply = null;
+                bool shouldArchiveThreadBack = false;
 
-                // Only send message if there's actual content (not empty for file-only messages)
-                if (!string.IsNullOrWhiteSpace(message.Content))
+                if (message.ThreadType == ThreadType.Parent)
                 {
-                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                        options: new RequestOptions { CancelToken = cancellationToken });
-                }
+                    string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" :
+                        message.Message.Length <= 20 ? message.Message : message.Message[..20];
 
-                cancellationToken.ThrowIfCancellationRequested();
-                IEnumerable<IMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
+                    if (!string.IsNullOrWhiteSpace(message.Content))
+                    {
+                        await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                    }
 
-                cancellationToken.ThrowIfCancellationRequested();
-                IThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread,
-                    ThreadArchiveDuration.OneHour, threadMessages.First(), options: new RequestOptions { CancelToken = cancellationToken });
-                threadStartsDict[message.ParentThreadTs] = threadID;
-            }
-            else if (message.ThreadType == ThreadType.Reply)
-            {
-                if (threadStartsDict.TryGetValue(message.ParentThreadTs, out IThreadChannel threadID))
-                {
-                    if (threadID.IsArchived)
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
+                    var firstMessage = threadMessages.FirstOrDefault();
+
+                    if (firstMessage != null)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await threadID.ModifyAsync(properties => properties.Archived = false,
-                            options: new RequestOptions { CancelToken = cancellationToken });
-                        shouldArchiveThreadBack = true;
+                        IThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread,
+                            ThreadArchiveDuration.OneHour, firstMessage, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        threadStartsDict[message.ParentThreadTs] = threadID;
                     }
-                    threadIdForReply = threadID.Id;
                 }
-
-                // Only send message if there's actual content
-                if (!string.IsNullOrWhiteSpace(message.Content))
+                else if (message.ThreadType == ThreadType.Reply)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                        threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
-                }
+                    if (threadStartsDict.TryGetValue(message.ParentThreadTs, out IThreadChannel threadID))
+                    {
+                        if (threadID.IsArchived)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            await threadID.ModifyAsync(properties => properties.Archived = false,
+                                options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                            shouldArchiveThreadBack = true;
+                        }
+                        threadIdForReply = threadID.Id;
+                    }
 
-                if (shouldArchiveThreadBack && threadID != null)
-                {
-                    try
+                    if (!string.IsNullOrWhiteSpace(message.Content))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await threadID.ModifyAsync(properties => properties.Archived = true,
-                            options: new RequestOptions { CancelToken = cancellationToken });
+                        await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                            threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
-                    catch (Exception archiveEx)
-                    {
-                        Application.Current.Dispatcher.Dispatch(() => {
-                            ApplicationWindow.WriteToDebugWindow($"⚠️ Error archiving thread: {archiveEx.Message}\n");
-                        });
-                    }
-                }
-            }
-            else
-            {
-                // Only send message if there's actual content
-                if (!string.IsNullOrWhiteSpace(message.Content))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                        options: new RequestOptions { CancelToken = cancellationToken });
-                }
-            }
 
-            // Handle files with user attribution
-            await HandleMessageExtras(message, discordChannel, fileSizeLimit, webhookClient, cancellationToken);
+                    if (shouldArchiveThreadBack && threadID != null)
+                    {
+                        try
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            await threadID.ModifyAsync(properties => properties.Archived = true,
+                                options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        }
+                        catch (Exception archiveEx)
+                        {
+                            SafeLogToDebugWindow($"⚠️ Error archiving thread: {archiveEx.Message}");
+                        }
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(message.Content))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                    }
+                }
+
+                await HandleMessageExtras(message, discordChannel, fileSizeLimit, webhookClient, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                SafeLogToDebugWindow($"❌ Error in PostSingleMessage: {ex.Message}");
+                Logger.Log($"PostSingleMessage error: {ex}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -784,92 +808,131 @@ namespace Slackord.Classes
         private static async Task HandleMessageExtras(ReconstructedMessage message, ITextChannel discordChannel,
             long fileSizeLimit, DiscordWebhookClient webhookClient, CancellationToken cancellationToken)
         {
-            if (message.IsPinned && message.ThreadType == ThreadType.None)
+            try
             {
-                try
+                if (message.IsPinned && message.ThreadType == ThreadType.None)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    IEnumerable<IMessage> recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync(cancellationToken);
-                    IMessage recentMessage = recentMessages.FirstOrDefault();
-                    if (recentMessage is IUserMessage userMessage)
+                    try
                     {
-                        await userMessage.PinAsync(options: new RequestOptions { CancelToken = cancellationToken });
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync(cancellationToken);
+                        var recentMessage = recentMessages.FirstOrDefault();
+                        if (recentMessage is IUserMessage userMessage)
+                        {
+                            await userMessage.PinAsync(options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        SafeLogToDebugWindow($"⚠️ Error pinning message: {ex.Message}");
                     }
                 }
-                catch (Exception ex)
+
+                for (int i = 0; i < message.FileURLs.Count; i++)
                 {
-                    Application.Current.Dispatcher.Dispatch(() => {
-                        ApplicationWindow.WriteToDebugWindow($"⚠️ Error pinning message: {ex.Message}\n");
-                    });
+                    try
+                    {
+                        string localFilePath = message.FileURLs[i];
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (File.Exists(localFilePath))
+                        {
+                            FileInfo fileInfo = new(localFilePath);
+                            long fileSizeInBytes = fileInfo.Length;
+
+                            if (fileSizeInBytes <= fileSizeLimit)
+                            {
+                                await webhookClient.SendFileAsync(localFilePath,
+                                    text: null,
+                                    username: message.User,
+                                    avatarUrl: message.Avatar,
+                                    options: new RequestOptions { CancelToken = cancellationToken, Timeout = 60000 });
+                            }
+                            else
+                            {
+                                await webhookClient.SendMessageAsync(
+                                    $"📎 File too large to upload: {Path.GetFileName(localFilePath)} ({SlackordFileManager.GetFileSizeDisplay(localFilePath)})",
+                                    username: message.User,
+                                    avatarUrl: message.Avatar,
+                                    options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                            }
+                        }
+                        else
+                        {
+                            Logger.Log($"File not found: {localFilePath}");
+
+                            if (i < message.FallbackFileURLs.Count)
+                            {
+                                string url = message.FallbackFileURLs[i];
+                                if (!string.IsNullOrWhiteSpace(url))
+                                {
+                                    await webhookClient.SendMessageAsync(url,
+                                        username: message.User,
+                                        avatarUrl: message.Avatar,
+                                        options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                                    continue;
+                                }
+                            }
+
+                            await webhookClient.SendMessageAsync(
+                                $"📎 Attachment not found: {Path.GetFileName(localFilePath)}",
+                                username: message.User,
+                                avatarUrl: message.Avatar,
+                                options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        SafeLogToDebugWindow($"⚠️ Error handling file {i}: {ex.Message}");
+                        Logger.Log($"HandleMessageExtras file error: {ex}");
+                    }
                 }
             }
-
-            for (int i = 0; i < message.FileURLs.Count; i++)
+            catch (OperationCanceledException)
             {
-                string localFilePath = message.FileURLs[i];
-                cancellationToken.ThrowIfCancellationRequested();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                SafeLogToDebugWindow($"❌ Error in HandleMessageExtras: {ex.Message}");
+                Logger.Log($"HandleMessageExtras error: {ex}");
+            }
+        }
 
-                if (File.Exists(localFilePath))
+        /// <summary>
+        /// Handles logging messages to the debug window safely
+        /// </summary>
+        /// <param name="message">The message to safely log to the debug window</param>
+        private static void SafeLogToDebugWindow(string message)
+        {
+            try
+            {
+                if (Application.Current?.Dispatcher != null)
                 {
-                    FileInfo fileInfo = new(localFilePath);
-                    long fileSizeInBytes = fileInfo.Length;
-
-                    if (fileSizeInBytes <= fileSizeLimit)
+                    Application.Current.Dispatcher.Dispatch(() =>
                     {
                         try
                         {
-                            await webhookClient.SendFileAsync(localFilePath,
-                                text: null,
-                                username: message.User,
-                                avatarUrl: message.Avatar,
-                                options: new RequestOptions { CancelToken = cancellationToken });
+                            ApplicationWindow.WriteToDebugWindow($"{message}\n");
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            Logger.Log($"Failed to upload file {localFilePath}: {ex.Message}");
-                            Application.Current.Dispatcher.Dispatch(() => {
-                                ApplicationWindow.WriteToDebugWindow($"⚠️ Failed to upload file: {Path.GetFileName(localFilePath)}\n");
-                            });
 
-                            await webhookClient.SendMessageAsync(
-                                $"📎 Could not upload file: {Path.GetFileName(localFilePath)}",
-                                username: message.User,
-                                avatarUrl: message.Avatar,
-                                options: new RequestOptions { CancelToken = cancellationToken });
                         }
-                    }
-                    else
-                    {
-                        await webhookClient.SendMessageAsync(
-                            $"📎 File too large to upload: {Path.GetFileName(localFilePath)} ({SlackordFileManager.GetFileSizeDisplay(localFilePath)})",
-                            username: message.User,
-                            avatarUrl: message.Avatar,
-                            options: new RequestOptions { CancelToken = cancellationToken });
-                    }
+                    });
                 }
                 else
                 {
-                    Logger.Log($"File not found: {localFilePath}");
-
-                    if (i < message.FallbackFileURLs.Count)
-                    {
-                        string url = message.FallbackFileURLs[i];
-                        if (!string.IsNullOrWhiteSpace(url))
-                        {
-                            await webhookClient.SendMessageAsync(url,
-                                username: message.User,
-                                avatarUrl: message.Avatar,
-                                options: new RequestOptions { CancelToken = cancellationToken });
-                            continue;
-                        }
-                    }
-
-                    await webhookClient.SendMessageAsync(
-                        $"📎 Attachment not found: {Path.GetFileName(localFilePath)}",
-                        username: message.User,
-                        avatarUrl: message.Avatar,
-                        options: new RequestOptions { CancelToken = cancellationToken });
+                    Logger.Log(message);
                 }
+            }
+            catch
+            {
+                Logger.Log(message);
             }
         }
 
@@ -984,6 +1047,77 @@ namespace Slackord.Classes
                 ApplicationWindow.WriteToDebugWindow($"❌ CreateDiscordChannelsForSession: {ex.Message}\n");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Handles safe progress bar updates in the UI
+        /// </summary>
+        /// <param name="current">Integer of the current progress value</param>
+        /// <param name="total">Integer value of the total messages sent</param>
+        private static void SafeUpdateProgressBar(int current, int total)
+        {
+            try
+            {
+                if (Application.Current?.Dispatcher != null)
+                {
+                    Application.Current.Dispatcher.Dispatch(() =>
+                    {
+                        try
+                        {
+                            ApplicationWindow.UpdateProgressBar(current, total, "messages");
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log($"Error updating progress bar: {ex.Message}");
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"Error dispatching progress update: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Initializes global exception handling to log unhandled exceptions across the entire application
+        /// It is places here specifically because the DiscordBot is likely to cause unhandled exceptions with the UI
+        /// </summary>
+        public static void InitializeGlobalExceptionHandling()
+        {
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                var exception = args.ExceptionObject as Exception;
+                Logger.Log($"Unhandled exception: {exception}");
+
+                try
+                {
+                    SafeLogToDebugWindow($"💥 CRITICAL ERROR: {exception?.Message ?? "Unknown error"}");
+                    SafeLogToDebugWindow("Application may need to be restarted");
+                }
+                catch
+                {
+                    // Final fallback - just log to file
+                    Logger.Log("Critical error occurred but could not update UI");
+                }
+            };
+
+            TaskScheduler.UnobservedTaskException += (sender, args) =>
+            {
+                Logger.Log($"Unobserved task exception: {args.Exception}");
+
+                try
+                {
+                    SafeLogToDebugWindow($"🔥 Background task error: {args.Exception.GetBaseException().Message}");
+                }
+                catch
+                {
+                    // Final fallback
+                    Logger.Log("Background task error occurred but could not update UI");
+                }
+
+                args.SetObserved(); // Prevent app crash
+            };
         }
     }
 }
