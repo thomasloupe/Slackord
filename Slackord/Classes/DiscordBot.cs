@@ -703,11 +703,9 @@ namespace Slackord.Classes
                 string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" :
                     message.Message.Length <= 20 ? message.Message : message.Message[..20];
 
-                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply: null, cancellationToken: cancellationToken);
-
+                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply: null, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
                 IEnumerable<IMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
-
                 cancellationToken.ThrowIfCancellationRequested();
                 IThreadChannel threadID = await discordChannel.CreateThreadAsync(threadName, Discord.ThreadType.PublicThread,
                     ThreadArchiveDuration.OneHour, threadMessages.First(), options: new RequestOptions { CancelToken = cancellationToken });
@@ -749,7 +747,7 @@ namespace Slackord.Classes
             else
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply: null, cancellationToken: cancellationToken);
+                await SendMessageWithAttachments(message, webhookClient, fileSizeLimit, threadIdForReply: null, cancellationToken);
             }
 
             await HandleMessageExtras(message, discordChannel, cancellationToken);
@@ -851,7 +849,56 @@ namespace Slackord.Classes
                     });
                 }
             }
+        }
+            for (int i = 0; i < message.FileURLs.Count; i++)
+            {
+                string localFilePath = message.FileURLs[i];
+                cancellationToken.ThrowIfCancellationRequested();
 
+                if (File.Exists(localFilePath))
+                {
+                    FileInfo fileInfo = new(localFilePath);
+                    long fileSizeInBytes = fileInfo.Length;
+
+                    if (fileSizeInBytes <= fileSizeLimit)
+                    {
+                        try
+                        {
+                            using FileStream fs = new(localFilePath, FileMode.Open, FileAccess.Read);
+                            await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath),
+                                options: new RequestOptions { CancelToken = cancellationToken });
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log($"Failed to upload file {localFilePath}: {ex.Message}");
+                            Application.Current.Dispatcher.Dispatch(() => {
+                                ApplicationWindow.WriteToDebugWindow($"⚠️ Failed to upload file: {Path.GetFileName(localFilePath)}\n");
+                            });
+                        }
+                    }
+                    else
+                    {
+                        await discordChannel.SendMessageAsync($"📎 File too large to upload: {Path.GetFileName(localFilePath)} ({SlackordFileManager.GetFileSizeDisplay(localFilePath)})",
+                            options: new RequestOptions { CancelToken = cancellationToken });
+                    }
+                }
+                else
+                {
+                    Logger.Log($"File not found: {localFilePath}");
+                    await discordChannel.SendMessageAsync($"📎 Attachment not found: {Path.GetFileName(localFilePath)}",
+                        options: new RequestOptions { CancelToken = cancellationToken });
+
+                    if (i < message.FallbackFileURLs.Count)
+                    {
+                        string url = message.FallbackFileURLs[i];
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            await discordChannel.SendMessageAsync(url,
+                                options: new RequestOptions { CancelToken = cancellationToken });
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
