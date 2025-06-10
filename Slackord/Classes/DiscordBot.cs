@@ -379,7 +379,8 @@ namespace Slackord.Classes
             int totalMessagesAcrossAllChannels = currentSession.Channels.Sum(c => c.TotalMessages);
             int totalMessagesSentPreviously = currentSession.Channels.Sum(c => c.MessagesSent);
 
-            Application.Current.Dispatcher.Dispatch(() => {
+            Application.Current.Dispatcher.Dispatch(() =>
+            {
                 ApplicationWindow.WriteToDebugWindow($"📤 Starting Discord import for session {currentSession.SessionId}\n");
                 ApplicationWindow.WriteToDebugWindow($"📊 Channels to process: {channelsToProcess.Count}\n");
                 ApplicationWindow.WriteToDebugWindow($"📋 Messages to post: {totalMessagesToPost:N0}\n");
@@ -471,7 +472,8 @@ namespace Slackord.Classes
                     }
                     else
                     {
-                        Application.Current.Dispatcher.Dispatch(() => {
+                        Application.Current.Dispatcher.Dispatch(() =>
+                        {
                             ApplicationWindow.WriteToDebugWindow($"❌ Discord channel not found for: {channelProgress.Name}\n");
                         });
                     }
@@ -497,7 +499,8 @@ namespace Slackord.Classes
                 int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
                 cumulativeMessagesPosted = totalMessagesSentPreviously + currentSessionProgress;
 
-                Application.Current.Dispatcher.Dispatch(() => {
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
                     ApplicationWindow.WriteToDebugWindow($"❌ Unexpected error during message posting: {ex.Message}\n");
                 });
             }
@@ -526,22 +529,11 @@ namespace Slackord.Classes
                 else
                     await interaction.FollowupAsync("✅ Resume completed successfully!");
 
-                Application.Current.Dispatcher.Dispatch(() => {
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
                     ApplicationWindow.WriteToDebugWindow($"🎉 Import completed successfully!\n");
-                    ApplicationWindow.WriteToDebugWindow($"📊 Final stats: {cumulativeMessagesPosted:N0} total messages posted\n\n");
+                    ApplicationWindow.WriteToDebugWindow($"📊 Final stats: {cumulativeMessagesPosted:N0} total messages posted\n");
                 });
-            }
-            else
-            {
-                ProcessingManager.Instance.SetState(ProcessingState.Error);
-                currentSession.Save();
-
-                int currentSessionProgress = currentSession.Channels.Sum(c => c.MessagesSent) - totalMessagesSentPreviously;
-
-                if (!isResume)
-                    await interaction.FollowupAsync($"❌ Message sending was interrupted after {currentSessionProgress} messages.");
-                else
-                    await interaction.FollowupAsync($"❌ Resume operation was interrupted after {currentSessionProgress} messages.");
             }
         }
 
@@ -1133,7 +1125,6 @@ namespace Slackord.Classes
                 }
                 catch
                 {
-                    // Final fallback - just log to file
                     Logger.Log("Critical error occurred but could not update UI");
                 }
             };
@@ -1148,7 +1139,6 @@ namespace Slackord.Classes
                 }
                 catch
                 {
-                    // Final fallback
                     Logger.Log("Background task error occurred but could not update UI");
                 }
 

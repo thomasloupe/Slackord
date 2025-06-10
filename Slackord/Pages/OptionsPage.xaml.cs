@@ -8,6 +8,16 @@ namespace Slackord.Pages
         private bool _isPasswordVisible = false;
 
         /// <summary>
+        /// Defines the cleanup behavior options for post-import cleanup
+        /// </summary>
+        public enum CleanupBehavior
+        {
+            Prompt = 0,
+            Automatically = 1,
+            Never = 2
+        }
+
+        /// <summary>
         /// Initializes the Options page and loads settings
         /// </summary>
         public OptionsPage()
@@ -36,6 +46,9 @@ namespace Slackord.Pages
 
             bool checkForUpdates = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
             CheckUpdatesSwitch.IsToggled = checkForUpdates;
+
+            int cleanupBehavior = Preferences.Default.Get("CleanupAfterImport", (int)CleanupBehavior.Prompt);
+            CleanupAfterImportPicker.SelectedIndex = cleanupBehavior;
         }
 
         /// <summary>
@@ -114,6 +127,11 @@ namespace Slackord.Pages
                 DiscordBot.Instance.UpdateLogLevel(GetLogSeverityFromIndex(LogLevelPicker.SelectedIndex));
             }
 
+            if (CleanupAfterImportPicker.SelectedIndex >= 0)
+            {
+                Preferences.Default.Set("CleanupAfterImport", CleanupAfterImportPicker.SelectedIndex);
+            }
+
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckUpdatesSwitch.IsToggled);
             await UpdateMainPageUISettings();
 
@@ -141,6 +159,7 @@ namespace Slackord.Pages
                 TimestampFormatPicker.SelectedIndex = 0;
                 BotTokenEntry.Text = string.Empty;
                 LogLevelPicker.SelectedIndex = 3;
+                CleanupAfterImportPicker.SelectedIndex = (int)CleanupBehavior.Prompt;
                 CheckUpdatesSwitch.IsToggled = true;
 
                 await DisplayAlert("Reset Complete", "All settings have been reset to default values.", "OK");
@@ -258,6 +277,29 @@ namespace Slackord.Pages
                 4 => "Debug - Detailed debugging information",
                 5 => "Verbose - All possible log messages",
                 _ => "Info - General operational information"
+            };
+        }
+
+        /// <summary>
+        /// Gets the current cleanup behavior setting from preferences
+        /// </summary>
+        public static CleanupBehavior GetCleanupBehavior()
+        {
+            int behaviorIndex = Preferences.Default.Get("CleanupAfterImport", (int)CleanupBehavior.Prompt);
+            return (CleanupBehavior)behaviorIndex;
+        }
+
+        /// <summary>
+        /// Returns a human-readable description of the cleanup behavior
+        /// </summary>
+        public static string GetCleanupBehaviorDescription(CleanupBehavior behavior)
+        {
+            return behavior switch
+            {
+                CleanupBehavior.Prompt => "Prompt - Ask before cleaning up",
+                CleanupBehavior.Automatically => "Automatically - Clean up without asking",
+                CleanupBehavior.Never => "Never - Keep all files",
+                _ => "Prompt - Ask before cleaning up"
             };
         }
     }
