@@ -5,7 +5,7 @@
 Slackord is an application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
 
 # Demo
-https://github.com/user-attachments/assets/a2289c0b-cbd2-4e98-a0dd-ad5e5cfaad9b
+https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
 
 # Features
 1. `Recreate channels` - Slackord will automatically recreate all your Slack channels on Discord along with their descriptions.
