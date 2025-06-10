@@ -789,8 +789,9 @@ namespace Slackord.Classes
                 }
             }
 
-            foreach (string localFilePath in message.FileURLs)
+            for (int i = 0; i < message.FileURLs.Count; i++)
             {
+                string localFilePath = message.FileURLs[i];
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (File.Exists(localFilePath))
@@ -825,6 +826,16 @@ namespace Slackord.Classes
                     Logger.Log($"File not found: {localFilePath}");
                     await discordChannel.SendMessageAsync($"📎 Attachment not found: {Path.GetFileName(localFilePath)}",
                         options: new RequestOptions { CancelToken = cancellationToken });
+
+                    if (i < message.FallbackFileURLs.Count)
+                    {
+                        string url = message.FallbackFileURLs[i];
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            await discordChannel.SendMessageAsync(url,
+                                options: new RequestOptions { CancelToken = cancellationToken });
+                        }
+                    }
                 }
             }
         }
