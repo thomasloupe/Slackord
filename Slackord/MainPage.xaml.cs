@@ -55,6 +55,7 @@ namespace MenuApp
         /// </summary>
         private async Task Initialize()
         {
+            DiscordBot.InitializeGlobalExceptionHandling();
             ApplicationWindow.CheckForFirstRun();
 
             bool checkForUpdatesOnStartup = Preferences.Default.Get("CheckForUpdatesOnStartup", true);

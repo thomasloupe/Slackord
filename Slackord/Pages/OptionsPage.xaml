@@ -61,6 +61,24 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Import Settings -->
+            <Border Stroke="LightGray" Padding="15" Margin="0,10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Import Settings" FontSize="18" FontAttributes="Bold"/>
+
+                    <Label Text="Clean up after successful import to Discord" Margin="0,5,0,0"/>
+                    <Picker x:Name="CleanupAfterImportPicker" Title="Choose how to handle cleanup of import and download files after successful import">
+                        <Picker.Items>
+                            <x:String>Prompt - Ask before cleaning up</x:String>
+                            <x:String>Automatically - Clean up without asking</x:String>
+                            <x:String>Never - Keep all files</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label Text="Cleanup removes import data files and channel downloads to reclaim disk space." 
+                           FontSize="12" TextColor="Gray" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Update Settings -->
             <Border Stroke="LightGray" Padding="15" Margin="0,10">
                 <VerticalStackLayout Spacing="10">

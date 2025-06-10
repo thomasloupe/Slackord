@@ -127,28 +127,58 @@ namespace Slackord.Classes
                 {
                     foreach (var file in files)
                     {
+                        currentProperty = "mode";
+                        currentValue = file[currentProperty];
+                        bool isHiddenByLimit = currentValue?.ToString() == "hidden_by_limit";
+
+                        if (isHiddenByLimit)
+                        {
+                            ImportJson.TotalHiddenFileCount++;
+                        }
+
+                        currentProperty = "local_path";
+                        currentValue = file[currentProperty];
+                        string localPath = currentValue?.ToString();
+                        if (!string.IsNullOrEmpty(localPath))
+                        {
+                            deconstructedMessage.FileURLs.Add(localPath);
+                            deconstructedMessage.IsFileDownloadable.Add(true);
+                            continue;
+                        }
+
                         currentProperty = "url_private_download";
                         currentValue = file[currentProperty];
                         var fileUrl = currentValue?.ToString();
 
-                        if (string.IsNullOrEmpty(fileUrl))
-                        {
-                            string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
-                            Logger.Log(logMessage);
-                        }
-                        else
+                        if (!string.IsNullOrEmpty(fileUrl))
                         {
                             deconstructedMessage.FileURLs.Add(fileUrl);
                             deconstructedMessage.IsFileDownloadable.Add(true);
                         }
-
-                        currentProperty = "mode";
-                        currentValue = file[currentProperty];
-                        if (currentValue?.ToString() == "hidden_by_limit")
+                        else
                         {
-                            deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
-                            deconstructedMessage.IsFileDownloadable.Add(false);
-                            ImportJson.TotalHiddenFileCount++;
+                            currentProperty = "url_private";
+                            currentValue = file[currentProperty];
+                            fileUrl = currentValue?.ToString();
+
+                            if (!string.IsNullOrEmpty(fileUrl))
+                            {
+                                deconstructedMessage.FileURLs.Add(fileUrl);
+                                deconstructedMessage.IsFileDownloadable.Add(true);
+                            }
+                            else
+                            {
+                                if (isHiddenByLimit)
+                                {
+                                    deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
+                                    deconstructedMessage.IsFileDownloadable.Add(false);
+                                }
+                                else
+                                {
+                                    string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
+                                    Logger.Log(logMessage);
+                                }
+                            }
                         }
                     }
                 }

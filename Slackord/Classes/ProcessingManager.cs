@@ -82,6 +82,27 @@
             {
                 UpdateUIForState(newState);
             });
+
+            // Handle cleanup when import completes successfully
+            if (newState == ProcessingState.Completed)
+            {
+                Application.Current.Dispatcher.Dispatch(async () =>
+                {
+                    try
+                    {
+                        var currentSession = ImportJson.GetCurrentSession();
+                        if (currentSession != null && currentSession.IsCompleted)
+                        {
+                            await ImportCleanupUtility.HandlePostImportCleanup(currentSession);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log($"Error during post-completion cleanup: {ex.Message}");
+                        ApplicationWindow.WriteToDebugWindow($"⚠️ Post-completion cleanup encountered an issue: {ex.Message}\n");
+                    }
+                });
+            }
         }
 
         /// <summary>

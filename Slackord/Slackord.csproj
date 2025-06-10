@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework Condition="$([MSBuild]::IsOSPlatform('windows'))">net9.0-windows10.0.19041.0</TargetFramework>
-
-		<OutputType>Exe</OutputType>
-		<RootNamespace>Slackord</RootNamespace>
+		<TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Slackord</RootNamespace>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>12</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -17,16 +16,27 @@
 		<ApplicationDisplayVersion>4.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>4</ApplicationVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-		<WindowsPackageType Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">None</WindowsPackageType>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<WindowsPackageType>None</WindowsPackageType>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
-		<AssemblyVersion>5.0.0.0</AssemblyVersion>
-		<FileVersion>5.0.0.0</FileVersion>
+		<AssemblyVersion>5.1.0.0</AssemblyVersion>
+		<FileVersion>5.1.0.0</FileVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
+		<ApplicationVersion>5</ApplicationVersion>
+		<Optimize>False</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
+		<ApplicationVersion>5</ApplicationVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -42,6 +52,7 @@
 
 		<!-- Raw Assets -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" />
 	</ItemGroup>
@@ -67,14 +78,13 @@
 		<PackageReference Include="System.Text.Json" Version="9.0.5" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'">
-		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="9.0.70">
-		</PackageReference>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="9.0.70" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Update="Pages\OptionsPage.xaml.cs">
-		  <DependentUpon>OptionsPage.xaml</DependentUpon>
+			<DependentUpon>OptionsPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 			<DesignTime>True</DesignTime>
@@ -91,25 +101,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Pages\OptionsPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+		<MauiXaml Update="Pages\OptionsPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
-		<ApplicationVersion>5</ApplicationVersion>
-		<Optimize>False</Optimize>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
-		<ApplicationVersion>5</ApplicationVersion>
-	</PropertyGroup>
-	<PropertyGroup>
-	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.26100.0</TargetFrameworks>
-	  <AssemblyVersion>5.0</AssemblyVersion>
-	  <FileVersion>5.0</FileVersion>
-	  <TargetFrameworks />
-	  <WindowsPackageType>None</WindowsPackageType>
-	</PropertyGroup>
 </Project>

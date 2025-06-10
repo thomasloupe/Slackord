@@ -179,7 +179,20 @@ namespace Slackord.Classes
         {
             try
             {
-                string messageContent = string.IsNullOrEmpty(deconstructedMessage.Text) ? "File hidden by Slack limit" : ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text));
+                string messageContent;
+                if (!string.IsNullOrEmpty(deconstructedMessage.Text))
+                {
+                    messageContent = ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text));
+                }
+                else if (deconstructedMessage.FileURLs.Count > 0 && deconstructedMessage.IsFileDownloadable.Any(x => x))
+                {
+                    messageContent = "";
+                }
+                else
+                {
+                    messageContent = "File hidden by Slack limit";
+                }
+
                 string timestampString = deconstructedMessage.Timestamp?.ToString();
                 if (string.IsNullOrEmpty(timestampString))
                 {
@@ -200,13 +213,15 @@ namespace Slackord.Classes
                     {
                         string fileUrl = deconstructedMessage.FileURLs[i];
                         bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
+                        int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
+
                         if (isDownloadable)
                         {
-                            var (localFilePath, permalink) = await DownloadFile(fileUrl, channel.Name, isDownloadable);
+                            var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable);
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
-                                int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
                                 channel.ReconstructedMessagesList[lastMessageIndex].FileURLs.Add(localFilePath);
+                                channel.ReconstructedMessagesList[lastMessageIndex].FallbackFileURLs.Remove(fileUrl);
                             }
                             else
                             {
@@ -215,7 +230,6 @@ namespace Slackord.Classes
                         }
                         else
                         {
-                            int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
                             channel.ReconstructedMessagesList[lastMessageIndex].Content += " [File hidden by Slack limit]";
                         }
                     }
@@ -242,15 +256,33 @@ namespace Slackord.Classes
                 return (null, null);
             }
 
+            string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
+
+            Directory.CreateDirectory(downloadsFolder);
+
+            if (File.Exists(fileUrl))
+            {
+                string localFileName = Path.GetFileName(fileUrl);
+                string sanitizedLocalFileName = string.Concat(localFileName.Split(Path.GetInvalidFileNameChars()));
+                string destinationPath = Path.Combine(downloadsFolder, sanitizedLocalFileName);
+
+                if (File.Exists(destinationPath))
+                {
+                    string fileExtension = Path.GetExtension(sanitizedLocalFileName);
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sanitizedLocalFileName);
+                    destinationPath = Path.Combine(downloadsFolder, $"{fileNameWithoutExtension}_{Guid.NewGuid()}{fileExtension}");
+                }
+
+                File.Copy(fileUrl, destinationPath);
+                return (destinationPath, fileUrl);
+            }
+
             if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
             {
                 Logger.Log($"Invalid URL provided: {fileUrl}");
                 return (null, null);
             }
 
-            string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
-
-            Directory.CreateDirectory(downloadsFolder);
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
             string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
             string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
@@ -450,8 +482,9 @@ namespace Slackord.Classes
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
         {
             List<string> messageParts = SplitMessageIntoParts(formattedMessage);
-            foreach (string part in messageParts)
+            for (int i = 0; i < messageParts.Count; i++)
             {
+                string part = messageParts[i];
                 ReconstructedMessage reconstructedMessage = new()
                 {
                     User = userName,
@@ -464,9 +497,16 @@ namespace Slackord.Classes
                     OriginalTimestamp = deconstructedMessage.OriginalTimestamp
                 };
 
-                foreach (var url in deconstructedMessage.FileURLs)
+                if (i == messageParts.Count - 1)
                 {
-                    reconstructedMessage.FileURLs.Add(url);
+                    foreach (var url in deconstructedMessage.FileURLs)
+                    {
+                        reconstructedMessage.FallbackFileURLs.Add(url);
+                    }
+                    foreach (var flag in deconstructedMessage.IsFileDownloadable)
+                    {
+                        reconstructedMessage.IsFileDownloadable.Add(flag);
+                    }
                 }
 
                 channel.ReconstructedMessagesList.Add(reconstructedMessage);
@@ -474,20 +514,36 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Splits a message into parts that fit Discord's character limits
+        /// Splits a message into parts that fit Discord's character limits while preserving code block formatting and supporting multi-part code block splits
         /// </summary>
         /// <param name="message">The message to split</param>
         /// <returns>A list of message parts</returns>
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
+            const string codeBlockMarker = "```";
+
             List<string> messageParts = [];
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
+            bool inMultiPartCodeBlock = false;
+            string codeBlockLanguage = "";
+
             while (currentIndex < message.Length)
             {
-                int bestSplitIndex = Math.Min(currentIndex + maxMessageLength, message.Length);
+                int availableLength = maxMessageLength;
+                string openingMarker = "";
+                string closingMarker = "";
+
+                if (inMultiPartCodeBlock)
+                {
+                    openingMarker = codeBlockMarker + codeBlockLanguage + "\n";
+                    closingMarker = "\n" + codeBlockMarker;
+                    availableLength = maxMessageLength - openingMarker.Length - closingMarker.Length;
+                }
+
+                int bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
 
                 while (bestSplitIndex > currentIndex &&
                        bestSplitIndex < message.Length &&
@@ -496,29 +552,168 @@ namespace Slackord.Classes
                     bestSplitIndex--;
                 }
 
-                MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
-                if (matches.Count > 0)
+                if (!inMultiPartCodeBlock)
                 {
-                    Match lastMatch = matches[^1];
-                    if (lastMatch.Index + lastMatch.Length > bestSplitIndex)
+                    MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
+                    if (matches.Count > 0)
                     {
-                        bestSplitIndex = lastMatch.Index;
+                        Match lastMatch = matches[^1];
+                        if (lastMatch.Index + lastMatch.Length > bestSplitIndex - currentIndex - 20)
+                        {
+                            bestSplitIndex = currentIndex + lastMatch.Index;
+                        }
+                    }
+
+                    int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
+                    if (boldSyntax > -1 && boldSyntax >= bestSplitIndex - 3)
+                    {
+                        bestSplitIndex = boldSyntax;
                     }
                 }
 
-                int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
-                if (boldSyntax > -1 && boldSyntax == bestSplitIndex - 2)
-                {
-                    bestSplitIndex -= 2;
-                }
-
                 string part = message[currentIndex..bestSplitIndex];
-                messageParts.Add(part);
 
-                currentIndex = bestSplitIndex;
+                if (bestSplitIndex < message.Length)
+                {
+                    if (!inMultiPartCodeBlock)
+                    {
+                        bool insideCodeBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
+
+                        if (insideCodeBlock)
+                        {
+                            codeBlockLanguage = GetCodeBlockLanguage(message, currentIndex);
+                            inMultiPartCodeBlock = true;
+
+                            part = part.TrimEnd() + "\n" + codeBlockMarker;
+                            messageParts.Add(part);
+
+                            while (bestSplitIndex < message.Length && char.IsWhiteSpace(message[bestSplitIndex]))
+                            {
+                                bestSplitIndex++;
+                            }
+
+                            currentIndex = bestSplitIndex;
+                            continue;
+                        }
+                        else
+                        {
+                            messageParts.Add(part);
+                            currentIndex = bestSplitIndex;
+                        }
+                    }
+                    else
+                    {
+                        bool stillInBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
+
+                        string nextPart = openingMarker + part;
+                        if (stillInBlock && bestSplitIndex < message.Length)
+                        {
+                            nextPart += closingMarker;
+                        }
+                        else
+                        {
+                            inMultiPartCodeBlock = false;
+                            codeBlockLanguage = "";
+                        }
+
+                        messageParts.Add(nextPart);
+                        currentIndex = bestSplitIndex;
+                    }
+                }
+                else
+                {
+                    if (inMultiPartCodeBlock)
+                    {
+                        part = openingMarker + part;
+                        inMultiPartCodeBlock = false;
+                    }
+
+                    messageParts.Add(part);
+                    currentIndex = bestSplitIndex;
+                }
             }
 
             return messageParts;
+        }
+
+        /// <summary>
+        /// Checks if a segment of text contains an unclosed code block
+        /// </summary>
+        /// <param name="message">The full message</param>
+        /// <param name="startIndex">Start of the segment</param>
+        /// <param name="endIndex">End of the segment</param>
+        /// <returns>True if the segment is inside a code block</returns>
+        private static bool IsInsideCodeBlock(string message, int startIndex, int endIndex)
+        {
+            int codeBlocksBefore = 0;
+            int searchIndex = 0;
+
+            while (searchIndex < startIndex)
+            {
+                int markerIndex = message.IndexOf("```", searchIndex);
+                if (markerIndex == -1 || markerIndex >= startIndex)
+                    break;
+
+                codeBlocksBefore++;
+                searchIndex = markerIndex + 3;
+            }
+
+            int markersInSegment = 0;
+            searchIndex = startIndex;
+
+            while (searchIndex < endIndex)
+            {
+                int markerIndex = message.IndexOf("```", searchIndex);
+                if (markerIndex == -1 || markerIndex >= endIndex)
+                    break;
+
+                markersInSegment++;
+                searchIndex = markerIndex + 3;
+            }
+
+            bool startedInBlock = (codeBlocksBefore % 2 == 1);
+            bool endInBlock = startedInBlock;
+
+            if (markersInSegment % 2 == 1)
+            {
+                endInBlock = !startedInBlock;
+            }
+
+            return endInBlock;
+        }
+
+        /// <summary>
+        /// Extracts the language specifier from the current code block
+        /// </summary>
+        /// <param name="message">The full message</param>
+        /// <param name="position">Current position in the message</param>
+        /// <returns>Language specifier or empty string</returns>
+        private static string GetCodeBlockLanguage(string message, int position)
+        {
+            int searchStart = Math.Max(0, position - 1000);
+
+            for (int i = position - 3; i >= searchStart; i--)
+            {
+                if (i + 2 < message.Length && message.Substring(i, 3) == "```")
+                {
+                    int lineStart = i + 3;
+                    int lineEnd = message.IndexOf('\n', lineStart);
+                    if (lineEnd == -1) lineEnd = message.Length;
+
+                    string language = message[lineStart..lineEnd].Trim();
+
+                    if (!string.IsNullOrEmpty(language) &&
+                        !language.Contains(' ') &&
+                        language.Length <= 20)
+                    {
+                        return language;
+                    }
+
+                    return "";
+                }
+            }
+
+            return "";
         }
 
         /// <summary>
