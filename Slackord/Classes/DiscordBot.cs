@@ -4,6 +4,7 @@ using Discord.Net;
 using Discord.Webhook;
 using Discord.WebSocket;
 using MenuApp;
+using static Slackord.Classes.Reconstruct;
 
 namespace Slackord.Classes
 {
@@ -703,8 +704,12 @@ namespace Slackord.Classes
                 string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" :
                     message.Message.Length <= 20 ? message.Message : message.Message[..20];
 
-                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                    options: new RequestOptions { CancelToken = cancellationToken });
+                // Only send message if there's actual content (not empty for file-only messages)
+                if (!string.IsNullOrWhiteSpace(message.Content))
+                {
+                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                        options: new RequestOptions { CancelToken = cancellationToken });
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
                 IEnumerable<IMessage> threadMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync();
@@ -728,9 +733,13 @@ namespace Slackord.Classes
                     threadIdForReply = threadID.Id;
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
-                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                    threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+                // Only send message if there's actual content
+                if (!string.IsNullOrWhiteSpace(message.Content))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                        threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken });
+                }
 
                 if (shouldArchiveThreadBack && threadID != null)
                 {
@@ -750,12 +759,17 @@ namespace Slackord.Classes
             }
             else
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
-                    options: new RequestOptions { CancelToken = cancellationToken });
+                // Only send message if there's actual content
+                if (!string.IsNullOrWhiteSpace(message.Content))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await webhookClient.SendMessageAsync(message.Content, false, null, message.User, message.Avatar,
+                        options: new RequestOptions { CancelToken = cancellationToken });
+                }
             }
 
-            await HandleMessageExtras(message, discordChannel, fileSizeLimit, cancellationToken);
+            // Handle files with user attribution
+            await HandleMessageExtras(message, discordChannel, fileSizeLimit, webhookClient, cancellationToken);
         }
 
         /// <summary>
@@ -764,10 +778,11 @@ namespace Slackord.Classes
         /// <param name="message">The reconstructed message with extras to handle</param>
         /// <param name="discordChannel">The Discord channel the message was posted to</param>
         /// <param name="fileSizeLimit">Maximum file size for uploads</param>
+        /// <param name="webhookClient">The Discord webhook client for file uploads</param>
         /// <param name="cancellationToken">Cancellation token for the operation</param>
         /// <returns>A completed task</returns>
         private static async Task HandleMessageExtras(ReconstructedMessage message, ITextChannel discordChannel,
-            long fileSizeLimit, CancellationToken cancellationToken)
+            long fileSizeLimit, DiscordWebhookClient webhookClient, CancellationToken cancellationToken)
         {
             if (message.IsPinned && message.ThreadType == ThreadType.None)
             {
@@ -803,8 +818,10 @@ namespace Slackord.Classes
                     {
                         try
                         {
-                            using FileStream fs = new(localFilePath, FileMode.Open, FileAccess.Read);
-                            await discordChannel.SendFileAsync(fs, Path.GetFileName(localFilePath),
+                            await webhookClient.SendFileAsync(localFilePath,
+                                text: null,
+                                username: message.User,
+                                avatarUrl: message.Avatar,
                                 options: new RequestOptions { CancelToken = cancellationToken });
                         }
                         catch (Exception ex)
@@ -813,29 +830,45 @@ namespace Slackord.Classes
                             Application.Current.Dispatcher.Dispatch(() => {
                                 ApplicationWindow.WriteToDebugWindow($"⚠️ Failed to upload file: {Path.GetFileName(localFilePath)}\n");
                             });
+
+                            await webhookClient.SendMessageAsync(
+                                $"📎 Could not upload file: {Path.GetFileName(localFilePath)}",
+                                username: message.User,
+                                avatarUrl: message.Avatar,
+                                options: new RequestOptions { CancelToken = cancellationToken });
                         }
                     }
                     else
                     {
-                        await discordChannel.SendMessageAsync($"📎 File too large to upload: {Path.GetFileName(localFilePath)} ({SlackordFileManager.GetFileSizeDisplay(localFilePath)})",
+                        await webhookClient.SendMessageAsync(
+                            $"📎 File too large to upload: {Path.GetFileName(localFilePath)} ({SlackordFileManager.GetFileSizeDisplay(localFilePath)})",
+                            username: message.User,
+                            avatarUrl: message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken });
                     }
                 }
                 else
                 {
                     Logger.Log($"File not found: {localFilePath}");
-                    await discordChannel.SendMessageAsync($"📎 Attachment not found: {Path.GetFileName(localFilePath)}",
-                        options: new RequestOptions { CancelToken = cancellationToken });
 
                     if (i < message.FallbackFileURLs.Count)
                     {
                         string url = message.FallbackFileURLs[i];
                         if (!string.IsNullOrWhiteSpace(url))
                         {
-                            await discordChannel.SendMessageAsync(url,
+                            await webhookClient.SendMessageAsync(url,
+                                username: message.User,
+                                avatarUrl: message.Avatar,
                                 options: new RequestOptions { CancelToken = cancellationToken });
+                            continue;
                         }
                     }
+
+                    await webhookClient.SendMessageAsync(
+                        $"📎 Attachment not found: {Path.GetFileName(localFilePath)}",
+                        username: message.User,
+                        avatarUrl: message.Avatar,
+                        options: new RequestOptions { CancelToken = cancellationToken });
                 }
             }
         }

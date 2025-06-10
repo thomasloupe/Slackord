@@ -501,17 +501,20 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Splits a message into parts that fit Discord's character limits
+        /// Splits a message into parts that fit Discord's character limits while preserving code block formatting
         /// </summary>
         /// <param name="message">The message to split</param>
         /// <returns>A list of message parts</returns>
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
+            const string codeBlockMarker = "```";
+
             List<string> messageParts = [];
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
+
             while (currentIndex < message.Length)
             {
                 int bestSplitIndex = Math.Min(currentIndex + maxMessageLength, message.Length);
@@ -527,25 +530,161 @@ namespace Slackord.Classes
                 if (matches.Count > 0)
                 {
                     Match lastMatch = matches[^1];
-                    if (lastMatch.Index + lastMatch.Length > bestSplitIndex)
+                    if (lastMatch.Index + lastMatch.Length > bestSplitIndex - currentIndex - 20)
                     {
-                        bestSplitIndex = lastMatch.Index;
+                        bestSplitIndex = currentIndex + lastMatch.Index;
                     }
                 }
 
                 int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
-                if (boldSyntax > -1 && boldSyntax == bestSplitIndex - 2)
+                if (boldSyntax > -1 && boldSyntax >= bestSplitIndex - 3)
                 {
-                    bestSplitIndex -= 2;
+                    bestSplitIndex = boldSyntax;
                 }
 
                 string part = message[currentIndex..bestSplitIndex];
-                messageParts.Add(part);
 
-                currentIndex = bestSplitIndex;
+                if (bestSplitIndex < message.Length)
+                {
+                    bool insideCodeBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
+
+                    if (insideCodeBlock)
+                    {
+                        string language = GetCodeBlockLanguage(message, currentIndex);
+
+                        part = part.TrimEnd() + "\n" + codeBlockMarker;
+                        messageParts.Add(part);
+
+                        while (bestSplitIndex < message.Length && char.IsWhiteSpace(message[bestSplitIndex]))
+                        {
+                            bestSplitIndex++;
+                        }
+
+                        if (bestSplitIndex < message.Length)
+                        {
+                            string codeBlockStart = codeBlockMarker + language + "\n";
+
+                            int nextMaxLength = maxMessageLength - codeBlockStart.Length;
+                            int nextSplit = Math.Min(bestSplitIndex + nextMaxLength, message.Length);
+
+                            while (nextSplit > bestSplitIndex &&
+                                   nextSplit < message.Length &&
+                                   !char.IsWhiteSpace(message[nextSplit]))
+                            {
+                                nextSplit--;
+                            }
+
+                            string nextContent = message[bestSplitIndex..nextSplit];
+                            bool nextPartStillInBlock = IsInsideCodeBlock(message, bestSplitIndex, nextSplit);
+
+                            string nextPart = codeBlockStart + nextContent;
+                            if (nextPartStillInBlock && nextSplit < message.Length)
+                            {
+                                nextPart += "\n" + codeBlockMarker;
+                            }
+
+                            messageParts.Add(nextPart);
+                            currentIndex = nextSplit;
+                        }
+                        else
+                        {
+                            currentIndex = bestSplitIndex;
+                        }
+                    }
+                    else
+                    {
+                        messageParts.Add(part);
+                        currentIndex = bestSplitIndex;
+                    }
+                }
+                else
+                {
+                    messageParts.Add(part);
+                    currentIndex = bestSplitIndex;
+                }
             }
 
             return messageParts;
+        }
+
+        /// <summary>
+        /// Checks if a segment of text contains an unclosed code block
+        /// </summary>
+        /// <param name="message">The full message</param>
+        /// <param name="startIndex">Start of the segment</param>
+        /// <param name="endIndex">End of the segment</param>
+        /// <returns>True if the segment is inside a code block</returns>
+        private static bool IsInsideCodeBlock(string message, int startIndex, int endIndex)
+        {
+            int codeBlocksBefore = 0;
+            int searchIndex = 0;
+
+            while (searchIndex < startIndex)
+            {
+                int markerIndex = message.IndexOf("```", searchIndex);
+                if (markerIndex == -1 || markerIndex >= startIndex)
+                    break;
+
+                codeBlocksBefore++;
+                searchIndex = markerIndex + 3;
+            }
+
+            int markersInSegment = 0;
+            searchIndex = startIndex;
+
+            while (searchIndex < endIndex)
+            {
+                int markerIndex = message.IndexOf("```", searchIndex);
+                if (markerIndex == -1 || markerIndex >= endIndex)
+                    break;
+
+                markersInSegment++;
+                searchIndex = markerIndex + 3;
+            }
+
+            bool startedInBlock = (codeBlocksBefore % 2 == 1);
+            bool endInBlock = startedInBlock;
+
+            if (markersInSegment % 2 == 1)
+            {
+                endInBlock = !startedInBlock;
+            }
+
+            return endInBlock;
+        }
+
+        /// <summary>
+        /// Extracts the language specifier from the current code block
+        /// </summary>
+        /// <param name="message">The full message</param>
+        /// <param name="position">Current position in the message</param>
+        /// <returns>Language specifier or empty string</returns>
+        private static string GetCodeBlockLanguage(string message, int position)
+        {
+            int searchStart = Math.Max(0, position - 1000);
+
+            for (int i = position - 3; i >= searchStart; i--)
+            {
+                if (i + 2 < message.Length && message.Substring(i, 3) == "```")
+                {
+                    int lineStart = i + 3;
+                    int lineEnd = message.IndexOf('\n', lineStart);
+                    if (lineEnd == -1) lineEnd = message.Length;
+
+                    string language = message[lineStart..lineEnd].Trim();
+
+                    if (!string.IsNullOrEmpty(language) &&
+                        !language.Contains(' ') &&
+                        language.Length <= 20)
+                    {
+                        return language;
+                    }
+
+                    return "";
+                }
+            }
+
+            return "";
         }
 
         /// <summary>

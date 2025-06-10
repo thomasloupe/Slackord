@@ -46,9 +46,7 @@ namespace Slackord.Classes
             Reconstruct.InitializeUsersDict(usersDict);
 
             DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
-            FileInfo[] rootJsonFiles = rootDirectory.GetFiles("*.json")
-                .Where(f => f.Name != "users.json" && f.Name != "channels.json")
-                .ToArray();
+            FileInfo[] rootJsonFiles = [.. rootDirectory.GetFiles("*.json").Where(f => f.Name != "users.json" && f.Name != "channels.json")];
 
             bool useRootFiles = channelDirectories.Length == 0 && rootJsonFiles.Length > 0;
 
