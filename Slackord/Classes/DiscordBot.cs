@@ -718,6 +718,11 @@ namespace Slackord.Classes
                         await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
+                    else if (message.IsPinned || message.FileURLs.Count > 0)
+                    {
+                        await webhookClient.SendMessageAsync("📎", false, null, message.User, message.Avatar,
+                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                    }
 
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -754,6 +759,12 @@ namespace Slackord.Classes
                         await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
+                    else if (message.IsPinned || message.FileURLs.Count > 0)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await webhookClient.SendMessageAsync("📎", false, null, message.User, message.Avatar,
+                            threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                    }
 
                     if (shouldArchiveThreadBack && threadID != null)
                     {
@@ -777,6 +788,12 @@ namespace Slackord.Classes
 
                         cancellationToken.ThrowIfCancellationRequested();
                         await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
+                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                    }
+                    else if (message.IsPinned || message.FileURLs.Count > 0)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await webhookClient.SendMessageAsync("📎", false, null, message.User, message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
                 }
@@ -809,7 +826,7 @@ namespace Slackord.Classes
         {
             try
             {
-                if (message.IsPinned && message.ThreadType == ThreadType.None)
+                if (message.IsPinned)
                 {
                     try
                     {
@@ -936,7 +953,7 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Creates Discord channels for all channels in the import session
+        /// Creates Discord channels for all channels in the import session with progress tracking
         /// </summary>
         /// <param name="guildID">The Discord guild ID to create channels in</param>
         /// <param name="session">The import session containing channel information</param>
@@ -948,9 +965,17 @@ namespace Slackord.Classes
             {
                 SocketGuild guild = DiscordClient.GetGuild(guildID);
                 string baseCategoryName = "Slackord Import";
+                int totalChannels = session.Channels.Count;
+                int processedChannels = 0;
+
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"🔍 Checking Discord channels for {totalChannels} imported channels...\n");
+                });
 
                 foreach (var channelProgress in session.Channels.Where(c => c.DiscordChannelId > 0))
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     var existingChannel = guild.GetTextChannel(channelProgress.DiscordChannelId);
                     if (existingChannel != null)
                     {
@@ -966,6 +991,10 @@ namespace Slackord.Classes
                         });
                         channelProgress.SetDiscordChannelId(0);
                     }
+
+                    processedChannels++;
+                    ApplicationWindow.UpdateProgressBarWithCustomText(processedChannels, totalChannels,
+                        $"Checking existing channels... ({processedChannels}/{totalChannels})");
                 }
 
                 var channelsNeedingCreation = session.Channels.Where(c => c.NeedsDiscordChannel).ToList();
@@ -975,6 +1004,7 @@ namespace Slackord.Classes
                     Application.Current.Dispatcher.Dispatch(() => {
                         ApplicationWindow.WriteToDebugWindow($"✅ All Discord channels already exist. Ready to resume posting.\n");
                     });
+                    ApplicationWindow.UpdateProgressBarWithCustomText(totalChannels, totalChannels, "All channels ready!");
                     return;
                 }
 
@@ -987,23 +1017,40 @@ namespace Slackord.Classes
 
                 if (currentCategory == null)
                 {
+                    Application.Current.Dispatcher.Dispatch(() => {
+                        ApplicationWindow.WriteToDebugWindow($"📂 Creating category: {baseCategoryName}\n");
+                    });
                     var createdCategory = await guild.CreateCategoryChannelAsync(baseCategoryName);
                     currentCategoryId = createdCategory.Id;
                 }
                 else
                 {
                     currentCategoryId = currentCategory.Id;
+                    Application.Current.Dispatcher.Dispatch(() => {
+                        ApplicationWindow.WriteToDebugWindow($"📂 Using existing category: {currentCategory.Name}\n");
+                    });
                 }
 
                 int channelCountInCurrentCategory = guild.Channels.Count(c => c is SocketTextChannel textChannel && textChannel.CategoryId == currentCategoryId);
+                int channelCreationIndex = 0;
 
                 foreach (var channelProgress in channelsNeedingCreation)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    channelCreationIndex++;
+
+                    int overallProgress = processedChannels + channelCreationIndex;
+                    ApplicationWindow.UpdateProgressBarWithCustomText(overallProgress, totalChannels,
+                        $"Creating channel: {channelProgress.Name} ({channelCreationIndex}/{channelsNeedingCreation.Count})");
 
                     if (channelCountInCurrentCategory >= 50)
                     {
-                        var newCategory = await guild.CreateCategoryChannelAsync($"{baseCategoryName} {DateTime.Now:MMdd-HHmm}");
+                        string newCategoryName = $"{baseCategoryName} {DateTime.Now:MMdd-HHmm}";
+                        Application.Current.Dispatcher.Dispatch(() => {
+                            ApplicationWindow.WriteToDebugWindow($"📂 Creating additional category: {newCategoryName}\n");
+                        });
+
+                        var newCategory = await guild.CreateCategoryChannelAsync(newCategoryName);
                         currentCategoryId = newCategory.Id;
                         channelCountInCurrentCategory = 0;
                     }
@@ -1020,30 +1067,53 @@ namespace Slackord.Classes
                         } while (guild.TextChannels.Any(c => c.Name.Equals(newName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId));
 
                         channelName = newName;
+                        Application.Current.Dispatcher.Dispatch(() => {
+                            ApplicationWindow.WriteToDebugWindow($"⚠️ Channel name conflict resolved: {channelProgress.Name} → {channelName}\n");
+                        });
                     }
 
-                    var createdChannel = await guild.CreateTextChannelAsync(channelName, properties =>
+                    try
                     {
-                        properties.CategoryId = currentCategoryId;
-                        properties.Topic = channelProgress.Description;
-                    });
+                        var createdChannel = await guild.CreateTextChannelAsync(channelName, properties =>
+                        {
+                            properties.CategoryId = currentCategoryId;
+                            properties.Topic = channelProgress.Description;
+                        });
 
-                    ulong createdChannelId = createdChannel.Id;
-                    channelProgress.SetDiscordChannelId(createdChannelId);
-                    CreatedChannels[createdChannelId] = createdChannel;
+                        ulong createdChannelId = createdChannel.Id;
+                        channelProgress.SetDiscordChannelId(createdChannelId);
+                        CreatedChannels[createdChannelId] = createdChannel;
 
-                    channelCountInCurrentCategory++;
+                        channelCountInCurrentCategory++;
 
-                    Application.Current.Dispatcher.Dispatch(() => {
-                        ApplicationWindow.WriteToDebugWindow($"📁 Created Discord channel: #{channelName} (ID: {createdChannelId})\n");
-                    });
+                        Application.Current.Dispatcher.Dispatch(() => {
+                            ApplicationWindow.WriteToDebugWindow($"✅ Created Discord channel: #{channelName} (ID: {createdChannelId})\n");
+                        });
+
+                        await Task.Delay(100, cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        Application.Current.Dispatcher.Dispatch(() => {
+                            ApplicationWindow.WriteToDebugWindow($"❌ Failed to create channel {channelName}: {ex.Message}\n");
+                        });
+                        Logger.Log($"Error creating Discord channel {channelName}: {ex.Message}");
+                    }
                 }
+
+                ApplicationWindow.UpdateProgressBarWithCustomText(totalChannels, totalChannels,
+                    $"Channel setup complete! Created {channelsNeedingCreation.Count} new channels.");
+
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"🎊 Channel creation complete! Created {channelsNeedingCreation.Count} new channels.\n");
+                });
 
                 session.Save();
             }
             catch (Exception ex)
             {
                 ApplicationWindow.WriteToDebugWindow($"❌ CreateDiscordChannelsForSession: {ex.Message}\n");
+                Logger.Log($"CreateDiscordChannelsForSession error: {ex}");
                 throw;
             }
         }

@@ -640,7 +640,7 @@ Would you like to open the donation page now?
         }
 
         /// <summary>
-        /// Pushes accumulated debug text to the UI thread-safely
+        /// Pushes accumulated debug text to the UI thread-safely and auto-scrolls to bottom
         /// </summary>
         public static void PushDebugText()
         {
@@ -650,8 +650,26 @@ Would you like to open the donation page now?
                 return;
             }
 
-            MainPage.DebugWindowInstance.Text += debugOutput.ToString();
+            var debugWindow = MainPage.DebugWindowInstance;
+            string newText = debugOutput.ToString();
+            debugWindow.Text += newText;
             _ = debugOutput.Clear();
+
+            if (!string.IsNullOrEmpty(newText))
+            {
+                try
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        debugWindow.CursorPosition = debugWindow.Text.Length;
+                        debugWindow.Focus();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Error auto-scrolling debug window: {ex.Message}");
+                }
+            }
         }
 
         /// <summary>

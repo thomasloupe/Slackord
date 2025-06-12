@@ -26,8 +26,9 @@ namespace Slackord.Classes
         /// Deconstructs a Slack message JSON object into a structured DeconstructedMessage
         /// </summary>
         /// <param name="slackMessage">The Slack message JSON object to deconstruct</param>
+        /// <param name="pinnedMessageIds">Set of pinned message timestamps for the current channel</param>
         /// <returns>A DeconstructedMessage containing the parsed data</returns>
-        public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
+        public static DeconstructedMessage DeconstructMessage(JObject slackMessage, HashSet<string> pinnedMessageIds)
         {
             DeconstructedMessage deconstructedMessage = new()
             {
@@ -71,8 +72,7 @@ namespace Slackord.Classes
                 currentValue = slackMessage[currentProperty];
                 deconstructedMessage.IsStarred = currentValue?.ToObject<bool>() ?? false;
 
-                currentProperty = "pinned_to";
-                deconstructedMessage.IsPinned = slackMessage[currentProperty] != null;
+                deconstructedMessage.IsPinned = !string.IsNullOrEmpty(timestamp) && pinnedMessageIds.Contains(timestamp);
 
                 currentProperty = "subtype";
                 currentValue = slackMessage[currentProperty];
@@ -191,6 +191,16 @@ namespace Slackord.Classes
             }
 
             return deconstructedMessage;
+        }
+
+        /// <summary>
+        /// Deconstructs a Slack message JSON object into a structured DeconstructedMessage
+        /// </summary>
+        /// <param name="slackMessage">The Slack message JSON object to deconstruct</param>
+        /// <returns>A DeconstructedMessage containing the parsed data</returns>
+        public static DeconstructedMessage DeconstructMessage(JObject slackMessage)
+        {
+            return DeconstructMessage(slackMessage, []);
         }
 
         /// <summary>

@@ -243,7 +243,7 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Downloads a file from Slack and saves it locally
+        /// Downloads a file from Slack and saves it locally using smart downloading
         /// </summary>
         /// <param name="fileUrl">The URL of the file to download</param>
         /// <param name="channelName">The name of the channel (for organizing downloads)</param>
@@ -256,16 +256,18 @@ namespace Slackord.Classes
                 return (null, null);
             }
 
-            string downloadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Downloads", channelName);
-
+            // Use the user's Downloads folder instead of app directory
+            string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", channelName);
             Directory.CreateDirectory(downloadsFolder);
 
+            // Handle local file copying (unchanged)
             if (File.Exists(fileUrl))
             {
                 string localFileName = Path.GetFileName(fileUrl);
-                string sanitizedLocalFileName = string.Concat(localFileName.Split(Path.GetInvalidFileNameChars()));
+                string sanitizedLocalFileName = SanitizeFileName(localFileName);
                 string destinationPath = Path.Combine(downloadsFolder, sanitizedLocalFileName);
 
+                // Check if destination already exists and add GUID if needed
                 if (File.Exists(destinationPath))
                 {
                     string fileExtension = Path.GetExtension(sanitizedLocalFileName);
@@ -277,43 +279,88 @@ namespace Slackord.Classes
                 return (destinationPath, fileUrl);
             }
 
+            // Validate URL
             if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
             {
                 Logger.Log($"Invalid URL provided: {fileUrl}");
                 return (null, null);
             }
 
+            // Extract and sanitize filename
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
-            string sanitizedFileName = string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = $"downloaded_file_{Guid.NewGuid()}";
+            }
+
+            string sanitizedFileName = SanitizeFileName(fileName);
             string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
 
             try
             {
-                using HttpClient httpClient = new();
-                HttpResponseMessage response = await httpClient.GetAsync(fileUrl);
-                if (response.IsSuccessStatusCode)
+                // Use smart downloading to avoid re-downloading existing files
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromMinutes(10); // Reasonable timeout for large files
+
+                var downloadResult = await SmartDownloadUtility.DownloadFileIfNeededAsync(
+                    fileUrl,
+                    localFilePath,
+                    expectedSize: 0, // We don't know the size beforehand
+                    httpClient,
+                    CancellationToken.None);
+
+                switch (downloadResult.Status)
                 {
-                    byte[] fileData = await response.Content.ReadAsByteArrayAsync();
-                    if (File.Exists(localFilePath))
-                    {
-                        string fileExtension = Path.GetExtension(sanitizedFileName);
-                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sanitizedFileName);
-                        localFilePath = Path.Combine(downloadsFolder, $"{fileNameWithoutExtension}_{Guid.NewGuid()}{fileExtension}");
-                    }
-                    await File.WriteAllBytesAsync(localFilePath, fileData);
-                    return (localFilePath, fileUrl);
-                }
-                else
-                {
-                    Logger.Log($"Failed to download file from {fileUrl}. HTTP status: {response.StatusCode}");
-                    return (null, null);
+                    case DownloadStatus.Downloaded:
+                        // File was successfully downloaded
+                        return (downloadResult.LocalPath, fileUrl);
+
+                    case DownloadStatus.Skipped:
+                        // File already existed and was complete
+                        ApplicationWindow.WriteToDebugWindow($"⏭️ Skipped download (already exists): {Path.GetFileName(localFilePath)}\n");
+                        return (downloadResult.LocalPath, fileUrl);
+
+                    case DownloadStatus.Failed:
+                        // Download failed
+                        Logger.Log($"Smart download failed for {fileUrl}: {downloadResult.Message}");
+                        return (null, null);
+
+                    default:
+                        Logger.Log($"Unexpected download status for {fileUrl}: {downloadResult.Status}");
+                        return (null, null);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log($"DownloadFile(): Exception during file download: {ex.Message}");
+                Logger.Log($"DownloadFile(): Exception during smart download: {ex.Message}");
                 return (null, null);
             }
+        }
+
+        /// <summary>
+        /// Sanitizes a filename by removing invalid characters and ensuring reasonable length
+        /// </summary>
+        /// <param name="fileName">The original filename</param>
+        /// <returns>A sanitized filename safe for filesystem use</returns>
+        private static string SanitizeFileName(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return $"unknown_file_{Guid.NewGuid()}";
+
+            var invalidChars = Path.GetInvalidFileNameChars();
+            string sanitized = string.Concat(fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
+
+            if (string.IsNullOrEmpty(sanitized))
+                return $"sanitized_file_{Guid.NewGuid()}";
+
+            if (sanitized.Length > 200)
+            {
+                var extension = Path.GetExtension(sanitized);
+                var nameWithoutExt = Path.GetFileNameWithoutExtension(sanitized);
+                sanitized = string.Concat(nameWithoutExt.AsSpan(0, 200 - extension.Length), extension);
+            }
+
+            return sanitized;
         }
 
         /// <summary>
