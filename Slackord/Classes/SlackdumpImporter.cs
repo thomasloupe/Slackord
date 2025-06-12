@@ -32,15 +32,35 @@ namespace Slackord.Classes
 
             Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : [];
             Dictionary<string, string> channelDescriptions = [];
+            Dictionary<string, HashSet<string>> channelPins = [];
 
             if (channelsFile != null)
             {
                 string channelsJsonContent = await File.ReadAllTextAsync(channelsFile.FullName, cancellationToken).ConfigureAwait(false);
                 JArray channelsJson = JArray.Parse(channelsJsonContent);
-                channelDescriptions = channelsJson.ToDictionary(
-                    jChannel => jChannel["name"].ToString(),
-                    jChannel => jChannel["purpose"]["value"].ToString()
-                );
+
+                foreach (JObject channel in channelsJson.Cast<JObject>())
+                {
+                    string channelName = channel["name"]?.ToString();
+                    if (!string.IsNullOrEmpty(channelName))
+                    {
+                        channelDescriptions[channelName] = channel["purpose"]?["value"]?.ToString() ?? "";
+
+                        var pins = new HashSet<string>();
+                        if (channel["pins"] is JArray pinsArray)
+                        {
+                            foreach (JObject pin in pinsArray.Cast<JObject>())
+                            {
+                                string pinId = pin["id"]?.ToString();
+                                if (!string.IsNullOrEmpty(pinId))
+                                {
+                                    pins.Add(pinId);
+                                }
+                            }
+                        }
+                        channelPins[channelName] = pins;
+                    }
+                }
             }
 
             Reconstruct.InitializeUsersDict(usersDict);
@@ -64,7 +84,7 @@ namespace Slackord.Classes
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         DirectoryInfo fakeDirectory = new(jsonFile.FullName);
-                        int channelFilesProcessed = await ImportJson.ProcessChannelAsync(fakeDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                        int channelFilesProcessed = await ImportJson.ProcessChannelAsync(fakeDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
                         filesProcessed += channelFilesProcessed;
                     }
                     catch (Exception ex)
@@ -83,7 +103,7 @@ namespace Slackord.Classes
                     try
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        int channelFilesProcessed = await ImportJson.ProcessChannelAsync(channelDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                        int channelFilesProcessed = await ImportJson.ProcessChannelAsync(channelDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
                         filesProcessed += channelFilesProcessed;
                     }
                     catch (Exception ex)

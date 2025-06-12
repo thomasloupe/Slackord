@@ -118,23 +118,41 @@ namespace Slackord.Classes
 
             Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : [];
             Dictionary<string, string> channelDescriptions = [];
+            Dictionary<string, HashSet<string>> channelPins = [];
 
             if (channelsFile != null)
             {
                 string channelsJsonContent = await File.ReadAllTextAsync(channelsFile.FullName, cancellationToken).ConfigureAwait(false);
                 JArray channelsJson = JArray.Parse(channelsJsonContent);
-                channelDescriptions = channelsJson.ToDictionary(
-                    jChannel => jChannel["name"].ToString(),
-                    jChannel => jChannel["purpose"]["value"].ToString()
-                );
+
+                foreach (JObject channel in channelsJson.Cast<JObject>())
+                {
+                    string channelName = channel["name"]?.ToString();
+                    if (!string.IsNullOrEmpty(channelName))
+                    {
+                        channelDescriptions[channelName] = channel["purpose"]?["value"]?.ToString() ?? "";
+
+                        var pins = new HashSet<string>();
+                        if (channel["pins"] is JArray pinsArray)
+                        {
+                            foreach (JObject pin in pinsArray.Cast<JObject>())
+                            {
+                                string pinId = pin["id"]?.ToString();
+                                if (!string.IsNullOrEmpty(pinId))
+                                {
+                                    pins.Add(pinId);
+                                }
+                            }
+                        }
+                        channelPins[channelName] = pins;
+                    }
+                }
             }
 
             Reconstruct.InitializeUsersDict(usersDict);
 
             DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
-            FileInfo[] rootJsonFiles = rootDirectory.GetFiles("*.json")
-                .Where(f => f.Name != "users.json" && f.Name != "channels.json")
-                .ToArray();
+            FileInfo[] rootJsonFiles = [.. rootDirectory.GetFiles("*.json").Where(f => f.Name != "users.json" && f.Name != "channels.json")];
 
             bool useRootFiles = channelDirectories.Length == 0 && rootJsonFiles.Length > 0;
 
@@ -152,7 +170,7 @@ namespace Slackord.Classes
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         DirectoryInfo fakeDirectory = new(jsonFile.FullName);
-                        int channelFilesProcessed = await ProcessChannelAsync(fakeDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                        int channelFilesProcessed = await ProcessChannelAsync(fakeDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
                         filesProcessed += channelFilesProcessed;
                     }
                     catch (Exception ex)
@@ -171,7 +189,7 @@ namespace Slackord.Classes
                     try
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        int channelFilesProcessed = await ProcessChannelAsync(channelDirectory, channelDescriptions, usersDict, filesProcessed, totalFiles, cancellationToken);
+                        int channelFilesProcessed = await ProcessChannelAsync(channelDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
                         filesProcessed += channelFilesProcessed;
                     }
                     catch (Exception ex)
@@ -182,19 +200,19 @@ namespace Slackord.Classes
             }
         }
 
-
         /// <summary>
         /// Processes all JSON files within a single channel directory
         /// </summary>
         /// <param name="channelDirectory">The channel directory to process</param>
         /// <param name="channelDescriptions">Dictionary of channel descriptions</param>
+        /// <param name="channelPins">Dictionary of pinned message timestamps per channel</param>
         /// <param name="usersDict">Dictionary of user information</param>
         /// <param name="currentFilesProcessed">Number of files already processed</param>
         /// <param name="totalFiles">Total number of files to process</param>
         /// <param name="cancellationToken">Token to cancel the operation</param>
         /// <returns>The number of files processed in this channel</returns>
         internal static async Task<int> ProcessChannelAsync(DirectoryInfo channelDirectory, Dictionary<string, string> channelDescriptions,
-                    Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
+                    Dictionary<string, HashSet<string>> channelPins, Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(usersDict);
 
@@ -229,6 +247,7 @@ namespace Slackord.Classes
                 });
             }
 
+            var pinnedMessageIds = channelPins.GetValueOrDefault(channelName, []);
             var deconstructedMessages = new List<DeconstructedMessage>();
             foreach (FileInfo jsonFile in jsonFiles)
             {
@@ -239,7 +258,7 @@ namespace Slackord.Classes
                     JArray messagesArray = JArray.Parse(jsonContent);
                     foreach (JObject slackMessage in messagesArray.Cast<JObject>())
                     {
-                        DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage);
+                        DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage, pinnedMessageIds);
                         deconstructedMessages.Add(deconstructedMessage);
                     }
                     localFilesProcessed++;
