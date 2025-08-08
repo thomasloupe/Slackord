@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Slackord.Classes
 {
@@ -33,17 +33,22 @@ namespace Slackord.Classes
             Dictionary<string, DeconstructedUser> usersDict = usersFile != null ? DeconstructedUsers.ParseUsersFile(usersFile) : [];
             Dictionary<string, string> channelDescriptions = [];
             Dictionary<string, HashSet<string>> channelPins = [];
+            HashSet<string> validChannelNames = [];
 
-            if (channelsFile != null)
+            if (channelsFile != null && channelsFile.Exists)
             {
                 string channelsJsonContent = await File.ReadAllTextAsync(channelsFile.FullName, cancellationToken).ConfigureAwait(false);
                 JArray channelsJson = JArray.Parse(channelsJsonContent);
 
                 foreach (JObject channel in channelsJson.Cast<JObject>())
                 {
+                    string channelId = channel["id"]?.ToString();
                     string channelName = channel["name"]?.ToString();
-                    if (!string.IsNullOrEmpty(channelName))
+                    bool isChannel = channel["is_channel"]?.Value<bool>() ?? false;
+
+                    if (!string.IsNullOrEmpty(channelName) && isChannel && !channelId.StartsWith('D'))
                     {
+                        validChannelNames.Add(channelName);
                         channelDescriptions[channelName] = channel["purpose"]?["value"]?.ToString() ?? "";
 
                         var pins = new HashSet<string>();
@@ -65,51 +70,56 @@ namespace Slackord.Classes
 
             Reconstruct.InitializeUsersDict(usersDict);
 
-            DirectoryInfo[] channelDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
-            FileInfo[] rootJsonFiles = [.. rootDirectory.GetFiles("*.json").Where(f => f.Name != "users.json" && f.Name != "channels.json")];
+            DirectoryInfo[] allDirectories = isFullExport ? rootDirectory.GetDirectories() : [directoryInfo];
+            DirectoryInfo[] channelDirectories;
+
+            if (validChannelNames.Count > 0)
+            {
+                channelDirectories = [.. allDirectories.Where(d => validChannelNames.Contains(d.Name))];
+            }
+            else
+            {
+                channelDirectories = [.. allDirectories.Where(d =>
+            !d.Name.StartsWith('D') &&
+            !d.Name.StartsWith('G') &&
+            !d.Name.StartsWith("__"))];
+            }
+
+            if (channelDirectories.Length == 0)
+            {
+                Application.Current.Dispatcher.Dispatch(() => {
+                    ApplicationWindow.WriteToDebugWindow($"❌ No valid channel directories found to process!\n");
+                });
+                return;
+            }
+
+            FileInfo[] rootJsonFiles = [.. rootDirectory.GetFiles("*.json").Where(f =>
+        f.Name != "users.json" &&
+        f.Name != "channels.json" &&
+        f.Name != "meta.json" &&
+        f.Name != "mpims.json" &&
+        f.Name != "dms.json")];
 
             bool useRootFiles = channelDirectories.Length == 0 && rootJsonFiles.Length > 0;
-
             int totalFiles = useRootFiles ? rootJsonFiles.Length : ImportJson.CountTotalJsonFiles(channelDirectories);
             int filesProcessed = 0;
 
             ApplicationWindow.ShowProgressBar();
             ProcessingManager.Instance.SetState(ProcessingState.DeconstructingMessages);
 
-            if (useRootFiles)
+            foreach (DirectoryInfo channelDirectory in channelDirectories)
             {
-                foreach (FileInfo jsonFile in rootJsonFiles)
+                try
                 {
-                    try
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        DirectoryInfo fakeDirectory = new(jsonFile.FullName);
-                        int channelFilesProcessed = await ImportJson.ProcessChannelAsync(fakeDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
-                        filesProcessed += channelFilesProcessed;
-                    }
-                    catch (Exception ex)
-                    {
-                        Application.Current.Dispatcher.Dispatch(() =>
-                        {
-                            ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n");
-                        });
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    int channelFilesProcessed = await ImportJson.ProcessChannelAsync(channelDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
+                    filesProcessed += channelFilesProcessed;
                 }
-            }
-            else
-            {
-                foreach (DirectoryInfo channelDirectory in channelDirectories)
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        int channelFilesProcessed = await ImportJson.ProcessChannelAsync(channelDirectory, channelDescriptions, channelPins, usersDict, filesProcessed, totalFiles, cancellationToken);
-                        filesProcessed += channelFilesProcessed;
-                    }
-                    catch (Exception ex)
-                    {
-                        Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n"); });
-                    }
+                    Application.Current.Dispatcher.Dispatch(() => {
+                        ApplicationWindow.WriteToDebugWindow($"Exception processing channel {channelDirectory.Name}: {ex.Message}\n");
+                    });
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
 
 namespace Slackord.Classes
@@ -244,6 +245,7 @@ namespace Slackord.Classes
 
         /// <summary>
         /// Downloads a file from Slack and saves it locally using smart downloading
+        /// Ignores files from Slackdump exports that are already local paths
         /// </summary>
         /// <param name="fileUrl">The URL of the file to download</param>
         /// <param name="channelName">The name of the channel (for organizing downloads)</param>
@@ -256,73 +258,74 @@ namespace Slackord.Classes
                 return (null, null);
             }
 
-            // Use the user's Downloads folder instead of app directory
+            if (!fileUrl.StartsWith("http://") && !fileUrl.StartsWith("https://"))
+            {
+                string fullLocalPath;
+
+                if (!Path.IsPathRooted(fileUrl))
+                {
+                    string[] possiblePaths = [
+                Path.Combine(ImportJson.RootFolderPath, fileUrl),
+                Path.Combine(ImportJson.RootFolderPath, "__uploads", fileUrl),
+                Path.Combine(ImportJson.RootFolderPath, "__uploads", fileUrl.Replace("/", Path.DirectorySeparatorChar.ToString()))
+            ];
+
+                    fullLocalPath = possiblePaths.FirstOrDefault(path => File.Exists(path)) ?? possiblePaths[0];
+                }
+                else
+                {
+                    fullLocalPath = fileUrl;
+                }
+
+                if (File.Exists(fullLocalPath))
+                {
+                    ApplicationWindow.WriteToDebugWindow($"✅ Using existing Slackdump file: {Path.GetFileName(fullLocalPath)}\n");
+                    return (fullLocalPath, fileUrl);
+                }
+                else
+                {
+                    Logger.Log($"Slackdump file not found at expected location: {fullLocalPath}");
+                    ApplicationWindow.WriteToDebugWindow($"⚠️ Slackdump file not found: {Path.GetFileName(fullLocalPath)}\n");
+                    return (null, null);
+                }
+            }
+
             string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", channelName);
             Directory.CreateDirectory(downloadsFolder);
 
-            // Handle local file copying (unchanged)
-            if (File.Exists(fileUrl))
-            {
-                string localFileName = Path.GetFileName(fileUrl);
-                string sanitizedLocalFileName = SanitizeFileName(localFileName);
-                string destinationPath = Path.Combine(downloadsFolder, sanitizedLocalFileName);
-
-                // Check if destination already exists and add GUID if needed
-                if (File.Exists(destinationPath))
-                {
-                    string fileExtension = Path.GetExtension(sanitizedLocalFileName);
-                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sanitizedLocalFileName);
-                    destinationPath = Path.Combine(downloadsFolder, $"{fileNameWithoutExtension}_{Guid.NewGuid()}{fileExtension}");
-                }
-
-                File.Copy(fileUrl, destinationPath);
-                return (destinationPath, fileUrl);
-            }
-
-            // Validate URL
-            if (!Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
-            {
-                Logger.Log($"Invalid URL provided: {fileUrl}");
-                return (null, null);
-            }
-
-            // Extract and sanitize filename
             string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
-            if (string.IsNullOrEmpty(fileName))
+            if (string.IsNullOrWhiteSpace(fileName))
             {
-                fileName = $"downloaded_file_{Guid.NewGuid()}";
+                fileName = Guid.NewGuid().ToString();
             }
 
-            string sanitizedFileName = SanitizeFileName(fileName);
-            string localFilePath = Path.Combine(downloadsFolder, sanitizedFileName);
+            string localFilePath = Path.Combine(downloadsFolder, fileName);
 
             try
             {
-                // Use smart downloading to avoid re-downloading existing files
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromMinutes(10); // Reasonable timeout for large files
+                httpClient.Timeout = TimeSpan.FromSeconds(30);
 
                 var downloadResult = await SmartDownloadUtility.DownloadFileIfNeededAsync(
                     fileUrl,
                     localFilePath,
-                    expectedSize: 0, // We don't know the size beforehand
+                    expectedSize: 0,
                     httpClient,
-                    CancellationToken.None);
+                    cts.Token);
 
                 switch (downloadResult.Status)
                 {
                     case DownloadStatus.Downloaded:
-                        // File was successfully downloaded
                         return (downloadResult.LocalPath, fileUrl);
 
                     case DownloadStatus.Skipped:
-                        // File already existed and was complete
                         ApplicationWindow.WriteToDebugWindow($"⏭️ Skipped download (already exists): {Path.GetFileName(localFilePath)}\n");
                         return (downloadResult.LocalPath, fileUrl);
 
                     case DownloadStatus.Failed:
-                        // Download failed
-                        Logger.Log($"Smart download failed for {fileUrl}: {downloadResult.Message}");
+                        Logger.Log($"Download failed for {fileUrl}: {downloadResult.Message}");
+                        ApplicationWindow.WriteToDebugWindow($"⚠️ Skipping unavailable file: {Path.GetFileName(localFilePath)}\n");
                         return (null, null);
 
                     default:
@@ -330,9 +333,16 @@ namespace Slackord.Classes
                         return (null, null);
                 }
             }
+            catch (TaskCanceledException)
+            {
+                Logger.Log($"Download timeout for {fileUrl} after 30 seconds");
+                ApplicationWindow.WriteToDebugWindow($"⚠️ Download timeout - skipping: {Path.GetFileName(localFilePath)}\n");
+                return (null, null);
+            }
             catch (Exception ex)
             {
-                Logger.Log($"DownloadFile(): Exception during smart download: {ex.Message}");
+                Logger.Log($"DownloadFile(): Exception during download of {fileUrl}: {ex.Message}");
+                ApplicationWindow.WriteToDebugWindow($"⚠️ Download error - skipping: {Path.GetFileName(localFilePath)}\n");
                 return (null, null);
             }
         }
@@ -529,9 +539,11 @@ namespace Slackord.Classes
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
         {
             List<string> messageParts = SplitMessageIntoParts(formattedMessage);
+
             for (int i = 0; i < messageParts.Count; i++)
             {
                 string part = messageParts[i];
+
                 ReconstructedMessage reconstructedMessage = new()
                 {
                     User = userName,
@@ -560,25 +572,43 @@ namespace Slackord.Classes
             }
         }
 
-        /// <summary>
-        /// Splits a message into parts that fit Discord's character limits while preserving code block formatting and supporting multi-part code block splits
-        /// </summary>
-        /// <param name="message">The message to split</param>
-        /// <returns>A list of message parts</returns>
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
             const string codeBlockMarker = "```";
 
             List<string> messageParts = [];
+
+            if (string.IsNullOrEmpty(message))
+            {
+                messageParts.Add("");
+                return messageParts;
+            }
+
+            if (message.Length <= maxMessageLength)
+            {
+                messageParts.Add(message);
+                return messageParts;
+            }
+
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
             bool inMultiPartCodeBlock = false;
             string codeBlockLanguage = "";
+            int loopCount = 0;
+            const int maxLoops = 1000;
 
             while (currentIndex < message.Length)
             {
+                loopCount++;
+                if (loopCount > maxLoops)
+                {
+                    Logger.Log($"SplitMessageIntoParts infinite loop detected. Message length: {message.Length}, Current index: {currentIndex}");
+                    messageParts.Add(message[currentIndex..]);
+                    break;
+                }
+
                 int availableLength = maxMessageLength;
                 string openingMarker = "";
                 string closingMarker = "";
@@ -597,6 +627,11 @@ namespace Slackord.Classes
                        !char.IsWhiteSpace(message[bestSplitIndex]))
                 {
                     bestSplitIndex--;
+                }
+
+                if (bestSplitIndex <= currentIndex)
+                {
+                    bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
                 }
 
                 if (!inMultiPartCodeBlock)
