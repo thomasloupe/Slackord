@@ -63,8 +63,18 @@ namespace Slackord.Classes
 
                 if (!string.IsNullOrEmpty(folderPath))
                 {
-                    bool isSlackdump = File.Exists(Path.Combine(folderPath, "meta.json")) ||
-                                        Directory.Exists(Path.Combine(folderPath, "files"));
+                    bool hasDmsJson = File.Exists(Path.Combine(folderPath, "dms.json"));
+                    bool hasGroupsJson = File.Exists(Path.Combine(folderPath, "groups.json"));
+                    bool hasMpimsJson = File.Exists(Path.Combine(folderPath, "mpims.json"));
+                    bool hasMetaJson = File.Exists(Path.Combine(folderPath, "meta.json"));
+                    bool hasUploadsFolder = Directory.Exists(Path.Combine(folderPath, "__uploads")) ||
+                                           Directory.Exists(Path.Combine(folderPath, "files"));
+
+                    bool isSlackdump = hasMetaJson ||
+                                      hasUploadsFolder ||
+                                      hasDmsJson ||
+                                      hasGroupsJson ||
+                                      hasMpimsJson;
 
                     if (isSlackdump)
                     {
@@ -298,7 +308,6 @@ namespace Slackord.Classes
         {
             try
             {
-
                 var reconstructedMessages = new List<ReconstructedMessage>();
                 int processedCount = 0;
                 var loggedPercents = new HashSet<int>();
@@ -318,15 +327,12 @@ namespace Slackord.Classes
 
                     var batch = deconstructedMessages.Skip(i).Take(batchSize).ToList();
 
-                    await Task.Run(async () =>
+                    foreach (var deconstructedMessage in batch)
                     {
-                        foreach (var deconstructedMessage in batch)
-                        {
-                            var tempChannel = new Channel { Name = channelName };
-                            await Reconstruct.ReconstructMessage(deconstructedMessage, tempChannel);
-                            reconstructedMessages.AddRange(tempChannel.ReconstructedMessagesList);
-                        }
-                    }, cancellationToken);
+                        var tempChannel = new Channel { Name = channelName };
+                        await Reconstruct.ReconstructMessage(deconstructedMessage, tempChannel);
+                        reconstructedMessages.AddRange(tempChannel.ReconstructedMessagesList);
+                    }
 
                     processedCount += batch.Count;
 
@@ -346,8 +352,6 @@ namespace Slackord.Classes
                             });
                         }
                     }
-
-                    await Task.Yield();
                 }
 
                 if (totalMessages >= 100 && !loggedPercents.Contains(100))
@@ -361,17 +365,12 @@ namespace Slackord.Classes
 
                 channelProgress.TotalMessages = reconstructedMessages.Count;
 
-                // Save to file
                 string channelFilePath = CurrentSession.GetChannelFilePath(channelName);
-                await Task.Run(async () =>
-                {
-                    await SlackordFileManager.SaveChannelMessagesAsync(channelFilePath, reconstructedMessages);
-                }, cancellationToken);
+                await SlackordFileManager.SaveChannelMessagesAsync(channelFilePath, reconstructedMessages);
 
                 channelProgress.FileCreated = true;
                 CurrentSession.Save();
 
-                // Show saved message count
                 Application.Current.Dispatcher.Dispatch(() => {
                     ApplicationWindow.WriteToDebugWindow($"💾 Saved {reconstructedMessages.Count:N0} messages to {channelName}.slackord\n");
                 });
