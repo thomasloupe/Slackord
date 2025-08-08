@@ -5,7 +5,7 @@
 Slackord is an application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
 
 # Demo
-https://github.com/user-attachments/assets/a2289c0b-cbd2-4e98-a0dd-ad5e5cfaad9b
+https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
 
 # Features
 1. `Recreate channels` - Slackord will automatically recreate all your Slack channels on Discord along with their descriptions.
@@ -20,9 +20,10 @@ https://github.com/user-attachments/assets/a2289c0b-cbd2-4e98-a0dd-ad5e5cfaad9b
 1. `Privacy & Data Safety` - Slackord allows you to set the name format and fallback when posting messages. Choose between `display name`, `user name`, and `real name`. In addition to user privacy, your data is yours. Slackord works completely off your local connection and machine.
 1. `Update checks` - Slackord allows you to toggle the ability to get notified when a new version is available.
 1. `Active development` - Slackord is actively maintained with consistent quality-of-life fixes, bugfixes, and new features.
+1. `Slackdump Compatibility` - Slackord supports Slackdump exports [Slackdump](https://github.com/rusq/slackdump).
 
 # Slackord Does Not Support
-1. Private Direct Messages - Since Slackord is meant for Slack Workspace Admins and not end-users, this will not be supported due to user privacy concerns.
+1. Private Direct Messages - Since Slackord is meant for Slack Workspace Admins and not end-users, private DMs will not be supported due to user privacy concerns.
 1. Reactions - A bot cannot give a post ten thumbs up emojis. These actions are done by individuals, which makes it very difficult to recreate accurately. However, I'm open to ideas via issue submissions and sponsorship.
 1. Mapping Slack users to Discord users - Support for this may be considered if sponsored, but will likely be offered as a separate tool.
 
@@ -49,4 +50,4 @@ https://github.com/user-attachments/assets/a2289c0b-cbd2-4e98-a0dd-ad5e5cfaad9b
 1. If you'd like to donate, you can do so from within Slackord by opening the `Options` page and clicking the `Donate` button at the bottom of the page, sponsoring Slackord at the top of this repository by clicking the heart (sponsor) button, or donating directly to me via [PayPal](https://paypal.me/thomasloupe).
 
 # Special Mentions
-While Slackord handles migrating your Slack, archiving your Slack history is something you might also want to do. Check out [Slackdump](https://github.com/rusq/slackdump) for archiving your entire Slack workspace!
+While Slackord handles migrating your Slack, archiving your Slack history is something you might also want to do. Check out [Slackdump](https://github.com/rusq/slackdump) for archiving your entire Slack workspace! Slackord officially supports Slackdump exports.
