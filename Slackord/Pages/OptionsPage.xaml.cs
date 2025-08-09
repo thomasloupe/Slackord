@@ -37,7 +37,13 @@ namespace Slackord.Pages
             UserFormatPicker.SelectedIndex = userFormatIndex;
 
             string timestampValue = Preferences.Default.Get("TimestampValue", "12 Hour");
-            TimestampFormatPicker.SelectedIndex = timestampValue == "12 Hour" ? 0 : 1;
+            TimestampFormatPicker.SelectedIndex = timestampValue switch
+            {
+                "12 Hour" => 0,
+                "24 Hour" => 1,
+                "Remove Timestamps" => 2,
+                _ => 0
+            };
 
             BotTokenEntry.Text = Preferences.Default.Get("SlackordBotToken", string.Empty);
 
@@ -95,7 +101,13 @@ namespace Slackord.Pages
 
             if (TimestampFormatPicker.SelectedIndex >= 0)
             {
-                string timestampValue = TimestampFormatPicker.SelectedIndex == 0 ? "12 Hour" : "24 Hour";
+                string timestampValue = TimestampFormatPicker.SelectedIndex switch
+                {
+                    0 => "12 Hour",
+                    1 => "24 Hour",
+                    2 => "Remove Timestamps",
+                    _ => "12 Hour"
+                };
                 Preferences.Default.Set("TimestampValue", timestampValue);
             }
 

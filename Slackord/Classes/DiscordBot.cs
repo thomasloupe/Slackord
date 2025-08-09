@@ -718,11 +718,6 @@ namespace Slackord.Classes
                         await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
-                    else if (message.IsPinned || message.FileURLs.Count > 0)
-                    {
-                        await webhookClient.SendMessageAsync("📎", false, null, message.User, message.Avatar,
-                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
-                    }
 
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -759,12 +754,6 @@ namespace Slackord.Classes
                         await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
                             threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
-                    else if (message.IsPinned || message.FileURLs.Count > 0)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await webhookClient.SendMessageAsync("📎", false, null, message.User, message.Avatar,
-                            threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
-                    }
 
                     if (shouldArchiveThreadBack && threadID != null)
                     {
@@ -788,12 +777,6 @@ namespace Slackord.Classes
 
                         cancellationToken.ThrowIfCancellationRequested();
                         await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
-                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
-                    }
-                    else if (message.IsPinned || message.FileURLs.Count > 0)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await webhookClient.SendMessageAsync("📎", false, null, message.User, message.Avatar,
                             options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
                     }
                 }

@@ -222,7 +222,8 @@ namespace Slackord.Classes
         /// <param name="cancellationToken">Token to cancel the operation</param>
         /// <returns>The number of files processed in this channel</returns>
         internal static async Task<int> ProcessChannelAsync(DirectoryInfo channelDirectory, Dictionary<string, string> channelDescriptions,
-                    Dictionary<string, HashSet<string>> channelPins, Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed, int totalFiles, CancellationToken cancellationToken)
+                    Dictionary<string, HashSet<string>> channelPins, Dictionary<string, DeconstructedUser> usersDict, int currentFilesProcessed,
+                    int totalFiles, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(usersDict);
 
@@ -250,6 +251,7 @@ namespace Slackord.Classes
             Application.Current.Dispatcher.Dispatch(() => {
                 ApplicationWindow.WriteToDebugWindow($"Begin processing {channelName} with {jsonFileCount} JSON files...\n");
             });
+
             if (jsonFileCount > 400)
             {
                 Application.Current.Dispatcher.Dispatch(() => {
@@ -257,40 +259,67 @@ namespace Slackord.Classes
                 });
             }
 
-            var pinnedMessageIds = channelPins.GetValueOrDefault(channelName, []);
-            var deconstructedMessages = new List<DeconstructedMessage>();
+            var deconstructedMessagesList = new List<DeconstructedMessage>();
+            string channelDescription = channelDescriptions.TryGetValue(channelName, out var desc) ? desc : "";
+            HashSet<string> pins = channelPins.TryGetValue(channelName, out var pinSet) ? pinSet : [];
+
             foreach (FileInfo jsonFile in jsonFiles)
             {
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+
                     string jsonContent = await File.ReadAllTextAsync(jsonFile.FullName, cancellationToken).ConfigureAwait(false);
-                    JArray messagesArray = JArray.Parse(jsonContent);
-                    foreach (JObject slackMessage in messagesArray.Cast<JObject>())
+                    JArray messagesJson = JArray.Parse(jsonContent);
+
+                    foreach (JObject message in messagesJson.Cast<JObject>())
                     {
-                        DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(slackMessage, pinnedMessageIds);
-                        deconstructedMessages.Add(deconstructedMessage);
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        DeconstructedMessage deconstructedMessage = Deconstruct.DeconstructMessage(message, pins);
+                        if (deconstructedMessage != null)
+                        {
+                            deconstructedMessagesList.Add(deconstructedMessage);
+                        }
                     }
+
                     localFilesProcessed++;
-                    ApplicationWindow.UpdateProgressBar(currentFilesProcessed + localFilesProcessed, totalFiles, "files");
+                    currentFilesProcessed++;
+
+                    double progressPercent = (double)currentFilesProcessed / totalFiles * 100;
+                    ApplicationWindow.UpdateProgressBar(currentFilesProcessed, totalFiles, "files");
                 }
                 catch (Exception ex)
                 {
                     Application.Current.Dispatcher.Dispatch(() => {
-                        ApplicationWindow.WriteToDebugWindow($"Exception processing file {jsonFile.Name}: {ex.Message}\n");
+                        ApplicationWindow.WriteToDebugWindow($"Error processing {jsonFile.Name}: {ex.Message}\n");
                     });
                 }
             }
 
-            if (deconstructedMessages.Count > 0)
+            deconstructedMessagesList = [.. deconstructedMessagesList.OrderBy(m => double.TryParse(m.Timestamp, out var ts) ? ts : 0)];
+
+            Application.Current.Dispatcher.Dispatch(() => {
+                ApplicationWindow.WriteToDebugWindow($"Sorted {deconstructedMessagesList.Count} messages chronologically for {channelName}\n");
+            });
+
+            if (deconstructedMessagesList.Count > 0)
             {
                 ProcessingManager.Instance.SetState(ProcessingState.ReconstructingMessages);
-                var channelProgress = CurrentSession.AddChannel(channelName, deconstructedMessages.Count);
-                if (channelDescriptions.TryGetValue(channelName, out string description))
+
+                var channelProgress = new ChannelProgress
                 {
-                    channelProgress.Description = description;
-                }
-                await ReconstructAndSaveChannelAsync(channelName, deconstructedMessages, channelProgress, cancellationToken);
+                    Name = channelName,
+                    Description = channelDescription,
+                    TotalMessages = 0,
+                    MessagesSent = 0,
+                    IsCompleted = false
+                };
+
+                CurrentSession.Channels.Add(channelProgress);
+                CurrentSession.Save();
+
+                await ReconstructAndSaveChannelAsync(channelName, deconstructedMessagesList, channelProgress, cancellationToken);
             }
 
             return localFilesProcessed;
@@ -462,6 +491,27 @@ namespace Slackord.Classes
         public static ImportSession GetCurrentSession()
         {
             return CurrentSession;
+        }
+
+        /// <summary>
+        /// Gets the path to the downloads folder for the current session
+        /// </summary>
+        /// <returns>The downloads folder path</returns>
+        public static string GetDownloadsFolderPath()
+        {
+            if (CurrentSession == null)
+            {
+                throw new InvalidOperationException("No active import session");
+            }
+
+            string downloadsPath = Path.Combine(CurrentSession.SessionPath, "downloads");
+
+            if (!Directory.Exists(downloadsPath))
+            {
+                Directory.CreateDirectory(downloadsPath);
+            }
+
+            return downloadsPath;
         }
 
         /// <summary>

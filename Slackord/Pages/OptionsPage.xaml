@@ -29,6 +29,7 @@
                         <Picker.Items>
                             <x:String>12 Hour</x:String>
                             <x:String>24 Hour</x:String>
+                            <x:String>Remove Timestamps</x:String>
                         </Picker.Items>
                     </Picker>
                 </VerticalStackLayout>
