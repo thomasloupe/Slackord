@@ -1,5 +1,6 @@
 ﻿using Discord;
 using MenuApp;
+using Microsoft.UI;
 using System.Text;
 
 namespace Slackord.Classes
@@ -279,12 +280,18 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Toggles the timestamp format between 12-hour and 24-hour
+        /// Sets the timestamp format value to 12-hour, 24-hour, or Remove Timestamps
         /// </summary>
         public static async Task SetTimestampValue()
         {
             string currentSetting = Preferences.Default.Get("TimestampValue", "12 Hour");
-            string newSetting = currentSetting == "12 Hour" ? "24 Hour" : "12 Hour";
+            string newSetting = currentSetting switch
+            {
+                "12 Hour" => "24 Hour",
+                "24 Hour" => "Remove Timestamps",
+                "Remove Timestamps" => "12 Hour",
+                _ => "12 Hour"
+            };
             Preferences.Default.Set("TimestampValue", newSetting);
             WriteToDebugWindow($"Timestamp setting changed to {newSetting}. Messages sent to Discord will use this format.\n");
 
@@ -311,7 +318,14 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Cycles to the next user format setting
+        /// Sets the user format value to one of the following options:
+        /// Display Name > User > Real Name, 
+        /// Display Name > Real Name > User,
+        /// User > Display Name > Real Name,
+        /// User > Real Name > Display Name,
+        /// Real Name > Display Name > User,
+        /// or
+        /// Real Name > User > Display Name
         /// </summary>
         public static async Task SetUserFormatValue()
         {

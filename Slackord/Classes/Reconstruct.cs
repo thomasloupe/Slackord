@@ -213,12 +213,12 @@ namespace Slackord.Classes
                     for (int i = 0; i < deconstructedMessage.FileURLs.Count; i++)
                     {
                         string fileUrl = deconstructedMessage.FileURLs[i];
-                        bool isDownloadable = deconstructedMessage.IsFileDownloadable[i];
+                        bool isDownloadable = i < deconstructedMessage.IsFileDownloadable.Count && deconstructedMessage.IsFileDownloadable[i];
                         int lastMessageIndex = channel.ReconstructedMessagesList.Count - 1;
 
                         if (isDownloadable)
                         {
-                            var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable);
+                            var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable, deconstructedMessage.Timestamp);
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
                                 channel.ReconstructedMessagesList[lastMessageIndex].FileURLs.Add(localFilePath);
@@ -228,10 +228,6 @@ namespace Slackord.Classes
                             {
                                 Logger.Log($"File download for channel {channel.Name} failed. Original Slack Message: {deconstructedMessage.OriginalSlackMessageJson}");
                             }
-                        }
-                        else
-                        {
-                            channel.ReconstructedMessagesList[lastMessageIndex].Content += " [File hidden by Slack limit]";
                         }
                     }
                 }
@@ -251,99 +247,53 @@ namespace Slackord.Classes
         /// <param name="channelName">The name of the channel (for organizing downloads)</param>
         /// <param name="isDownloadable">Whether the file is downloadable</param>
         /// <returns>A tuple containing the local file path and permalink</returns>
-        public static async Task<(string localFilePath, string permalink)> DownloadFile(string fileUrl, string channelName, bool isDownloadable)
+        private static async Task<(string localPath, bool isDownloaded)> DownloadFile(string fileUrl, string channelName, bool isDownloadable, string messageTimestamp = null)
         {
-            if (!isDownloadable || string.IsNullOrWhiteSpace(fileUrl))
+            if (!isDownloadable || string.IsNullOrEmpty(fileUrl))
             {
-                return (null, null);
+                return (string.Empty, false);
             }
-
-            if (!fileUrl.StartsWith("http://") && !fileUrl.StartsWith("https://"))
-            {
-                string fullLocalPath;
-
-                if (!Path.IsPathRooted(fileUrl))
-                {
-                    string[] possiblePaths = [
-                Path.Combine(ImportJson.RootFolderPath, fileUrl),
-                Path.Combine(ImportJson.RootFolderPath, "__uploads", fileUrl),
-                Path.Combine(ImportJson.RootFolderPath, "__uploads", fileUrl.Replace("/", Path.DirectorySeparatorChar.ToString()))
-            ];
-
-                    fullLocalPath = possiblePaths.FirstOrDefault(path => File.Exists(path)) ?? possiblePaths[0];
-                }
-                else
-                {
-                    fullLocalPath = fileUrl;
-                }
-
-                if (File.Exists(fullLocalPath))
-                {
-                    ApplicationWindow.WriteToDebugWindow($"✅ Using existing Slackdump file: {Path.GetFileName(fullLocalPath)}\n");
-                    return (fullLocalPath, fileUrl);
-                }
-                else
-                {
-                    Logger.Log($"Slackdump file not found at expected location: {fullLocalPath}");
-                    ApplicationWindow.WriteToDebugWindow($"⚠️ Slackdump file not found: {Path.GetFileName(fullLocalPath)}\n");
-                    return (null, null);
-                }
-            }
-
-            string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", channelName);
-            Directory.CreateDirectory(downloadsFolder);
-
-            string fileName = Path.GetFileName(new Uri(fileUrl).LocalPath);
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                fileName = Guid.NewGuid().ToString();
-            }
-
-            string localFilePath = Path.Combine(downloadsFolder, fileName);
 
             try
             {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-                using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(30);
+                Uri uri = new(fileUrl);
+                string originalFileName = Path.GetFileName(uri.LocalPath);
+                string fileExtension = Path.GetExtension(originalFileName);
+                string baseFileName = Path.GetFileNameWithoutExtension(originalFileName);
 
-                var downloadResult = await SmartDownloadUtility.DownloadFileIfNeededAsync(
-                    fileUrl,
-                    localFilePath,
-                    expectedSize: 0,
-                    httpClient,
-                    cts.Token);
+                string uniqueIdentifier = messageTimestamp != null ?
+                    messageTimestamp.Replace(".", "_") :
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
 
-                switch (downloadResult.Status)
+                string uniqueFileName = $"{uniqueIdentifier}_{baseFileName}{fileExtension}";
+
+                string downloadsFolder = ImportJson.GetDownloadsFolderPath();
+                string channelFolder = Path.Combine(downloadsFolder, SanitizeFileName(channelName));
+
+                if (!Directory.Exists(channelFolder))
                 {
-                    case DownloadStatus.Downloaded:
-                        return (downloadResult.LocalPath, fileUrl);
-
-                    case DownloadStatus.Skipped:
-                        ApplicationWindow.WriteToDebugWindow($"⏭️ Skipped download (already exists): {Path.GetFileName(localFilePath)}\n");
-                        return (downloadResult.LocalPath, fileUrl);
-
-                    case DownloadStatus.Failed:
-                        Logger.Log($"Download failed for {fileUrl}: {downloadResult.Message}");
-                        ApplicationWindow.WriteToDebugWindow($"⚠️ Skipping unavailable file: {Path.GetFileName(localFilePath)}\n");
-                        return (null, null);
-
-                    default:
-                        Logger.Log($"Unexpected download status for {fileUrl}: {downloadResult.Status}");
-                        return (null, null);
+                    Directory.CreateDirectory(channelFolder);
                 }
-            }
-            catch (TaskCanceledException)
-            {
-                Logger.Log($"Download timeout for {fileUrl} after 30 seconds");
-                ApplicationWindow.WriteToDebugWindow($"⚠️ Download timeout - skipping: {Path.GetFileName(localFilePath)}\n");
-                return (null, null);
+
+                string localFilePath = Path.Combine(channelFolder, uniqueFileName);
+
+                if (File.Exists(localFilePath))
+                {
+                    return (localFilePath, true);
+                }
+
+                using HttpClient client = new();
+                client.Timeout = TimeSpan.FromSeconds(30);
+
+                byte[] fileData = await client.GetByteArrayAsync(fileUrl);
+                await File.WriteAllBytesAsync(localFilePath, fileData);
+
+                return (localFilePath, true);
             }
             catch (Exception ex)
             {
-                Logger.Log($"DownloadFile(): Exception during download of {fileUrl}: {ex.Message}");
-                ApplicationWindow.WriteToDebugWindow($"⚠️ Download error - skipping: {Path.GetFileName(localFilePath)}\n");
-                return (null, null);
+                Logger.Log($"DownloadFile error for {fileUrl}: {ex.Message}");
+                return (string.Empty, false);
             }
         }
 
@@ -525,6 +475,13 @@ namespace Slackord.Classes
         /// <returns>The formatted message string</returns>
         private static string FormatMessage(string messageContent, string timestamp)
         {
+            string timestampSetting = Preferences.Default.Get("TimestampValue", "12 Hour");
+
+            if (timestampSetting == "Remove Timestamps")
+            {
+                return messageContent;
+            }
+
             return $"[{timestamp}] : {messageContent}";
         }
 
