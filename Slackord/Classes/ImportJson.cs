@@ -70,18 +70,20 @@ namespace Slackord.Classes
                     bool hasUploadsFolder = Directory.Exists(Path.Combine(folderPath, "__uploads")) ||
                                            Directory.Exists(Path.Combine(folderPath, "files"));
 
-                    bool isSlackdump = hasMetaJson ||
+                    IsSlackdumpExport = hasMetaJson ||
                                       hasUploadsFolder ||
                                       hasDmsJson ||
                                       hasGroupsJson ||
                                       hasMpimsJson;
 
-                    if (isSlackdump)
+                    if (IsSlackdumpExport)
                     {
+                        ApplicationWindow.WriteToDebugWindow($"📦 Detected Slackdump export - files will be copied locally\n");
                         await SlackdumpImporter.ProcessSlackdumpDataAsync(isFullExport, folderPath, cancellationToken);
                     }
                     else
                     {
+                        ApplicationWindow.WriteToDebugWindow($"📥 Detected regular Slack export - files will be downloaded\n");
                         await ProcessSlackDataAsync(isFullExport, folderPath, cancellationToken);
                     }
                 }
@@ -494,9 +496,14 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Gets the path to the downloads folder for the current session
+        /// Gets whether the current import is a Slackdump export
         /// </summary>
-        /// <returns>The downloads folder path</returns>
+        public static bool IsSlackdumpExport { get; private set; }
+
+        /// <summary>
+        /// Gets the path to the downloads folder for storing file attachments
+        /// </summary>
+        /// <returns>The path to the downloads folder within the current session</returns>
         public static string GetDownloadsFolderPath()
         {
             if (CurrentSession == null)
@@ -504,14 +511,7 @@ namespace Slackord.Classes
                 throw new InvalidOperationException("No active import session");
             }
 
-            string downloadsPath = Path.Combine(CurrentSession.SessionPath, "downloads");
-
-            if (!Directory.Exists(downloadsPath))
-            {
-                Directory.CreateDirectory(downloadsPath);
-            }
-
-            return downloadsPath;
+            return Path.Combine(CurrentSession.SessionPath, "Downloads");
         }
 
         /// <summary>
