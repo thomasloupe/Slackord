@@ -153,43 +153,51 @@ namespace Slackord.Classes
                             continue;
                         }
 
-                        if (!string.IsNullOrEmpty(fileId) && !string.IsNullOrEmpty(fileName))
+                        if (ImportJson.IsSlackdumpExport)
                         {
-                            deconstructedMessage.FileURLs.Add($"slackdump://{fileId}/{fileName}");
-                            deconstructedMessage.IsFileDownloadable.Add(true);
-                            continue;
+                            if (!string.IsNullOrEmpty(fileId) && !string.IsNullOrEmpty(fileName))
+                            {
+                                deconstructedMessage.FileURLs.Add($"slackdump://{fileId}/{fileName}");
+                                deconstructedMessage.IsFileDownloadable.Add(true);
+                            }
+                            else
+                            {
+                                deconstructedMessage.FileURLs.Add("");
+                                deconstructedMessage.IsFileDownloadable.Add(false);
+                            }
                         }
-
-                        currentProperty = "url_private_download";
-                        currentValue = file[currentProperty];
-                        string urlPrivateDownload = currentValue?.ToString();
-
-                        if (!string.IsNullOrEmpty(urlPrivateDownload))
+                        else
                         {
-                            deconstructedMessage.FileURLs.Add(urlPrivateDownload);
-                            deconstructedMessage.IsFileDownloadable.Add(true);
-                            continue;
-                        }
+                            currentProperty = "url_private";
+                            currentValue = file[currentProperty];
+                            string urlPrivate = currentValue?.ToString();
 
-                        currentProperty = "url_private";
-                        currentValue = file[currentProperty];
-                        string urlPrivate = currentValue?.ToString();
+                            currentProperty = "url_private_download";
+                            currentValue = file[currentProperty];
+                            string urlPrivateDownload = currentValue?.ToString();
 
-                        if (!string.IsNullOrEmpty(urlPrivate))
-                        {
-                            deconstructedMessage.FileURLs.Add(urlPrivate);
-                            deconstructedMessage.IsFileDownloadable.Add(true);
-                            continue;
-                        }
+                            if (!string.IsNullOrEmpty(urlPrivateDownload))
+                            {
+                                deconstructedMessage.FileURLs.Add(urlPrivateDownload);
+                                deconstructedMessage.IsFileDownloadable.Add(!isHiddenByLimit);
+                            }
+                            else if (!string.IsNullOrEmpty(urlPrivate))
+                            {
+                                deconstructedMessage.FileURLs.Add(urlPrivate);
+                                deconstructedMessage.IsFileDownloadable.Add(!isHiddenByLimit);
+                            }
+                            else
+                            {
+                                currentProperty = "permalink";
+                                currentValue = file[currentProperty];
+                                string permalink = currentValue?.ToString();
 
-                        currentProperty = "permalink";
-                        currentValue = file[currentProperty];
-                        string permalink = currentValue?.ToString();
-
-                        if (!string.IsNullOrEmpty(permalink))
-                        {
-                            deconstructedMessage.FileURLs.Add(permalink);
-                            deconstructedMessage.IsFileDownloadable.Add(false);
+                                if (!string.IsNullOrEmpty(permalink))
+                                {
+                                    deconstructedMessage.FileURLs.Add(permalink);
+                                    deconstructedMessage.IsFileDownloadable.Add(false);
+                                }
+                            }
                         }
                     }
                 }

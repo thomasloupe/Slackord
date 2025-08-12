@@ -267,23 +267,6 @@ namespace Slackord.Classes
                                     fileName = string.Join("/", parts.Skip(1));
                                 }
                             }
-                            else if (!fileUrl.StartsWith("http://") && !fileUrl.StartsWith("https://"))
-                            {
-                                try
-                                {
-                                    var originalJson = JObject.Parse(deconstructedMessage.OriginalSlackMessageJson);
-                                    if (originalJson["files"] is JArray files && i < files.Count)
-                                    {
-                                        var fileObj = files[i];
-                                        fileId = fileObj["id"]?.ToString();
-                                        fileName = fileObj["name"]?.ToString();
-                                    }
-                                }
-                                catch (Exception parseEx)
-                                {
-                                    Logger.Log($"Error parsing file info from JSON: {parseEx.Message}");
-                                }
-                            }
 
                             var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable, deconstructedMessage.Timestamp, fileId, fileName);
                             if (!string.IsNullOrEmpty(localFilePath))
@@ -310,7 +293,7 @@ namespace Slackord.Classes
         /// Downloads a file from Slack or copies it from Slackdump export and saves it locally
         /// </summary>
         /// <param name="fileUrl">The URL or local path of the file</param>
-        /// <param name="channelName">The name of the channel (for organizing downloads)</param>
+        /// <param name="channelName">The name of the channel for organizing downloads</param>
         /// <param name="isDownloadable">Whether the file is downloadable</param>
         /// <param name="messageTimestamp">Optional timestamp for unique naming</param>
         /// <param name="fileId">Optional file ID for Slackdump exports</param>
@@ -325,11 +308,11 @@ namespace Slackord.Classes
 
             try
             {
-                bool isSlackdumpExport = fileUrl.StartsWith("slackdump://") || (!fileUrl.StartsWith("http://") && !fileUrl.StartsWith("https://"));
+                bool isSlackdumpExport = fileUrl.StartsWith("slackdump://");
 
                 if (isSlackdumpExport)
                 {
-                    if (fileUrl.StartsWith("slackdump://"))
+                    if (string.IsNullOrEmpty(fileId) || string.IsNullOrEmpty(fileName))
                     {
                         var parts = fileUrl["slackdump://".Length..].Split('/');
                         if (parts.Length >= 2)
@@ -345,19 +328,79 @@ namespace Slackord.Classes
                         return (string.Empty, false);
                     }
 
+                    Logger.Log($"Processing Slackdump file - FileID: {fileId}, FileName: {fileName}, URL: {fileUrl}");
+
                     string slackdumpFilePath = Path.Combine(ImportJson.RootFolderPath, "__uploads", fileId, fileName);
+                    Logger.Log($"Checking primary path: {slackdumpFilePath}");
 
                     if (!File.Exists(slackdumpFilePath))
                     {
                         string altPath = Path.Combine(ImportJson.RootFolderPath, "files", fileId, fileName);
+                        Logger.Log($"Primary path not found, checking alt path: {altPath}");
+
                         if (File.Exists(altPath))
                         {
                             slackdumpFilePath = altPath;
                         }
                         else
                         {
-                            Logger.Log($"Slackdump file not found at: {slackdumpFilePath} or {altPath}");
-                            return (string.Empty, false);
+                            string folderPath = Path.Combine(ImportJson.RootFolderPath, "__uploads", fileId);
+                            Logger.Log($"Alt path not found, checking folder: {folderPath}");
+
+                            if (Directory.Exists(folderPath))
+                            {
+                                var files = Directory.GetFiles(folderPath);
+                                Logger.Log($"Found {files.Length} files in folder {fileId}");
+
+                                if (files.Length == 1)
+                                {
+                                    slackdumpFilePath = files[0];
+                                    Logger.Log($"Using single file in folder: {Path.GetFileName(slackdumpFilePath)}");
+                                }
+                                else if (files.Length > 1)
+                                {
+                                    foreach (var f in files)
+                                    {
+                                        Logger.Log($"  Found file: {Path.GetFileName(f)}");
+                                    }
+
+                                    var matchingFile = files.FirstOrDefault(f =>
+                                        Path.GetFileName(f).Equals(fileName, StringComparison.OrdinalIgnoreCase) ||
+                                        Path.GetFileName(f).Replace(" ", "_").Equals(fileName, StringComparison.OrdinalIgnoreCase) ||
+                                        Path.GetFileName(f).Replace("_", " ").Equals(fileName, StringComparison.OrdinalIgnoreCase) ||
+                                        Path.GetFileName(f).Replace(" ", "_").Replace("-", "_").Equals(fileName.Replace("-", "_"), StringComparison.OrdinalIgnoreCase));
+
+                                    if (matchingFile != null)
+                                    {
+                                        slackdumpFilePath = matchingFile;
+                                        Logger.Log($"Found matching file by name variation: {Path.GetFileName(slackdumpFilePath)}");
+                                    }
+                                    else
+                                    {
+                                        Logger.Log($"Could not find matching file for '{fileName}' in folder with {files.Length} files");
+                                        return (string.Empty, false);
+                                    }
+                                }
+                                else
+                                {
+                                    Logger.Log($"No files found in folder: {folderPath}");
+                                    return (string.Empty, false);
+                                }
+                            }
+                            else
+                            {
+                                slackdumpFilePath = Path.Combine(ImportJson.RootFolderPath, "__uploads", fileName);
+                                Logger.Log($"Folder doesn't exist, checking root uploads: {slackdumpFilePath}");
+
+                                if (!File.Exists(slackdumpFilePath))
+                                {
+                                    Logger.Log($"Slackdump file not found in any expected location for: {fileName}");
+                                    Logger.Log($"  Tried: __uploads/{fileId}/{fileName}");
+                                    Logger.Log($"  Tried: files/{fileId}/{fileName}");
+                                    Logger.Log($"  Tried: __uploads/{fileName}");
+                                    return (string.Empty, false);
+                                }
+                            }
                         }
                     }
 
@@ -390,10 +433,16 @@ namespace Slackord.Classes
 
                     return (localFilePath, true);
                 }
-                else
+                else if (fileUrl.StartsWith("http://") || fileUrl.StartsWith("https://"))
                 {
                     Uri uri = new(fileUrl);
                     string originalFileName = Path.GetFileName(uri.LocalPath);
+
+                    if (string.IsNullOrEmpty(originalFileName))
+                    {
+                        originalFileName = "file";
+                    }
+
                     string fileExtension = Path.GetExtension(originalFileName);
                     string baseFileName = Path.GetFileNameWithoutExtension(originalFileName);
 
@@ -424,7 +473,13 @@ namespace Slackord.Classes
                     byte[] fileData = await client.GetByteArrayAsync(fileUrl);
                     await File.WriteAllBytesAsync(localFilePath, fileData);
 
+                    Logger.Log($"Downloaded file from {fileUrl} to {localFilePath}");
                     return (localFilePath, true);
+                }
+                else
+                {
+                    Logger.Log($"Unknown file URL format (not HTTP/HTTPS/Slackdump): {fileUrl}");
+                    return (string.Empty, false);
                 }
             }
             catch (Exception ex)
