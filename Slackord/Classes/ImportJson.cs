@@ -494,9 +494,9 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Gets the path to the downloads folder for the current session
+        /// Gets the path to the downloads folder for storing file attachments
         /// </summary>
-        /// <returns>The downloads folder path</returns>
+        /// <returns>The path to the downloads folder within the current session</returns>
         public static string GetDownloadsFolderPath()
         {
             if (CurrentSession == null)
@@ -504,14 +504,7 @@ namespace Slackord.Classes
                 throw new InvalidOperationException("No active import session");
             }
 
-            string downloadsPath = Path.Combine(CurrentSession.SessionPath, "downloads");
-
-            if (!Directory.Exists(downloadsPath))
-            {
-                Directory.CreateDirectory(downloadsPath);
-            }
-
-            return downloadsPath;
+            return Path.Combine(CurrentSession.SessionPath, "Downloads");
         }
 
         /// <summary>

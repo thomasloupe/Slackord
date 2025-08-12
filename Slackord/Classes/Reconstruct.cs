@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -172,32 +174,67 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Reconstructs a single Slack message into Discord-compatible format
+        /// Processes the content of a deconstructed message, handling various message types and formatting
         /// </summary>
-        /// <param name="deconstructedMessage">The deconstructed Slack message</param>
+        /// <param name="deconstructedMessage">The deconstructed message to process</param>
+        /// <returns>The processed message content</returns>
+        private static string ProcessMessageContent(DeconstructedMessage deconstructedMessage)
+        {
+            string messageContent = deconstructedMessage.Text;
+
+            if (deconstructedMessage.Subtype == "channel_join")
+            {
+                string displayName = ConvertUserToDisplayName(deconstructedMessage.User);
+                messageContent = $"{displayName} has joined the channel";
+            }
+            else if (deconstructedMessage.Subtype == "channel_leave")
+            {
+                string displayName = ConvertUserToDisplayName(deconstructedMessage.User);
+                messageContent = $"{displayName} has left the channel";
+            }
+            else if (deconstructedMessage.Subtype == "channel_topic")
+            {
+                string displayName = ConvertUserToDisplayName(deconstructedMessage.User);
+                messageContent = $"{displayName} set the channel topic: {deconstructedMessage.Text}";
+            }
+            else if (deconstructedMessage.Subtype == "channel_purpose")
+            {
+                string displayName = ConvertUserToDisplayName(deconstructedMessage.User);
+                messageContent = $"{displayName} set the channel purpose: {deconstructedMessage.Text}";
+            }
+            else if (!string.IsNullOrEmpty(deconstructedMessage.PreviousMessage))
+            {
+                messageContent = $"{deconstructedMessage.Text} *(edited)*";
+            }
+
+            if (!string.IsNullOrEmpty(messageContent))
+            {
+                messageContent = ReplaceUserMentions(messageContent);
+                messageContent = ConvertToDiscordMarkdown(messageContent);
+            }
+
+            return messageContent ?? "";
+        }
+
+        /// <summary>
+        /// Reconstructs a Slack message for Discord, handling formatting and attachments
+        /// </summary>
+        /// <param name="deconstructedMessage">The deconstructed Slack message to reconstruct</param>
         /// <param name="channel">The channel this message belongs to</param>
         public static async Task ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
         {
             try
             {
-                string messageContent;
-                if (!string.IsNullOrEmpty(deconstructedMessage.Text))
+                string messageContent = ProcessMessageContent(deconstructedMessage);
+                string timestampString;
+
+                if (decimal.TryParse(deconstructedMessage.Timestamp, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal timestampDecimal))
                 {
-                    messageContent = ConvertToDiscordMarkdown(ReplaceUserMentions(deconstructedMessage.Text));
-                }
-                else if (deconstructedMessage.FileURLs.Count > 0 && deconstructedMessage.IsFileDownloadable.Any(x => x))
-                {
-                    messageContent = "";
+                    timestampString = timestampDecimal.ToString("F6", CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    messageContent = "File hidden by Slack limit";
-                }
-
-                string timestampString = deconstructedMessage.Timestamp?.ToString();
-                if (string.IsNullOrEmpty(timestampString))
-                {
-                    Logger.Log(timestampString == null ? "Missing timestamp for message." : "Invalid timestamp format.");
+                    ApplicationWindow.WriteToDebugWindow($"❌ {(string.IsNullOrEmpty(deconstructedMessage.Timestamp) ? "Missing timestamp for message." : "Invalid timestamp format.")}");
                     return;
                 }
 
@@ -218,7 +255,37 @@ namespace Slackord.Classes
 
                         if (isDownloadable)
                         {
-                            var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable, deconstructedMessage.Timestamp);
+                            string fileId = null;
+                            string fileName = null;
+
+                            if (fileUrl.StartsWith("slackdump://"))
+                            {
+                                var parts = fileUrl["slackdump://".Length..].Split('/');
+                                if (parts.Length >= 2)
+                                {
+                                    fileId = parts[0];
+                                    fileName = string.Join("/", parts.Skip(1));
+                                }
+                            }
+                            else if (!fileUrl.StartsWith("http://") && !fileUrl.StartsWith("https://"))
+                            {
+                                try
+                                {
+                                    var originalJson = JObject.Parse(deconstructedMessage.OriginalSlackMessageJson);
+                                    if (originalJson["files"] is JArray files && i < files.Count)
+                                    {
+                                        var fileObj = files[i];
+                                        fileId = fileObj["id"]?.ToString();
+                                        fileName = fileObj["name"]?.ToString();
+                                    }
+                                }
+                                catch (Exception parseEx)
+                                {
+                                    Logger.Log($"Error parsing file info from JSON: {parseEx.Message}");
+                                }
+                            }
+
+                            var (localFilePath, _) = await DownloadFile(fileUrl, channel.Name, isDownloadable, deconstructedMessage.Timestamp, fileId, fileName);
                             if (!string.IsNullOrEmpty(localFilePath))
                             {
                                 channel.ReconstructedMessagesList[lastMessageIndex].FileURLs.Add(localFilePath);
@@ -240,14 +307,16 @@ namespace Slackord.Classes
         }
 
         /// <summary>
-        /// Downloads a file from Slack and saves it locally using smart downloading
-        /// Ignores files from Slackdump exports that are already local paths
+        /// Downloads a file from Slack or copies it from Slackdump export and saves it locally
         /// </summary>
-        /// <param name="fileUrl">The URL of the file to download</param>
+        /// <param name="fileUrl">The URL or local path of the file</param>
         /// <param name="channelName">The name of the channel (for organizing downloads)</param>
         /// <param name="isDownloadable">Whether the file is downloadable</param>
-        /// <returns>A tuple containing the local file path and permalink</returns>
-        private static async Task<(string localPath, bool isDownloaded)> DownloadFile(string fileUrl, string channelName, bool isDownloadable, string messageTimestamp = null)
+        /// <param name="messageTimestamp">Optional timestamp for unique naming</param>
+        /// <param name="fileId">Optional file ID for Slackdump exports</param>
+        /// <param name="fileName">Optional file name for Slackdump exports</param>
+        /// <returns>A tuple containing the local file path and download status</returns>
+        private static async Task<(string localPath, bool isDownloaded)> DownloadFile(string fileUrl, string channelName, bool isDownloadable, string messageTimestamp = null, string fileId = null, string fileName = null)
         {
             if (!isDownloadable || string.IsNullOrEmpty(fileUrl))
             {
@@ -256,39 +325,107 @@ namespace Slackord.Classes
 
             try
             {
-                Uri uri = new(fileUrl);
-                string originalFileName = Path.GetFileName(uri.LocalPath);
-                string fileExtension = Path.GetExtension(originalFileName);
-                string baseFileName = Path.GetFileNameWithoutExtension(originalFileName);
+                bool isSlackdumpExport = fileUrl.StartsWith("slackdump://") || (!fileUrl.StartsWith("http://") && !fileUrl.StartsWith("https://"));
 
-                string uniqueIdentifier = messageTimestamp != null ?
-                    messageTimestamp.Replace(".", "_") :
-                    DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
-
-                string uniqueFileName = $"{uniqueIdentifier}_{baseFileName}{fileExtension}";
-
-                string downloadsFolder = ImportJson.GetDownloadsFolderPath();
-                string channelFolder = Path.Combine(downloadsFolder, SanitizeFileName(channelName));
-
-                if (!Directory.Exists(channelFolder))
+                if (isSlackdumpExport)
                 {
-                    Directory.CreateDirectory(channelFolder);
-                }
+                    if (fileUrl.StartsWith("slackdump://"))
+                    {
+                        var parts = fileUrl["slackdump://".Length..].Split('/');
+                        if (parts.Length >= 2)
+                        {
+                            fileId = parts[0];
+                            fileName = string.Join("/", parts.Skip(1));
+                        }
+                    }
 
-                string localFilePath = Path.Combine(channelFolder, uniqueFileName);
+                    if (string.IsNullOrEmpty(fileId) || string.IsNullOrEmpty(fileName))
+                    {
+                        Logger.Log($"Slackdump file missing ID or name for: {fileUrl}");
+                        return (string.Empty, false);
+                    }
 
-                if (File.Exists(localFilePath))
-                {
+                    string slackdumpFilePath = Path.Combine(ImportJson.RootFolderPath, "__uploads", fileId, fileName);
+
+                    if (!File.Exists(slackdumpFilePath))
+                    {
+                        string altPath = Path.Combine(ImportJson.RootFolderPath, "files", fileId, fileName);
+                        if (File.Exists(altPath))
+                        {
+                            slackdumpFilePath = altPath;
+                        }
+                        else
+                        {
+                            Logger.Log($"Slackdump file not found at: {slackdumpFilePath} or {altPath}");
+                            return (string.Empty, false);
+                        }
+                    }
+
+                    string fileExtension = Path.GetExtension(fileName);
+                    string baseFileName = Path.GetFileNameWithoutExtension(fileName);
+
+                    string uniqueIdentifier = messageTimestamp != null ?
+                        messageTimestamp.Replace(".", "_") :
+                        DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+
+                    string uniqueFileName = $"{uniqueIdentifier}_{baseFileName}{fileExtension}";
+
+                    string downloadsFolder = ImportJson.GetDownloadsFolderPath();
+                    string channelFolder = Path.Combine(downloadsFolder, SanitizeFileName(channelName));
+
+                    if (!Directory.Exists(channelFolder))
+                    {
+                        Directory.CreateDirectory(channelFolder);
+                    }
+
+                    string localFilePath = Path.Combine(channelFolder, uniqueFileName);
+
+                    if (File.Exists(localFilePath))
+                    {
+                        return (localFilePath, true);
+                    }
+
+                    File.Copy(slackdumpFilePath, localFilePath, true);
+                    Logger.Log($"Copied Slackdump file from {slackdumpFilePath} to {localFilePath}");
+
                     return (localFilePath, true);
                 }
+                else
+                {
+                    Uri uri = new(fileUrl);
+                    string originalFileName = Path.GetFileName(uri.LocalPath);
+                    string fileExtension = Path.GetExtension(originalFileName);
+                    string baseFileName = Path.GetFileNameWithoutExtension(originalFileName);
 
-                using HttpClient client = new();
-                client.Timeout = TimeSpan.FromSeconds(30);
+                    string uniqueIdentifier = messageTimestamp != null ?
+                        messageTimestamp.Replace(".", "_") :
+                        DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
 
-                byte[] fileData = await client.GetByteArrayAsync(fileUrl);
-                await File.WriteAllBytesAsync(localFilePath, fileData);
+                    string uniqueFileName = $"{uniqueIdentifier}_{baseFileName}{fileExtension}";
 
-                return (localFilePath, true);
+                    string downloadsFolder = ImportJson.GetDownloadsFolderPath();
+                    string channelFolder = Path.Combine(downloadsFolder, SanitizeFileName(channelName));
+
+                    if (!Directory.Exists(channelFolder))
+                    {
+                        Directory.CreateDirectory(channelFolder);
+                    }
+
+                    string localFilePath = Path.Combine(channelFolder, uniqueFileName);
+
+                    if (File.Exists(localFilePath))
+                    {
+                        return (localFilePath, true);
+                    }
+
+                    using HttpClient client = new();
+                    client.Timeout = TimeSpan.FromSeconds(30);
+
+                    byte[] fileData = await client.GetByteArrayAsync(fileUrl);
+                    await File.WriteAllBytesAsync(localFilePath, fileData);
+
+                    return (localFilePath, true);
+                }
             }
             catch (Exception ex)
             {
@@ -733,7 +870,7 @@ namespace Slackord.Classes
 
             for (int i = position - 3; i >= searchStart; i--)
             {
-                if (i + 2 < message.Length && message.Substring(i, 3) == "```")
+                if (i + 2 < message.Length && message[i..(i + 3)] == "```")
                 {
                     int lineStart = i + 3;
                     int lineEnd = message.IndexOf('\n', lineStart);

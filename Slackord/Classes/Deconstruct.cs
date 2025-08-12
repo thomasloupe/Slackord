@@ -136,9 +136,16 @@ namespace Slackord.Classes
                             ImportJson.TotalHiddenFileCount++;
                         }
 
+                        currentProperty = "id";
+                        string fileId = file[currentProperty]?.ToString();
+
+                        currentProperty = "name";
+                        string fileName = file[currentProperty]?.ToString();
+
                         currentProperty = "local_path";
                         currentValue = file[currentProperty];
                         string localPath = currentValue?.ToString();
+
                         if (!string.IsNullOrEmpty(localPath))
                         {
                             deconstructedMessage.FileURLs.Add(localPath);
@@ -146,39 +153,43 @@ namespace Slackord.Classes
                             continue;
                         }
 
+                        if (!string.IsNullOrEmpty(fileId) && !string.IsNullOrEmpty(fileName))
+                        {
+                            deconstructedMessage.FileURLs.Add($"slackdump://{fileId}/{fileName}");
+                            deconstructedMessage.IsFileDownloadable.Add(true);
+                            continue;
+                        }
+
                         currentProperty = "url_private_download";
                         currentValue = file[currentProperty];
-                        var fileUrl = currentValue?.ToString();
+                        string urlPrivateDownload = currentValue?.ToString();
 
-                        if (!string.IsNullOrEmpty(fileUrl))
+                        if (!string.IsNullOrEmpty(urlPrivateDownload))
                         {
-                            deconstructedMessage.FileURLs.Add(fileUrl);
+                            deconstructedMessage.FileURLs.Add(urlPrivateDownload);
                             deconstructedMessage.IsFileDownloadable.Add(true);
+                            continue;
                         }
-                        else
-                        {
-                            currentProperty = "url_private";
-                            currentValue = file[currentProperty];
-                            fileUrl = currentValue?.ToString();
 
-                            if (!string.IsNullOrEmpty(fileUrl))
-                            {
-                                deconstructedMessage.FileURLs.Add(fileUrl);
-                                deconstructedMessage.IsFileDownloadable.Add(true);
-                            }
-                            else
-                            {
-                                if (isHiddenByLimit)
-                                {
-                                    deconstructedMessage.FileURLs.Add("File is hidden by Slack due to limits.");
-                                    deconstructedMessage.IsFileDownloadable.Add(false);
-                                }
-                                else
-                                {
-                                    string logMessage = $"Empty or null file URL found. Channel: {slackMessage.Root}";
-                                    Logger.Log(logMessage);
-                                }
-                            }
+                        currentProperty = "url_private";
+                        currentValue = file[currentProperty];
+                        string urlPrivate = currentValue?.ToString();
+
+                        if (!string.IsNullOrEmpty(urlPrivate))
+                        {
+                            deconstructedMessage.FileURLs.Add(urlPrivate);
+                            deconstructedMessage.IsFileDownloadable.Add(true);
+                            continue;
+                        }
+
+                        currentProperty = "permalink";
+                        currentValue = file[currentProperty];
+                        string permalink = currentValue?.ToString();
+
+                        if (!string.IsNullOrEmpty(permalink))
+                        {
+                            deconstructedMessage.FileURLs.Add(permalink);
+                            deconstructedMessage.IsFileDownloadable.Add(false);
                         }
                     }
                 }
