@@ -708,6 +708,11 @@ namespace Slackord.Classes
 
                 if (message.ThreadType == ThreadType.Parent)
                 {
+                    if (threadStartsDict.ContainsKey(message.ParentThreadTs))
+                    {
+                        return;
+                    }
+
                     string threadName = string.IsNullOrEmpty(message.Message) ? "Replies" :
                         message.Message.Length <= 20 ? message.Message : message.Message[..20];
 
