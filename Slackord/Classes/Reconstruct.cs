@@ -721,6 +721,11 @@ namespace Slackord.Classes
             }
         }
 
+        /// <summary>
+        /// Splits a message into parts that fit within Discord's message length limit
+        /// </summary>
+        /// <param name="message">The message to split</param>
+        /// <returns>List of message parts that fit within Discord's limits</returns>
         private static List<string> SplitMessageIntoParts(string message)
         {
             const int maxMessageLength = 2000;
@@ -740,6 +745,21 @@ namespace Slackord.Classes
                 return messageParts;
             }
 
+            // For extremely large messages (like 9000-line code blocks), convert to file attachment
+            const int maxReasonableLength = 50000; // ~25 Discord messages worth
+            if (message.Length > maxReasonableLength)
+            {
+                Logger.Log($"Message too large ({message.Length} chars), will be handled as file attachment");
+
+                // Add a truncated preview and note
+                string preview = message.Length > 1800 ? message[..1800] : message;
+                messageParts.Add($"{preview}\n\n**[Message truncated - {message.Length:N0} characters total. Full content should be attached as a file]**");
+
+                // Store the full content for file attachment handling
+                // This will need to be handled in the DiscordBot.cs PostSingleMessage method
+                return messageParts;
+            }
+
             Regex urlPattern = URLPattern();
 
             int currentIndex = 0;
@@ -753,8 +773,42 @@ namespace Slackord.Classes
                 loopCount++;
                 if (loopCount > maxLoops)
                 {
-                    Logger.Log($"SplitMessageIntoParts infinite loop detected. Message length: {message.Length}, Current index: {currentIndex}");
-                    messageParts.Add(message[currentIndex..]);
+                    Logger.Log($"SplitMessageIntoParts: Breaking after {maxLoops} iterations. Message length: {message.Length}, Current index: {currentIndex}");
+
+                    // Force completion by adding remaining content
+                    if (currentIndex < message.Length)
+                    {
+                        string remaining = message[currentIndex..];
+                        if (remaining.Length > maxMessageLength)
+                        {
+                            // Split remaining into final chunks
+                            while (currentIndex < message.Length)
+                            {
+                                int chunkEnd = Math.Min(currentIndex + maxMessageLength - 100, message.Length);
+                                string chunk = message[currentIndex..chunkEnd];
+
+                                if (inMultiPartCodeBlock)
+                                {
+                                    chunk = codeBlockMarker + codeBlockLanguage + "\n" + chunk;
+                                    if (chunkEnd < message.Length)
+                                    {
+                                        chunk += "\n" + codeBlockMarker;
+                                    }
+                                }
+
+                                messageParts.Add(chunk);
+                                currentIndex = chunkEnd;
+                            }
+                        }
+                        else
+                        {
+                            if (inMultiPartCodeBlock)
+                            {
+                                remaining = codeBlockMarker + codeBlockLanguage + "\n" + remaining;
+                            }
+                            messageParts.Add(remaining);
+                        }
+                    }
                     break;
                 }
 
@@ -766,40 +820,32 @@ namespace Slackord.Classes
                 {
                     openingMarker = codeBlockMarker + codeBlockLanguage + "\n";
                     closingMarker = "\n" + codeBlockMarker;
-                    availableLength = maxMessageLength - openingMarker.Length - closingMarker.Length;
+                    availableLength = maxMessageLength - openingMarker.Length - closingMarker.Length - 50; // Extra buffer
                 }
 
+                // Ensure we're making progress
+                int minAdvance = Math.Min(100, message.Length - currentIndex);
                 int bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
 
-                while (bestSplitIndex > currentIndex &&
+                // Try to find a good breaking point (whitespace)
+                while (bestSplitIndex > currentIndex + minAdvance &&
                        bestSplitIndex < message.Length &&
                        !char.IsWhiteSpace(message[bestSplitIndex]))
                 {
                     bestSplitIndex--;
                 }
 
-                if (bestSplitIndex <= currentIndex)
+                // If we couldn't find whitespace, just break at the limit
+                if (bestSplitIndex <= currentIndex + minAdvance)
                 {
                     bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
                 }
 
-                if (!inMultiPartCodeBlock)
+                // Ensure we always advance
+                if (bestSplitIndex <= currentIndex)
                 {
-                    MatchCollection matches = urlPattern.Matches(message[currentIndex..bestSplitIndex]);
-                    if (matches.Count > 0)
-                    {
-                        Match lastMatch = matches[^1];
-                        if (lastMatch.Index + lastMatch.Length > bestSplitIndex - currentIndex - 20)
-                        {
-                            bestSplitIndex = currentIndex + lastMatch.Index;
-                        }
-                    }
-
-                    int boldSyntax = message.LastIndexOf("**", bestSplitIndex - 2);
-                    if (boldSyntax > -1 && boldSyntax >= bestSplitIndex - 3)
-                    {
-                        bestSplitIndex = boldSyntax;
-                    }
+                    bestSplitIndex = Math.Min(currentIndex + Math.Max(minAdvance, 1), message.Length);
+                    Logger.Log($"SplitMessageIntoParts: Forced advance from {currentIndex} to {bestSplitIndex}");
                 }
 
                 string part = message[currentIndex..bestSplitIndex];
@@ -818,6 +864,7 @@ namespace Slackord.Classes
                             part = part.TrimEnd() + "\n" + codeBlockMarker;
                             messageParts.Add(part);
 
+                            // Skip whitespace after the split
                             while (bestSplitIndex < message.Length && char.IsWhiteSpace(message[bestSplitIndex]))
                             {
                                 bestSplitIndex++;
@@ -828,12 +875,32 @@ namespace Slackord.Classes
                         }
                         else
                         {
+                            // Check for URLs that might be broken
+                            MatchCollection matches = urlPattern.Matches(message[currentIndex..Math.Min(bestSplitIndex + 50, message.Length)]);
+                            foreach (Match match in matches)
+                            {
+                                int urlStart = currentIndex + match.Index;
+                                int urlEnd = urlStart + match.Length;
+
+                                // If URL would be split, move split point before URL
+                                if (urlStart < bestSplitIndex && urlEnd > bestSplitIndex)
+                                {
+                                    if (urlStart > currentIndex + minAdvance)
+                                    {
+                                        bestSplitIndex = urlStart;
+                                        part = message[currentIndex..bestSplitIndex];
+                                    }
+                                    break;
+                                }
+                            }
+
                             messageParts.Add(part);
                             currentIndex = bestSplitIndex;
                         }
                     }
                     else
                     {
+                        // We're in a multi-part code block
                         bool stillInBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
 
                         string nextPart = openingMarker + part;
@@ -853,6 +920,7 @@ namespace Slackord.Classes
                 }
                 else
                 {
+                    // Last part
                     if (inMultiPartCodeBlock)
                     {
                         part = openingMarker + part;
@@ -861,6 +929,12 @@ namespace Slackord.Classes
 
                     messageParts.Add(part);
                     currentIndex = bestSplitIndex;
+                }
+
+                // Skip any leading whitespace for next iteration
+                while (currentIndex < message.Length && char.IsWhiteSpace(message[currentIndex]))
+                {
+                    currentIndex++;
                 }
             }
 
