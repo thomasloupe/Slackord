@@ -715,8 +715,16 @@ namespace Slackord.Classes
                     {
                         string contentWithChannelMentions = ReplaceChannelMentions(message.Content, session);
 
-                        await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
-                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        if (contentWithChannelMentions.Length > 2000)
+                        {
+                            await SendAsFileAttachment(webhookClient, contentWithChannelMentions, message.User,
+                                message.Avatar, null, cancellationToken);
+                        }
+                        else
+                        {
+                            await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
+                                options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        }
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
@@ -750,9 +758,17 @@ namespace Slackord.Classes
                     {
                         string contentWithChannelMentions = ReplaceChannelMentions(message.Content, session);
 
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
-                            threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        if (contentWithChannelMentions.Length > 2000)
+                        {
+                            await SendAsFileAttachment(webhookClient, contentWithChannelMentions, message.User,
+                                message.Avatar, threadIdForReply, cancellationToken);
+                        }
+                        else
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
+                                threadId: threadIdForReply, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        }
                     }
 
                     if (shouldArchiveThreadBack && threadID != null)
@@ -775,9 +791,17 @@ namespace Slackord.Classes
                     {
                         string contentWithChannelMentions = ReplaceChannelMentions(message.Content, session);
 
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
-                            options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        if (contentWithChannelMentions.Length > 2000)
+                        {
+                            await SendAsFileAttachment(webhookClient, contentWithChannelMentions, message.User,
+                                message.Avatar, null, cancellationToken);
+                        }
+                        else
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            await webhookClient.SendMessageAsync(contentWithChannelMentions, false, null, message.User, message.Avatar,
+                                options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+                        }
                     }
                 }
 
@@ -793,6 +817,95 @@ namespace Slackord.Classes
                 Logger.Log($"PostSingleMessage error: {ex}");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Sends large content as a file attachment when it exceeds Discord's message limit
+        /// </summary>
+        private static async Task SendAsFileAttachment(DiscordWebhookClient webhookClient, string content,
+            string username, string avatarUrl, ulong? threadId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                bool isCode = content.StartsWith("```") && content.Count(c => c == '`') >= 6;
+                string filename = isCode ? "code.txt" : "message.txt";
+
+                string preview = content.Length > 100 ? content[..100] + "..." : content;
+                if (isCode && preview.StartsWith("```"))
+                {
+                    var lines = preview.Split('\n');
+                    if (lines.Length > 0 && lines[0].Length > 3)
+                    {
+                        string lang = lines[0][3..].Trim();
+                        if (!string.IsNullOrEmpty(lang) && lang.Length < 20)
+                        {
+                            filename = $"code.{GetFileExtension(lang)}";
+                        }
+                    }
+                }
+
+                byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(content);
+                using var stream = new MemoryStream(fileBytes);
+
+                string notificationText = $"📄 **Message too large** ({content.Length:N0} characters) - attached as `{filename}`";
+
+                await webhookClient.SendFileAsync(
+                    stream,
+                    filename,
+                    text: notificationText,
+                    isTTS: false,
+                    embeds: null,
+                    username: username,
+                    avatarUrl: avatarUrl,
+                    options: new RequestOptions { CancelToken = cancellationToken, Timeout = 60000 },
+                    isSpoiler: false,
+                    allowedMentions: null,
+                    components: null,
+                    threadId: threadId);
+
+                SafeLogToDebugWindow($"📎 Converted large message to file attachment: {filename} ({content.Length:N0} chars)");
+            }
+            catch (Exception ex)
+            {
+                SafeLogToDebugWindow($"❌ Error sending as file attachment: {ex.Message}");
+                Logger.Log($"SendAsFileAttachment error: {ex}");
+
+                string truncated = content.Length > 1900 ? content[..1900] + "\n\n[Message truncated]" : content;
+                await webhookClient.SendMessageAsync(truncated, false, null, username, avatarUrl,
+                    threadId: threadId, options: new RequestOptions { CancelToken = cancellationToken, Timeout = 30000 });
+            }
+        }
+
+        /// <summary>
+        /// Gets file extension for common programming languages
+        /// </summary>
+        private static string GetFileExtension(string language)
+        {
+            return language?.ToLower() switch
+            {
+                "python" or "py" => "py",
+                "javascript" or "js" => "js",
+                "typescript" or "ts" => "ts",
+                "java" => "java",
+                "csharp" or "c#" or "cs" => "cs",
+                "cpp" or "c++" => "cpp",
+                "c" => "c",
+                "dart" => "dart",
+                "go" => "go",
+                "rust" or "rs" => "rs",
+                "ruby" or "rb" => "rb",
+                "php" => "php",
+                "swift" => "swift",
+                "kotlin" or "kt" => "kt",
+                "html" => "html",
+                "css" => "css",
+                "sql" => "sql",
+                "json" => "json",
+                "xml" => "xml",
+                "yaml" or "yml" => "yaml",
+                "bash" or "sh" or "shell" => "sh",
+                _ => "txt"
+            };
         }
 
         /// <summary>
@@ -1195,7 +1308,7 @@ namespace Slackord.Classes
                     Logger.Log("Background task error occurred but could not update UI");
                 }
 
-                args.SetObserved(); // Prevent app crash
+                args.SetObserved();
             };
         }
     }

@@ -24,18 +24,18 @@
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
-		<AssemblyVersion>5.3.0.0</AssemblyVersion>
+		<AssemblyVersion>5.3.2.0</AssemblyVersion>
 		<FileVersion>5.3.0.0</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>5.2.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>5.3.2</ApplicationDisplayVersion>
 		<ApplicationVersion>5</ApplicationVersion>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>5.2.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>5.3.2</ApplicationDisplayVersion>
 		<ApplicationVersion>5</ApplicationVersion>
 	</PropertyGroup>
 
