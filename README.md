@@ -28,14 +28,13 @@ https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
 1. Mapping Slack users to Discord users - Support for this may be considered if sponsored, but will likely be offered as a separate tool.
 
 # Getting Started
-1. Download the [latest](https://github.com/thomasloupe/Slackord/releases) Slackord release and extract the contents.
-2. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
-3. Name your bot "Slackord", or any preferred custom name.
-4. On the "Installation" page, select "Guild Install", and select "None" for the "Install Link" and save your changes.
-5. Select "Bot" from the left panel. Ensure that both "Public Bot", and "Requires OAuth2 Code Grant" are both toggled off in Authorization Flow, and "Message Content Intent" is toggled on. then save your changes.
-6. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. Set the bot's permissions to "Administrator".
-7. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired Discord server.
-9. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
+1. Create a Discord bot [here](https://discord.com/developers/applications) by selecting "New Application" at the top-right.
+2. Name your bot "Slackord", or any preferred custom name.
+3. On the "Installation" page, select "Guild Install", and select "None" for the "Install Link" and save your changes.
+4. Select "Bot" from the left panel. Ensure that both "Public Bot", and "Requires OAuth2 Code Grant" are both toggled off in Authorization Flow, and "Message Content Intent" is toggled on. then save your changes.
+5. Select "OAuth2" from the left panel. Set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. Set the bot's permissions to "Administrator".
+6. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired Discord server.
+7. Select "Bot" from the left panel. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
 
 # Running Slackord
 1. Run Slackord. You may need to install the latest .NET9 framework [here](https://builds.dotnet.microsoft.com/dotnet/Runtime/9.0.5/dotnet-runtime-9.0.5-win-x64.exe).
