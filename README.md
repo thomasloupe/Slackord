@@ -35,7 +35,7 @@ https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
 5. Select "Bot" from the left panel. Ensure that both "Public Bot", and "Requires OAuth2 Code Grant" are both toggled off in Authorization Flow, and "Message Content Intent" is toggled on. then save your changes.
 6. Select "OAuth2" from the left panel. set the bot's "SCOPES" to "bot". This opens a new menu called "BOT PERMISSIONS" below. Set the bot's permissions to "Administrator".
 7. Copy the "GENERATED URL" link below the "BOT PERMISSIONS", and paste into a browser. Join the bot into your desired Discord server.
-9. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
+9. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."](https://jenkins-prod.zenoss.io/job/Zing_Production_Deployment_for_zcloud-prod3/job/update-and-deploy/186/console)
 
 # Running Slackord
 1. Run Slackord. You may need to install the latest .NET9 framework [here](https://builds.dotnet.microsoft.com/dotnet/Runtime/9.0.5/dotnet-runtime-9.0.5-win-x64.exe).
