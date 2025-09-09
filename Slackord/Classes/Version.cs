@@ -11,7 +11,7 @@
         /// <returns>The current version string</returns>
         public static string GetVersion()
         {
-            string version = "v5.3.2";
+            string version = "v5.3.4";
 
             return version;
         }
