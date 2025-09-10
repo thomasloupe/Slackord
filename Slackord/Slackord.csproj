@@ -27,20 +27,23 @@
 		<AssemblyVersion>5.3.4.0</AssemblyVersion>
 		<FileVersion>5.3.4.0</FileVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<PublishAot>True</PublishAot>
+		<PublishAot>False</PublishAot>
 		<DelaySign>False</DelaySign>
 		<NeutralLanguage>en-US</NeutralLanguage>
+		<PublishTrimmed>True</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<ApplicationDisplayVersion>5.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>5</ApplicationVersion>
 		<Optimize>True</Optimize>
+		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<ApplicationDisplayVersion>5.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>5</ApplicationVersion>
+		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -48,8 +51,6 @@
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
