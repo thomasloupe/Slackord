@@ -52,7 +52,7 @@ namespace Slackord.Classes
                     }
                     else
                     {
-                        await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
+                        await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlertAsync(_currentVersion, "You have the latest version, " + _currentVersion + "!", "OK");
                     }
                 }
                 else if (_currentVersion != latest.TagName)
@@ -71,7 +71,7 @@ namespace Slackord.Classes
 
                                 """;
                     });
-                    bool result = await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert("Slackord Update Available!",
+                    bool result = await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlertAsync("Slackord Update Available!",
                         $@"A new version of Slackord is available!
     Current version: {_currentVersion}
     Latest version: {latest.TagName}
@@ -92,7 +92,7 @@ namespace Slackord.Classes
             {
                 if (!isStartupCheck)
                 {
-                    await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlert(
+                    await Microsoft.Maui.Controls.Application.Current.Windows[0].Page.DisplayAlertAsync(
                         "Update Check Failed",
                         $"Could not check for updates: {ex.Message}",
                         "OK");

@@ -2,13 +2,39 @@
 
 namespace MenuApp
 {
+    /// <summary>
+    /// Main page of the application containing the primary UI for Discord import operations.
+    /// </summary>
     public partial class MainPage : ContentPage
     {
+        /// <summary>
+        /// Gets the current MainPage instance.
+        /// </summary>
         public static MainPage Current { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the debug window editor instance.
+        /// </summary>
         public static Editor DebugWindowInstance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the progress bar instance.
+        /// </summary>
         public static ProgressBar ProgressBarInstance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the bot connection button instance.
+        /// </summary>
         public static Button BotConnectionButtonInstance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the progress bar text label instance.
+        /// </summary>
         public static Label ProgressBarTextInstance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the processing state label instance.
+        /// </summary>
         public static Label ProcessingStateLabelInstance { get; set; }
 
         private readonly ApplicationWindow applicationWindow;

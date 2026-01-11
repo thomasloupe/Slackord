@@ -2,6 +2,9 @@
 
 namespace Slackord
 {
+    /// <summary>
+    /// Entry point class for configuring and building the MAUI application.
+    /// </summary>
     public static class MauiProgram
     {
         /// <summary>

@@ -51,11 +51,34 @@ namespace Slackord.Classes
         /// </summary>
         public enum UserFormatOrder
         {
+            /// <summary>
+            /// Display name first, then username, then real name
+            /// </summary>
             DisplayName_User_RealName,
+
+            /// <summary>
+            /// Display name first, then real name, then username
+            /// </summary>
             DisplayName_RealName_User,
+
+            /// <summary>
+            /// Username first, then display name, then real name
+            /// </summary>
             User_DisplayName_RealName,
+
+            /// <summary>
+            /// Username first, then real name, then display name
+            /// </summary>
             User_RealName_DisplayName,
+
+            /// <summary>
+            /// Real name first, then display name, then username
+            /// </summary>
             RealName_DisplayName_User,
+
+            /// <summary>
+            /// Real name first, then username, then display name
+            /// </summary>
             RealName_User_DisplayName
         }
 
@@ -151,7 +174,7 @@ namespace Slackord.Classes
                     sb.AppendLine($"... and {incompleteSessions.Count - 3} more sessions");
                 }
 
-                bool shouldResume = await MainPage.Current.DisplayAlert(
+                bool shouldResume = await MainPage.Current.DisplayAlertAsync(
                     "Resume Import Sessions",
                     sb.ToString() + "Would you like to resume the most recent incomplete import?",
                     "Resume", "Start New");
@@ -209,7 +232,7 @@ namespace Slackord.Classes
 
                 ProcessingManager.Instance.SetState(ProcessingState.ReadyForDiscordImport);
 
-                bool shouldShowInstructions = await MainPage.Current.DisplayAlert(
+                bool shouldShowInstructions = await MainPage.Current.DisplayAlertAsync(
                     "Resume Ready",
                     $"Session {sessionToResume.SessionId} is now loaded and ready to resume.\n\n" +
                     $"To continue:\n" +
@@ -227,7 +250,7 @@ namespace Slackord.Classes
             {
                 WriteToDebugWindow($"❌ Error resuming import: {ex.Message}\n");
                 Logger.Log($"ResumeRecentImport error: {ex.Message}");
-                await MainPage.Current.DisplayAlert("Resume Error", $"An error occurred while resuming: {ex.Message}", "OK");
+                await MainPage.Current.DisplayAlertAsync("Resume Error", $"An error occurred while resuming: {ex.Message}", "OK");
             }
         }
 
@@ -563,7 +586,7 @@ namespace Slackord.Classes
         public static void DisplayAbout()
         {
             string currentVersion = Version.GetVersion();
-            _ = MainPageInstance.DisplayAlert("", $@"
+            _ = MainPageInstance.DisplayAlertAsync("", $@"
 Slackord {currentVersion}.
 Created by Thomas Loupe.
 Github: https://github.com/thomasloupe
@@ -584,7 +607,7 @@ If you'd like to buy me a beer anyway, I won't tell you not to!
 Would you like to open the donation page now?
 ";
 
-            bool result = await MainPageInstance.DisplayAlert("Slackord is free, but beer is not!", message, "Yes", "No");
+            bool result = await MainPageInstance.DisplayAlertAsync("Slackord is free, but beer is not!", message, "Yes", "No");
 
             if (result)
             {
@@ -597,7 +620,7 @@ Would you like to open the donation page now?
         /// </summary>
         public static async Task ExitApplication()
         {
-            bool result = await MainPageInstance.DisplayAlert("Confirm Exit", "Are you sure you want to quit Slackord?", "Yes", "No");
+            bool result = await MainPageInstance.DisplayAlertAsync("Confirm Exit", "Are you sure you want to quit Slackord?", "Yes", "No");
 
             if (result)
             {

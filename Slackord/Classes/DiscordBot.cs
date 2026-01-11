@@ -619,7 +619,7 @@ namespace Slackord.Classes
                         try
                         {
                             // Use ConfigureAwait(false) to avoid deadlocks
-                            shouldContinue = await MainPage.Current.DisplayAlert(
+                            shouldContinue = await MainPage.Current.DisplayAlertAsync(
                                 "Error Posting Message",
                                 $"An error occurred while posting a message to {channelProgress.Name}: {ex.Message}\n\nWould you like to continue with the next message?",
                                 "Continue", "Stop").ConfigureAwait(false);
@@ -977,7 +977,7 @@ namespace Slackord.Classes
                         try
                         {
                             cancellationToken.ThrowIfCancellationRequested();
-                            var recentMessages = await discordChannel.GetMessagesAsync(1).Flatten().ToListAsync(cancellationToken);
+                            var recentMessages = await discordChannel.GetMessagesAsync(1).FlattenAsync().ConfigureAwait(false);
                             var recentMessage = recentMessages.FirstOrDefault();
                             if (recentMessage is IUserMessage userMessage)
                             {

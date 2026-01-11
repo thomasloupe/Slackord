@@ -1,17 +1,24 @@
-﻿namespace Slackord
+namespace Slackord
 {
+    /// <summary>
+    /// Main application class that configures the MAUI application window and navigation.
+    /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Initializes a new instance of the App class.
+        /// </summary>
         public App()
         {
             InitializeComponent();
         }
 
         /// <summary>
-        /// Creates the main application window with a navigation page
+        /// Creates the main application window with a navigation page.
+        /// On Windows, additional native window configuration is applied to disable resizing.
         /// </summary>
-        /// <param name="activationState">The activation state of the app</param>
-        /// <returns>The main application window</returns>
+        /// <param name="activationState">The activation state of the app.</param>
+        /// <returns>The main application window.</returns>
         protected override Window CreateWindow(IActivationState activationState)
         {
             const int windowWidth = 1280;
