@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
 7. Select "Bot" from the left panel. Click "Reset Token", select "Yes, do it!", then click the "Copy" button to the left of "Regenerate". "Keep it secret, keep it safe."
 
 # Running Slackord
-1. Run Slackord. You may need to install the latest .NET9 framework [here](https://builds.dotnet.microsoft.com/dotnet/Runtime/9.0.5/dotnet-runtime-9.0.5-win-x64.exe).
+1. Run Slackord. You may need to install the latest .NET10 framework [here](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-10.0.1-windows-x64-installer).
 1. Click `Options` and paste your Discord bot's token into the `Bot Token` text field.
 1. Click `Connect` to connect the bot to your server.
 1. Click `Import Server` and select the Slack JSON chat history root folder, or `Import Channel` and select the channel folder.
