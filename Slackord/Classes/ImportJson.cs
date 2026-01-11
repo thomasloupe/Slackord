@@ -144,7 +144,7 @@ namespace Slackord.Classes
                     {
                         channelDescriptions[channelName] = channel["purpose"]?["value"]?.ToString() ?? "";
 
-                        var pins = new HashSet<string>();
+                        HashSet<string> pins = [];
                         if (channel["pins"] is JArray pinsArray)
                         {
                             foreach (JObject pin in pinsArray.Cast<JObject>())
@@ -261,7 +261,7 @@ namespace Slackord.Classes
                 });
             }
 
-            var deconstructedMessagesList = new List<DeconstructedMessage>();
+            List<DeconstructedMessage> deconstructedMessagesList = [];
             string channelDescription = channelDescriptions.TryGetValue(channelName, out var desc) ? desc : "";
             HashSet<string> pins = channelPins.TryGetValue(channelName, out var pinSet) ? pinSet : [];
 
@@ -339,9 +339,9 @@ namespace Slackord.Classes
         {
             try
             {
-                var reconstructedMessages = new List<ReconstructedMessage>();
+                List<ReconstructedMessage> reconstructedMessages = [];
                 int processedCount = 0;
-                var loggedPercents = new HashSet<int>();
+                HashSet<int> loggedPercents = [];
                 int totalMessages = deconstructedMessages.Count;
 
                 if (totalMessages > 100)

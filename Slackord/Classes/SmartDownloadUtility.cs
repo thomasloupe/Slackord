@@ -279,8 +279,19 @@
     /// </summary>
     public enum FileStatus
     {
+        /// <summary>
+        /// File does not exist at the specified path
+        /// </summary>
         DoesNotExist,
+
+        /// <summary>
+        /// File exists and is complete with valid content
+        /// </summary>
         CompleteAndValid,
+
+        /// <summary>
+        /// File exists but is incomplete or corrupted
+        /// </summary>
         IncompleteOrCorrupted
     }
 
@@ -289,8 +300,19 @@
     /// </summary>
     public enum DownloadStatus
     {
+        /// <summary>
+        /// File was successfully downloaded
+        /// </summary>
         Downloaded,
+
+        /// <summary>
+        /// File download was skipped because it already exists
+        /// </summary>
         Skipped,
+
+        /// <summary>
+        /// File download failed
+        /// </summary>
         Failed
     }
 
@@ -403,7 +425,7 @@
         /// <returns>Summary text</returns>
         public string GetSummaryText()
         {
-            var parts = new List<string>();
+            List<string> parts = [];
 
             if (FilesDownloaded > 0)
                 parts.Add($"{FilesDownloaded} downloaded");

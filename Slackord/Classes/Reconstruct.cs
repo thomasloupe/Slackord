@@ -687,6 +687,35 @@ namespace Slackord.Classes
         /// <param name="userAvatar">The user avatar URL</param>
         private static void SplitAndAddMessages(string formattedMessage, DeconstructedMessage deconstructedMessage, Channel channel, string userName, string userAvatar)
         {
+            const int discordLimit = 2000;
+
+            if (formattedMessage.Length <= discordLimit)
+            {
+                ReconstructedMessage reconstructedMessage = new()
+                {
+                    User = userName,
+                    Message = deconstructedMessage.Text,
+                    Content = formattedMessage,
+                    ParentThreadTs = deconstructedMessage.ParentThreadTs,
+                    ThreadType = deconstructedMessage.ThreadType,
+                    IsPinned = deconstructedMessage.IsPinned,
+                    Avatar = userAvatar,
+                    OriginalTimestamp = deconstructedMessage.OriginalTimestamp
+                };
+
+                foreach (var url in deconstructedMessage.FileURLs)
+                {
+                    reconstructedMessage.FallbackFileURLs.Add(url);
+                }
+                foreach (var flag in deconstructedMessage.IsFileDownloadable)
+                {
+                    reconstructedMessage.IsFileDownloadable.Add(flag);
+                }
+
+                channel.ReconstructedMessagesList.Add(reconstructedMessage);
+                return;
+            }
+
             List<string> messageParts = SplitMessageIntoParts(formattedMessage);
 
             for (int i = 0; i < messageParts.Count; i++)
@@ -699,8 +728,8 @@ namespace Slackord.Classes
                     Message = deconstructedMessage.Text,
                     Content = part,
                     ParentThreadTs = deconstructedMessage.ParentThreadTs,
-                    ThreadType = deconstructedMessage.ThreadType,
-                    IsPinned = deconstructedMessage.IsPinned,
+                    ThreadType = i == 0 ? deconstructedMessage.ThreadType : ThreadType.None,
+                    IsPinned = i == 0 && deconstructedMessage.IsPinned,
                     Avatar = userAvatar,
                     OriginalTimestamp = deconstructedMessage.OriginalTimestamp
                 };
@@ -745,18 +774,14 @@ namespace Slackord.Classes
                 return messageParts;
             }
 
-            // For extremely large messages (like 9000-line code blocks), convert to file attachment
-            const int maxReasonableLength = 50000; // ~25 Discord messages worth
+            const int maxReasonableLength = 50000;
             if (message.Length > maxReasonableLength)
             {
                 Logger.Log($"Message too large ({message.Length} chars), will be handled as file attachment");
 
-                // Add a truncated preview and note
                 string preview = message.Length > 1800 ? message[..1800] : message;
                 messageParts.Add($"{preview}\n\n**[Message truncated - {message.Length:N0} characters total. Full content should be attached as a file]**");
 
-                // Store the full content for file attachment handling
-                // This will need to be handled in the DiscordBot.cs PostSingleMessage method
                 return messageParts;
             }
 
@@ -775,13 +800,11 @@ namespace Slackord.Classes
                 {
                     Logger.Log($"SplitMessageIntoParts: Breaking after {maxLoops} iterations. Message length: {message.Length}, Current index: {currentIndex}");
 
-                    // Force completion by adding remaining content
                     if (currentIndex < message.Length)
                     {
                         string remaining = message[currentIndex..];
                         if (remaining.Length > maxMessageLength)
                         {
-                            // Split remaining into final chunks
                             while (currentIndex < message.Length)
                             {
                                 int chunkEnd = Math.Min(currentIndex + maxMessageLength - 100, message.Length);
@@ -820,14 +843,12 @@ namespace Slackord.Classes
                 {
                     openingMarker = codeBlockMarker + codeBlockLanguage + "\n";
                     closingMarker = "\n" + codeBlockMarker;
-                    availableLength = maxMessageLength - openingMarker.Length - closingMarker.Length - 50; // Extra buffer
+                    availableLength = maxMessageLength - openingMarker.Length - closingMarker.Length - 50;
                 }
 
-                // Ensure we're making progress
                 int minAdvance = Math.Min(100, message.Length - currentIndex);
                 int bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
 
-                // Try to find a good breaking point (whitespace)
                 while (bestSplitIndex > currentIndex + minAdvance &&
                        bestSplitIndex < message.Length &&
                        !char.IsWhiteSpace(message[bestSplitIndex]))
@@ -835,13 +856,11 @@ namespace Slackord.Classes
                     bestSplitIndex--;
                 }
 
-                // If we couldn't find whitespace, just break at the limit
                 if (bestSplitIndex <= currentIndex + minAdvance)
                 {
                     bestSplitIndex = Math.Min(currentIndex + availableLength, message.Length);
                 }
 
-                // Ensure we always advance
                 if (bestSplitIndex <= currentIndex)
                 {
                     bestSplitIndex = Math.Min(currentIndex + Math.Max(minAdvance, 1), message.Length);
@@ -864,7 +883,6 @@ namespace Slackord.Classes
                             part = part.TrimEnd() + "\n" + codeBlockMarker;
                             messageParts.Add(part);
 
-                            // Skip whitespace after the split
                             while (bestSplitIndex < message.Length && char.IsWhiteSpace(message[bestSplitIndex]))
                             {
                                 bestSplitIndex++;
@@ -875,14 +893,12 @@ namespace Slackord.Classes
                         }
                         else
                         {
-                            // Check for URLs that might be broken
                             MatchCollection matches = urlPattern.Matches(message[currentIndex..Math.Min(bestSplitIndex + 50, message.Length)]);
                             foreach (Match match in matches)
                             {
                                 int urlStart = currentIndex + match.Index;
                                 int urlEnd = urlStart + match.Length;
 
-                                // If URL would be split, move split point before URL
                                 if (urlStart < bestSplitIndex && urlEnd > bestSplitIndex)
                                 {
                                     if (urlStart > currentIndex + minAdvance)
@@ -900,7 +916,6 @@ namespace Slackord.Classes
                     }
                     else
                     {
-                        // We're in a multi-part code block
                         bool stillInBlock = IsInsideCodeBlock(message, currentIndex, bestSplitIndex);
 
                         string nextPart = openingMarker + part;
@@ -920,7 +935,6 @@ namespace Slackord.Classes
                 }
                 else
                 {
-                    // Last part
                     if (inMultiPartCodeBlock)
                     {
                         part = openingMarker + part;
@@ -931,7 +945,6 @@ namespace Slackord.Classes
                     currentIndex = bestSplitIndex;
                 }
 
-                // Skip any leading whitespace for next iteration
                 while (currentIndex < message.Length && char.IsWhiteSpace(message[currentIndex]))
                 {
                     currentIndex++;

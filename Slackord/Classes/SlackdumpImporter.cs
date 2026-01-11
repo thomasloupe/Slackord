@@ -51,7 +51,7 @@ namespace Slackord.Classes
                         validChannelNames.Add(channelName);
                         channelDescriptions[channelName] = channel["purpose"]?["value"]?.ToString() ?? "";
 
-                        var pins = new HashSet<string>();
+                        HashSet<string> pins = [];
                         if (channel["pins"] is JArray pinsArray)
                         {
                             foreach (JObject pin in pinsArray.Cast<JObject>())

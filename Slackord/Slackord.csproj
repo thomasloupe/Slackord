@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+		<TargetFramework Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFramework>
+		<TargetFramework Condition="$([MSBuild]::IsOSPlatform('osx'))">net10.0-maccatalyst</TargetFramework>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Slackord</RootNamespace>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<LangVersion>12</LangVersion>
+		<LangVersion>13</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<ApplicationTitle>Slackord</ApplicationTitle>
@@ -16,27 +17,39 @@
 		<ApplicationDisplayVersion>4.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>4</ApplicationVersion>
 
-		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-		<WindowsPackageType>None</WindowsPackageType>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<WindowsPackageType Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">None</WindowsPackageType>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+
+		<RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+
+		<UseNativeHttpHandler>false</UseNativeHttpHandler>
 
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
-		<AssemblyVersion>5.3.2.0</AssemblyVersion>
-		<FileVersion>5.3.0.0</FileVersion>
+		<AssemblyVersion>5.3.4.0</AssemblyVersion>
+		<FileVersion>5.3.4.0</FileVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PublishAot>False</PublishAot>
+		<DelaySign>False</DelaySign>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PublishTrimmed>True</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>5.3.2</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>5.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>5</ApplicationVersion>
-		<Optimize>False</Optimize>
+		<Optimize>True</Optimize>
+		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>5.3.2</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>5.3.3</ApplicationDisplayVersion>
 		<ApplicationVersion>5</ApplicationVersion>
+		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -44,8 +57,6 @@
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
@@ -58,28 +69,27 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
 		<PackageReference Include="Discord.Net.Core" Version="3.17.4" />
 		<PackageReference Include="Discord.Net.Interactions" Version="3.17.4" />
 		<PackageReference Include="Discord.Net.Rest" Version="3.17.4" />
 		<PackageReference Include="Discord.Net.Webhook" Version="3.17.4" />
 		<PackageReference Include="Discord.Net.WebSocket" Version="3.17.4" />
 		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.70" />
-		<PackageReference Include="Microsoft.Maui.Graphics" Version="9.0.70" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250513003" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Maui.Graphics" Version="10.0.10" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
-		<PackageReference Include="System.Text.Json" Version="9.0.5" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="9.0.70" />
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250909003" />
+		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="10.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -105,5 +115,14 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 	</ItemGroup>
+
+	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Debug'">
+		<CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Debug.plist</CodesignEntitlements>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
+		<CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Release.plist</CodesignEntitlements>
+		<UseHardenedRuntime>true</UseHardenedRuntime>
+	</PropertyGroup>
 
 </Project>

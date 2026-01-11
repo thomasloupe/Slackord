@@ -1,7 +1,4 @@
-﻿// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace Slackord.WinUI
+﻿namespace Slackord.WinUI
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -17,7 +14,10 @@ namespace Slackord.WinUI
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Creates and returns the MAUI application instance.
+        /// </summary>
+        /// <returns>The configured MauiApp instance.</returns>
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
-
 }

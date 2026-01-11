@@ -3,6 +3,9 @@ using Slackord.Classes;
 
 namespace Slackord.Pages
 {
+    /// <summary>
+    /// Options page for configuring application settings including bot token, timestamps, and cleanup behavior.
+    /// </summary>
     public partial class OptionsPage : ContentPage
     {
         private bool _isPasswordVisible = false;
@@ -12,8 +15,19 @@ namespace Slackord.Pages
         /// </summary>
         public enum CleanupBehavior
         {
+            /// <summary>
+            /// Prompt the user before cleaning up files
+            /// </summary>
             Prompt = 0,
+
+            /// <summary>
+            /// Automatically clean up files without prompting
+            /// </summary>
             Automatically = 1,
+
+            /// <summary>
+            /// Never clean up files after import
+            /// </summary>
             Never = 2
         }
 
@@ -123,7 +137,7 @@ namespace Slackord.Pages
                     }
                     else
                     {
-                        await DisplayAlert("Warning", "The bot token you entered appears to be invalid. A valid Discord bot token is typically at least 30 characters long.", "OK");
+                        await DisplayAlertAsync("Warning", "The bot token you entered appears to be invalid. A valid Discord bot token is typically at least 30 characters long.", "OK");
                         Preferences.Default.Set("SlackordBotToken", token);
                     }
                 }
@@ -152,7 +166,7 @@ namespace Slackord.Pages
                 await new ApplicationWindow().CheckForValidBotToken();
             }
 
-            await DisplayAlert("Success", "Settings saved successfully!", "OK");
+            await DisplayAlertAsync("Success", "Settings saved successfully!", "OK");
             await Navigation.PopAsync();
         }
 
@@ -161,7 +175,7 @@ namespace Slackord.Pages
         /// </summary>
         private async void ResetButton_Clicked(object sender, EventArgs e)
         {
-            bool confirm = await DisplayAlert("Confirm Reset",
+            bool confirm = await DisplayAlertAsync("Confirm Reset",
                 "Are you sure you want to reset all settings to default values?",
                 "Yes", "No");
 
@@ -174,7 +188,7 @@ namespace Slackord.Pages
                 CleanupAfterImportPicker.SelectedIndex = (int)CleanupBehavior.Prompt;
                 CheckUpdatesSwitch.IsToggled = true;
 
-                await DisplayAlert("Reset Complete", "All settings have been reset to default values.", "OK");
+                await DisplayAlertAsync("Reset Complete", "All settings have been reset to default values.", "OK");
             }
         }
 
@@ -254,7 +268,7 @@ namespace Slackord.Pages
             }
             catch (Exception ex)
             {
-                Application.Current.Windows[0].Page.DisplayAlert("Error", $"Unable to open link: {ex.Message}", "OK");
+                Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Unable to open link: {ex.Message}", "OK");
             }
         }
 

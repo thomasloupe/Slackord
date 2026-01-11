@@ -91,7 +91,7 @@ namespace Slackord.Classes
                             return false;
                         }
 
-                        return await Application.Current.Windows[0].Page.DisplayAlert(
+                        return await Application.Current.Windows[0].Page.DisplayAlertAsync(
                             "Import Complete - Cleanup Available",
                             message,
                             "Yes, clean up",
@@ -368,7 +368,7 @@ namespace Slackord.Classes
             /// <summary>
             /// List of channel names that have download folders
             /// </summary>
-            public List<string> ChannelsWithDownloads { get; set; } = new List<string>();
+            public List<string> ChannelsWithDownloads { get; set; } = [];
 
             /// <summary>
             /// Total size of all files that can be cleaned up

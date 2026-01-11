@@ -88,7 +88,7 @@ namespace Slackord.Classes
         /// <returns>A list of incomplete ImportSession instances ordered by creation date (newest first)</returns>
         public static List<ImportSession> GetIncompleteImports()
         {
-            var incompleteSessions = new List<ImportSession>();
+            List<ImportSession> incompleteSessions = [];
 
             if (!Directory.Exists(ImportsFolder))
                 return incompleteSessions;

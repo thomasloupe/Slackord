@@ -313,7 +313,7 @@ namespace Slackord.Classes
         {
             try
             {
-                var usersDict = new Dictionary<string, DeconstructedUser>();
+                Dictionary<string, DeconstructedUser> usersDict = [];
 
                 if (usersFile != null)
                 {
