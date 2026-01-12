@@ -1,0 +1,147 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ThreadType
+  commentId: T:Slackord.Classes.ThreadType
+  id: ThreadType
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ThreadType.None
+  - Slackord.Classes.ThreadType.Parent
+  - Slackord.Classes.ThreadType.Reply
+  langs:
+  - csharp
+  - vb
+  name: ThreadType
+  nameWithType: ThreadType
+  fullName: Slackord.Classes.ThreadType
+  type: Enum
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ThreadType
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 394
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Defines the type of thread relationship for a message
+  example: []
+  syntax:
+    content: public enum ThreadType
+    content.vb: Public Enum ThreadType
+- uid: Slackord.Classes.ThreadType.None
+  commentId: F:Slackord.Classes.ThreadType.None
+  id: None
+  parent: Slackord.Classes.ThreadType
+  langs:
+  - csharp
+  - vb
+  name: None
+  nameWithType: ThreadType.None
+  fullName: Slackord.Classes.ThreadType.None
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: None
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 399
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Message is not part of a thread
+  example: []
+  syntax:
+    content: None = 0
+    return:
+      type: Slackord.Classes.ThreadType
+- uid: Slackord.Classes.ThreadType.Parent
+  commentId: F:Slackord.Classes.ThreadType.Parent
+  id: Parent
+  parent: Slackord.Classes.ThreadType
+  langs:
+  - csharp
+  - vb
+  name: Parent
+  nameWithType: ThreadType.Parent
+  fullName: Slackord.Classes.ThreadType.Parent
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Parent
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 403
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Message is the parent/start of a thread
+  example: []
+  syntax:
+    content: Parent = 1
+    return:
+      type: Slackord.Classes.ThreadType
+- uid: Slackord.Classes.ThreadType.Reply
+  commentId: F:Slackord.Classes.ThreadType.Reply
+  id: Reply
+  parent: Slackord.Classes.ThreadType
+  langs:
+  - csharp
+  - vb
+  name: Reply
+  nameWithType: ThreadType.Reply
+  fullName: Slackord.Classes.ThreadType.Reply
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Reply
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 407
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Message is a reply within a thread
+  example: []
+  syntax:
+    content: Reply = 2
+    return:
+      type: Slackord.Classes.ThreadType
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: Slackord.Classes.ThreadType
+  commentId: T:Slackord.Classes.ThreadType
+  parent: Slackord.Classes
+  href: Slackord.Classes.ThreadType.html
+  name: ThreadType
+  nameWithType: ThreadType
+  fullName: Slackord.Classes.ThreadType

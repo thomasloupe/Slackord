@@ -1,0 +1,30 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.WinUI
+  commentId: N:Slackord.WinUI
+  id: Slackord.WinUI
+  children:
+  - Slackord.WinUI.App
+  - Slackord.WinUI.Program
+  langs:
+  - csharp
+  - vb
+  name: Slackord.WinUI
+  nameWithType: Slackord.WinUI
+  fullName: Slackord.WinUI
+  type: Namespace
+  assemblies:
+  - Slackord
+references:
+- uid: Slackord.WinUI.App
+  commentId: T:Slackord.WinUI.App
+  href: Slackord.WinUI.App.html
+  name: App
+  nameWithType: App
+  fullName: Slackord.WinUI.App
+- uid: Slackord.WinUI.Program
+  commentId: T:Slackord.WinUI.Program
+  href: Slackord.WinUI.Program.html
+  name: Program
+  nameWithType: Program
+  fullName: Slackord.WinUI.Program

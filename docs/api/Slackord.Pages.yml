@@ -1,0 +1,69 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Pages
+  commentId: N:Slackord.Pages
+  id: Slackord.Pages
+  children:
+  - Slackord.Pages.OptionsPage
+  - Slackord.Pages.OptionsPage.CleanupBehavior
+  langs:
+  - csharp
+  - vb
+  name: Slackord.Pages
+  nameWithType: Slackord.Pages
+  fullName: Slackord.Pages
+  type: Namespace
+  assemblies:
+  - Slackord
+references:
+- uid: Slackord.Pages.OptionsPage
+  commentId: T:Slackord.Pages.OptionsPage
+  href: Slackord.Pages.OptionsPage.html
+  name: OptionsPage
+  nameWithType: OptionsPage
+  fullName: Slackord.Pages.OptionsPage
+- uid: Slackord.Pages.OptionsPage.CleanupBehavior
+  commentId: T:Slackord.Pages.OptionsPage.CleanupBehavior
+  parent: Slackord.Pages
+  href: Slackord.Pages.OptionsPage.html
+  name: OptionsPage.CleanupBehavior
+  nameWithType: OptionsPage.CleanupBehavior
+  fullName: Slackord.Pages.OptionsPage.CleanupBehavior
+  spec.csharp:
+  - uid: Slackord.Pages.OptionsPage
+    name: OptionsPage
+    href: Slackord.Pages.OptionsPage.html
+  - name: .
+  - uid: Slackord.Pages.OptionsPage.CleanupBehavior
+    name: CleanupBehavior
+    href: Slackord.Pages.OptionsPage.CleanupBehavior.html
+  spec.vb:
+  - uid: Slackord.Pages.OptionsPage
+    name: OptionsPage
+    href: Slackord.Pages.OptionsPage.html
+  - name: .
+  - uid: Slackord.Pages.OptionsPage.CleanupBehavior
+    name: CleanupBehavior
+    href: Slackord.Pages.OptionsPage.CleanupBehavior.html
+- uid: Slackord.Pages
+  commentId: N:Slackord.Pages
+  href: Slackord.html
+  name: Slackord.Pages
+  nameWithType: Slackord.Pages
+  fullName: Slackord.Pages
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Pages
+    name: Pages
+    href: Slackord.Pages.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Pages
+    name: Pages
+    href: Slackord.Pages.html

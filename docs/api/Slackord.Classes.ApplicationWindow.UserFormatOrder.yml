@@ -1,0 +1,250 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  commentId: T:Slackord.Classes.ApplicationWindow.UserFormatOrder
+  id: ApplicationWindow.UserFormatOrder
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_RealName_User
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_User_RealName
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_DisplayName_User
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_User_DisplayName
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder.User_DisplayName_RealName
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder.User_RealName_DisplayName
+  langs:
+  - csharp
+  - vb
+  name: ApplicationWindow.UserFormatOrder
+  nameWithType: ApplicationWindow.UserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  type: Enum
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: UserFormatOrder
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 51
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Defines the order in which user name components are displayed
+  example: []
+  syntax:
+    content: public enum ApplicationWindow.UserFormatOrder
+    content.vb: Public Enum ApplicationWindow.UserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_User_RealName
+  commentId: F:Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_User_RealName
+  id: DisplayName_User_RealName
+  parent: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  langs:
+  - csharp
+  - vb
+  name: DisplayName_User_RealName
+  nameWithType: ApplicationWindow.UserFormatOrder.DisplayName_User_RealName
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_User_RealName
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DisplayName_User_RealName
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 56
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Display name first, then username, then real name
+  example: []
+  syntax:
+    content: DisplayName_User_RealName = 0
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_RealName_User
+  commentId: F:Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_RealName_User
+  id: DisplayName_RealName_User
+  parent: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  langs:
+  - csharp
+  - vb
+  name: DisplayName_RealName_User
+  nameWithType: ApplicationWindow.UserFormatOrder.DisplayName_RealName_User
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder.DisplayName_RealName_User
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DisplayName_RealName_User
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 61
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Display name first, then real name, then username
+  example: []
+  syntax:
+    content: DisplayName_RealName_User = 1
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder.User_DisplayName_RealName
+  commentId: F:Slackord.Classes.ApplicationWindow.UserFormatOrder.User_DisplayName_RealName
+  id: User_DisplayName_RealName
+  parent: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  langs:
+  - csharp
+  - vb
+  name: User_DisplayName_RealName
+  nameWithType: ApplicationWindow.UserFormatOrder.User_DisplayName_RealName
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder.User_DisplayName_RealName
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: User_DisplayName_RealName
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 66
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Username first, then display name, then real name
+  example: []
+  syntax:
+    content: User_DisplayName_RealName = 2
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder.User_RealName_DisplayName
+  commentId: F:Slackord.Classes.ApplicationWindow.UserFormatOrder.User_RealName_DisplayName
+  id: User_RealName_DisplayName
+  parent: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  langs:
+  - csharp
+  - vb
+  name: User_RealName_DisplayName
+  nameWithType: ApplicationWindow.UserFormatOrder.User_RealName_DisplayName
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder.User_RealName_DisplayName
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: User_RealName_DisplayName
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 71
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Username first, then real name, then display name
+  example: []
+  syntax:
+    content: User_RealName_DisplayName = 3
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_DisplayName_User
+  commentId: F:Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_DisplayName_User
+  id: RealName_DisplayName_User
+  parent: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  langs:
+  - csharp
+  - vb
+  name: RealName_DisplayName_User
+  nameWithType: ApplicationWindow.UserFormatOrder.RealName_DisplayName_User
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_DisplayName_User
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: RealName_DisplayName_User
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 76
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Real name first, then display name, then username
+  example: []
+  syntax:
+    content: RealName_DisplayName_User = 4
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_User_DisplayName
+  commentId: F:Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_User_DisplayName
+  id: RealName_User_DisplayName
+  parent: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  langs:
+  - csharp
+  - vb
+  name: RealName_User_DisplayName
+  nameWithType: ApplicationWindow.UserFormatOrder.RealName_User_DisplayName
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder.RealName_User_DisplayName
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: RealName_User_DisplayName
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 81
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Real name first, then username, then display name
+  example: []
+  syntax:
+    content: RealName_User_DisplayName = 5
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  commentId: T:Slackord.Classes.ApplicationWindow.UserFormatOrder
+  parent: Slackord.Classes
+  href: Slackord.Classes.ApplicationWindow.html
+  name: ApplicationWindow.UserFormatOrder
+  nameWithType: ApplicationWindow.UserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  spec.csharp:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+  spec.vb:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html

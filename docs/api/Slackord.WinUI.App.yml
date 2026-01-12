@@ -1,0 +1,1198 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.WinUI.App
+  commentId: T:Slackord.WinUI.App
+  id: App
+  parent: Slackord.WinUI
+  children:
+  - Slackord.WinUI.App.#ctor
+  - Slackord.WinUI.App.CreateMauiApp
+  - Slackord.WinUI.App.InitializeComponent
+  langs:
+  - csharp
+  - vb
+  name: App
+  nameWithType: App
+  fullName: Slackord.WinUI.App
+  type: Class
+  source:
+    remote:
+      path: Slackord/obj/Release/net10.0-windows10.0.19041.0/win-x64/WinRT.SourceGenerator/Generator.WinRTAotSourceGenerator/Slackord.WinUI.App.WinRTVtable.g.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: App
+    path: Slackord/obj/Release/net10.0-windows10.0.19041.0/win-x64/WinRT.SourceGenerator/Generator.WinRTAotSourceGenerator/Slackord.WinUI.App.WinRTVtable.g.cs
+    startLine: 2
+  assemblies:
+  - Slackord
+  namespace: Slackord.WinUI
+  summary: Provides application-specific behavior to supplement the default Application class.
+  example: []
+  syntax:
+    content: >-
+      [WinRTRuntimeClassName("Microsoft.UI.Xaml.IApplicationOverrides")]
+
+      [WinRTExposedType(typeof(Slackord_WinUI_AppWinRTTypeDetails))]
+
+      public class App : MauiWinUIApplication, IWinRTObject, IUnmanagedVirtualMethodTableProvider, IDynamicInterfaceCastable, IEquatable<Application>, IPlatformApplication
+    content.vb: >-
+      <WinRTRuntimeClassName("Microsoft.UI.Xaml.IApplicationOverrides")>
+
+      <WinRTExposedType(GetType(Slackord_WinUI_AppWinRTTypeDetails))>
+
+      Public Class App Inherits MauiWinUIApplication Implements IWinRTObject, IUnmanagedVirtualMethodTableProvider, IDynamicInterfaceCastable, IEquatable(Of Application), IPlatformApplication
+  inheritance:
+  - System.Object
+  - Microsoft.UI.Xaml.Application
+  - Microsoft.Maui.MauiWinUIApplication
+  implements:
+  - WinRT.IWinRTObject
+  - System.Runtime.InteropServices.Marshalling.IUnmanagedVirtualMethodTableProvider
+  - System.Runtime.InteropServices.IDynamicInterfaceCastable
+  - System.IEquatable{Microsoft.UI.Xaml.Application}
+  - Microsoft.Maui.IPlatformApplication
+  inheritedMembers:
+  - Microsoft.Maui.MauiWinUIApplication.OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs)
+  - Microsoft.Maui.MauiWinUIApplication.Current
+  - Microsoft.Maui.MauiWinUIApplication.LaunchActivatedEventArgs
+  - Microsoft.Maui.MauiWinUIApplication.Services
+  - Microsoft.Maui.MauiWinUIApplication.Application
+  - Microsoft.UI.Xaml.Application.As``1
+  - Microsoft.UI.Xaml.Application.Start(Microsoft.UI.Xaml.ApplicationInitializationCallback)
+  - Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri)
+  - Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri,Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+  - Microsoft.UI.Xaml.Application.FromAbi(System.IntPtr)
+  - Microsoft.UI.Xaml.Application.Equals(Microsoft.UI.Xaml.Application)
+  - Microsoft.UI.Xaml.Application.Equals(System.Object)
+  - Microsoft.UI.Xaml.Application.GetHashCode
+  - Microsoft.UI.Xaml.Application.Exit
+  - Microsoft.UI.Xaml.Application.IsOverridableInterface(System.Guid)
+  - Microsoft.UI.Xaml.Application.DebugSettings
+  - Microsoft.UI.Xaml.Application.DispatcherShutdownMode
+  - Microsoft.UI.Xaml.Application.FocusVisualKind
+  - Microsoft.UI.Xaml.Application.HighContrastAdjustment
+  - Microsoft.UI.Xaml.Application.RequestedTheme
+  - Microsoft.UI.Xaml.Application.Resources
+  - Microsoft.UI.Xaml.Application.UnhandledException
+  - Microsoft.UI.Xaml.Application.ResourceManagerRequested
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  attributes:
+  - type: WinRT.WinRTRuntimeClassNameAttribute
+    ctor: WinRT.WinRTRuntimeClassNameAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: Microsoft.UI.Xaml.IApplicationOverrides
+- uid: Slackord.WinUI.App.#ctor
+  commentId: M:Slackord.WinUI.App.#ctor
+  id: '#ctor'
+  parent: Slackord.WinUI.App
+  langs:
+  - csharp
+  - vb
+  name: App()
+  nameWithType: App.App()
+  fullName: Slackord.WinUI.App.App()
+  type: Constructor
+  source:
+    remote:
+      path: Slackord/Platforms/Windows/App.xaml.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: .ctor
+    path: Slackord/Platforms/Windows/App.xaml.cs
+    startLine: 11
+  assemblies:
+  - Slackord
+  namespace: Slackord.WinUI
+  summary: >-
+    Initializes the singleton application object.  This is the first line of authored code
+
+    executed, and as such is the logical equivalent of main() or WinMain().
+  example: []
+  syntax:
+    content: public App()
+    content.vb: Public Sub New()
+  overload: Slackord.WinUI.App.#ctor*
+  nameWithType.vb: App.New()
+  fullName.vb: Slackord.WinUI.App.New()
+  name.vb: New()
+- uid: Slackord.WinUI.App.CreateMauiApp
+  commentId: M:Slackord.WinUI.App.CreateMauiApp
+  id: CreateMauiApp
+  parent: Slackord.WinUI.App
+  langs:
+  - csharp
+  - vb
+  name: CreateMauiApp()
+  nameWithType: App.CreateMauiApp()
+  fullName: Slackord.WinUI.App.CreateMauiApp()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Platforms/Windows/App.xaml.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CreateMauiApp
+    path: Slackord/Platforms/Windows/App.xaml.cs
+    startLine: 20
+  assemblies:
+  - Slackord
+  namespace: Slackord.WinUI
+  summary: Creates and returns the MAUI application instance.
+  example: []
+  syntax:
+    content: protected override MauiApp CreateMauiApp()
+    return:
+      type: Microsoft.Maui.Hosting.MauiApp
+      description: The configured MauiApp instance.
+    content.vb: Protected Overrides Function CreateMauiApp() As MauiApp
+  overridden: Microsoft.Maui.MauiWinUIApplication.CreateMauiApp
+  overload: Slackord.WinUI.App.CreateMauiApp*
+- uid: Slackord.WinUI.App.InitializeComponent
+  commentId: M:Slackord.WinUI.App.InitializeComponent
+  id: InitializeComponent
+  parent: Slackord.WinUI.App
+  langs:
+  - csharp
+  - vb
+  name: InitializeComponent()
+  nameWithType: App.InitializeComponent()
+  fullName: Slackord.WinUI.App.InitializeComponent()
+  type: Method
+  source:
+    remote:
+      path: Slackord/obj/Release/net10.0-windows10.0.19041.0/win-x64/Platforms/Windows/App.g.i.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: InitializeComponent
+    path: Slackord/obj/Release/net10.0-windows10.0.19041.0/win-x64/Platforms/Windows/App.g.i.cs
+    startLine: 41
+  assemblies:
+  - Slackord
+  namespace: Slackord.WinUI
+  summary: InitializeComponent()
+  example: []
+  syntax:
+    content: public void InitializeComponent()
+    content.vb: Public Sub InitializeComponent()
+  overload: Slackord.WinUI.App.InitializeComponent*
+references:
+- uid: Slackord.WinUI
+  commentId: N:Slackord.WinUI
+  href: Slackord.html
+  name: Slackord.WinUI
+  nameWithType: Slackord.WinUI
+  fullName: Slackord.WinUI
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.WinUI
+    name: WinUI
+    href: Slackord.WinUI.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.WinUI
+    name: WinUI
+    href: Slackord.WinUI.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: Microsoft.UI.Xaml.Application
+  commentId: T:Microsoft.UI.Xaml.Application
+  parent: Microsoft.UI.Xaml
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application
+  name: Application
+  nameWithType: Application
+  fullName: Microsoft.UI.Xaml.Application
+- uid: Microsoft.Maui.MauiWinUIApplication
+  commentId: T:Microsoft.Maui.MauiWinUIApplication
+  parent: Microsoft.Maui
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication
+  name: MauiWinUIApplication
+  nameWithType: MauiWinUIApplication
+  fullName: Microsoft.Maui.MauiWinUIApplication
+- uid: WinRT.IWinRTObject
+  commentId: T:WinRT.IWinRTObject
+  parent: WinRT
+  isExternal: true
+  name: IWinRTObject
+  nameWithType: IWinRTObject
+  fullName: WinRT.IWinRTObject
+- uid: System.Runtime.InteropServices.Marshalling.IUnmanagedVirtualMethodTableProvider
+  commentId: T:System.Runtime.InteropServices.Marshalling.IUnmanagedVirtualMethodTableProvider
+  parent: System.Runtime.InteropServices.Marshalling
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.marshalling.iunmanagedvirtualmethodtableprovider
+  name: IUnmanagedVirtualMethodTableProvider
+  nameWithType: IUnmanagedVirtualMethodTableProvider
+  fullName: System.Runtime.InteropServices.Marshalling.IUnmanagedVirtualMethodTableProvider
+- uid: System.Runtime.InteropServices.IDynamicInterfaceCastable
+  commentId: T:System.Runtime.InteropServices.IDynamicInterfaceCastable
+  parent: System.Runtime.InteropServices
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.idynamicinterfacecastable
+  name: IDynamicInterfaceCastable
+  nameWithType: IDynamicInterfaceCastable
+  fullName: System.Runtime.InteropServices.IDynamicInterfaceCastable
+- uid: System.IEquatable{Microsoft.UI.Xaml.Application}
+  commentId: T:System.IEquatable{Microsoft.UI.Xaml.Application}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<Application>
+  nameWithType: IEquatable<Application>
+  fullName: System.IEquatable<Microsoft.UI.Xaml.Application>
+  nameWithType.vb: IEquatable(Of Application)
+  fullName.vb: System.IEquatable(Of Microsoft.UI.Xaml.Application)
+  name.vb: IEquatable(Of Application)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: Microsoft.UI.Xaml.Application
+    name: Application
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Microsoft.UI.Xaml.Application
+    name: Application
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application
+  - name: )
+- uid: Microsoft.Maui.IPlatformApplication
+  commentId: T:Microsoft.Maui.IPlatformApplication
+  parent: Microsoft.Maui
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.iplatformapplication
+  name: IPlatformApplication
+  nameWithType: IPlatformApplication
+  fullName: Microsoft.Maui.IPlatformApplication
+- uid: Microsoft.Maui.MauiWinUIApplication.OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs)
+  commentId: M:Microsoft.Maui.MauiWinUIApplication.OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs)
+  parent: Microsoft.Maui.MauiWinUIApplication
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.onlaunched
+  name: OnLaunched(LaunchActivatedEventArgs)
+  nameWithType: MauiWinUIApplication.OnLaunched(LaunchActivatedEventArgs)
+  fullName: Microsoft.Maui.MauiWinUIApplication.OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs)
+  spec.csharp:
+  - uid: Microsoft.Maui.MauiWinUIApplication.OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs)
+    name: OnLaunched
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.onlaunched
+  - name: (
+  - uid: Microsoft.UI.Xaml.LaunchActivatedEventArgs
+    name: LaunchActivatedEventArgs
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.launchactivatedeventargs
+  - name: )
+  spec.vb:
+  - uid: Microsoft.Maui.MauiWinUIApplication.OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs)
+    name: OnLaunched
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.onlaunched
+  - name: (
+  - uid: Microsoft.UI.Xaml.LaunchActivatedEventArgs
+    name: LaunchActivatedEventArgs
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.launchactivatedeventargs
+  - name: )
+- uid: Microsoft.Maui.MauiWinUIApplication.Current
+  commentId: P:Microsoft.Maui.MauiWinUIApplication.Current
+  parent: Microsoft.Maui.MauiWinUIApplication
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.current
+  name: Current
+  nameWithType: MauiWinUIApplication.Current
+  fullName: Microsoft.Maui.MauiWinUIApplication.Current
+- uid: Microsoft.Maui.MauiWinUIApplication.LaunchActivatedEventArgs
+  commentId: P:Microsoft.Maui.MauiWinUIApplication.LaunchActivatedEventArgs
+  parent: Microsoft.Maui.MauiWinUIApplication
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.launchactivatedeventargs
+  name: LaunchActivatedEventArgs
+  nameWithType: MauiWinUIApplication.LaunchActivatedEventArgs
+  fullName: Microsoft.Maui.MauiWinUIApplication.LaunchActivatedEventArgs
+- uid: Microsoft.Maui.MauiWinUIApplication.Services
+  commentId: P:Microsoft.Maui.MauiWinUIApplication.Services
+  parent: Microsoft.Maui.MauiWinUIApplication
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.services
+  name: Services
+  nameWithType: MauiWinUIApplication.Services
+  fullName: Microsoft.Maui.MauiWinUIApplication.Services
+- uid: Microsoft.Maui.MauiWinUIApplication.Application
+  commentId: P:Microsoft.Maui.MauiWinUIApplication.Application
+  parent: Microsoft.Maui.MauiWinUIApplication
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.application
+  name: Application
+  nameWithType: MauiWinUIApplication.Application
+  fullName: Microsoft.Maui.MauiWinUIApplication.Application
+- uid: Microsoft.UI.Xaml.Application.As``1
+  commentId: M:Microsoft.UI.Xaml.Application.As``1
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.as
+  name: As<I>()
+  nameWithType: Application.As<I>()
+  fullName: Microsoft.UI.Xaml.Application.As<I>()
+  nameWithType.vb: Application.As(Of I)()
+  fullName.vb: Microsoft.UI.Xaml.Application.As(Of I)()
+  name.vb: As(Of I)()
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.As``1
+    name: As
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.as
+  - name: <
+  - name: I
+  - name: '>'
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.As``1
+    name: As
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.as
+  - name: (
+  - name: Of
+  - name: " "
+  - name: I
+  - name: )
+  - name: (
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.Start(Microsoft.UI.Xaml.ApplicationInitializationCallback)
+  commentId: M:Microsoft.UI.Xaml.Application.Start(Microsoft.UI.Xaml.ApplicationInitializationCallback)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.start
+  name: Start(ApplicationInitializationCallback)
+  nameWithType: Application.Start(ApplicationInitializationCallback)
+  fullName: Microsoft.UI.Xaml.Application.Start(Microsoft.UI.Xaml.ApplicationInitializationCallback)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.Start(Microsoft.UI.Xaml.ApplicationInitializationCallback)
+    name: Start
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.start
+  - name: (
+  - uid: Microsoft.UI.Xaml.ApplicationInitializationCallback
+    name: ApplicationInitializationCallback
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.applicationinitializationcallback
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.Start(Microsoft.UI.Xaml.ApplicationInitializationCallback)
+    name: Start
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.start
+  - name: (
+  - uid: Microsoft.UI.Xaml.ApplicationInitializationCallback
+    name: ApplicationInitializationCallback
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.applicationinitializationcallback
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri)
+  commentId: M:Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.loadcomponent#microsoft-ui-xaml-application-loadcomponent(system-object-system-uri)
+  name: LoadComponent(object, Uri)
+  nameWithType: Application.LoadComponent(object, Uri)
+  fullName: Microsoft.UI.Xaml.Application.LoadComponent(object, System.Uri)
+  nameWithType.vb: Application.LoadComponent(Object, Uri)
+  fullName.vb: Microsoft.UI.Xaml.Application.LoadComponent(Object, System.Uri)
+  name.vb: LoadComponent(Object, Uri)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri)
+    name: LoadComponent
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.loadcomponent#microsoft-ui-xaml-application-loadcomponent(system-object-system-uri)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Uri
+    name: Uri
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.uri
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri)
+    name: LoadComponent
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.loadcomponent#microsoft-ui-xaml-application-loadcomponent(system-object-system-uri)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Uri
+    name: Uri
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.uri
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri,Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+  commentId: M:Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri,Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.loadcomponent#microsoft-ui-xaml-application-loadcomponent(system-object-system-uri-microsoft-ui-xaml-controls-primitives-componentresourcelocation)
+  name: LoadComponent(object, Uri, ComponentResourceLocation)
+  nameWithType: Application.LoadComponent(object, Uri, ComponentResourceLocation)
+  fullName: Microsoft.UI.Xaml.Application.LoadComponent(object, System.Uri, Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+  nameWithType.vb: Application.LoadComponent(Object, Uri, ComponentResourceLocation)
+  fullName.vb: Microsoft.UI.Xaml.Application.LoadComponent(Object, System.Uri, Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+  name.vb: LoadComponent(Object, Uri, ComponentResourceLocation)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri,Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+    name: LoadComponent
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.loadcomponent#microsoft-ui-xaml-application-loadcomponent(system-object-system-uri-microsoft-ui-xaml-controls-primitives-componentresourcelocation)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Uri
+    name: Uri
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.uri
+  - name: ','
+  - name: " "
+  - uid: Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation
+    name: ComponentResourceLocation
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.componentresourcelocation
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.LoadComponent(System.Object,System.Uri,Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation)
+    name: LoadComponent
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.loadcomponent#microsoft-ui-xaml-application-loadcomponent(system-object-system-uri-microsoft-ui-xaml-controls-primitives-componentresourcelocation)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Uri
+    name: Uri
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.uri
+  - name: ','
+  - name: " "
+  - uid: Microsoft.UI.Xaml.Controls.Primitives.ComponentResourceLocation
+    name: ComponentResourceLocation
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.componentresourcelocation
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.FromAbi(System.IntPtr)
+  commentId: M:Microsoft.UI.Xaml.Application.FromAbi(System.IntPtr)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.fromabi
+  name: FromAbi(nint)
+  nameWithType: Application.FromAbi(nint)
+  fullName: Microsoft.UI.Xaml.Application.FromAbi(nint)
+  nameWithType.vb: Application.FromAbi(IntPtr)
+  fullName.vb: Microsoft.UI.Xaml.Application.FromAbi(System.IntPtr)
+  name.vb: FromAbi(IntPtr)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.FromAbi(System.IntPtr)
+    name: FromAbi
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.fromabi
+  - name: (
+  - uid: System.IntPtr
+    name: nint
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.intptr
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.FromAbi(System.IntPtr)
+    name: FromAbi
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.fromabi
+  - name: (
+  - uid: System.IntPtr
+    name: IntPtr
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.intptr
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.Equals(Microsoft.UI.Xaml.Application)
+  commentId: M:Microsoft.UI.Xaml.Application.Equals(Microsoft.UI.Xaml.Application)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.equals#microsoft-ui-xaml-application-equals(microsoft-ui-xaml-application)
+  name: Equals(Application)
+  nameWithType: Application.Equals(Application)
+  fullName: Microsoft.UI.Xaml.Application.Equals(Microsoft.UI.Xaml.Application)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.Equals(Microsoft.UI.Xaml.Application)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.equals#microsoft-ui-xaml-application-equals(microsoft-ui-xaml-application)
+  - name: (
+  - uid: Microsoft.UI.Xaml.Application
+    name: Application
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.Equals(Microsoft.UI.Xaml.Application)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.equals#microsoft-ui-xaml-application-equals(microsoft-ui-xaml-application)
+  - name: (
+  - uid: Microsoft.UI.Xaml.Application
+    name: Application
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.Equals(System.Object)
+  commentId: M:Microsoft.UI.Xaml.Application.Equals(System.Object)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.equals#microsoft-ui-xaml-application-equals(system-object)
+  name: Equals(object)
+  nameWithType: Application.Equals(object)
+  fullName: Microsoft.UI.Xaml.Application.Equals(object)
+  nameWithType.vb: Application.Equals(Object)
+  fullName.vb: Microsoft.UI.Xaml.Application.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.equals#microsoft-ui-xaml-application-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.equals#microsoft-ui-xaml-application-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.GetHashCode
+  commentId: M:Microsoft.UI.Xaml.Application.GetHashCode
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.gethashcode
+  name: GetHashCode()
+  nameWithType: Application.GetHashCode()
+  fullName: Microsoft.UI.Xaml.Application.GetHashCode()
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.gethashcode
+  - name: (
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.Exit
+  commentId: M:Microsoft.UI.Xaml.Application.Exit
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.exit
+  name: Exit()
+  nameWithType: Application.Exit()
+  fullName: Microsoft.UI.Xaml.Application.Exit()
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.Exit
+    name: Exit
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.exit
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.Exit
+    name: Exit
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.exit
+  - name: (
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.IsOverridableInterface(System.Guid)
+  commentId: M:Microsoft.UI.Xaml.Application.IsOverridableInterface(System.Guid)
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.isoverridableinterface
+  name: IsOverridableInterface(Guid)
+  nameWithType: Application.IsOverridableInterface(Guid)
+  fullName: Microsoft.UI.Xaml.Application.IsOverridableInterface(System.Guid)
+  spec.csharp:
+  - uid: Microsoft.UI.Xaml.Application.IsOverridableInterface(System.Guid)
+    name: IsOverridableInterface
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.isoverridableinterface
+  - name: (
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: )
+  spec.vb:
+  - uid: Microsoft.UI.Xaml.Application.IsOverridableInterface(System.Guid)
+    name: IsOverridableInterface
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.isoverridableinterface
+  - name: (
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: )
+- uid: Microsoft.UI.Xaml.Application.DebugSettings
+  commentId: P:Microsoft.UI.Xaml.Application.DebugSettings
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.debugsettings
+  name: DebugSettings
+  nameWithType: Application.DebugSettings
+  fullName: Microsoft.UI.Xaml.Application.DebugSettings
+- uid: Microsoft.UI.Xaml.Application.DispatcherShutdownMode
+  commentId: P:Microsoft.UI.Xaml.Application.DispatcherShutdownMode
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.dispatchershutdownmode
+  name: DispatcherShutdownMode
+  nameWithType: Application.DispatcherShutdownMode
+  fullName: Microsoft.UI.Xaml.Application.DispatcherShutdownMode
+- uid: Microsoft.UI.Xaml.Application.FocusVisualKind
+  commentId: P:Microsoft.UI.Xaml.Application.FocusVisualKind
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.focusvisualkind
+  name: FocusVisualKind
+  nameWithType: Application.FocusVisualKind
+  fullName: Microsoft.UI.Xaml.Application.FocusVisualKind
+- uid: Microsoft.UI.Xaml.Application.HighContrastAdjustment
+  commentId: P:Microsoft.UI.Xaml.Application.HighContrastAdjustment
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.highcontrastadjustment
+  name: HighContrastAdjustment
+  nameWithType: Application.HighContrastAdjustment
+  fullName: Microsoft.UI.Xaml.Application.HighContrastAdjustment
+- uid: Microsoft.UI.Xaml.Application.RequestedTheme
+  commentId: P:Microsoft.UI.Xaml.Application.RequestedTheme
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.requestedtheme
+  name: RequestedTheme
+  nameWithType: Application.RequestedTheme
+  fullName: Microsoft.UI.Xaml.Application.RequestedTheme
+- uid: Microsoft.UI.Xaml.Application.Resources
+  commentId: P:Microsoft.UI.Xaml.Application.Resources
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.resources
+  name: Resources
+  nameWithType: Application.Resources
+  fullName: Microsoft.UI.Xaml.Application.Resources
+- uid: Microsoft.UI.Xaml.Application.UnhandledException
+  commentId: E:Microsoft.UI.Xaml.Application.UnhandledException
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception
+  name: UnhandledException
+  nameWithType: Application.UnhandledException
+  fullName: Microsoft.UI.Xaml.Application.UnhandledException
+- uid: Microsoft.UI.Xaml.Application.ResourceManagerRequested
+  commentId: E:Microsoft.UI.Xaml.Application.ResourceManagerRequested
+  parent: Microsoft.UI.Xaml.Application
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.resourcemanagerrequested
+  name: ResourceManagerRequested
+  nameWithType: Application.ResourceManagerRequested
+  fullName: Microsoft.UI.Xaml.Application.ResourceManagerRequested
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Microsoft.UI.Xaml
+  commentId: N:Microsoft.UI.Xaml
+  isExternal: true
+  href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft
+  name: Microsoft.UI.Xaml
+  nameWithType: Microsoft.UI.Xaml
+  fullName: Microsoft.UI.Xaml
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft
+  - name: .
+  - uid: Microsoft.UI
+    name: UI
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui
+  - name: .
+  - uid: Microsoft.UI.Xaml
+    name: Xaml
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft
+  - name: .
+  - uid: Microsoft.UI
+    name: UI
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui
+  - name: .
+  - uid: Microsoft.UI.Xaml
+    name: Xaml
+    isExternal: true
+    href: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml
+- uid: Microsoft.Maui
+  commentId: N:Microsoft.Maui
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft
+  name: Microsoft.Maui
+  nameWithType: Microsoft.Maui
+  fullName: Microsoft.Maui
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Maui
+    name: Maui
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Maui
+    name: Maui
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui
+- uid: WinRT
+  commentId: N:WinRT
+  isExternal: true
+  name: WinRT
+  nameWithType: WinRT
+  fullName: WinRT
+- uid: System.Runtime.InteropServices.Marshalling
+  commentId: N:System.Runtime.InteropServices.Marshalling
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Runtime.InteropServices.Marshalling
+  nameWithType: System.Runtime.InteropServices.Marshalling
+  fullName: System.Runtime.InteropServices.Marshalling
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Runtime
+    name: Runtime
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime
+  - name: .
+  - uid: System.Runtime.InteropServices
+    name: InteropServices
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices
+  - name: .
+  - uid: System.Runtime.InteropServices.Marshalling
+    name: Marshalling
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.marshalling
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Runtime
+    name: Runtime
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime
+  - name: .
+  - uid: System.Runtime.InteropServices
+    name: InteropServices
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices
+  - name: .
+  - uid: System.Runtime.InteropServices.Marshalling
+    name: Marshalling
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.marshalling
+- uid: System.Runtime.InteropServices
+  commentId: N:System.Runtime.InteropServices
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Runtime.InteropServices
+  nameWithType: System.Runtime.InteropServices
+  fullName: System.Runtime.InteropServices
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Runtime
+    name: Runtime
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime
+  - name: .
+  - uid: System.Runtime.InteropServices
+    name: InteropServices
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Runtime
+    name: Runtime
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime
+  - name: .
+  - uid: System.Runtime.InteropServices
+    name: InteropServices
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.runtime.interopservices
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: Slackord.WinUI.App.#ctor*
+  commentId: Overload:Slackord.WinUI.App.#ctor
+  href: Slackord.WinUI.App.html#Slackord_WinUI_App__ctor
+  name: App
+  nameWithType: App.App
+  fullName: Slackord.WinUI.App.App
+  nameWithType.vb: App.New
+  fullName.vb: Slackord.WinUI.App.New
+  name.vb: New
+- uid: Microsoft.Maui.MauiWinUIApplication.CreateMauiApp
+  commentId: M:Microsoft.Maui.MauiWinUIApplication.CreateMauiApp
+  parent: Microsoft.Maui.MauiWinUIApplication
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.createmauiapp
+  name: CreateMauiApp()
+  nameWithType: MauiWinUIApplication.CreateMauiApp()
+  fullName: Microsoft.Maui.MauiWinUIApplication.CreateMauiApp()
+  spec.csharp:
+  - uid: Microsoft.Maui.MauiWinUIApplication.CreateMauiApp
+    name: CreateMauiApp
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.createmauiapp
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: Microsoft.Maui.MauiWinUIApplication.CreateMauiApp
+    name: CreateMauiApp
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.mauiwinuiapplication.createmauiapp
+  - name: (
+  - name: )
+- uid: Slackord.WinUI.App.CreateMauiApp*
+  commentId: Overload:Slackord.WinUI.App.CreateMauiApp
+  href: Slackord.WinUI.App.html#Slackord_WinUI_App_CreateMauiApp
+  name: CreateMauiApp
+  nameWithType: App.CreateMauiApp
+  fullName: Slackord.WinUI.App.CreateMauiApp
+- uid: Microsoft.Maui.Hosting.MauiApp
+  commentId: T:Microsoft.Maui.Hosting.MauiApp
+  parent: Microsoft.Maui.Hosting
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.hosting.mauiapp
+  name: MauiApp
+  nameWithType: MauiApp
+  fullName: Microsoft.Maui.Hosting.MauiApp
+- uid: Microsoft.Maui.Hosting
+  commentId: N:Microsoft.Maui.Hosting
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft
+  name: Microsoft.Maui.Hosting
+  nameWithType: Microsoft.Maui.Hosting
+  fullName: Microsoft.Maui.Hosting
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Maui
+    name: Maui
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui
+  - name: .
+  - uid: Microsoft.Maui.Hosting
+    name: Hosting
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.hosting
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Maui
+    name: Maui
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui
+  - name: .
+  - uid: Microsoft.Maui.Hosting
+    name: Hosting
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.hosting
+- uid: Slackord.WinUI.App.InitializeComponent*
+  commentId: Overload:Slackord.WinUI.App.InitializeComponent
+  href: Slackord.WinUI.App.html#Slackord_WinUI_App_InitializeComponent
+  name: InitializeComponent
+  nameWithType: App.InitializeComponent
+  fullName: Slackord.WinUI.App.InitializeComponent

@@ -1,0 +1,147 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.FileStatus
+  commentId: T:Slackord.Classes.FileStatus
+  id: FileStatus
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.FileStatus.CompleteAndValid
+  - Slackord.Classes.FileStatus.DoesNotExist
+  - Slackord.Classes.FileStatus.IncompleteOrCorrupted
+  langs:
+  - csharp
+  - vb
+  name: FileStatus
+  nameWithType: FileStatus
+  fullName: Slackord.Classes.FileStatus
+  type: Enum
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: FileStatus
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 279
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Status of an existing file
+  example: []
+  syntax:
+    content: public enum FileStatus
+    content.vb: Public Enum FileStatus
+- uid: Slackord.Classes.FileStatus.DoesNotExist
+  commentId: F:Slackord.Classes.FileStatus.DoesNotExist
+  id: DoesNotExist
+  parent: Slackord.Classes.FileStatus
+  langs:
+  - csharp
+  - vb
+  name: DoesNotExist
+  nameWithType: FileStatus.DoesNotExist
+  fullName: Slackord.Classes.FileStatus.DoesNotExist
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DoesNotExist
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 284
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: File does not exist at the specified path
+  example: []
+  syntax:
+    content: DoesNotExist = 0
+    return:
+      type: Slackord.Classes.FileStatus
+- uid: Slackord.Classes.FileStatus.CompleteAndValid
+  commentId: F:Slackord.Classes.FileStatus.CompleteAndValid
+  id: CompleteAndValid
+  parent: Slackord.Classes.FileStatus
+  langs:
+  - csharp
+  - vb
+  name: CompleteAndValid
+  nameWithType: FileStatus.CompleteAndValid
+  fullName: Slackord.Classes.FileStatus.CompleteAndValid
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CompleteAndValid
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 289
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: File exists and is complete with valid content
+  example: []
+  syntax:
+    content: CompleteAndValid = 1
+    return:
+      type: Slackord.Classes.FileStatus
+- uid: Slackord.Classes.FileStatus.IncompleteOrCorrupted
+  commentId: F:Slackord.Classes.FileStatus.IncompleteOrCorrupted
+  id: IncompleteOrCorrupted
+  parent: Slackord.Classes.FileStatus
+  langs:
+  - csharp
+  - vb
+  name: IncompleteOrCorrupted
+  nameWithType: FileStatus.IncompleteOrCorrupted
+  fullName: Slackord.Classes.FileStatus.IncompleteOrCorrupted
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: IncompleteOrCorrupted
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 294
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: File exists but is incomplete or corrupted
+  example: []
+  syntax:
+    content: IncompleteOrCorrupted = 2
+    return:
+      type: Slackord.Classes.FileStatus
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: Slackord.Classes.FileStatus
+  commentId: T:Slackord.Classes.FileStatus
+  parent: Slackord.Classes
+  href: Slackord.Classes.FileStatus.html
+  name: FileStatus
+  nameWithType: FileStatus
+  fullName: Slackord.Classes.FileStatus

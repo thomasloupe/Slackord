@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet tool install:*)",
+      "Bash(dotnet tool:*)",
+      "Bash(dotnet docfx:*)",
+      "Bash(taskkill:*)",
+      "Bash(pkill:*)",
+      "Bash(git pull:*)"
+    ]
+  }
+}

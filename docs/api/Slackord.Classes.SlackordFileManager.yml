@@ -1,0 +1,984 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.SlackordFileManager
+  commentId: T:Slackord.Classes.SlackordFileManager
+  id: SlackordFileManager
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.SlackordFileManager.AppendMessageAsync(System.String,Slackord.Classes.ReconstructedMessage)
+  - Slackord.Classes.SlackordFileManager.DeleteChannelFile(System.String)
+  - Slackord.Classes.SlackordFileManager.GetFileSizeDisplay(System.String)
+  - Slackord.Classes.SlackordFileManager.GetMessageCountAsync(System.String)
+  - Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync(System.String)
+  - Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync(System.String,System.Int32,System.Int32)
+  - Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync(System.String,System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage})
+  - Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync(System.String)
+  langs:
+  - csharp
+  - vb
+  name: SlackordFileManager
+  nameWithType: SlackordFileManager
+  fullName: Slackord.Classes.SlackordFileManager
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SlackordFileManager
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 8
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Manages reading and writing .slackord files containing converted message data
+  example: []
+  syntax:
+    content: public static class SlackordFileManager
+    content.vb: Public Module SlackordFileManager
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync(System.String,System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage})
+  commentId: M:Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync(System.String,System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage})
+  id: SaveChannelMessagesAsync(System.String,System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage})
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: SaveChannelMessagesAsync(string, List<ReconstructedMessage>)
+  nameWithType: SlackordFileManager.SaveChannelMessagesAsync(string, List<ReconstructedMessage>)
+  fullName: Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync(string, System.Collections.Generic.List<Slackord.Classes.ReconstructedMessage>)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SaveChannelMessagesAsync
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 15
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Saves reconstructed messages to a .slackord file
+  example: []
+  syntax:
+    content: public static Task SaveChannelMessagesAsync(string filePath, List<ReconstructedMessage> messages)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path where the file should be saved
+    - id: messages
+      type: System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}
+      description: The list of reconstructed messages to save
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function SaveChannelMessagesAsync(filePath As String, messages As List(Of ReconstructedMessage)) As Task
+  overload: Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync*
+  nameWithType.vb: SlackordFileManager.SaveChannelMessagesAsync(String, List(Of ReconstructedMessage))
+  fullName.vb: Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync(String, System.Collections.Generic.List(Of Slackord.Classes.ReconstructedMessage))
+  name.vb: SaveChannelMessagesAsync(String, List(Of ReconstructedMessage))
+- uid: Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync(System.String)
+  commentId: M:Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync(System.String)
+  id: LoadChannelMessagesAsync(System.String)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: LoadChannelMessagesAsync(string)
+  nameWithType: SlackordFileManager.LoadChannelMessagesAsync(string)
+  fullName: Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LoadChannelMessagesAsync
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 39
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Loads reconstructed messages from a .slackord file
+  example: []
+  syntax:
+    content: public static Task<List<ReconstructedMessage>> LoadChannelMessagesAsync(string filePath)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the .slackord file to load
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}}
+      description: A list of reconstructed messages, or empty list if file doesn't exist
+    content.vb: Public Shared Function LoadChannelMessagesAsync(filePath As String) As Task(Of List(Of ReconstructedMessage))
+  overload: Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync*
+  nameWithType.vb: SlackordFileManager.LoadChannelMessagesAsync(String)
+  fullName.vb: Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync(String)
+  name.vb: LoadChannelMessagesAsync(String)
+- uid: Slackord.Classes.SlackordFileManager.AppendMessageAsync(System.String,Slackord.Classes.ReconstructedMessage)
+  commentId: M:Slackord.Classes.SlackordFileManager.AppendMessageAsync(System.String,Slackord.Classes.ReconstructedMessage)
+  id: AppendMessageAsync(System.String,Slackord.Classes.ReconstructedMessage)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: AppendMessageAsync(string, ReconstructedMessage)
+  nameWithType: SlackordFileManager.AppendMessageAsync(string, ReconstructedMessage)
+  fullName: Slackord.Classes.SlackordFileManager.AppendMessageAsync(string, Slackord.Classes.ReconstructedMessage)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: AppendMessageAsync
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 68
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Appends a single message to an existing .slackord file (for incremental saves)
+  example: []
+  syntax:
+    content: public static Task AppendMessageAsync(string filePath, ReconstructedMessage message)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the .slackord file
+    - id: message
+      type: Slackord.Classes.ReconstructedMessage
+      description: The message to append
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function AppendMessageAsync(filePath As String, message As ReconstructedMessage) As Task
+  overload: Slackord.Classes.SlackordFileManager.AppendMessageAsync*
+  nameWithType.vb: SlackordFileManager.AppendMessageAsync(String, ReconstructedMessage)
+  fullName.vb: Slackord.Classes.SlackordFileManager.AppendMessageAsync(String, Slackord.Classes.ReconstructedMessage)
+  name.vb: AppendMessageAsync(String, ReconstructedMessage)
+- uid: Slackord.Classes.SlackordFileManager.GetMessageCountAsync(System.String)
+  commentId: M:Slackord.Classes.SlackordFileManager.GetMessageCountAsync(System.String)
+  id: GetMessageCountAsync(System.String)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: GetMessageCountAsync(string)
+  nameWithType: SlackordFileManager.GetMessageCountAsync(string)
+  fullName: Slackord.Classes.SlackordFileManager.GetMessageCountAsync(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetMessageCountAsync
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 89
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the number of messages in a .slackord file without loading all data
+  example: []
+  syntax:
+    content: public static Task<int> GetMessageCountAsync(string filePath)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the .slackord file
+    return:
+      type: System.Threading.Tasks.Task{System.Int32}
+      description: The number of messages in the file, or 0 if file doesn't exist
+    content.vb: Public Shared Function GetMessageCountAsync(filePath As String) As Task(Of Integer)
+  overload: Slackord.Classes.SlackordFileManager.GetMessageCountAsync*
+  nameWithType.vb: SlackordFileManager.GetMessageCountAsync(String)
+  fullName.vb: Slackord.Classes.SlackordFileManager.GetMessageCountAsync(String)
+  name.vb: GetMessageCountAsync(String)
+- uid: Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync(System.String,System.Int32,System.Int32)
+  commentId: M:Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync(System.String,System.Int32,System.Int32)
+  id: LoadMessageRangeAsync(System.String,System.Int32,System.Int32)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: LoadMessageRangeAsync(string, int, int)
+  nameWithType: SlackordFileManager.LoadMessageRangeAsync(string, int, int)
+  fullName: Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync(string, int, int)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LoadMessageRangeAsync
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 114
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Loads a range of messages from a .slackord file (for pagination/resume)
+  example: []
+  syntax:
+    content: public static Task<List<ReconstructedMessage>> LoadMessageRangeAsync(string filePath, int startIndex, int count)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the .slackord file
+    - id: startIndex
+      type: System.Int32
+      description: The starting index of messages to load
+    - id: count
+      type: System.Int32
+      description: The number of messages to load
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}}
+      description: A list of messages in the specified range
+    content.vb: Public Shared Function LoadMessageRangeAsync(filePath As String, startIndex As Integer, count As Integer) As Task(Of List(Of ReconstructedMessage))
+  overload: Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync*
+  nameWithType.vb: SlackordFileManager.LoadMessageRangeAsync(String, Integer, Integer)
+  fullName.vb: Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync(String, Integer, Integer)
+  name.vb: LoadMessageRangeAsync(String, Integer, Integer)
+- uid: Slackord.Classes.SlackordFileManager.DeleteChannelFile(System.String)
+  commentId: M:Slackord.Classes.SlackordFileManager.DeleteChannelFile(System.String)
+  id: DeleteChannelFile(System.String)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: DeleteChannelFile(string)
+  nameWithType: SlackordFileManager.DeleteChannelFile(string)
+  fullName: Slackord.Classes.SlackordFileManager.DeleteChannelFile(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DeleteChannelFile
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 138
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Deletes a channel's .slackord file
+  example: []
+  syntax:
+    content: public static void DeleteChannelFile(string filePath)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the .slackord file to delete
+    content.vb: Public Shared Sub DeleteChannelFile(filePath As String)
+  overload: Slackord.Classes.SlackordFileManager.DeleteChannelFile*
+  nameWithType.vb: SlackordFileManager.DeleteChannelFile(String)
+  fullName.vb: Slackord.Classes.SlackordFileManager.DeleteChannelFile(String)
+  name.vb: DeleteChannelFile(String)
+- uid: Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync(System.String)
+  commentId: M:Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync(System.String)
+  id: ValidateChannelFileAsync(System.String)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: ValidateChannelFileAsync(string)
+  nameWithType: SlackordFileManager.ValidateChannelFileAsync(string)
+  fullName: Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ValidateChannelFileAsync
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 160
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Validates that a .slackord file contains valid data
+  example: []
+  syntax:
+    content: public static Task<bool> ValidateChannelFileAsync(string filePath)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the .slackord file to validate
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+      description: True if the file exists and contains valid message data
+    content.vb: Public Shared Function ValidateChannelFileAsync(filePath As String) As Task(Of Boolean)
+  overload: Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync*
+  nameWithType.vb: SlackordFileManager.ValidateChannelFileAsync(String)
+  fullName.vb: Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync(String)
+  name.vb: ValidateChannelFileAsync(String)
+- uid: Slackord.Classes.SlackordFileManager.GetFileSizeDisplay(System.String)
+  commentId: M:Slackord.Classes.SlackordFileManager.GetFileSizeDisplay(System.String)
+  id: GetFileSizeDisplay(System.String)
+  parent: Slackord.Classes.SlackordFileManager
+  langs:
+  - csharp
+  - vb
+  name: GetFileSizeDisplay(string)
+  nameWithType: SlackordFileManager.GetFileSizeDisplay(string)
+  fullName: Slackord.Classes.SlackordFileManager.GetFileSizeDisplay(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/SlackordFileManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetFileSizeDisplay
+    path: Slackord/Classes/SlackordFileManager.cs
+    startLine: 181
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets file size in a human-readable format
+  example: []
+  syntax:
+    content: public static string GetFileSizeDisplay(string filePath)
+    parameters:
+    - id: filePath
+      type: System.String
+      description: The path to the file
+    return:
+      type: System.String
+      description: A formatted string showing the file size (e.g., "1.5 MB")
+    content.vb: Public Shared Function GetFileSizeDisplay(filePath As String) As String
+  overload: Slackord.Classes.SlackordFileManager.GetFileSizeDisplay*
+  nameWithType.vb: SlackordFileManager.GetFileSizeDisplay(String)
+  fullName.vb: Slackord.Classes.SlackordFileManager.GetFileSizeDisplay(String)
+  name.vb: GetFileSizeDisplay(String)
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_SaveChannelMessagesAsync_System_String_System_Collections_Generic_List_Slackord_Classes_ReconstructedMessage__
+  name: SaveChannelMessagesAsync
+  nameWithType: SlackordFileManager.SaveChannelMessagesAsync
+  fullName: Slackord.Classes.SlackordFileManager.SaveChannelMessagesAsync
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}
+  commentId: T:System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<ReconstructedMessage>
+  nameWithType: List<ReconstructedMessage>
+  fullName: System.Collections.Generic.List<Slackord.Classes.ReconstructedMessage>
+  nameWithType.vb: List(Of ReconstructedMessage)
+  fullName.vb: System.Collections.Generic.List(Of Slackord.Classes.ReconstructedMessage)
+  name.vb: List(Of ReconstructedMessage)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: Slackord.Classes.ReconstructedMessage
+    name: ReconstructedMessage
+    href: Slackord.Classes.ReconstructedMessage.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.ReconstructedMessage
+    name: ReconstructedMessage
+    href: Slackord.Classes.ReconstructedMessage.html
+  - name: )
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_LoadChannelMessagesAsync_System_String_
+  name: LoadChannelMessagesAsync
+  nameWithType: SlackordFileManager.LoadChannelMessagesAsync
+  fullName: Slackord.Classes.SlackordFileManager.LoadChannelMessagesAsync
+- uid: System.Threading.Tasks.Task{System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}}
+  commentId: T:System.Threading.Tasks.Task{System.Collections.Generic.List{Slackord.Classes.ReconstructedMessage}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<List<ReconstructedMessage>>
+  nameWithType: Task<List<ReconstructedMessage>>
+  fullName: System.Threading.Tasks.Task<System.Collections.Generic.List<Slackord.Classes.ReconstructedMessage>>
+  nameWithType.vb: Task(Of List(Of ReconstructedMessage))
+  fullName.vb: System.Threading.Tasks.Task(Of System.Collections.Generic.List(Of Slackord.Classes.ReconstructedMessage))
+  name.vb: Task(Of List(Of ReconstructedMessage))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: Slackord.Classes.ReconstructedMessage
+    name: ReconstructedMessage
+    href: Slackord.Classes.ReconstructedMessage.html
+  - name: '>'
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.ReconstructedMessage
+    name: ReconstructedMessage
+    href: Slackord.Classes.ReconstructedMessage.html
+  - name: )
+  - name: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: TResult
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TResult
+  - name: )
+- uid: Slackord.Classes.SlackordFileManager.AppendMessageAsync*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.AppendMessageAsync
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_AppendMessageAsync_System_String_Slackord_Classes_ReconstructedMessage_
+  name: AppendMessageAsync
+  nameWithType: SlackordFileManager.AppendMessageAsync
+  fullName: Slackord.Classes.SlackordFileManager.AppendMessageAsync
+- uid: Slackord.Classes.ReconstructedMessage
+  commentId: T:Slackord.Classes.ReconstructedMessage
+  parent: Slackord.Classes
+  href: Slackord.Classes.ReconstructedMessage.html
+  name: ReconstructedMessage
+  nameWithType: ReconstructedMessage
+  fullName: Slackord.Classes.ReconstructedMessage
+- uid: Slackord.Classes.SlackordFileManager.GetMessageCountAsync*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.GetMessageCountAsync
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_GetMessageCountAsync_System_String_
+  name: GetMessageCountAsync
+  nameWithType: SlackordFileManager.GetMessageCountAsync
+  fullName: Slackord.Classes.SlackordFileManager.GetMessageCountAsync
+- uid: System.Threading.Tasks.Task{System.Int32}
+  commentId: T:System.Threading.Tasks.Task{System.Int32}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<int>
+  nameWithType: Task<int>
+  fullName: System.Threading.Tasks.Task<int>
+  nameWithType.vb: Task(Of Integer)
+  fullName.vb: System.Threading.Tasks.Task(Of Integer)
+  name.vb: Task(Of Integer)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_LoadMessageRangeAsync_System_String_System_Int32_System_Int32_
+  name: LoadMessageRangeAsync
+  nameWithType: SlackordFileManager.LoadMessageRangeAsync
+  fullName: Slackord.Classes.SlackordFileManager.LoadMessageRangeAsync
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Slackord.Classes.SlackordFileManager.DeleteChannelFile*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.DeleteChannelFile
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_DeleteChannelFile_System_String_
+  name: DeleteChannelFile
+  nameWithType: SlackordFileManager.DeleteChannelFile
+  fullName: Slackord.Classes.SlackordFileManager.DeleteChannelFile
+- uid: Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_ValidateChannelFileAsync_System_String_
+  name: ValidateChannelFileAsync
+  nameWithType: SlackordFileManager.ValidateChannelFileAsync
+  fullName: Slackord.Classes.SlackordFileManager.ValidateChannelFileAsync
+- uid: System.Threading.Tasks.Task{System.Boolean}
+  commentId: T:System.Threading.Tasks.Task{System.Boolean}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<bool>
+  nameWithType: Task<bool>
+  fullName: System.Threading.Tasks.Task<bool>
+  nameWithType.vb: Task(Of Boolean)
+  fullName.vb: System.Threading.Tasks.Task(Of Boolean)
+  name.vb: Task(Of Boolean)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+- uid: Slackord.Classes.SlackordFileManager.GetFileSizeDisplay*
+  commentId: Overload:Slackord.Classes.SlackordFileManager.GetFileSizeDisplay
+  href: Slackord.Classes.SlackordFileManager.html#Slackord_Classes_SlackordFileManager_GetFileSizeDisplay_System_String_
+  name: GetFileSizeDisplay
+  nameWithType: SlackordFileManager.GetFileSizeDisplay
+  fullName: Slackord.Classes.SlackordFileManager.GetFileSizeDisplay

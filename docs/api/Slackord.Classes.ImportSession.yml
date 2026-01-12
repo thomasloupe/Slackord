@@ -1,0 +1,970 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ImportSession
+  commentId: T:Slackord.Classes.ImportSession
+  id: ImportSession
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ImportSession.AddChannel(System.String,System.Int32)
+  - Slackord.Classes.ImportSession.Channels
+  - Slackord.Classes.ImportSession.CompleteChannel(System.String)
+  - Slackord.Classes.ImportSession.CreateNew
+  - Slackord.Classes.ImportSession.CreatedAt
+  - Slackord.Classes.ImportSession.GetChannelFilePath(System.String)
+  - Slackord.Classes.ImportSession.GetIncompleteImports
+  - Slackord.Classes.ImportSession.IsCompleted
+  - Slackord.Classes.ImportSession.Load(System.String)
+  - Slackord.Classes.ImportSession.Save
+  - Slackord.Classes.ImportSession.SessionId
+  - Slackord.Classes.ImportSession.SessionPath
+  langs:
+  - csharp
+  - vb
+  name: ImportSession
+  nameWithType: ImportSession
+  fullName: Slackord.Classes.ImportSession
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportSession
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 7
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Represents a single import session with persistent file-based storage
+  example: []
+  syntax:
+    content: public class ImportSession
+    content.vb: Public Class ImportSession
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.ImportSession.SessionId
+  commentId: P:Slackord.Classes.ImportSession.SessionId
+  id: SessionId
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: SessionId
+  nameWithType: ImportSession.SessionId
+  fullName: Slackord.Classes.ImportSession.SessionId
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SessionId
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 12
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the unique session identifier based on timestamp
+  example: []
+  syntax:
+    content: public string SessionId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property SessionId As String
+  overload: Slackord.Classes.ImportSession.SessionId*
+- uid: Slackord.Classes.ImportSession.SessionPath
+  commentId: P:Slackord.Classes.ImportSession.SessionPath
+  id: SessionPath
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: SessionPath
+  nameWithType: ImportSession.SessionPath
+  fullName: Slackord.Classes.ImportSession.SessionPath
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SessionPath
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 17
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the file system path where session data is stored
+  example: []
+  syntax:
+    content: public string SessionPath { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property SessionPath As String
+  overload: Slackord.Classes.ImportSession.SessionPath*
+- uid: Slackord.Classes.ImportSession.CreatedAt
+  commentId: P:Slackord.Classes.ImportSession.CreatedAt
+  id: CreatedAt
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: CreatedAt
+  nameWithType: ImportSession.CreatedAt
+  fullName: Slackord.Classes.ImportSession.CreatedAt
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CreatedAt
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 22
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the timestamp when this session was created
+  example: []
+  syntax:
+    content: public DateTime CreatedAt { get; set; }
+    parameters: []
+    return:
+      type: System.DateTime
+    content.vb: Public Property CreatedAt As Date
+  overload: Slackord.Classes.ImportSession.CreatedAt*
+- uid: Slackord.Classes.ImportSession.Channels
+  commentId: P:Slackord.Classes.ImportSession.Channels
+  id: Channels
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: Channels
+  nameWithType: ImportSession.Channels
+  fullName: Slackord.Classes.ImportSession.Channels
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Channels
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 27
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the list of channel progress trackers for this session
+  example: []
+  syntax:
+    content: public List<ChannelProgress> Channels { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{Slackord.Classes.ChannelProgress}
+    content.vb: Public Property Channels As List(Of ChannelProgress)
+  overload: Slackord.Classes.ImportSession.Channels*
+- uid: Slackord.Classes.ImportSession.IsCompleted
+  commentId: P:Slackord.Classes.ImportSession.IsCompleted
+  id: IsCompleted
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: IsCompleted
+  nameWithType: ImportSession.IsCompleted
+  fullName: Slackord.Classes.ImportSession.IsCompleted
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: IsCompleted
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 32
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets whether all channels in this session have completed importing
+  example: []
+  syntax:
+    content: public bool IsCompleted { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property IsCompleted As Boolean
+  overload: Slackord.Classes.ImportSession.IsCompleted*
+- uid: Slackord.Classes.ImportSession.CreateNew
+  commentId: M:Slackord.Classes.ImportSession.CreateNew
+  id: CreateNew
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: CreateNew()
+  nameWithType: ImportSession.CreateNew()
+  fullName: Slackord.Classes.ImportSession.CreateNew()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CreateNew
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 43
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Creates a new import session with timestamped folder
+  example: []
+  syntax:
+    content: public static ImportSession CreateNew()
+    return:
+      type: Slackord.Classes.ImportSession
+      description: A new ImportSession instance with initialized properties
+    content.vb: Public Shared Function CreateNew() As ImportSession
+  overload: Slackord.Classes.ImportSession.CreateNew*
+- uid: Slackord.Classes.ImportSession.Load(System.String)
+  commentId: M:Slackord.Classes.ImportSession.Load(System.String)
+  id: Load(System.String)
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: Load(string)
+  nameWithType: ImportSession.Load(string)
+  fullName: Slackord.Classes.ImportSession.Load(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Load
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 62
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Loads an existing session from disk
+  example: []
+  syntax:
+    content: public static ImportSession Load(string sessionPath)
+    parameters:
+    - id: sessionPath
+      type: System.String
+      description: The path to the session directory
+    return:
+      type: Slackord.Classes.ImportSession
+      description: The loaded ImportSession or null if loading fails
+    content.vb: Public Shared Function Load(sessionPath As String) As ImportSession
+  overload: Slackord.Classes.ImportSession.Load*
+  nameWithType.vb: ImportSession.Load(String)
+  fullName.vb: Slackord.Classes.ImportSession.Load(String)
+  name.vb: Load(String)
+- uid: Slackord.Classes.ImportSession.Save
+  commentId: M:Slackord.Classes.ImportSession.Save
+  id: Save
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: Save()
+  nameWithType: ImportSession.Save()
+  fullName: Slackord.Classes.ImportSession.Save()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Save
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 77
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Saves the session's resume data to disk
+  example: []
+  syntax:
+    content: public void Save()
+    content.vb: Public Sub Save()
+  overload: Slackord.Classes.ImportSession.Save*
+- uid: Slackord.Classes.ImportSession.GetIncompleteImports
+  commentId: M:Slackord.Classes.ImportSession.GetIncompleteImports
+  id: GetIncompleteImports
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: GetIncompleteImports()
+  nameWithType: ImportSession.GetIncompleteImports()
+  fullName: Slackord.Classes.ImportSession.GetIncompleteImports()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetIncompleteImports
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 88
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets all incomplete import sessions from the imports folder
+  example: []
+  syntax:
+    content: public static List<ImportSession> GetIncompleteImports()
+    return:
+      type: System.Collections.Generic.List{Slackord.Classes.ImportSession}
+      description: A list of incomplete ImportSession instances ordered by creation date (newest first)
+    content.vb: Public Shared Function GetIncompleteImports() As List(Of ImportSession)
+  overload: Slackord.Classes.ImportSession.GetIncompleteImports*
+- uid: Slackord.Classes.ImportSession.AddChannel(System.String,System.Int32)
+  commentId: M:Slackord.Classes.ImportSession.AddChannel(System.String,System.Int32)
+  id: AddChannel(System.String,System.Int32)
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: AddChannel(string, int)
+  nameWithType: ImportSession.AddChannel(string, int)
+  fullName: Slackord.Classes.ImportSession.AddChannel(string, int)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: AddChannel
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 113
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Adds a channel to this session with specified message count
+  example: []
+  syntax:
+    content: public ChannelProgress AddChannel(string channelName, int totalMessages)
+    parameters:
+    - id: channelName
+      type: System.String
+      description: The name of the channel to add
+    - id: totalMessages
+      type: System.Int32
+      description: The total number of messages in this channel
+    return:
+      type: Slackord.Classes.ChannelProgress
+      description: The created ChannelProgress instance
+    content.vb: Public Function AddChannel(channelName As String, totalMessages As Integer) As ChannelProgress
+  overload: Slackord.Classes.ImportSession.AddChannel*
+  nameWithType.vb: ImportSession.AddChannel(String, Integer)
+  fullName.vb: Slackord.Classes.ImportSession.AddChannel(String, Integer)
+  name.vb: AddChannel(String, Integer)
+- uid: Slackord.Classes.ImportSession.GetChannelFilePath(System.String)
+  commentId: M:Slackord.Classes.ImportSession.GetChannelFilePath(System.String)
+  id: GetChannelFilePath(System.String)
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: GetChannelFilePath(string)
+  nameWithType: ImportSession.GetChannelFilePath(string)
+  fullName: Slackord.Classes.ImportSession.GetChannelFilePath(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetChannelFilePath
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 133
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the file path for a channel's .slackord data file
+  example: []
+  syntax:
+    content: public string GetChannelFilePath(string channelName)
+    parameters:
+    - id: channelName
+      type: System.String
+      description: The name of the channel
+    return:
+      type: System.String
+      description: The full file path for the channel's .slackord file
+    content.vb: Public Function GetChannelFilePath(channelName As String) As String
+  overload: Slackord.Classes.ImportSession.GetChannelFilePath*
+  nameWithType.vb: ImportSession.GetChannelFilePath(String)
+  fullName.vb: Slackord.Classes.ImportSession.GetChannelFilePath(String)
+  name.vb: GetChannelFilePath(String)
+- uid: Slackord.Classes.ImportSession.CompleteChannel(System.String)
+  commentId: M:Slackord.Classes.ImportSession.CompleteChannel(System.String)
+  id: CompleteChannel(System.String)
+  parent: Slackord.Classes.ImportSession
+  langs:
+  - csharp
+  - vb
+  name: CompleteChannel(string)
+  nameWithType: ImportSession.CompleteChannel(string)
+  fullName: Slackord.Classes.ImportSession.CompleteChannel(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportSession.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CompleteChannel
+    path: Slackord/Classes/ImportSession.cs
+    startLine: 143
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Marks a channel as completed and updates its progress
+  example: []
+  syntax:
+    content: public void CompleteChannel(string channelName)
+    parameters:
+    - id: channelName
+      type: System.String
+      description: The name of the channel to mark as complete
+    content.vb: Public Sub CompleteChannel(channelName As String)
+  overload: Slackord.Classes.ImportSession.CompleteChannel*
+  nameWithType.vb: ImportSession.CompleteChannel(String)
+  fullName.vb: Slackord.Classes.ImportSession.CompleteChannel(String)
+  name.vb: CompleteChannel(String)
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.ImportSession.SessionId*
+  commentId: Overload:Slackord.Classes.ImportSession.SessionId
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_SessionId
+  name: SessionId
+  nameWithType: ImportSession.SessionId
+  fullName: Slackord.Classes.ImportSession.SessionId
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.ImportSession.SessionPath*
+  commentId: Overload:Slackord.Classes.ImportSession.SessionPath
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_SessionPath
+  name: SessionPath
+  nameWithType: ImportSession.SessionPath
+  fullName: Slackord.Classes.ImportSession.SessionPath
+- uid: Slackord.Classes.ImportSession.CreatedAt*
+  commentId: Overload:Slackord.Classes.ImportSession.CreatedAt
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_CreatedAt
+  name: CreatedAt
+  nameWithType: ImportSession.CreatedAt
+  fullName: Slackord.Classes.ImportSession.CreatedAt
+- uid: System.DateTime
+  commentId: T:System.DateTime
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.datetime
+  name: DateTime
+  nameWithType: DateTime
+  fullName: System.DateTime
+  nameWithType.vb: Date
+  fullName.vb: Date
+  name.vb: Date
+- uid: Slackord.Classes.ImportSession.Channels*
+  commentId: Overload:Slackord.Classes.ImportSession.Channels
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_Channels
+  name: Channels
+  nameWithType: ImportSession.Channels
+  fullName: Slackord.Classes.ImportSession.Channels
+- uid: System.Collections.Generic.List{Slackord.Classes.ChannelProgress}
+  commentId: T:System.Collections.Generic.List{Slackord.Classes.ChannelProgress}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<ChannelProgress>
+  nameWithType: List<ChannelProgress>
+  fullName: System.Collections.Generic.List<Slackord.Classes.ChannelProgress>
+  nameWithType.vb: List(Of ChannelProgress)
+  fullName.vb: System.Collections.Generic.List(Of Slackord.Classes.ChannelProgress)
+  name.vb: List(Of ChannelProgress)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: Slackord.Classes.ChannelProgress
+    name: ChannelProgress
+    href: Slackord.Classes.ChannelProgress.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.ChannelProgress
+    name: ChannelProgress
+    href: Slackord.Classes.ChannelProgress.html
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: Slackord.Classes.ImportSession.IsCompleted*
+  commentId: Overload:Slackord.Classes.ImportSession.IsCompleted
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_IsCompleted
+  name: IsCompleted
+  nameWithType: ImportSession.IsCompleted
+  fullName: Slackord.Classes.ImportSession.IsCompleted
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: Slackord.Classes.ImportSession.CreateNew*
+  commentId: Overload:Slackord.Classes.ImportSession.CreateNew
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_CreateNew
+  name: CreateNew
+  nameWithType: ImportSession.CreateNew
+  fullName: Slackord.Classes.ImportSession.CreateNew
+- uid: Slackord.Classes.ImportSession
+  commentId: T:Slackord.Classes.ImportSession
+  parent: Slackord.Classes
+  href: Slackord.Classes.ImportSession.html
+  name: ImportSession
+  nameWithType: ImportSession
+  fullName: Slackord.Classes.ImportSession
+- uid: Slackord.Classes.ImportSession.Load*
+  commentId: Overload:Slackord.Classes.ImportSession.Load
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_Load_System_String_
+  name: Load
+  nameWithType: ImportSession.Load
+  fullName: Slackord.Classes.ImportSession.Load
+- uid: Slackord.Classes.ImportSession.Save*
+  commentId: Overload:Slackord.Classes.ImportSession.Save
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_Save
+  name: Save
+  nameWithType: ImportSession.Save
+  fullName: Slackord.Classes.ImportSession.Save
+- uid: Slackord.Classes.ImportSession.GetIncompleteImports*
+  commentId: Overload:Slackord.Classes.ImportSession.GetIncompleteImports
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_GetIncompleteImports
+  name: GetIncompleteImports
+  nameWithType: ImportSession.GetIncompleteImports
+  fullName: Slackord.Classes.ImportSession.GetIncompleteImports
+- uid: System.Collections.Generic.List{Slackord.Classes.ImportSession}
+  commentId: T:System.Collections.Generic.List{Slackord.Classes.ImportSession}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<ImportSession>
+  nameWithType: List<ImportSession>
+  fullName: System.Collections.Generic.List<Slackord.Classes.ImportSession>
+  nameWithType.vb: List(Of ImportSession)
+  fullName.vb: System.Collections.Generic.List(Of Slackord.Classes.ImportSession)
+  name.vb: List(Of ImportSession)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: Slackord.Classes.ImportSession
+    name: ImportSession
+    href: Slackord.Classes.ImportSession.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.ImportSession
+    name: ImportSession
+    href: Slackord.Classes.ImportSession.html
+  - name: )
+- uid: Slackord.Classes.ImportSession.AddChannel*
+  commentId: Overload:Slackord.Classes.ImportSession.AddChannel
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_AddChannel_System_String_System_Int32_
+  name: AddChannel
+  nameWithType: ImportSession.AddChannel
+  fullName: Slackord.Classes.ImportSession.AddChannel
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Slackord.Classes.ChannelProgress
+  commentId: T:Slackord.Classes.ChannelProgress
+  parent: Slackord.Classes
+  href: Slackord.Classes.ChannelProgress.html
+  name: ChannelProgress
+  nameWithType: ChannelProgress
+  fullName: Slackord.Classes.ChannelProgress
+- uid: Slackord.Classes.ImportSession.GetChannelFilePath*
+  commentId: Overload:Slackord.Classes.ImportSession.GetChannelFilePath
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_GetChannelFilePath_System_String_
+  name: GetChannelFilePath
+  nameWithType: ImportSession.GetChannelFilePath
+  fullName: Slackord.Classes.ImportSession.GetChannelFilePath
+- uid: Slackord.Classes.ImportSession.CompleteChannel*
+  commentId: Overload:Slackord.Classes.ImportSession.CompleteChannel
+  href: Slackord.Classes.ImportSession.html#Slackord_Classes_ImportSession_CompleteChannel_System_String_
+  name: CompleteChannel
+  nameWithType: ImportSession.CompleteChannel
+  fullName: Slackord.Classes.ImportSession.CompleteChannel

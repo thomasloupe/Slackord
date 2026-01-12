@@ -1,0 +1,51 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": ["Slackord/Slackord.csproj"]
+        }
+      ],
+      "dest": "docs/api",
+      "properties": {
+        "TargetFramework": "net10.0-windows10.0.19041.0"
+      },
+      "includePrivateMembers": false,
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": ["docs/api/**.yml", "docs/api/index.md"]
+      },
+      {
+        "files": ["docs/articles/**.md", "docs/articles/**/toc.yml"],
+        "src": ".",
+        "dest": "articles"
+      },
+      {
+        "files": ["docs/toc.yml", "docs/*.md"]
+      }
+    ],
+    "resource": [
+      {
+        "files": ["docs/images/**"]
+      }
+    ],
+    "output": "_site",
+    "template": ["default", "modern"],
+    "globalMetadata": {
+      "_appTitle": "Slackord Documentation",
+      "_appName": "Slackord",
+      "_appFooter": "Slackord - Import Slack messages into Discord",
+      "_enableSearch": true,
+      "_enableNewTab": true
+    },
+    "fileMetadata": {},
+    "postProcessors": [],
+    "keepFileLink": false,
+    "disableGitFeatures": false
+  }
+}

@@ -1,0 +1,1282 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.AppSettings
+  commentId: T:Slackord.Classes.AppSettings
+  id: AppSettings
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.AppSettings.BotToken
+  - Slackord.Classes.AppSettings.CheckForUpdatesOnStartup
+  - Slackord.Classes.AppSettings.ClearResumeState
+  - Slackord.Classes.AppSettings.DiscordLogLevel
+  - Slackord.Classes.AppSettings.EnableResumeImport
+  - Slackord.Classes.AppSettings.ExportStatsAfterImport
+  - Slackord.Classes.AppSettings.GetLogLevelDescription
+  - Slackord.Classes.AppSettings.GuildId
+  - Slackord.Classes.AppSettings.HasPartialImport
+  - Slackord.Classes.AppSettings.ImportAttachments
+  - Slackord.Classes.AppSettings.Instance
+  - Slackord.Classes.AppSettings.LastImportChannel
+  - Slackord.Classes.AppSettings.LastImportType
+  - Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp
+  - Slackord.Classes.AppSettings.LoadFromPreferences
+  - Slackord.Classes.AppSettings.RateLimitDelay
+  - Slackord.Classes.AppSettings.ResetToDefaults
+  - Slackord.Classes.AppSettings.SaveAsync
+  - Slackord.Classes.AppSettings.SaveResumeState(System.String,System.String,System.String)
+  - Slackord.Classes.AppSettings.SkipExistingChannels
+  - Slackord.Classes.AppSettings.TimestampFormat
+  - Slackord.Classes.AppSettings.UseThreadsForReplies
+  - Slackord.Classes.AppSettings.UserFormat
+  langs:
+  - csharp
+  - vb
+  name: AppSettings
+  nameWithType: AppSettings
+  fullName: Slackord.Classes.AppSettings
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: AppSettings
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 5
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Manages application settings and preferences with singleton pattern
+  example: []
+  syntax:
+    content: public class AppSettings
+    content.vb: Public Class AppSettings
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.AppSettings.Instance
+  commentId: P:Slackord.Classes.AppSettings.Instance
+  id: Instance
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: Instance
+  nameWithType: AppSettings.Instance
+  fullName: Slackord.Classes.AppSettings.Instance
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Instance
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 15
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the singleton instance of AppSettings
+  example: []
+  syntax:
+    content: public static AppSettings Instance { get; }
+    parameters: []
+    return:
+      type: Slackord.Classes.AppSettings
+    content.vb: Public Shared ReadOnly Property Instance As AppSettings
+  overload: Slackord.Classes.AppSettings.Instance*
+- uid: Slackord.Classes.AppSettings.UserFormat
+  commentId: P:Slackord.Classes.AppSettings.UserFormat
+  id: UserFormat
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: UserFormat
+  nameWithType: AppSettings.UserFormat
+  fullName: Slackord.Classes.AppSettings.UserFormat
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: UserFormat
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 20
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the user format order for displaying names
+  example: []
+  syntax:
+    content: public ApplicationWindow.UserFormatOrder UserFormat { get; set; }
+    parameters: []
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    content.vb: Public Property UserFormat As ApplicationWindow.UserFormatOrder
+  overload: Slackord.Classes.AppSettings.UserFormat*
+- uid: Slackord.Classes.AppSettings.TimestampFormat
+  commentId: P:Slackord.Classes.AppSettings.TimestampFormat
+  id: TimestampFormat
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: TimestampFormat
+  nameWithType: AppSettings.TimestampFormat
+  fullName: Slackord.Classes.AppSettings.TimestampFormat
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: TimestampFormat
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 25
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the timestamp format (12 Hour or 24 Hour)
+  example: []
+  syntax:
+    content: public string TimestampFormat { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TimestampFormat As String
+  overload: Slackord.Classes.AppSettings.TimestampFormat*
+- uid: Slackord.Classes.AppSettings.UseThreadsForReplies
+  commentId: P:Slackord.Classes.AppSettings.UseThreadsForReplies
+  id: UseThreadsForReplies
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: UseThreadsForReplies
+  nameWithType: AppSettings.UseThreadsForReplies
+  fullName: Slackord.Classes.AppSettings.UseThreadsForReplies
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: UseThreadsForReplies
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 30
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether to use threads for reply messages
+  example: []
+  syntax:
+    content: public bool UseThreadsForReplies { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property UseThreadsForReplies As Boolean
+  overload: Slackord.Classes.AppSettings.UseThreadsForReplies*
+- uid: Slackord.Classes.AppSettings.BotToken
+  commentId: P:Slackord.Classes.AppSettings.BotToken
+  id: BotToken
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: BotToken
+  nameWithType: AppSettings.BotToken
+  fullName: Slackord.Classes.AppSettings.BotToken
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: BotToken
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 35
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the Discord bot authentication token
+  example: []
+  syntax:
+    content: public string BotToken { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property BotToken As String
+  overload: Slackord.Classes.AppSettings.BotToken*
+- uid: Slackord.Classes.AppSettings.GuildId
+  commentId: P:Slackord.Classes.AppSettings.GuildId
+  id: GuildId
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: GuildId
+  nameWithType: AppSettings.GuildId
+  fullName: Slackord.Classes.AppSettings.GuildId
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GuildId
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 40
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the Discord guild (server) ID
+  example: []
+  syntax:
+    content: public string GuildId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property GuildId As String
+  overload: Slackord.Classes.AppSettings.GuildId*
+- uid: Slackord.Classes.AppSettings.DiscordLogLevel
+  commentId: P:Slackord.Classes.AppSettings.DiscordLogLevel
+  id: DiscordLogLevel
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: DiscordLogLevel
+  nameWithType: AppSettings.DiscordLogLevel
+  fullName: Slackord.Classes.AppSettings.DiscordLogLevel
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DiscordLogLevel
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 45
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the Discord logging level (0-5)
+  example: []
+  syntax:
+    content: public int DiscordLogLevel { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property DiscordLogLevel As Integer
+  overload: Slackord.Classes.AppSettings.DiscordLogLevel*
+- uid: Slackord.Classes.AppSettings.RateLimitDelay
+  commentId: P:Slackord.Classes.AppSettings.RateLimitDelay
+  id: RateLimitDelay
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: RateLimitDelay
+  nameWithType: AppSettings.RateLimitDelay
+  fullName: Slackord.Classes.AppSettings.RateLimitDelay
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: RateLimitDelay
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 50
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the rate limit delay between Discord API calls
+  example: []
+  syntax:
+    content: public int RateLimitDelay { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property RateLimitDelay As Integer
+  overload: Slackord.Classes.AppSettings.RateLimitDelay*
+- uid: Slackord.Classes.AppSettings.SkipExistingChannels
+  commentId: P:Slackord.Classes.AppSettings.SkipExistingChannels
+  id: SkipExistingChannels
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: SkipExistingChannels
+  nameWithType: AppSettings.SkipExistingChannels
+  fullName: Slackord.Classes.AppSettings.SkipExistingChannels
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SkipExistingChannels
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 55
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether to skip channels that already exist
+  example: []
+  syntax:
+    content: public bool SkipExistingChannels { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property SkipExistingChannels As Boolean
+  overload: Slackord.Classes.AppSettings.SkipExistingChannels*
+- uid: Slackord.Classes.AppSettings.ImportAttachments
+  commentId: P:Slackord.Classes.AppSettings.ImportAttachments
+  id: ImportAttachments
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: ImportAttachments
+  nameWithType: AppSettings.ImportAttachments
+  fullName: Slackord.Classes.AppSettings.ImportAttachments
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportAttachments
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 60
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether to import file attachments
+  example: []
+  syntax:
+    content: public bool ImportAttachments { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property ImportAttachments As Boolean
+  overload: Slackord.Classes.AppSettings.ImportAttachments*
+- uid: Slackord.Classes.AppSettings.ExportStatsAfterImport
+  commentId: P:Slackord.Classes.AppSettings.ExportStatsAfterImport
+  id: ExportStatsAfterImport
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: ExportStatsAfterImport
+  nameWithType: AppSettings.ExportStatsAfterImport
+  fullName: Slackord.Classes.AppSettings.ExportStatsAfterImport
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ExportStatsAfterImport
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 65
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether to export statistics after import completion
+  example: []
+  syntax:
+    content: public bool ExportStatsAfterImport { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property ExportStatsAfterImport As Boolean
+  overload: Slackord.Classes.AppSettings.ExportStatsAfterImport*
+- uid: Slackord.Classes.AppSettings.CheckForUpdatesOnStartup
+  commentId: P:Slackord.Classes.AppSettings.CheckForUpdatesOnStartup
+  id: CheckForUpdatesOnStartup
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: CheckForUpdatesOnStartup
+  nameWithType: AppSettings.CheckForUpdatesOnStartup
+  fullName: Slackord.Classes.AppSettings.CheckForUpdatesOnStartup
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CheckForUpdatesOnStartup
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 70
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether to check for updates on application startup
+  example: []
+  syntax:
+    content: public bool CheckForUpdatesOnStartup { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property CheckForUpdatesOnStartup As Boolean
+  overload: Slackord.Classes.AppSettings.CheckForUpdatesOnStartup*
+- uid: Slackord.Classes.AppSettings.EnableResumeImport
+  commentId: P:Slackord.Classes.AppSettings.EnableResumeImport
+  id: EnableResumeImport
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: EnableResumeImport
+  nameWithType: AppSettings.EnableResumeImport
+  fullName: Slackord.Classes.AppSettings.EnableResumeImport
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: EnableResumeImport
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 75
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether the resume import feature is enabled
+  example: []
+  syntax:
+    content: public bool EnableResumeImport { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property EnableResumeImport As Boolean
+  overload: Slackord.Classes.AppSettings.EnableResumeImport*
+- uid: Slackord.Classes.AppSettings.LastImportType
+  commentId: P:Slackord.Classes.AppSettings.LastImportType
+  id: LastImportType
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: LastImportType
+  nameWithType: AppSettings.LastImportType
+  fullName: Slackord.Classes.AppSettings.LastImportType
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LastImportType
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 80
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the type of the last import operation (Full or Channel)
+  example: []
+  syntax:
+    content: public string LastImportType { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property LastImportType As String
+  overload: Slackord.Classes.AppSettings.LastImportType*
+- uid: Slackord.Classes.AppSettings.LastImportChannel
+  commentId: P:Slackord.Classes.AppSettings.LastImportChannel
+  id: LastImportChannel
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: LastImportChannel
+  nameWithType: AppSettings.LastImportChannel
+  fullName: Slackord.Classes.AppSettings.LastImportChannel
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LastImportChannel
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 85
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the name of the last imported channel
+  example: []
+  syntax:
+    content: public string LastImportChannel { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property LastImportChannel As String
+  overload: Slackord.Classes.AppSettings.LastImportChannel*
+- uid: Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp
+  commentId: P:Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp
+  id: LastSuccessfulMessageTimestamp
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: LastSuccessfulMessageTimestamp
+  nameWithType: AppSettings.LastSuccessfulMessageTimestamp
+  fullName: Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LastSuccessfulMessageTimestamp
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 90
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the timestamp of the last successfully processed message
+  example: []
+  syntax:
+    content: public string LastSuccessfulMessageTimestamp { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property LastSuccessfulMessageTimestamp As String
+  overload: Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp*
+- uid: Slackord.Classes.AppSettings.HasPartialImport
+  commentId: P:Slackord.Classes.AppSettings.HasPartialImport
+  id: HasPartialImport
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: HasPartialImport
+  nameWithType: AppSettings.HasPartialImport
+  fullName: Slackord.Classes.AppSettings.HasPartialImport
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: HasPartialImport
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 95
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether there is a partial import that can be resumed
+  example: []
+  syntax:
+    content: public bool HasPartialImport { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property HasPartialImport As Boolean
+  overload: Slackord.Classes.AppSettings.HasPartialImport*
+- uid: Slackord.Classes.AppSettings.LoadFromPreferences
+  commentId: M:Slackord.Classes.AppSettings.LoadFromPreferences
+  id: LoadFromPreferences
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: LoadFromPreferences()
+  nameWithType: AppSettings.LoadFromPreferences()
+  fullName: Slackord.Classes.AppSettings.LoadFromPreferences()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LoadFromPreferences
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 108
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Loads all settings from the application preferences store
+  example: []
+  syntax:
+    content: public void LoadFromPreferences()
+    content.vb: Public Sub LoadFromPreferences()
+  overload: Slackord.Classes.AppSettings.LoadFromPreferences*
+- uid: Slackord.Classes.AppSettings.SaveAsync
+  commentId: M:Slackord.Classes.AppSettings.SaveAsync
+  id: SaveAsync
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: SaveAsync()
+  nameWithType: AppSettings.SaveAsync()
+  fullName: Slackord.Classes.AppSettings.SaveAsync()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SaveAsync
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 131
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Saves all current settings to the application preferences store and updates UI
+  example: []
+  syntax:
+    content: public Task SaveAsync()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function SaveAsync() As Task
+  overload: Slackord.Classes.AppSettings.SaveAsync*
+- uid: Slackord.Classes.AppSettings.ResetToDefaults
+  commentId: M:Slackord.Classes.AppSettings.ResetToDefaults
+  id: ResetToDefaults
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: ResetToDefaults()
+  nameWithType: AppSettings.ResetToDefaults()
+  fullName: Slackord.Classes.AppSettings.ResetToDefaults()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ResetToDefaults
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 166
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Resets all settings to their default values
+  example: []
+  syntax:
+    content: public void ResetToDefaults()
+    content.vb: Public Sub ResetToDefaults()
+  overload: Slackord.Classes.AppSettings.ResetToDefaults*
+- uid: Slackord.Classes.AppSettings.SaveResumeState(System.String,System.String,System.String)
+  commentId: M:Slackord.Classes.AppSettings.SaveResumeState(System.String,System.String,System.String)
+  id: SaveResumeState(System.String,System.String,System.String)
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: SaveResumeState(string, string, string)
+  nameWithType: AppSettings.SaveResumeState(string, string, string)
+  fullName: Slackord.Classes.AppSettings.SaveResumeState(string, string, string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SaveResumeState
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 184
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Saves the current state for resume functionality
+  example: []
+  syntax:
+    content: public void SaveResumeState(string importType, string channelName, string messageTimestamp)
+    parameters:
+    - id: importType
+      type: System.String
+      description: The type of import (Full or Channel)
+    - id: channelName
+      type: System.String
+      description: The name of the channel being processed
+    - id: messageTimestamp
+      type: System.String
+      description: The timestamp of the last processed message
+    content.vb: Public Sub SaveResumeState(importType As String, channelName As String, messageTimestamp As String)
+  overload: Slackord.Classes.AppSettings.SaveResumeState*
+  nameWithType.vb: AppSettings.SaveResumeState(String, String, String)
+  fullName.vb: Slackord.Classes.AppSettings.SaveResumeState(String, String, String)
+  name.vb: SaveResumeState(String, String, String)
+- uid: Slackord.Classes.AppSettings.ClearResumeState
+  commentId: M:Slackord.Classes.AppSettings.ClearResumeState
+  id: ClearResumeState
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: ClearResumeState()
+  nameWithType: AppSettings.ClearResumeState()
+  fullName: Slackord.Classes.AppSettings.ClearResumeState()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ClearResumeState
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 200
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Clears the saved resume state information
+  example: []
+  syntax:
+    content: public void ClearResumeState()
+    content.vb: Public Sub ClearResumeState()
+  overload: Slackord.Classes.AppSettings.ClearResumeState*
+- uid: Slackord.Classes.AppSettings.GetLogLevelDescription
+  commentId: M:Slackord.Classes.AppSettings.GetLogLevelDescription
+  id: GetLogLevelDescription
+  parent: Slackord.Classes.AppSettings
+  langs:
+  - csharp
+  - vb
+  name: GetLogLevelDescription()
+  nameWithType: AppSettings.GetLogLevelDescription()
+  fullName: Slackord.Classes.AppSettings.GetLogLevelDescription()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/AppSettings.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetLogLevelDescription
+    path: Slackord/Classes/AppSettings.cs
+    startLine: 217
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets a user-friendly description of the Discord log level
+  example: []
+  syntax:
+    content: public string GetLogLevelDescription()
+    return:
+      type: System.String
+      description: A descriptive string explaining the current log level
+    content.vb: Public Function GetLogLevelDescription() As String
+  overload: Slackord.Classes.AppSettings.GetLogLevelDescription*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.AppSettings.Instance*
+  commentId: Overload:Slackord.Classes.AppSettings.Instance
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_Instance
+  name: Instance
+  nameWithType: AppSettings.Instance
+  fullName: Slackord.Classes.AppSettings.Instance
+- uid: Slackord.Classes.AppSettings
+  commentId: T:Slackord.Classes.AppSettings
+  parent: Slackord.Classes
+  href: Slackord.Classes.AppSettings.html
+  name: AppSettings
+  nameWithType: AppSettings
+  fullName: Slackord.Classes.AppSettings
+- uid: Slackord.Classes.AppSettings.UserFormat*
+  commentId: Overload:Slackord.Classes.AppSettings.UserFormat
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_UserFormat
+  name: UserFormat
+  nameWithType: AppSettings.UserFormat
+  fullName: Slackord.Classes.AppSettings.UserFormat
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  commentId: T:Slackord.Classes.ApplicationWindow.UserFormatOrder
+  parent: Slackord.Classes
+  href: Slackord.Classes.ApplicationWindow.html
+  name: ApplicationWindow.UserFormatOrder
+  nameWithType: ApplicationWindow.UserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  spec.csharp:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+  spec.vb:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+- uid: Slackord.Classes.AppSettings.TimestampFormat*
+  commentId: Overload:Slackord.Classes.AppSettings.TimestampFormat
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_TimestampFormat
+  name: TimestampFormat
+  nameWithType: AppSettings.TimestampFormat
+  fullName: Slackord.Classes.AppSettings.TimestampFormat
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.AppSettings.UseThreadsForReplies*
+  commentId: Overload:Slackord.Classes.AppSettings.UseThreadsForReplies
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_UseThreadsForReplies
+  name: UseThreadsForReplies
+  nameWithType: AppSettings.UseThreadsForReplies
+  fullName: Slackord.Classes.AppSettings.UseThreadsForReplies
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: Slackord.Classes.AppSettings.BotToken*
+  commentId: Overload:Slackord.Classes.AppSettings.BotToken
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_BotToken
+  name: BotToken
+  nameWithType: AppSettings.BotToken
+  fullName: Slackord.Classes.AppSettings.BotToken
+- uid: Slackord.Classes.AppSettings.GuildId*
+  commentId: Overload:Slackord.Classes.AppSettings.GuildId
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_GuildId
+  name: GuildId
+  nameWithType: AppSettings.GuildId
+  fullName: Slackord.Classes.AppSettings.GuildId
+- uid: Slackord.Classes.AppSettings.DiscordLogLevel*
+  commentId: Overload:Slackord.Classes.AppSettings.DiscordLogLevel
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_DiscordLogLevel
+  name: DiscordLogLevel
+  nameWithType: AppSettings.DiscordLogLevel
+  fullName: Slackord.Classes.AppSettings.DiscordLogLevel
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Slackord.Classes.AppSettings.RateLimitDelay*
+  commentId: Overload:Slackord.Classes.AppSettings.RateLimitDelay
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_RateLimitDelay
+  name: RateLimitDelay
+  nameWithType: AppSettings.RateLimitDelay
+  fullName: Slackord.Classes.AppSettings.RateLimitDelay
+- uid: Slackord.Classes.AppSettings.SkipExistingChannels*
+  commentId: Overload:Slackord.Classes.AppSettings.SkipExistingChannels
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_SkipExistingChannels
+  name: SkipExistingChannels
+  nameWithType: AppSettings.SkipExistingChannels
+  fullName: Slackord.Classes.AppSettings.SkipExistingChannels
+- uid: Slackord.Classes.AppSettings.ImportAttachments*
+  commentId: Overload:Slackord.Classes.AppSettings.ImportAttachments
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_ImportAttachments
+  name: ImportAttachments
+  nameWithType: AppSettings.ImportAttachments
+  fullName: Slackord.Classes.AppSettings.ImportAttachments
+- uid: Slackord.Classes.AppSettings.ExportStatsAfterImport*
+  commentId: Overload:Slackord.Classes.AppSettings.ExportStatsAfterImport
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_ExportStatsAfterImport
+  name: ExportStatsAfterImport
+  nameWithType: AppSettings.ExportStatsAfterImport
+  fullName: Slackord.Classes.AppSettings.ExportStatsAfterImport
+- uid: Slackord.Classes.AppSettings.CheckForUpdatesOnStartup*
+  commentId: Overload:Slackord.Classes.AppSettings.CheckForUpdatesOnStartup
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_CheckForUpdatesOnStartup
+  name: CheckForUpdatesOnStartup
+  nameWithType: AppSettings.CheckForUpdatesOnStartup
+  fullName: Slackord.Classes.AppSettings.CheckForUpdatesOnStartup
+- uid: Slackord.Classes.AppSettings.EnableResumeImport*
+  commentId: Overload:Slackord.Classes.AppSettings.EnableResumeImport
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_EnableResumeImport
+  name: EnableResumeImport
+  nameWithType: AppSettings.EnableResumeImport
+  fullName: Slackord.Classes.AppSettings.EnableResumeImport
+- uid: Slackord.Classes.AppSettings.LastImportType*
+  commentId: Overload:Slackord.Classes.AppSettings.LastImportType
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_LastImportType
+  name: LastImportType
+  nameWithType: AppSettings.LastImportType
+  fullName: Slackord.Classes.AppSettings.LastImportType
+- uid: Slackord.Classes.AppSettings.LastImportChannel*
+  commentId: Overload:Slackord.Classes.AppSettings.LastImportChannel
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_LastImportChannel
+  name: LastImportChannel
+  nameWithType: AppSettings.LastImportChannel
+  fullName: Slackord.Classes.AppSettings.LastImportChannel
+- uid: Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp*
+  commentId: Overload:Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_LastSuccessfulMessageTimestamp
+  name: LastSuccessfulMessageTimestamp
+  nameWithType: AppSettings.LastSuccessfulMessageTimestamp
+  fullName: Slackord.Classes.AppSettings.LastSuccessfulMessageTimestamp
+- uid: Slackord.Classes.AppSettings.HasPartialImport*
+  commentId: Overload:Slackord.Classes.AppSettings.HasPartialImport
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_HasPartialImport
+  name: HasPartialImport
+  nameWithType: AppSettings.HasPartialImport
+  fullName: Slackord.Classes.AppSettings.HasPartialImport
+- uid: Slackord.Classes.AppSettings.LoadFromPreferences*
+  commentId: Overload:Slackord.Classes.AppSettings.LoadFromPreferences
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_LoadFromPreferences
+  name: LoadFromPreferences
+  nameWithType: AppSettings.LoadFromPreferences
+  fullName: Slackord.Classes.AppSettings.LoadFromPreferences
+- uid: Slackord.Classes.AppSettings.SaveAsync*
+  commentId: Overload:Slackord.Classes.AppSettings.SaveAsync
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_SaveAsync
+  name: SaveAsync
+  nameWithType: AppSettings.SaveAsync
+  fullName: Slackord.Classes.AppSettings.SaveAsync
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.AppSettings.ResetToDefaults*
+  commentId: Overload:Slackord.Classes.AppSettings.ResetToDefaults
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_ResetToDefaults
+  name: ResetToDefaults
+  nameWithType: AppSettings.ResetToDefaults
+  fullName: Slackord.Classes.AppSettings.ResetToDefaults
+- uid: Slackord.Classes.AppSettings.SaveResumeState*
+  commentId: Overload:Slackord.Classes.AppSettings.SaveResumeState
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_SaveResumeState_System_String_System_String_System_String_
+  name: SaveResumeState
+  nameWithType: AppSettings.SaveResumeState
+  fullName: Slackord.Classes.AppSettings.SaveResumeState
+- uid: Slackord.Classes.AppSettings.ClearResumeState*
+  commentId: Overload:Slackord.Classes.AppSettings.ClearResumeState
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_ClearResumeState
+  name: ClearResumeState
+  nameWithType: AppSettings.ClearResumeState
+  fullName: Slackord.Classes.AppSettings.ClearResumeState
+- uid: Slackord.Classes.AppSettings.GetLogLevelDescription*
+  commentId: Overload:Slackord.Classes.AppSettings.GetLogLevelDescription
+  href: Slackord.Classes.AppSettings.html#Slackord_Classes_AppSettings_GetLogLevelDescription
+  name: GetLogLevelDescription
+  nameWithType: AppSettings.GetLogLevelDescription
+  fullName: Slackord.Classes.AppSettings.GetLogLevelDescription

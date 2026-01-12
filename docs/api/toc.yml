@@ -1,0 +1,137 @@
+### YamlMime:TableOfContent
+items:
+- uid: MenuApp
+  name: MenuApp
+  type: Namespace
+  items:
+  - uid: MenuApp.AppShell
+    name: AppShell
+    type: Class
+  - uid: MenuApp.MainPage
+    name: MainPage
+    type: Class
+- uid: Slackord
+  name: Slackord
+  type: Namespace
+  items:
+  - uid: Slackord.App
+    name: App
+    type: Class
+  - uid: Slackord.MauiProgram
+    name: MauiProgram
+    type: Class
+- uid: Slackord.Classes
+  name: Slackord.Classes
+  type: Namespace
+  items:
+  - uid: Slackord.Classes.AppSettings
+    name: AppSettings
+    type: Class
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    type: Class
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: ApplicationWindow.UserFormatOrder
+    type: Enum
+  - uid: Slackord.Classes.BandwidthAnalysis
+    name: BandwidthAnalysis
+    type: Class
+  - uid: Slackord.Classes.BandwidthAnalysisUtility
+    name: BandwidthAnalysisUtility
+    type: Class
+  - uid: Slackord.Classes.Channel
+    name: Channel
+    type: Class
+  - uid: Slackord.Classes.ChannelProgress
+    name: ChannelProgress
+    type: Class
+  - uid: Slackord.Classes.Deconstruct
+    name: Deconstruct
+    type: Class
+  - uid: Slackord.Classes.DeconstructedMessage
+    name: DeconstructedMessage
+    type: Class
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    type: Class
+  - uid: Slackord.Classes.DeconstructedUser.UserProfile
+    name: DeconstructedUser.UserProfile
+    type: Class
+  - uid: Slackord.Classes.DeconstructedUsers
+    name: DeconstructedUsers
+    type: Class
+  - uid: Slackord.Classes.DownloadRequest
+    name: DownloadRequest
+    type: Class
+  - uid: Slackord.Classes.DownloadResult
+    name: DownloadResult
+    type: Class
+  - uid: Slackord.Classes.DownloadStatus
+    name: DownloadStatus
+    type: Enum
+  - uid: Slackord.Classes.DownloadSummary
+    name: DownloadSummary
+    type: Class
+  - uid: Slackord.Classes.FileStatus
+    name: FileStatus
+    type: Enum
+  - uid: Slackord.Classes.ImportCleanupUtility
+    name: ImportCleanupUtility
+    type: Class
+  - uid: Slackord.Classes.ImportJson
+    name: ImportJson
+    type: Class
+  - uid: Slackord.Classes.ImportSession
+    name: ImportSession
+    type: Class
+  - uid: Slackord.Classes.Logger
+    name: Logger
+    type: Class
+  - uid: Slackord.Classes.ProcessingManager
+    name: ProcessingManager
+    type: Class
+  - uid: Slackord.Classes.ProcessingState
+    name: ProcessingState
+    type: Enum
+  - uid: Slackord.Classes.Reaction
+    name: Reaction
+    type: Class
+  - uid: Slackord.Classes.Reconstruct
+    name: Reconstruct
+    type: Class
+  - uid: Slackord.Classes.ReconstructedMessage
+    name: ReconstructedMessage
+    type: Class
+  - uid: Slackord.Classes.SlackordFileManager
+    name: SlackordFileManager
+    type: Class
+  - uid: Slackord.Classes.SmartDownloadUtility
+    name: SmartDownloadUtility
+    type: Class
+  - uid: Slackord.Classes.ThreadInfo
+    name: ThreadInfo
+    type: Class
+  - uid: Slackord.Classes.ThreadType
+    name: ThreadType
+    type: Enum
+- uid: Slackord.Pages
+  name: Slackord.Pages
+  type: Namespace
+  items:
+  - uid: Slackord.Pages.OptionsPage
+    name: OptionsPage
+    type: Class
+  - uid: Slackord.Pages.OptionsPage.CleanupBehavior
+    name: OptionsPage.CleanupBehavior
+    type: Enum
+- uid: Slackord.WinUI
+  name: Slackord.WinUI
+  type: Namespace
+  items:
+  - uid: Slackord.WinUI.App
+    name: App
+    type: Class
+  - uid: Slackord.WinUI.Program
+    name: Program
+    type: Class
+memberLayout: SamePage

@@ -1,0 +1,960 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ChannelProgress
+  commentId: T:Slackord.Classes.ChannelProgress
+  id: ChannelProgress
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ChannelProgress.Description
+  - Slackord.Classes.ChannelProgress.DiscordChannelId
+  - Slackord.Classes.ChannelProgress.FileCreated
+  - Slackord.Classes.ChannelProgress.GetProgressDisplay
+  - Slackord.Classes.ChannelProgress.IsCompleted
+  - Slackord.Classes.ChannelProgress.LastMessageTimestamp
+  - Slackord.Classes.ChannelProgress.MessagesRemaining
+  - Slackord.Classes.ChannelProgress.MessagesSent
+  - Slackord.Classes.ChannelProgress.Name
+  - Slackord.Classes.ChannelProgress.NeedsDiscordChannel
+  - Slackord.Classes.ChannelProgress.ProgressPercentage
+  - Slackord.Classes.ChannelProgress.RecordMessageSent(System.String)
+  - Slackord.Classes.ChannelProgress.Reset
+  - Slackord.Classes.ChannelProgress.SetDiscordChannelId(System.UInt64)
+  - Slackord.Classes.ChannelProgress.TotalMessages
+  langs:
+  - csharp
+  - vb
+  name: ChannelProgress
+  nameWithType: ChannelProgress
+  fullName: Slackord.Classes.ChannelProgress
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ChannelProgress
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 7
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Tracks progress for a single channel during import process
+  example: []
+  syntax:
+    content: public class ChannelProgress
+    content.vb: Public Class ChannelProgress
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.ChannelProgress.Name
+  commentId: P:Slackord.Classes.ChannelProgress.Name
+  id: Name
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: Name
+  nameWithType: ChannelProgress.Name
+  fullName: Slackord.Classes.ChannelProgress.Name
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Name
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 12
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the original Slack channel name
+  example: []
+  syntax:
+    content: public string Name { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Name As String
+  overload: Slackord.Classes.ChannelProgress.Name*
+- uid: Slackord.Classes.ChannelProgress.DiscordChannelId
+  commentId: P:Slackord.Classes.ChannelProgress.DiscordChannelId
+  id: DiscordChannelId
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: DiscordChannelId
+  nameWithType: ChannelProgress.DiscordChannelId
+  fullName: Slackord.Classes.ChannelProgress.DiscordChannelId
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DiscordChannelId
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 17
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the Discord channel ID once created (0 if not created yet)
+  example: []
+  syntax:
+    content: public ulong DiscordChannelId { get; set; }
+    parameters: []
+    return:
+      type: System.UInt64
+    content.vb: Public Property DiscordChannelId As ULong
+  overload: Slackord.Classes.ChannelProgress.DiscordChannelId*
+- uid: Slackord.Classes.ChannelProgress.TotalMessages
+  commentId: P:Slackord.Classes.ChannelProgress.TotalMessages
+  id: TotalMessages
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: TotalMessages
+  nameWithType: ChannelProgress.TotalMessages
+  fullName: Slackord.Classes.ChannelProgress.TotalMessages
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: TotalMessages
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 22
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the total number of messages to import for this channel
+  example: []
+  syntax:
+    content: public int TotalMessages { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property TotalMessages As Integer
+  overload: Slackord.Classes.ChannelProgress.TotalMessages*
+- uid: Slackord.Classes.ChannelProgress.MessagesSent
+  commentId: P:Slackord.Classes.ChannelProgress.MessagesSent
+  id: MessagesSent
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: MessagesSent
+  nameWithType: ChannelProgress.MessagesSent
+  fullName: Slackord.Classes.ChannelProgress.MessagesSent
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: MessagesSent
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 27
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the number of messages successfully sent to Discord
+  example: []
+  syntax:
+    content: public int MessagesSent { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property MessagesSent As Integer
+  overload: Slackord.Classes.ChannelProgress.MessagesSent*
+- uid: Slackord.Classes.ChannelProgress.IsCompleted
+  commentId: P:Slackord.Classes.ChannelProgress.IsCompleted
+  id: IsCompleted
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: IsCompleted
+  nameWithType: ChannelProgress.IsCompleted
+  fullName: Slackord.Classes.ChannelProgress.IsCompleted
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: IsCompleted
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 32
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether this channel has completed importing
+  example: []
+  syntax:
+    content: public bool IsCompleted { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property IsCompleted As Boolean
+  overload: Slackord.Classes.ChannelProgress.IsCompleted*
+- uid: Slackord.Classes.ChannelProgress.LastMessageTimestamp
+  commentId: P:Slackord.Classes.ChannelProgress.LastMessageTimestamp
+  id: LastMessageTimestamp
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: LastMessageTimestamp
+  nameWithType: ChannelProgress.LastMessageTimestamp
+  fullName: Slackord.Classes.ChannelProgress.LastMessageTimestamp
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LastMessageTimestamp
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 37
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the timestamp of the last successfully sent message
+  example: []
+  syntax:
+    content: public string LastMessageTimestamp { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property LastMessageTimestamp As String
+  overload: Slackord.Classes.ChannelProgress.LastMessageTimestamp*
+- uid: Slackord.Classes.ChannelProgress.Description
+  commentId: P:Slackord.Classes.ChannelProgress.Description
+  id: Description
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: Description
+  nameWithType: ChannelProgress.Description
+  fullName: Slackord.Classes.ChannelProgress.Description
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Description
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 42
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the Discord channel description/topic
+  example: []
+  syntax:
+    content: public string Description { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Description As String
+  overload: Slackord.Classes.ChannelProgress.Description*
+- uid: Slackord.Classes.ChannelProgress.FileCreated
+  commentId: P:Slackord.Classes.ChannelProgress.FileCreated
+  id: FileCreated
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: FileCreated
+  nameWithType: ChannelProgress.FileCreated
+  fullName: Slackord.Classes.ChannelProgress.FileCreated
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: FileCreated
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 47
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets whether the .slackord file has been created for this channel
+  example: []
+  syntax:
+    content: public bool FileCreated { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property FileCreated As Boolean
+  overload: Slackord.Classes.ChannelProgress.FileCreated*
+- uid: Slackord.Classes.ChannelProgress.ProgressPercentage
+  commentId: P:Slackord.Classes.ChannelProgress.ProgressPercentage
+  id: ProgressPercentage
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: ProgressPercentage
+  nameWithType: ChannelProgress.ProgressPercentage
+  fullName: Slackord.Classes.ChannelProgress.ProgressPercentage
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ProgressPercentage
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 52
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the progress percentage (0-100) for this channel
+  example: []
+  syntax:
+    content: >-
+      [JsonIgnore]
+
+      public double ProgressPercentage { get; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: >-
+      <JsonIgnore>
+
+      Public ReadOnly Property ProgressPercentage As Double
+  overload: Slackord.Classes.ChannelProgress.ProgressPercentage*
+  attributes:
+  - type: Newtonsoft.Json.JsonIgnoreAttribute
+    ctor: Newtonsoft.Json.JsonIgnoreAttribute.#ctor
+    arguments: []
+- uid: Slackord.Classes.ChannelProgress.NeedsDiscordChannel
+  commentId: P:Slackord.Classes.ChannelProgress.NeedsDiscordChannel
+  id: NeedsDiscordChannel
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: NeedsDiscordChannel
+  nameWithType: ChannelProgress.NeedsDiscordChannel
+  fullName: Slackord.Classes.ChannelProgress.NeedsDiscordChannel
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: NeedsDiscordChannel
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 58
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets whether this channel needs to be created on Discord
+  example: []
+  syntax:
+    content: >-
+      [JsonIgnore]
+
+      public bool NeedsDiscordChannel { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: >-
+      <JsonIgnore>
+
+      Public ReadOnly Property NeedsDiscordChannel As Boolean
+  overload: Slackord.Classes.ChannelProgress.NeedsDiscordChannel*
+  attributes:
+  - type: Newtonsoft.Json.JsonIgnoreAttribute
+    ctor: Newtonsoft.Json.JsonIgnoreAttribute.#ctor
+    arguments: []
+- uid: Slackord.Classes.ChannelProgress.MessagesRemaining
+  commentId: P:Slackord.Classes.ChannelProgress.MessagesRemaining
+  id: MessagesRemaining
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: MessagesRemaining
+  nameWithType: ChannelProgress.MessagesRemaining
+  fullName: Slackord.Classes.ChannelProgress.MessagesRemaining
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: MessagesRemaining
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 64
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the number of messages remaining to send
+  example: []
+  syntax:
+    content: >-
+      [JsonIgnore]
+
+      public int MessagesRemaining { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: >-
+      <JsonIgnore>
+
+      Public ReadOnly Property MessagesRemaining As Integer
+  overload: Slackord.Classes.ChannelProgress.MessagesRemaining*
+  attributes:
+  - type: Newtonsoft.Json.JsonIgnoreAttribute
+    ctor: Newtonsoft.Json.JsonIgnoreAttribute.#ctor
+    arguments: []
+- uid: Slackord.Classes.ChannelProgress.RecordMessageSent(System.String)
+  commentId: M:Slackord.Classes.ChannelProgress.RecordMessageSent(System.String)
+  id: RecordMessageSent(System.String)
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: RecordMessageSent(string)
+  nameWithType: ChannelProgress.RecordMessageSent(string)
+  fullName: Slackord.Classes.ChannelProgress.RecordMessageSent(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: RecordMessageSent
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 71
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Updates the progress when a message is successfully sent
+  example: []
+  syntax:
+    content: public void RecordMessageSent(string messageTimestamp)
+    parameters:
+    - id: messageTimestamp
+      type: System.String
+      description: The timestamp of the message that was sent
+    content.vb: Public Sub RecordMessageSent(messageTimestamp As String)
+  overload: Slackord.Classes.ChannelProgress.RecordMessageSent*
+  nameWithType.vb: ChannelProgress.RecordMessageSent(String)
+  fullName.vb: Slackord.Classes.ChannelProgress.RecordMessageSent(String)
+  name.vb: RecordMessageSent(String)
+- uid: Slackord.Classes.ChannelProgress.SetDiscordChannelId(System.UInt64)
+  commentId: M:Slackord.Classes.ChannelProgress.SetDiscordChannelId(System.UInt64)
+  id: SetDiscordChannelId(System.UInt64)
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: SetDiscordChannelId(ulong)
+  nameWithType: ChannelProgress.SetDiscordChannelId(ulong)
+  fullName: Slackord.Classes.ChannelProgress.SetDiscordChannelId(ulong)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SetDiscordChannelId
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 86
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Sets the Discord channel ID when channel is created
+  example: []
+  syntax:
+    content: public void SetDiscordChannelId(ulong channelId)
+    parameters:
+    - id: channelId
+      type: System.UInt64
+      description: The Discord channel ID
+    content.vb: Public Sub SetDiscordChannelId(channelId As ULong)
+  overload: Slackord.Classes.ChannelProgress.SetDiscordChannelId*
+  nameWithType.vb: ChannelProgress.SetDiscordChannelId(ULong)
+  fullName.vb: Slackord.Classes.ChannelProgress.SetDiscordChannelId(ULong)
+  name.vb: SetDiscordChannelId(ULong)
+- uid: Slackord.Classes.ChannelProgress.GetProgressDisplay
+  commentId: M:Slackord.Classes.ChannelProgress.GetProgressDisplay
+  id: GetProgressDisplay
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: GetProgressDisplay()
+  nameWithType: ChannelProgress.GetProgressDisplay()
+  fullName: Slackord.Classes.ChannelProgress.GetProgressDisplay()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetProgressDisplay
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 95
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets a display string for UI showing progress
+  example: []
+  syntax:
+    content: public string GetProgressDisplay()
+    return:
+      type: System.String
+      description: A formatted string showing channel progress
+    content.vb: Public Function GetProgressDisplay() As String
+  overload: Slackord.Classes.ChannelProgress.GetProgressDisplay*
+- uid: Slackord.Classes.ChannelProgress.Reset
+  commentId: M:Slackord.Classes.ChannelProgress.Reset
+  id: Reset
+  parent: Slackord.Classes.ChannelProgress
+  langs:
+  - csharp
+  - vb
+  name: Reset()
+  nameWithType: ChannelProgress.Reset()
+  fullName: Slackord.Classes.ChannelProgress.Reset()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ChannelProgress.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Reset
+    path: Slackord/Classes/ChannelProgress.cs
+    startLine: 109
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Resets progress for retry scenarios
+  example: []
+  syntax:
+    content: public void Reset()
+    content.vb: Public Sub Reset()
+  overload: Slackord.Classes.ChannelProgress.Reset*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.ChannelProgress.Name*
+  commentId: Overload:Slackord.Classes.ChannelProgress.Name
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_Name
+  name: Name
+  nameWithType: ChannelProgress.Name
+  fullName: Slackord.Classes.ChannelProgress.Name
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.ChannelProgress.DiscordChannelId*
+  commentId: Overload:Slackord.Classes.ChannelProgress.DiscordChannelId
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_DiscordChannelId
+  name: DiscordChannelId
+  nameWithType: ChannelProgress.DiscordChannelId
+  fullName: Slackord.Classes.ChannelProgress.DiscordChannelId
+- uid: System.UInt64
+  commentId: T:System.UInt64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.uint64
+  name: ulong
+  nameWithType: ulong
+  fullName: ulong
+  nameWithType.vb: ULong
+  fullName.vb: ULong
+  name.vb: ULong
+- uid: Slackord.Classes.ChannelProgress.TotalMessages*
+  commentId: Overload:Slackord.Classes.ChannelProgress.TotalMessages
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_TotalMessages
+  name: TotalMessages
+  nameWithType: ChannelProgress.TotalMessages
+  fullName: Slackord.Classes.ChannelProgress.TotalMessages
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Slackord.Classes.ChannelProgress.MessagesSent*
+  commentId: Overload:Slackord.Classes.ChannelProgress.MessagesSent
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_MessagesSent
+  name: MessagesSent
+  nameWithType: ChannelProgress.MessagesSent
+  fullName: Slackord.Classes.ChannelProgress.MessagesSent
+- uid: Slackord.Classes.ChannelProgress.IsCompleted*
+  commentId: Overload:Slackord.Classes.ChannelProgress.IsCompleted
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_IsCompleted
+  name: IsCompleted
+  nameWithType: ChannelProgress.IsCompleted
+  fullName: Slackord.Classes.ChannelProgress.IsCompleted
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: Slackord.Classes.ChannelProgress.LastMessageTimestamp*
+  commentId: Overload:Slackord.Classes.ChannelProgress.LastMessageTimestamp
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_LastMessageTimestamp
+  name: LastMessageTimestamp
+  nameWithType: ChannelProgress.LastMessageTimestamp
+  fullName: Slackord.Classes.ChannelProgress.LastMessageTimestamp
+- uid: Slackord.Classes.ChannelProgress.Description*
+  commentId: Overload:Slackord.Classes.ChannelProgress.Description
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_Description
+  name: Description
+  nameWithType: ChannelProgress.Description
+  fullName: Slackord.Classes.ChannelProgress.Description
+- uid: Slackord.Classes.ChannelProgress.FileCreated*
+  commentId: Overload:Slackord.Classes.ChannelProgress.FileCreated
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_FileCreated
+  name: FileCreated
+  nameWithType: ChannelProgress.FileCreated
+  fullName: Slackord.Classes.ChannelProgress.FileCreated
+- uid: Slackord.Classes.ChannelProgress.ProgressPercentage*
+  commentId: Overload:Slackord.Classes.ChannelProgress.ProgressPercentage
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_ProgressPercentage
+  name: ProgressPercentage
+  nameWithType: ChannelProgress.ProgressPercentage
+  fullName: Slackord.Classes.ChannelProgress.ProgressPercentage
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.double
+  name: double
+  nameWithType: double
+  fullName: double
+  nameWithType.vb: Double
+  fullName.vb: Double
+  name.vb: Double
+- uid: Slackord.Classes.ChannelProgress.NeedsDiscordChannel*
+  commentId: Overload:Slackord.Classes.ChannelProgress.NeedsDiscordChannel
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_NeedsDiscordChannel
+  name: NeedsDiscordChannel
+  nameWithType: ChannelProgress.NeedsDiscordChannel
+  fullName: Slackord.Classes.ChannelProgress.NeedsDiscordChannel
+- uid: Slackord.Classes.ChannelProgress.MessagesRemaining*
+  commentId: Overload:Slackord.Classes.ChannelProgress.MessagesRemaining
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_MessagesRemaining
+  name: MessagesRemaining
+  nameWithType: ChannelProgress.MessagesRemaining
+  fullName: Slackord.Classes.ChannelProgress.MessagesRemaining
+- uid: Slackord.Classes.ChannelProgress.RecordMessageSent*
+  commentId: Overload:Slackord.Classes.ChannelProgress.RecordMessageSent
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_RecordMessageSent_System_String_
+  name: RecordMessageSent
+  nameWithType: ChannelProgress.RecordMessageSent
+  fullName: Slackord.Classes.ChannelProgress.RecordMessageSent
+- uid: Slackord.Classes.ChannelProgress.SetDiscordChannelId*
+  commentId: Overload:Slackord.Classes.ChannelProgress.SetDiscordChannelId
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_SetDiscordChannelId_System_UInt64_
+  name: SetDiscordChannelId
+  nameWithType: ChannelProgress.SetDiscordChannelId
+  fullName: Slackord.Classes.ChannelProgress.SetDiscordChannelId
+- uid: Slackord.Classes.ChannelProgress.GetProgressDisplay*
+  commentId: Overload:Slackord.Classes.ChannelProgress.GetProgressDisplay
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_GetProgressDisplay
+  name: GetProgressDisplay
+  nameWithType: ChannelProgress.GetProgressDisplay
+  fullName: Slackord.Classes.ChannelProgress.GetProgressDisplay
+- uid: Slackord.Classes.ChannelProgress.Reset*
+  commentId: Overload:Slackord.Classes.ChannelProgress.Reset
+  href: Slackord.Classes.ChannelProgress.html#Slackord_Classes_ChannelProgress_Reset
+  name: Reset
+  nameWithType: ChannelProgress.Reset
+  fullName: Slackord.Classes.ChannelProgress.Reset

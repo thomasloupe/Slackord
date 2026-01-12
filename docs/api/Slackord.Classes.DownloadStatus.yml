@@ -1,0 +1,147 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.DownloadStatus
+  commentId: T:Slackord.Classes.DownloadStatus
+  id: DownloadStatus
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.DownloadStatus.Downloaded
+  - Slackord.Classes.DownloadStatus.Failed
+  - Slackord.Classes.DownloadStatus.Skipped
+  langs:
+  - csharp
+  - vb
+  name: DownloadStatus
+  nameWithType: DownloadStatus
+  fullName: Slackord.Classes.DownloadStatus
+  type: Enum
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DownloadStatus
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 300
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Result of a download operation
+  example: []
+  syntax:
+    content: public enum DownloadStatus
+    content.vb: Public Enum DownloadStatus
+- uid: Slackord.Classes.DownloadStatus.Downloaded
+  commentId: F:Slackord.Classes.DownloadStatus.Downloaded
+  id: Downloaded
+  parent: Slackord.Classes.DownloadStatus
+  langs:
+  - csharp
+  - vb
+  name: Downloaded
+  nameWithType: DownloadStatus.Downloaded
+  fullName: Slackord.Classes.DownloadStatus.Downloaded
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Downloaded
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 305
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: File was successfully downloaded
+  example: []
+  syntax:
+    content: Downloaded = 0
+    return:
+      type: Slackord.Classes.DownloadStatus
+- uid: Slackord.Classes.DownloadStatus.Skipped
+  commentId: F:Slackord.Classes.DownloadStatus.Skipped
+  id: Skipped
+  parent: Slackord.Classes.DownloadStatus
+  langs:
+  - csharp
+  - vb
+  name: Skipped
+  nameWithType: DownloadStatus.Skipped
+  fullName: Slackord.Classes.DownloadStatus.Skipped
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Skipped
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 310
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: File download was skipped because it already exists
+  example: []
+  syntax:
+    content: Skipped = 1
+    return:
+      type: Slackord.Classes.DownloadStatus
+- uid: Slackord.Classes.DownloadStatus.Failed
+  commentId: F:Slackord.Classes.DownloadStatus.Failed
+  id: Failed
+  parent: Slackord.Classes.DownloadStatus
+  langs:
+  - csharp
+  - vb
+  name: Failed
+  nameWithType: DownloadStatus.Failed
+  fullName: Slackord.Classes.DownloadStatus.Failed
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Failed
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 315
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: File download failed
+  example: []
+  syntax:
+    content: Failed = 2
+    return:
+      type: Slackord.Classes.DownloadStatus
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: Slackord.Classes.DownloadStatus
+  commentId: T:Slackord.Classes.DownloadStatus
+  parent: Slackord.Classes
+  href: Slackord.Classes.DownloadStatus.html
+  name: DownloadStatus
+  nameWithType: DownloadStatus
+  fullName: Slackord.Classes.DownloadStatus

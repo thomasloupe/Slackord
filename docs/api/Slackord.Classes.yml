@@ -1,0 +1,295 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  id: Slackord.Classes
+  children:
+  - Slackord.Classes.AppSettings
+  - Slackord.Classes.ApplicationWindow
+  - Slackord.Classes.ApplicationWindow.UserFormatOrder
+  - Slackord.Classes.BandwidthAnalysis
+  - Slackord.Classes.BandwidthAnalysisUtility
+  - Slackord.Classes.Channel
+  - Slackord.Classes.ChannelProgress
+  - Slackord.Classes.Deconstruct
+  - Slackord.Classes.DeconstructedMessage
+  - Slackord.Classes.DeconstructedUser
+  - Slackord.Classes.DeconstructedUser.UserProfile
+  - Slackord.Classes.DeconstructedUsers
+  - Slackord.Classes.DownloadRequest
+  - Slackord.Classes.DownloadResult
+  - Slackord.Classes.DownloadStatus
+  - Slackord.Classes.DownloadSummary
+  - Slackord.Classes.FileStatus
+  - Slackord.Classes.ImportCleanupUtility
+  - Slackord.Classes.ImportJson
+  - Slackord.Classes.ImportSession
+  - Slackord.Classes.Logger
+  - Slackord.Classes.ProcessingManager
+  - Slackord.Classes.ProcessingState
+  - Slackord.Classes.Reaction
+  - Slackord.Classes.Reconstruct
+  - Slackord.Classes.ReconstructedMessage
+  - Slackord.Classes.SlackordFileManager
+  - Slackord.Classes.SmartDownloadUtility
+  - Slackord.Classes.ThreadInfo
+  - Slackord.Classes.ThreadType
+  langs:
+  - csharp
+  - vb
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  type: Namespace
+  assemblies:
+  - Slackord
+references:
+- uid: Slackord.Classes.ApplicationWindow
+  commentId: T:Slackord.Classes.ApplicationWindow
+  href: Slackord.Classes.ApplicationWindow.html
+  name: ApplicationWindow
+  nameWithType: ApplicationWindow
+  fullName: Slackord.Classes.ApplicationWindow
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  commentId: T:Slackord.Classes.ApplicationWindow.UserFormatOrder
+  parent: Slackord.Classes
+  href: Slackord.Classes.ApplicationWindow.html
+  name: ApplicationWindow.UserFormatOrder
+  nameWithType: ApplicationWindow.UserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  spec.csharp:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+  spec.vb:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+- uid: Slackord.Classes.AppSettings
+  commentId: T:Slackord.Classes.AppSettings
+  parent: Slackord.Classes
+  href: Slackord.Classes.AppSettings.html
+  name: AppSettings
+  nameWithType: AppSettings
+  fullName: Slackord.Classes.AppSettings
+- uid: Slackord.Classes.BandwidthAnalysisUtility
+  commentId: T:Slackord.Classes.BandwidthAnalysisUtility
+  href: Slackord.Classes.BandwidthAnalysisUtility.html
+  name: BandwidthAnalysisUtility
+  nameWithType: BandwidthAnalysisUtility
+  fullName: Slackord.Classes.BandwidthAnalysisUtility
+- uid: Slackord.Classes.BandwidthAnalysis
+  commentId: T:Slackord.Classes.BandwidthAnalysis
+  parent: Slackord.Classes
+  href: Slackord.Classes.BandwidthAnalysis.html
+  name: BandwidthAnalysis
+  nameWithType: BandwidthAnalysis
+  fullName: Slackord.Classes.BandwidthAnalysis
+- uid: Slackord.Classes.Channel
+  commentId: T:Slackord.Classes.Channel
+  parent: Slackord.Classes
+  href: Slackord.Classes.Channel.html
+  name: Channel
+  nameWithType: Channel
+  fullName: Slackord.Classes.Channel
+- uid: Slackord.Classes.ChannelProgress
+  commentId: T:Slackord.Classes.ChannelProgress
+  parent: Slackord.Classes
+  href: Slackord.Classes.ChannelProgress.html
+  name: ChannelProgress
+  nameWithType: ChannelProgress
+  fullName: Slackord.Classes.ChannelProgress
+- uid: Slackord.Classes.Deconstruct
+  commentId: T:Slackord.Classes.Deconstruct
+  href: Slackord.Classes.Deconstruct.html
+  name: Deconstruct
+  nameWithType: Deconstruct
+  fullName: Slackord.Classes.Deconstruct
+- uid: Slackord.Classes.DeconstructedUser
+  commentId: T:Slackord.Classes.DeconstructedUser
+  href: Slackord.Classes.DeconstructedUser.html
+  name: DeconstructedUser
+  nameWithType: DeconstructedUser
+  fullName: Slackord.Classes.DeconstructedUser
+- uid: Slackord.Classes.DeconstructedUser.UserProfile
+  commentId: T:Slackord.Classes.DeconstructedUser.UserProfile
+  parent: Slackord.Classes
+  href: Slackord.Classes.DeconstructedUser.html
+  name: DeconstructedUser.UserProfile
+  nameWithType: DeconstructedUser.UserProfile
+  fullName: Slackord.Classes.DeconstructedUser.UserProfile
+  spec.csharp:
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    href: Slackord.Classes.DeconstructedUser.html
+  - name: .
+  - uid: Slackord.Classes.DeconstructedUser.UserProfile
+    name: UserProfile
+    href: Slackord.Classes.DeconstructedUser.UserProfile.html
+  spec.vb:
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    href: Slackord.Classes.DeconstructedUser.html
+  - name: .
+  - uid: Slackord.Classes.DeconstructedUser.UserProfile
+    name: UserProfile
+    href: Slackord.Classes.DeconstructedUser.UserProfile.html
+- uid: Slackord.Classes.DeconstructedUsers
+  commentId: T:Slackord.Classes.DeconstructedUsers
+  href: Slackord.Classes.DeconstructedUsers.html
+  name: DeconstructedUsers
+  nameWithType: DeconstructedUsers
+  fullName: Slackord.Classes.DeconstructedUsers
+- uid: Slackord.Classes.ThreadType
+  commentId: T:Slackord.Classes.ThreadType
+  parent: Slackord.Classes
+  href: Slackord.Classes.ThreadType.html
+  name: ThreadType
+  nameWithType: ThreadType
+  fullName: Slackord.Classes.ThreadType
+- uid: Slackord.Classes.ThreadInfo
+  commentId: T:Slackord.Classes.ThreadInfo
+  href: Slackord.Classes.ThreadInfo.html
+  name: ThreadInfo
+  nameWithType: ThreadInfo
+  fullName: Slackord.Classes.ThreadInfo
+- uid: Slackord.Classes.DeconstructedMessage
+  commentId: T:Slackord.Classes.DeconstructedMessage
+  parent: Slackord.Classes
+  href: Slackord.Classes.DeconstructedMessage.html
+  name: DeconstructedMessage
+  nameWithType: DeconstructedMessage
+  fullName: Slackord.Classes.DeconstructedMessage
+- uid: Slackord.Classes.Reaction
+  commentId: T:Slackord.Classes.Reaction
+  href: Slackord.Classes.Reaction.html
+  name: Reaction
+  nameWithType: Reaction
+  fullName: Slackord.Classes.Reaction
+- uid: Slackord.Classes.ImportCleanupUtility
+  commentId: T:Slackord.Classes.ImportCleanupUtility
+  href: Slackord.Classes.ImportCleanupUtility.html
+  name: ImportCleanupUtility
+  nameWithType: ImportCleanupUtility
+  fullName: Slackord.Classes.ImportCleanupUtility
+- uid: Slackord.Classes.ImportJson
+  commentId: T:Slackord.Classes.ImportJson
+  href: Slackord.Classes.ImportJson.html
+  name: ImportJson
+  nameWithType: ImportJson
+  fullName: Slackord.Classes.ImportJson
+- uid: Slackord.Classes.ImportSession
+  commentId: T:Slackord.Classes.ImportSession
+  parent: Slackord.Classes
+  href: Slackord.Classes.ImportSession.html
+  name: ImportSession
+  nameWithType: ImportSession
+  fullName: Slackord.Classes.ImportSession
+- uid: Slackord.Classes.Logger
+  commentId: T:Slackord.Classes.Logger
+  href: Slackord.Classes.Logger.html
+  name: Logger
+  nameWithType: Logger
+  fullName: Slackord.Classes.Logger
+- uid: Slackord.Classes.ProcessingState
+  commentId: T:Slackord.Classes.ProcessingState
+  parent: Slackord.Classes
+  href: Slackord.Classes.ProcessingState.html
+  name: ProcessingState
+  nameWithType: ProcessingState
+  fullName: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingManager
+  commentId: T:Slackord.Classes.ProcessingManager
+  parent: Slackord.Classes
+  href: Slackord.Classes.ProcessingManager.html
+  name: ProcessingManager
+  nameWithType: ProcessingManager
+  fullName: Slackord.Classes.ProcessingManager
+- uid: Slackord.Classes.Reconstruct
+  commentId: T:Slackord.Classes.Reconstruct
+  href: Slackord.Classes.Reconstruct.html
+  name: Reconstruct
+  nameWithType: Reconstruct
+  fullName: Slackord.Classes.Reconstruct
+- uid: Slackord.Classes.ReconstructedMessage
+  commentId: T:Slackord.Classes.ReconstructedMessage
+  parent: Slackord.Classes
+  href: Slackord.Classes.ReconstructedMessage.html
+  name: ReconstructedMessage
+  nameWithType: ReconstructedMessage
+  fullName: Slackord.Classes.ReconstructedMessage
+- uid: Slackord.Classes.SlackordFileManager
+  commentId: T:Slackord.Classes.SlackordFileManager
+  href: Slackord.Classes.SlackordFileManager.html
+  name: SlackordFileManager
+  nameWithType: SlackordFileManager
+  fullName: Slackord.Classes.SlackordFileManager
+- uid: Slackord.Classes.SmartDownloadUtility
+  commentId: T:Slackord.Classes.SmartDownloadUtility
+  href: Slackord.Classes.SmartDownloadUtility.html
+  name: SmartDownloadUtility
+  nameWithType: SmartDownloadUtility
+  fullName: Slackord.Classes.SmartDownloadUtility
+- uid: Slackord.Classes.FileStatus
+  commentId: T:Slackord.Classes.FileStatus
+  parent: Slackord.Classes
+  href: Slackord.Classes.FileStatus.html
+  name: FileStatus
+  nameWithType: FileStatus
+  fullName: Slackord.Classes.FileStatus
+- uid: Slackord.Classes.DownloadStatus
+  commentId: T:Slackord.Classes.DownloadStatus
+  parent: Slackord.Classes
+  href: Slackord.Classes.DownloadStatus.html
+  name: DownloadStatus
+  nameWithType: DownloadStatus
+  fullName: Slackord.Classes.DownloadStatus
+- uid: Slackord.Classes.DownloadResult
+  commentId: T:Slackord.Classes.DownloadResult
+  parent: Slackord.Classes
+  href: Slackord.Classes.DownloadResult.html
+  name: DownloadResult
+  nameWithType: DownloadResult
+  fullName: Slackord.Classes.DownloadResult
+- uid: Slackord.Classes.DownloadRequest
+  commentId: T:Slackord.Classes.DownloadRequest
+  href: Slackord.Classes.DownloadRequest.html
+  name: DownloadRequest
+  nameWithType: DownloadRequest
+  fullName: Slackord.Classes.DownloadRequest
+- uid: Slackord.Classes.DownloadSummary
+  commentId: T:Slackord.Classes.DownloadSummary
+  href: Slackord.Classes.DownloadSummary.html
+  name: DownloadSummary
+  nameWithType: DownloadSummary
+  fullName: Slackord.Classes.DownloadSummary
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
