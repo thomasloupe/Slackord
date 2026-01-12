@@ -19,6 +19,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
       - run: dotnet tool restore
+      - run: dotnet workload install maui-windows --skip-manifest-update
       - run: dotnet restore Slackord/Slackord.csproj -p:TargetFramework=net10.0-windows10.0.19041.0 -p:EnableWindowsTargeting=true -p:PublishTrimmed=false
       - run: dotnet docfx docfx.json
       - uses: actions/upload-pages-artifact@v3
