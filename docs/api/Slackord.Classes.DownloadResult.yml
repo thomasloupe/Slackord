@@ -1,0 +1,481 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.DownloadResult
+  commentId: T:Slackord.Classes.DownloadResult
+  id: DownloadResult
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.DownloadResult.BytesDownloaded
+  - Slackord.Classes.DownloadResult.LocalPath
+  - Slackord.Classes.DownloadResult.Message
+  - Slackord.Classes.DownloadResult.Status
+  langs:
+  - csharp
+  - vb
+  name: DownloadResult
+  nameWithType: DownloadResult
+  fullName: Slackord.Classes.DownloadResult
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DownloadResult
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 321
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Result of a single download operation
+  example: []
+  syntax:
+    content: public class DownloadResult
+    content.vb: Public Class DownloadResult
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.DownloadResult.Status
+  commentId: P:Slackord.Classes.DownloadResult.Status
+  id: Status
+  parent: Slackord.Classes.DownloadResult
+  langs:
+  - csharp
+  - vb
+  name: Status
+  nameWithType: DownloadResult.Status
+  fullName: Slackord.Classes.DownloadResult.Status
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Status
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 326
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Status of the download operation
+  example: []
+  syntax:
+    content: public DownloadStatus Status { get; set; }
+    parameters: []
+    return:
+      type: Slackord.Classes.DownloadStatus
+    content.vb: Public Property Status As DownloadStatus
+  overload: Slackord.Classes.DownloadResult.Status*
+- uid: Slackord.Classes.DownloadResult.Message
+  commentId: P:Slackord.Classes.DownloadResult.Message
+  id: Message
+  parent: Slackord.Classes.DownloadResult
+  langs:
+  - csharp
+  - vb
+  name: Message
+  nameWithType: DownloadResult.Message
+  fullName: Slackord.Classes.DownloadResult.Message
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Message
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 331
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Human-readable message about the result
+  example: []
+  syntax:
+    content: public string Message { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Message As String
+  overload: Slackord.Classes.DownloadResult.Message*
+- uid: Slackord.Classes.DownloadResult.LocalPath
+  commentId: P:Slackord.Classes.DownloadResult.LocalPath
+  id: LocalPath
+  parent: Slackord.Classes.DownloadResult
+  langs:
+  - csharp
+  - vb
+  name: LocalPath
+  nameWithType: DownloadResult.LocalPath
+  fullName: Slackord.Classes.DownloadResult.LocalPath
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: LocalPath
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 336
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Local file path where the file was/would be saved
+  example: []
+  syntax:
+    content: public string LocalPath { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property LocalPath As String
+  overload: Slackord.Classes.DownloadResult.LocalPath*
+- uid: Slackord.Classes.DownloadResult.BytesDownloaded
+  commentId: P:Slackord.Classes.DownloadResult.BytesDownloaded
+  id: BytesDownloaded
+  parent: Slackord.Classes.DownloadResult
+  langs:
+  - csharp
+  - vb
+  name: BytesDownloaded
+  nameWithType: DownloadResult.BytesDownloaded
+  fullName: Slackord.Classes.DownloadResult.BytesDownloaded
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/SmartDownloadUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: BytesDownloaded
+    path: Slackord/Classes/SmartDownloadUtility.cs
+    startLine: 341
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Number of bytes actually downloaded (0 for skipped files)
+  example: []
+  syntax:
+    content: public long BytesDownloaded { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property BytesDownloaded As Long
+  overload: Slackord.Classes.DownloadResult.BytesDownloaded*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.DownloadResult.Status*
+  commentId: Overload:Slackord.Classes.DownloadResult.Status
+  href: Slackord.Classes.DownloadResult.html#Slackord_Classes_DownloadResult_Status
+  name: Status
+  nameWithType: DownloadResult.Status
+  fullName: Slackord.Classes.DownloadResult.Status
+- uid: Slackord.Classes.DownloadStatus
+  commentId: T:Slackord.Classes.DownloadStatus
+  parent: Slackord.Classes
+  href: Slackord.Classes.DownloadStatus.html
+  name: DownloadStatus
+  nameWithType: DownloadStatus
+  fullName: Slackord.Classes.DownloadStatus
+- uid: Slackord.Classes.DownloadResult.Message*
+  commentId: Overload:Slackord.Classes.DownloadResult.Message
+  href: Slackord.Classes.DownloadResult.html#Slackord_Classes_DownloadResult_Message
+  name: Message
+  nameWithType: DownloadResult.Message
+  fullName: Slackord.Classes.DownloadResult.Message
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.DownloadResult.LocalPath*
+  commentId: Overload:Slackord.Classes.DownloadResult.LocalPath
+  href: Slackord.Classes.DownloadResult.html#Slackord_Classes_DownloadResult_LocalPath
+  name: LocalPath
+  nameWithType: DownloadResult.LocalPath
+  fullName: Slackord.Classes.DownloadResult.LocalPath
+- uid: Slackord.Classes.DownloadResult.BytesDownloaded*
+  commentId: Overload:Slackord.Classes.DownloadResult.BytesDownloaded
+  href: Slackord.Classes.DownloadResult.html#Slackord_Classes_DownloadResult_BytesDownloaded
+  name: BytesDownloaded
+  nameWithType: DownloadResult.BytesDownloaded
+  fullName: Slackord.Classes.DownloadResult.BytesDownloaded
+- uid: System.Int64
+  commentId: T:System.Int64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long
+  nameWithType: long
+  fullName: long
+  nameWithType.vb: Long
+  fullName.vb: Long
+  name.vb: Long

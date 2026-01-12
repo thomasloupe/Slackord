@@ -1,0 +1,734 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ImportJson
+  commentId: T:Slackord.Classes.ImportJson
+  id: ImportJson
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ImportJson.CurrentSession
+  - Slackord.Classes.ImportJson.GetCurrentSession
+  - Slackord.Classes.ImportJson.GetDownloadsFolderPath
+  - Slackord.Classes.ImportJson.ImportJsonAsync(System.Boolean,System.Threading.CancellationToken)
+  - Slackord.Classes.ImportJson.IsSlackdumpExport
+  - Slackord.Classes.ImportJson.RootFolderPath
+  - Slackord.Classes.ImportJson.SetCurrentSession(Slackord.Classes.ImportSession)
+  - Slackord.Classes.ImportJson.TotalHiddenFileCount
+  langs:
+  - csharp
+  - vb
+  name: ImportJson
+  nameWithType: ImportJson
+  fullName: Slackord.Classes.ImportJson
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportJson
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 8
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Handles the import and processing of Slack JSON export data
+  example: []
+  syntax:
+    content: public class ImportJson
+    content.vb: Public Class ImportJson
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.ImportJson.RootFolderPath
+  commentId: P:Slackord.Classes.ImportJson.RootFolderPath
+  id: RootFolderPath
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: RootFolderPath
+  nameWithType: ImportJson.RootFolderPath
+  fullName: Slackord.Classes.ImportJson.RootFolderPath
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: RootFolderPath
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 13
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the root folder path of the selected Slack export
+  example: []
+  syntax:
+    content: public static string RootFolderPath { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Shared Property RootFolderPath As String
+  overload: Slackord.Classes.ImportJson.RootFolderPath*
+- uid: Slackord.Classes.ImportJson.CurrentSession
+  commentId: P:Slackord.Classes.ImportJson.CurrentSession
+  id: CurrentSession
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: CurrentSession
+  nameWithType: ImportJson.CurrentSession
+  fullName: Slackord.Classes.ImportJson.CurrentSession
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CurrentSession
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 18
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the current import session being processed
+  example: []
+  syntax:
+    content: public static ImportSession CurrentSession { get; }
+    parameters: []
+    return:
+      type: Slackord.Classes.ImportSession
+    content.vb: Public Shared Property CurrentSession As ImportSession
+  overload: Slackord.Classes.ImportJson.CurrentSession*
+- uid: Slackord.Classes.ImportJson.TotalHiddenFileCount
+  commentId: P:Slackord.Classes.ImportJson.TotalHiddenFileCount
+  id: TotalHiddenFileCount
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: TotalHiddenFileCount
+  nameWithType: ImportJson.TotalHiddenFileCount
+  fullName: Slackord.Classes.ImportJson.TotalHiddenFileCount
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: TotalHiddenFileCount
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 23
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the total count of files hidden by Slack due to limits
+  example: []
+  syntax:
+    content: public static int TotalHiddenFileCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Shared Property TotalHiddenFileCount As Integer
+  overload: Slackord.Classes.ImportJson.TotalHiddenFileCount*
+- uid: Slackord.Classes.ImportJson.ImportJsonAsync(System.Boolean,System.Threading.CancellationToken)
+  commentId: M:Slackord.Classes.ImportJson.ImportJsonAsync(System.Boolean,System.Threading.CancellationToken)
+  id: ImportJsonAsync(System.Boolean,System.Threading.CancellationToken)
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: ImportJsonAsync(bool, CancellationToken)
+  nameWithType: ImportJson.ImportJsonAsync(bool, CancellationToken)
+  fullName: Slackord.Classes.ImportJson.ImportJsonAsync(bool, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportJsonAsync
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 30
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Initiates the JSON import process from a selected folder
+  example: []
+  syntax:
+    content: public static Task ImportJsonAsync(bool isFullExport, CancellationToken cancellationToken)
+    parameters:
+    - id: isFullExport
+      type: System.Boolean
+      description: Whether this is a full Slack export or single channel export
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+      description: Token to cancel the operation
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function ImportJsonAsync(isFullExport As Boolean, cancellationToken As CancellationToken) As Task
+  overload: Slackord.Classes.ImportJson.ImportJsonAsync*
+  nameWithType.vb: ImportJson.ImportJsonAsync(Boolean, CancellationToken)
+  fullName.vb: Slackord.Classes.ImportJson.ImportJsonAsync(Boolean, System.Threading.CancellationToken)
+  name.vb: ImportJsonAsync(Boolean, CancellationToken)
+- uid: Slackord.Classes.ImportJson.GetCurrentSession
+  commentId: M:Slackord.Classes.ImportJson.GetCurrentSession
+  id: GetCurrentSession
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: GetCurrentSession()
+  nameWithType: ImportJson.GetCurrentSession()
+  fullName: Slackord.Classes.ImportJson.GetCurrentSession()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetCurrentSession
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 492
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the current session or loads an existing one
+  example: []
+  syntax:
+    content: public static ImportSession GetCurrentSession()
+    return:
+      type: Slackord.Classes.ImportSession
+      description: The current import session
+    content.vb: Public Shared Function GetCurrentSession() As ImportSession
+  overload: Slackord.Classes.ImportJson.GetCurrentSession*
+- uid: Slackord.Classes.ImportJson.IsSlackdumpExport
+  commentId: P:Slackord.Classes.ImportJson.IsSlackdumpExport
+  id: IsSlackdumpExport
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: IsSlackdumpExport
+  nameWithType: ImportJson.IsSlackdumpExport
+  fullName: Slackord.Classes.ImportJson.IsSlackdumpExport
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: IsSlackdumpExport
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 500
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets whether the current import is a Slackdump export
+  example: []
+  syntax:
+    content: public static bool IsSlackdumpExport { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Shared Property IsSlackdumpExport As Boolean
+  overload: Slackord.Classes.ImportJson.IsSlackdumpExport*
+- uid: Slackord.Classes.ImportJson.GetDownloadsFolderPath
+  commentId: M:Slackord.Classes.ImportJson.GetDownloadsFolderPath
+  id: GetDownloadsFolderPath
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: GetDownloadsFolderPath()
+  nameWithType: ImportJson.GetDownloadsFolderPath()
+  fullName: Slackord.Classes.ImportJson.GetDownloadsFolderPath()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetDownloadsFolderPath
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 506
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets the path to the downloads folder for storing file attachments
+  example: []
+  syntax:
+    content: public static string GetDownloadsFolderPath()
+    return:
+      type: System.String
+      description: The path to the downloads folder within the current session
+    content.vb: Public Shared Function GetDownloadsFolderPath() As String
+  overload: Slackord.Classes.ImportJson.GetDownloadsFolderPath*
+- uid: Slackord.Classes.ImportJson.SetCurrentSession(Slackord.Classes.ImportSession)
+  commentId: M:Slackord.Classes.ImportJson.SetCurrentSession(Slackord.Classes.ImportSession)
+  id: SetCurrentSession(Slackord.Classes.ImportSession)
+  parent: Slackord.Classes.ImportJson
+  langs:
+  - csharp
+  - vb
+  name: SetCurrentSession(ImportSession)
+  nameWithType: ImportJson.SetCurrentSession(ImportSession)
+  fullName: Slackord.Classes.ImportJson.SetCurrentSession(Slackord.Classes.ImportSession)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportJson.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SetCurrentSession
+    path: Slackord/Classes/ImportJson.cs
+    startLine: 520
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Sets the current session (used for resume operations)
+  example: []
+  syntax:
+    content: public static void SetCurrentSession(ImportSession session)
+    parameters:
+    - id: session
+      type: Slackord.Classes.ImportSession
+      description: The import session to set as current
+    content.vb: Public Shared Sub SetCurrentSession(session As ImportSession)
+  overload: Slackord.Classes.ImportJson.SetCurrentSession*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.ImportJson.RootFolderPath*
+  commentId: Overload:Slackord.Classes.ImportJson.RootFolderPath
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_RootFolderPath
+  name: RootFolderPath
+  nameWithType: ImportJson.RootFolderPath
+  fullName: Slackord.Classes.ImportJson.RootFolderPath
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.ImportJson.CurrentSession*
+  commentId: Overload:Slackord.Classes.ImportJson.CurrentSession
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_CurrentSession
+  name: CurrentSession
+  nameWithType: ImportJson.CurrentSession
+  fullName: Slackord.Classes.ImportJson.CurrentSession
+- uid: Slackord.Classes.ImportSession
+  commentId: T:Slackord.Classes.ImportSession
+  parent: Slackord.Classes
+  href: Slackord.Classes.ImportSession.html
+  name: ImportSession
+  nameWithType: ImportSession
+  fullName: Slackord.Classes.ImportSession
+- uid: Slackord.Classes.ImportJson.TotalHiddenFileCount*
+  commentId: Overload:Slackord.Classes.ImportJson.TotalHiddenFileCount
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_TotalHiddenFileCount
+  name: TotalHiddenFileCount
+  nameWithType: ImportJson.TotalHiddenFileCount
+  fullName: Slackord.Classes.ImportJson.TotalHiddenFileCount
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Slackord.Classes.ImportJson.ImportJsonAsync*
+  commentId: Overload:Slackord.Classes.ImportJson.ImportJsonAsync
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_ImportJsonAsync_System_Boolean_System_Threading_CancellationToken_
+  name: ImportJsonAsync
+  nameWithType: ImportJson.ImportJsonAsync
+  fullName: Slackord.Classes.ImportJson.ImportJsonAsync
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.ImportJson.GetCurrentSession*
+  commentId: Overload:Slackord.Classes.ImportJson.GetCurrentSession
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_GetCurrentSession
+  name: GetCurrentSession
+  nameWithType: ImportJson.GetCurrentSession
+  fullName: Slackord.Classes.ImportJson.GetCurrentSession
+- uid: Slackord.Classes.ImportJson.IsSlackdumpExport*
+  commentId: Overload:Slackord.Classes.ImportJson.IsSlackdumpExport
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_IsSlackdumpExport
+  name: IsSlackdumpExport
+  nameWithType: ImportJson.IsSlackdumpExport
+  fullName: Slackord.Classes.ImportJson.IsSlackdumpExport
+- uid: Slackord.Classes.ImportJson.GetDownloadsFolderPath*
+  commentId: Overload:Slackord.Classes.ImportJson.GetDownloadsFolderPath
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_GetDownloadsFolderPath
+  name: GetDownloadsFolderPath
+  nameWithType: ImportJson.GetDownloadsFolderPath
+  fullName: Slackord.Classes.ImportJson.GetDownloadsFolderPath
+- uid: Slackord.Classes.ImportJson.SetCurrentSession*
+  commentId: Overload:Slackord.Classes.ImportJson.SetCurrentSession
+  href: Slackord.Classes.ImportJson.html#Slackord_Classes_ImportJson_SetCurrentSession_Slackord_Classes_ImportSession_
+  name: SetCurrentSession
+  nameWithType: ImportJson.SetCurrentSession
+  fullName: Slackord.Classes.ImportJson.SetCurrentSession

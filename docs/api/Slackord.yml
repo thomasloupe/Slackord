@@ -1,0 +1,30 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord
+  commentId: N:Slackord
+  id: Slackord
+  children:
+  - Slackord.App
+  - Slackord.MauiProgram
+  langs:
+  - csharp
+  - vb
+  name: Slackord
+  nameWithType: Slackord
+  fullName: Slackord
+  type: Namespace
+  assemblies:
+  - Slackord
+references:
+- uid: Slackord.App
+  commentId: T:Slackord.App
+  href: Slackord.App.html
+  name: App
+  nameWithType: App
+  fullName: Slackord.App
+- uid: Slackord.MauiProgram
+  commentId: T:Slackord.MauiProgram
+  href: Slackord.MauiProgram.html
+  name: MauiProgram
+  nameWithType: MauiProgram
+  fullName: Slackord.MauiProgram

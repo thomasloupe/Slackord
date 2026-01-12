@@ -1,0 +1,1619 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ApplicationWindow
+  commentId: T:Slackord.Classes.ApplicationWindow
+  id: ApplicationWindow
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ApplicationWindow.CanStartDiscordImport
+  - Slackord.Classes.ApplicationWindow.CancelImport
+  - Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton(System.String,Microsoft.Maui.Graphics.Color,Microsoft.Maui.Graphics.Color)
+  - Slackord.Classes.ApplicationWindow.CheckForFirstRun
+  - Slackord.Classes.ApplicationWindow.CheckForNewVersion(System.Boolean)
+  - Slackord.Classes.ApplicationWindow.CheckForPartialImport
+  - Slackord.Classes.ApplicationWindow.CheckForValidBotToken
+  - Slackord.Classes.ApplicationWindow.ClearLog
+  - Slackord.Classes.ApplicationWindow.CopyLog
+  - Slackord.Classes.ApplicationWindow.CreateDonateAlert
+  - Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder
+  - Slackord.Classes.ApplicationWindow.DisplayAbout
+  - Slackord.Classes.ApplicationWindow.ExitApplication
+  - Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue
+  - Slackord.Classes.ApplicationWindow.GetTimeStampValue
+  - Slackord.Classes.ApplicationWindow.GetUserFormatValue
+  - Slackord.Classes.ApplicationWindow.HideProgressBar
+  - Slackord.Classes.ApplicationWindow.ImportJsonAsync(System.Boolean)
+  - Slackord.Classes.ApplicationWindow.OnOperationCancelled
+  - Slackord.Classes.ApplicationWindow.PushDebugText
+  - Slackord.Classes.ApplicationWindow.ResetProgressBar
+  - Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue
+  - Slackord.Classes.ApplicationWindow.SetTimestampValue
+  - Slackord.Classes.ApplicationWindow.SetUserFormatValue
+  - Slackord.Classes.ApplicationWindow.ShowProgressBar
+  - Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable(System.Boolean)
+  - Slackord.Classes.ApplicationWindow.ToggleDiscordConnection
+  - Slackord.Classes.ApplicationWindow.UpdateProgressBar(System.Int32,System.Int32,System.String)
+  - Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText(System.Int32,System.Int32,System.String)
+  - Slackord.Classes.ApplicationWindow.WriteToDebugWindow(System.String)
+  langs:
+  - csharp
+  - vb
+  name: ApplicationWindow
+  nameWithType: ApplicationWindow
+  fullName: Slackord.Classes.ApplicationWindow
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ApplicationWindow
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 11
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: >-
+    Main application window class responsible for managing UI interactions, Discord bot connection, 
+
+    and coordinating import/export operations
+  example: []
+  syntax:
+    content: public class ApplicationWindow
+    content.vb: Public Class ApplicationWindow
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder
+  commentId: P:Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder
+  id: CurrentUserFormatOrder
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CurrentUserFormatOrder
+  nameWithType: ApplicationWindow.CurrentUserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CurrentUserFormatOrder
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 46
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the current user format order for displaying user names
+  example: []
+  syntax:
+    content: public static ApplicationWindow.UserFormatOrder CurrentUserFormatOrder { get; set; }
+    parameters: []
+    return:
+      type: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    content.vb: Public Shared Property CurrentUserFormatOrder As ApplicationWindow.UserFormatOrder
+  overload: Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder*
+- uid: Slackord.Classes.ApplicationWindow.CheckForFirstRun
+  commentId: M:Slackord.Classes.ApplicationWindow.CheckForFirstRun
+  id: CheckForFirstRun
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CheckForFirstRun()
+  nameWithType: ApplicationWindow.CheckForFirstRun()
+  fullName: Slackord.Classes.ApplicationWindow.CheckForFirstRun()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CheckForFirstRun
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 87
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Checks if this is the first run of the application and displays appropriate welcome message
+  example: []
+  syntax:
+    content: public static void CheckForFirstRun()
+    content.vb: Public Shared Sub CheckForFirstRun()
+  overload: Slackord.Classes.ApplicationWindow.CheckForFirstRun*
+- uid: Slackord.Classes.ApplicationWindow.CheckForValidBotToken
+  commentId: M:Slackord.Classes.ApplicationWindow.CheckForValidBotToken
+  id: CheckForValidBotToken
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CheckForValidBotToken()
+  nameWithType: ApplicationWindow.CheckForValidBotToken()
+  fullName: Slackord.Classes.ApplicationWindow.CheckForValidBotToken()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CheckForValidBotToken
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 111
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Validates the stored Discord bot token and updates the connection button state accordingly
+  example: []
+  syntax:
+    content: public Task CheckForValidBotToken()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function CheckForValidBotToken() As Task
+  overload: Slackord.Classes.ApplicationWindow.CheckForValidBotToken*
+- uid: Slackord.Classes.ApplicationWindow.CheckForPartialImport
+  commentId: M:Slackord.Classes.ApplicationWindow.CheckForPartialImport
+  id: CheckForPartialImport
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CheckForPartialImport()
+  nameWithType: ApplicationWindow.CheckForPartialImport()
+  fullName: Slackord.Classes.ApplicationWindow.CheckForPartialImport()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CheckForPartialImport
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 131
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Checks for incomplete import sessions and asks user if they want to resume
+  example: []
+  syntax:
+    content: public static Task CheckForPartialImport()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function CheckForPartialImport() As Task
+  overload: Slackord.Classes.ApplicationWindow.CheckForPartialImport*
+- uid: Slackord.Classes.ApplicationWindow.GetTimeStampValue
+  commentId: M:Slackord.Classes.ApplicationWindow.GetTimeStampValue
+  id: GetTimeStampValue
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: GetTimeStampValue()
+  nameWithType: ApplicationWindow.GetTimeStampValue()
+  fullName: Slackord.Classes.ApplicationWindow.GetTimeStampValue()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetTimeStampValue
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 291
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Retrieves and displays the current timestamp setting
+  example: []
+  syntax:
+    content: public static Task GetTimeStampValue()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function GetTimeStampValue() As Task
+  overload: Slackord.Classes.ApplicationWindow.GetTimeStampValue*
+- uid: Slackord.Classes.ApplicationWindow.SetTimestampValue
+  commentId: M:Slackord.Classes.ApplicationWindow.SetTimestampValue
+  id: SetTimestampValue
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: SetTimestampValue()
+  nameWithType: ApplicationWindow.SetTimestampValue()
+  fullName: Slackord.Classes.ApplicationWindow.SetTimestampValue()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SetTimestampValue
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 307
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Sets the timestamp format value to 12-hour, 24-hour, or Remove Timestamps
+  example: []
+  syntax:
+    content: public static Task SetTimestampValue()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function SetTimestampValue() As Task
+  overload: Slackord.Classes.ApplicationWindow.SetTimestampValue*
+- uid: Slackord.Classes.ApplicationWindow.GetUserFormatValue
+  commentId: M:Slackord.Classes.ApplicationWindow.GetUserFormatValue
+  id: GetUserFormatValue
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: GetUserFormatValue()
+  nameWithType: ApplicationWindow.GetUserFormatValue()
+  fullName: Slackord.Classes.ApplicationWindow.GetUserFormatValue()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetUserFormatValue
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 326
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Retrieves and displays the current user format setting
+  example: []
+  syntax:
+    content: public static Task GetUserFormatValue()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function GetUserFormatValue() As Task
+  overload: Slackord.Classes.ApplicationWindow.GetUserFormatValue*
+- uid: Slackord.Classes.ApplicationWindow.SetUserFormatValue
+  commentId: M:Slackord.Classes.ApplicationWindow.SetUserFormatValue
+  id: SetUserFormatValue
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: SetUserFormatValue()
+  nameWithType: ApplicationWindow.SetUserFormatValue()
+  fullName: Slackord.Classes.ApplicationWindow.SetUserFormatValue()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SetUserFormatValue
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 352
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: >-
+    Sets the user format value to one of the following options:
+
+    Display Name &gt; User &gt; Real Name, 
+
+    Display Name &gt; Real Name &gt; User,
+
+    User &gt; Display Name &gt; Real Name,
+
+    User &gt; Real Name &gt; Display Name,
+
+    Real Name &gt; Display Name &gt; User,
+
+    or
+
+    Real Name &gt; User &gt; Display Name
+  example: []
+  syntax:
+    content: public static Task SetUserFormatValue()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function SetUserFormatValue() As Task
+  overload: Slackord.Classes.ApplicationWindow.SetUserFormatValue*
+- uid: Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue
+  commentId: M:Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue
+  id: GetDiscordLogLevelValue
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: GetDiscordLogLevelValue()
+  nameWithType: ApplicationWindow.GetDiscordLogLevelValue()
+  fullName: Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetDiscordLogLevelValue
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 374
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Retrieves and displays the current Discord log level setting
+  example: []
+  syntax:
+    content: public static Task GetDiscordLogLevelValue()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function GetDiscordLogLevelValue() As Task
+  overload: Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue*
+- uid: Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue
+  commentId: M:Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue
+  id: SetDiscordLogLevelValue
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: SetDiscordLogLevelValue()
+  nameWithType: ApplicationWindow.SetDiscordLogLevelValue()
+  fullName: Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: SetDiscordLogLevelValue
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 391
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Cycles to the next Discord log level setting
+  example: []
+  syntax:
+    content: public static Task SetDiscordLogLevelValue()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function SetDiscordLogLevelValue() As Task
+  overload: Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue*
+- uid: Slackord.Classes.ApplicationWindow.ImportJsonAsync(System.Boolean)
+  commentId: M:Slackord.Classes.ApplicationWindow.ImportJsonAsync(System.Boolean)
+  id: ImportJsonAsync(System.Boolean)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ImportJsonAsync(bool)
+  nameWithType: ApplicationWindow.ImportJsonAsync(bool)
+  fullName: Slackord.Classes.ApplicationWindow.ImportJsonAsync(bool)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportJsonAsync
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 453
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Initiates the JSON import process for Slack data
+  example: []
+  syntax:
+    content: public Task ImportJsonAsync(bool isFullExport)
+    parameters:
+    - id: isFullExport
+      type: System.Boolean
+      description: Whether this is a full export or single channel export
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function ImportJsonAsync(isFullExport As Boolean) As Task
+  overload: Slackord.Classes.ApplicationWindow.ImportJsonAsync*
+  nameWithType.vb: ApplicationWindow.ImportJsonAsync(Boolean)
+  fullName.vb: Slackord.Classes.ApplicationWindow.ImportJsonAsync(Boolean)
+  name.vb: ImportJsonAsync(Boolean)
+- uid: Slackord.Classes.ApplicationWindow.CancelImport
+  commentId: M:Slackord.Classes.ApplicationWindow.CancelImport
+  id: CancelImport
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CancelImport()
+  nameWithType: ApplicationWindow.CancelImport()
+  fullName: Slackord.Classes.ApplicationWindow.CancelImport()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CancelImport
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 472
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Cancels all ongoing import and Discord operations
+  example: []
+  syntax:
+    content: public void CancelImport()
+    content.vb: Public Sub CancelImport()
+  overload: Slackord.Classes.ApplicationWindow.CancelImport*
+- uid: Slackord.Classes.ApplicationWindow.ToggleDiscordConnection
+  commentId: M:Slackord.Classes.ApplicationWindow.ToggleDiscordConnection
+  id: ToggleDiscordConnection
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ToggleDiscordConnection()
+  nameWithType: ApplicationWindow.ToggleDiscordConnection()
+  fullName: Slackord.Classes.ApplicationWindow.ToggleDiscordConnection()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ToggleDiscordConnection
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 487
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Toggles the Discord bot connection state and handles various connection scenarios
+  example: []
+  syntax:
+    content: public Task ToggleDiscordConnection()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function ToggleDiscordConnection() As Task
+  overload: Slackord.Classes.ApplicationWindow.ToggleDiscordConnection*
+- uid: Slackord.Classes.ApplicationWindow.OnOperationCancelled
+  commentId: M:Slackord.Classes.ApplicationWindow.OnOperationCancelled
+  id: OnOperationCancelled
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: OnOperationCancelled()
+  nameWithType: ApplicationWindow.OnOperationCancelled()
+  fullName: Slackord.Classes.ApplicationWindow.OnOperationCancelled()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: OnOperationCancelled
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 567
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Handles UI updates when an operation is cancelled
+  example: []
+  syntax:
+    content: public static Task OnOperationCancelled()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function OnOperationCancelled() As Task
+  overload: Slackord.Classes.ApplicationWindow.OnOperationCancelled*
+- uid: Slackord.Classes.ApplicationWindow.CheckForNewVersion(System.Boolean)
+  commentId: M:Slackord.Classes.ApplicationWindow.CheckForNewVersion(System.Boolean)
+  id: CheckForNewVersion(System.Boolean)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CheckForNewVersion(bool)
+  nameWithType: ApplicationWindow.CheckForNewVersion(bool)
+  fullName: Slackord.Classes.ApplicationWindow.CheckForNewVersion(bool)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CheckForNewVersion
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 577
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Checks for application updates from GitHub
+  example: []
+  syntax:
+    content: public static Task CheckForNewVersion(bool isStartupCheck)
+    parameters:
+    - id: isStartupCheck
+      type: System.Boolean
+      description: Whether this is an automatic startup check or manual check
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function CheckForNewVersion(isStartupCheck As Boolean) As Task
+  overload: Slackord.Classes.ApplicationWindow.CheckForNewVersion*
+  nameWithType.vb: ApplicationWindow.CheckForNewVersion(Boolean)
+  fullName.vb: Slackord.Classes.ApplicationWindow.CheckForNewVersion(Boolean)
+  name.vb: CheckForNewVersion(Boolean)
+- uid: Slackord.Classes.ApplicationWindow.DisplayAbout
+  commentId: M:Slackord.Classes.ApplicationWindow.DisplayAbout
+  id: DisplayAbout
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: DisplayAbout()
+  nameWithType: ApplicationWindow.DisplayAbout()
+  fullName: Slackord.Classes.ApplicationWindow.DisplayAbout()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DisplayAbout
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 585
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Displays the application about dialog with version and author information
+  example: []
+  syntax:
+    content: public static void DisplayAbout()
+    content.vb: Public Shared Sub DisplayAbout()
+  overload: Slackord.Classes.ApplicationWindow.DisplayAbout*
+- uid: Slackord.Classes.ApplicationWindow.CreateDonateAlert
+  commentId: M:Slackord.Classes.ApplicationWindow.CreateDonateAlert
+  id: CreateDonateAlert
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CreateDonateAlert()
+  nameWithType: ApplicationWindow.CreateDonateAlert()
+  fullName: Slackord.Classes.ApplicationWindow.CreateDonateAlert()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CreateDonateAlert
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 600
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Creates and displays a donation request dialog
+  example: []
+  syntax:
+    content: public static Task CreateDonateAlert()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function CreateDonateAlert() As Task
+  overload: Slackord.Classes.ApplicationWindow.CreateDonateAlert*
+- uid: Slackord.Classes.ApplicationWindow.ExitApplication
+  commentId: M:Slackord.Classes.ApplicationWindow.ExitApplication
+  id: ExitApplication
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ExitApplication()
+  nameWithType: ApplicationWindow.ExitApplication()
+  fullName: Slackord.Classes.ApplicationWindow.ExitApplication()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ExitApplication
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 620
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Prompts user for confirmation and exits the application
+  example: []
+  syntax:
+    content: public static Task ExitApplication()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function ExitApplication() As Task
+  overload: Slackord.Classes.ApplicationWindow.ExitApplication*
+- uid: Slackord.Classes.ApplicationWindow.CopyLog
+  commentId: M:Slackord.Classes.ApplicationWindow.CopyLog
+  id: CopyLog
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CopyLog()
+  nameWithType: ApplicationWindow.CopyLog()
+  fullName: Slackord.Classes.ApplicationWindow.CopyLog()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CopyLog
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 641
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Copies the entire debug log content to the system clipboard
+  example: []
+  syntax:
+    content: public static void CopyLog()
+    content.vb: Public Shared Sub CopyLog()
+  overload: Slackord.Classes.ApplicationWindow.CopyLog*
+- uid: Slackord.Classes.ApplicationWindow.ClearLog
+  commentId: M:Slackord.Classes.ApplicationWindow.ClearLog
+  id: ClearLog
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ClearLog()
+  nameWithType: ApplicationWindow.ClearLog()
+  fullName: Slackord.Classes.ApplicationWindow.ClearLog()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ClearLog
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 658
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Clears all content from the debug window
+  example: []
+  syntax:
+    content: public static void ClearLog()
+    content.vb: Public Shared Sub ClearLog()
+  overload: Slackord.Classes.ApplicationWindow.ClearLog*
+- uid: Slackord.Classes.ApplicationWindow.WriteToDebugWindow(System.String)
+  commentId: M:Slackord.Classes.ApplicationWindow.WriteToDebugWindow(System.String)
+  id: WriteToDebugWindow(System.String)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: WriteToDebugWindow(string)
+  nameWithType: ApplicationWindow.WriteToDebugWindow(string)
+  fullName: Slackord.Classes.ApplicationWindow.WriteToDebugWindow(string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: WriteToDebugWindow
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 672
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Writes text to the debug window, handling thread safety
+  example: []
+  syntax:
+    content: public static void WriteToDebugWindow(string text)
+    parameters:
+    - id: text
+      type: System.String
+      description: The text to write to the debug window
+    content.vb: Public Shared Sub WriteToDebugWindow(text As String)
+  overload: Slackord.Classes.ApplicationWindow.WriteToDebugWindow*
+  nameWithType.vb: ApplicationWindow.WriteToDebugWindow(String)
+  fullName.vb: Slackord.Classes.ApplicationWindow.WriteToDebugWindow(String)
+  name.vb: WriteToDebugWindow(String)
+- uid: Slackord.Classes.ApplicationWindow.PushDebugText
+  commentId: M:Slackord.Classes.ApplicationWindow.PushDebugText
+  id: PushDebugText
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: PushDebugText()
+  nameWithType: ApplicationWindow.PushDebugText()
+  fullName: Slackord.Classes.ApplicationWindow.PushDebugText()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: PushDebugText
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 681
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Pushes accumulated debug text to the UI thread-safely and auto-scrolls to bottom
+  example: []
+  syntax:
+    content: public static void PushDebugText()
+    content.vb: Public Shared Sub PushDebugText()
+  overload: Slackord.Classes.ApplicationWindow.PushDebugText*
+- uid: Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton(System.String,Microsoft.Maui.Graphics.Color,Microsoft.Maui.Graphics.Color)
+  commentId: M:Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton(System.String,Microsoft.Maui.Graphics.Color,Microsoft.Maui.Graphics.Color)
+  id: ChangeBotConnectionButton(System.String,Microsoft.Maui.Graphics.Color,Microsoft.Maui.Graphics.Color)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ChangeBotConnectionButton(string, Color, Color)
+  nameWithType: ApplicationWindow.ChangeBotConnectionButton(string, Color, Color)
+  fullName: Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton(string, Microsoft.Maui.Graphics.Color, Microsoft.Maui.Graphics.Color)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ChangeBotConnectionButton
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 717
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Updates the Discord connection button appearance and text
+  example: []
+  syntax:
+    content: public static Task ChangeBotConnectionButton(string state, Color backgroundColor, Color textColor)
+    parameters:
+    - id: state
+      type: System.String
+      description: The text to display on the button
+    - id: backgroundColor
+      type: Microsoft.Maui.Graphics.Color
+      description: The background color of the button
+    - id: textColor
+      type: Microsoft.Maui.Graphics.Color
+      description: The text color of the button
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function ChangeBotConnectionButton(state As String, backgroundColor As Color, textColor As Color) As Task
+  overload: Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton*
+  nameWithType.vb: ApplicationWindow.ChangeBotConnectionButton(String, Color, Color)
+  fullName.vb: Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton(String, Microsoft.Maui.Graphics.Color, Microsoft.Maui.Graphics.Color)
+  name.vb: ChangeBotConnectionButton(String, Color, Color)
+- uid: Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable(System.Boolean)
+  commentId: M:Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable(System.Boolean)
+  id: ToggleBotTokenEnable(System.Boolean)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ToggleBotTokenEnable(bool)
+  nameWithType: ApplicationWindow.ToggleBotTokenEnable(bool)
+  fullName: Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable(bool)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ToggleBotTokenEnable
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 735
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Toggles the bot token input field enabled state and updates the options page if visible
+  example: []
+  syntax:
+    content: public static Task ToggleBotTokenEnable(bool isEnabled)
+    parameters:
+    - id: isEnabled
+      type: System.Boolean
+      description: Whether the bot token field should be enabled
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function ToggleBotTokenEnable(isEnabled As Boolean) As Task
+  overload: Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable*
+  nameWithType.vb: ApplicationWindow.ToggleBotTokenEnable(Boolean)
+  fullName.vb: Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable(Boolean)
+  name.vb: ToggleBotTokenEnable(Boolean)
+- uid: Slackord.Classes.ApplicationWindow.ShowProgressBar
+  commentId: M:Slackord.Classes.ApplicationWindow.ShowProgressBar
+  id: ShowProgressBar
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ShowProgressBar()
+  nameWithType: ApplicationWindow.ShowProgressBar()
+  fullName: Slackord.Classes.ApplicationWindow.ShowProgressBar()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ShowProgressBar
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 755
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Makes the progress bar visible in the UI
+  example: []
+  syntax:
+    content: public static void ShowProgressBar()
+    content.vb: Public Shared Sub ShowProgressBar()
+  overload: Slackord.Classes.ApplicationWindow.ShowProgressBar*
+- uid: Slackord.Classes.ApplicationWindow.HideProgressBar
+  commentId: M:Slackord.Classes.ApplicationWindow.HideProgressBar
+  id: HideProgressBar
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: HideProgressBar()
+  nameWithType: ApplicationWindow.HideProgressBar()
+  fullName: Slackord.Classes.ApplicationWindow.HideProgressBar()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: HideProgressBar
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 770
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Hides the progress bar from the UI
+  example: []
+  syntax:
+    content: public static void HideProgressBar()
+    content.vb: Public Shared Sub HideProgressBar()
+  overload: Slackord.Classes.ApplicationWindow.HideProgressBar*
+- uid: Slackord.Classes.ApplicationWindow.CanStartDiscordImport
+  commentId: M:Slackord.Classes.ApplicationWindow.CanStartDiscordImport
+  id: CanStartDiscordImport
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: CanStartDiscordImport()
+  nameWithType: ApplicationWindow.CanStartDiscordImport()
+  fullName: Slackord.Classes.ApplicationWindow.CanStartDiscordImport()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CanStartDiscordImport
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 786
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Checks if Discord import can be started based on current processing state
+  example: []
+  syntax:
+    content: public static bool CanStartDiscordImport()
+    return:
+      type: System.Boolean
+      description: True if ready for Discord import, false otherwise
+    content.vb: Public Shared Function CanStartDiscordImport() As Boolean
+  overload: Slackord.Classes.ApplicationWindow.CanStartDiscordImport*
+- uid: Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText(System.Int32,System.Int32,System.String)
+  commentId: M:Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText(System.Int32,System.Int32,System.String)
+  id: UpdateProgressBarWithCustomText(System.Int32,System.Int32,System.String)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: UpdateProgressBarWithCustomText(int, int, string)
+  nameWithType: ApplicationWindow.UpdateProgressBarWithCustomText(int, int, string)
+  fullName: Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText(int, int, string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: UpdateProgressBarWithCustomText
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 797
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Updates the progress bar with custom text and percentage
+  example: []
+  syntax:
+    content: public static void UpdateProgressBarWithCustomText(int current, int total, string customText)
+    parameters:
+    - id: current
+      type: System.Int32
+      description: Current progress value
+    - id: total
+      type: System.Int32
+      description: Total expected value
+    - id: customText
+      type: System.String
+      description: Custom text to display
+    content.vb: Public Shared Sub UpdateProgressBarWithCustomText(current As Integer, total As Integer, customText As String)
+  overload: Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText*
+  nameWithType.vb: ApplicationWindow.UpdateProgressBarWithCustomText(Integer, Integer, String)
+  fullName.vb: Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText(Integer, Integer, String)
+  name.vb: UpdateProgressBarWithCustomText(Integer, Integer, String)
+- uid: Slackord.Classes.ApplicationWindow.UpdateProgressBar(System.Int32,System.Int32,System.String)
+  commentId: M:Slackord.Classes.ApplicationWindow.UpdateProgressBar(System.Int32,System.Int32,System.String)
+  id: UpdateProgressBar(System.Int32,System.Int32,System.String)
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: UpdateProgressBar(int, int, string)
+  nameWithType: ApplicationWindow.UpdateProgressBar(int, int, string)
+  fullName: Slackord.Classes.ApplicationWindow.UpdateProgressBar(int, int, string)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: UpdateProgressBar
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 817
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Updates the progress bar with percentage display
+  example: []
+  syntax:
+    content: public static void UpdateProgressBar(int current, int total, string type)
+    parameters:
+    - id: current
+      type: System.Int32
+      description: Current progress value
+    - id: total
+      type: System.Int32
+      description: Total expected value
+    - id: type
+      type: System.String
+      description: Type of items being processed (e.g., "messages", "files")
+    content.vb: Public Shared Sub UpdateProgressBar(current As Integer, total As Integer, type As String)
+  overload: Slackord.Classes.ApplicationWindow.UpdateProgressBar*
+  nameWithType.vb: ApplicationWindow.UpdateProgressBar(Integer, Integer, String)
+  fullName.vb: Slackord.Classes.ApplicationWindow.UpdateProgressBar(Integer, Integer, String)
+  name.vb: UpdateProgressBar(Integer, Integer, String)
+- uid: Slackord.Classes.ApplicationWindow.ResetProgressBar
+  commentId: M:Slackord.Classes.ApplicationWindow.ResetProgressBar
+  id: ResetProgressBar
+  parent: Slackord.Classes.ApplicationWindow
+  langs:
+  - csharp
+  - vb
+  name: ResetProgressBar()
+  nameWithType: ApplicationWindow.ResetProgressBar()
+  fullName: Slackord.Classes.ApplicationWindow.ResetProgressBar()
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ApplicationWindow.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ResetProgressBar
+    path: Slackord/Classes/ApplicationWindow.cs
+    startLine: 836
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Resets the progress bar to its initial state
+  example: []
+  syntax:
+    content: public static void ResetProgressBar()
+    content.vb: Public Shared Sub ResetProgressBar()
+  overload: Slackord.Classes.ApplicationWindow.ResetProgressBar*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CurrentUserFormatOrder
+  name: CurrentUserFormatOrder
+  nameWithType: ApplicationWindow.CurrentUserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.CurrentUserFormatOrder
+- uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  commentId: T:Slackord.Classes.ApplicationWindow.UserFormatOrder
+  parent: Slackord.Classes
+  href: Slackord.Classes.ApplicationWindow.html
+  name: ApplicationWindow.UserFormatOrder
+  nameWithType: ApplicationWindow.UserFormatOrder
+  fullName: Slackord.Classes.ApplicationWindow.UserFormatOrder
+  spec.csharp:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+  spec.vb:
+  - uid: Slackord.Classes.ApplicationWindow
+    name: ApplicationWindow
+    href: Slackord.Classes.ApplicationWindow.html
+  - name: .
+  - uid: Slackord.Classes.ApplicationWindow.UserFormatOrder
+    name: UserFormatOrder
+    href: Slackord.Classes.ApplicationWindow.UserFormatOrder.html
+- uid: Slackord.Classes.ApplicationWindow.CheckForFirstRun*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CheckForFirstRun
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CheckForFirstRun
+  name: CheckForFirstRun
+  nameWithType: ApplicationWindow.CheckForFirstRun
+  fullName: Slackord.Classes.ApplicationWindow.CheckForFirstRun
+- uid: Slackord.Classes.ApplicationWindow.CheckForValidBotToken*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CheckForValidBotToken
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CheckForValidBotToken
+  name: CheckForValidBotToken
+  nameWithType: ApplicationWindow.CheckForValidBotToken
+  fullName: Slackord.Classes.ApplicationWindow.CheckForValidBotToken
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.ApplicationWindow.CheckForPartialImport*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CheckForPartialImport
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CheckForPartialImport
+  name: CheckForPartialImport
+  nameWithType: ApplicationWindow.CheckForPartialImport
+  fullName: Slackord.Classes.ApplicationWindow.CheckForPartialImport
+- uid: Slackord.Classes.ApplicationWindow.GetTimeStampValue*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.GetTimeStampValue
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_GetTimeStampValue
+  name: GetTimeStampValue
+  nameWithType: ApplicationWindow.GetTimeStampValue
+  fullName: Slackord.Classes.ApplicationWindow.GetTimeStampValue
+- uid: Slackord.Classes.ApplicationWindow.SetTimestampValue*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.SetTimestampValue
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_SetTimestampValue
+  name: SetTimestampValue
+  nameWithType: ApplicationWindow.SetTimestampValue
+  fullName: Slackord.Classes.ApplicationWindow.SetTimestampValue
+- uid: Slackord.Classes.ApplicationWindow.GetUserFormatValue*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.GetUserFormatValue
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_GetUserFormatValue
+  name: GetUserFormatValue
+  nameWithType: ApplicationWindow.GetUserFormatValue
+  fullName: Slackord.Classes.ApplicationWindow.GetUserFormatValue
+- uid: Slackord.Classes.ApplicationWindow.SetUserFormatValue*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.SetUserFormatValue
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_SetUserFormatValue
+  name: SetUserFormatValue
+  nameWithType: ApplicationWindow.SetUserFormatValue
+  fullName: Slackord.Classes.ApplicationWindow.SetUserFormatValue
+- uid: Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_GetDiscordLogLevelValue
+  name: GetDiscordLogLevelValue
+  nameWithType: ApplicationWindow.GetDiscordLogLevelValue
+  fullName: Slackord.Classes.ApplicationWindow.GetDiscordLogLevelValue
+- uid: Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_SetDiscordLogLevelValue
+  name: SetDiscordLogLevelValue
+  nameWithType: ApplicationWindow.SetDiscordLogLevelValue
+  fullName: Slackord.Classes.ApplicationWindow.SetDiscordLogLevelValue
+- uid: Slackord.Classes.ApplicationWindow.ImportJsonAsync*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ImportJsonAsync
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ImportJsonAsync_System_Boolean_
+  name: ImportJsonAsync
+  nameWithType: ApplicationWindow.ImportJsonAsync
+  fullName: Slackord.Classes.ApplicationWindow.ImportJsonAsync
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: Slackord.Classes.ApplicationWindow.CancelImport*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CancelImport
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CancelImport
+  name: CancelImport
+  nameWithType: ApplicationWindow.CancelImport
+  fullName: Slackord.Classes.ApplicationWindow.CancelImport
+- uid: Slackord.Classes.ApplicationWindow.ToggleDiscordConnection*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ToggleDiscordConnection
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ToggleDiscordConnection
+  name: ToggleDiscordConnection
+  nameWithType: ApplicationWindow.ToggleDiscordConnection
+  fullName: Slackord.Classes.ApplicationWindow.ToggleDiscordConnection
+- uid: Slackord.Classes.ApplicationWindow.OnOperationCancelled*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.OnOperationCancelled
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_OnOperationCancelled
+  name: OnOperationCancelled
+  nameWithType: ApplicationWindow.OnOperationCancelled
+  fullName: Slackord.Classes.ApplicationWindow.OnOperationCancelled
+- uid: Slackord.Classes.ApplicationWindow.CheckForNewVersion*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CheckForNewVersion
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CheckForNewVersion_System_Boolean_
+  name: CheckForNewVersion
+  nameWithType: ApplicationWindow.CheckForNewVersion
+  fullName: Slackord.Classes.ApplicationWindow.CheckForNewVersion
+- uid: Slackord.Classes.ApplicationWindow.DisplayAbout*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.DisplayAbout
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_DisplayAbout
+  name: DisplayAbout
+  nameWithType: ApplicationWindow.DisplayAbout
+  fullName: Slackord.Classes.ApplicationWindow.DisplayAbout
+- uid: Slackord.Classes.ApplicationWindow.CreateDonateAlert*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CreateDonateAlert
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CreateDonateAlert
+  name: CreateDonateAlert
+  nameWithType: ApplicationWindow.CreateDonateAlert
+  fullName: Slackord.Classes.ApplicationWindow.CreateDonateAlert
+- uid: Slackord.Classes.ApplicationWindow.ExitApplication*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ExitApplication
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ExitApplication
+  name: ExitApplication
+  nameWithType: ApplicationWindow.ExitApplication
+  fullName: Slackord.Classes.ApplicationWindow.ExitApplication
+- uid: Slackord.Classes.ApplicationWindow.CopyLog*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CopyLog
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CopyLog
+  name: CopyLog
+  nameWithType: ApplicationWindow.CopyLog
+  fullName: Slackord.Classes.ApplicationWindow.CopyLog
+- uid: Slackord.Classes.ApplicationWindow.ClearLog*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ClearLog
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ClearLog
+  name: ClearLog
+  nameWithType: ApplicationWindow.ClearLog
+  fullName: Slackord.Classes.ApplicationWindow.ClearLog
+- uid: Slackord.Classes.ApplicationWindow.WriteToDebugWindow*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.WriteToDebugWindow
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_WriteToDebugWindow_System_String_
+  name: WriteToDebugWindow
+  nameWithType: ApplicationWindow.WriteToDebugWindow
+  fullName: Slackord.Classes.ApplicationWindow.WriteToDebugWindow
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.ApplicationWindow.PushDebugText*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.PushDebugText
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_PushDebugText
+  name: PushDebugText
+  nameWithType: ApplicationWindow.PushDebugText
+  fullName: Slackord.Classes.ApplicationWindow.PushDebugText
+- uid: Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ChangeBotConnectionButton_System_String_Microsoft_Maui_Graphics_Color_Microsoft_Maui_Graphics_Color_
+  name: ChangeBotConnectionButton
+  nameWithType: ApplicationWindow.ChangeBotConnectionButton
+  fullName: Slackord.Classes.ApplicationWindow.ChangeBotConnectionButton
+- uid: Microsoft.Maui.Graphics.Color
+  commentId: T:Microsoft.Maui.Graphics.Color
+  parent: Microsoft.Maui.Graphics
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.maui.graphics.color
+  name: Color
+  nameWithType: Color
+  fullName: Microsoft.Maui.Graphics.Color
+- uid: Microsoft.Maui.Graphics
+  commentId: N:Microsoft.Maui.Graphics
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft
+  name: Microsoft.Maui.Graphics
+  nameWithType: Microsoft.Maui.Graphics
+  fullName: Microsoft.Maui.Graphics
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Maui
+    name: Maui
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui
+  - name: .
+  - uid: Microsoft.Maui.Graphics
+    name: Graphics
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.graphics
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Maui
+    name: Maui
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui
+  - name: .
+  - uid: Microsoft.Maui.Graphics
+    name: Graphics
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.maui.graphics
+- uid: Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ToggleBotTokenEnable_System_Boolean_
+  name: ToggleBotTokenEnable
+  nameWithType: ApplicationWindow.ToggleBotTokenEnable
+  fullName: Slackord.Classes.ApplicationWindow.ToggleBotTokenEnable
+- uid: Slackord.Classes.ApplicationWindow.ShowProgressBar*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ShowProgressBar
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ShowProgressBar
+  name: ShowProgressBar
+  nameWithType: ApplicationWindow.ShowProgressBar
+  fullName: Slackord.Classes.ApplicationWindow.ShowProgressBar
+- uid: Slackord.Classes.ApplicationWindow.HideProgressBar*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.HideProgressBar
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_HideProgressBar
+  name: HideProgressBar
+  nameWithType: ApplicationWindow.HideProgressBar
+  fullName: Slackord.Classes.ApplicationWindow.HideProgressBar
+- uid: Slackord.Classes.ApplicationWindow.CanStartDiscordImport*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.CanStartDiscordImport
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_CanStartDiscordImport
+  name: CanStartDiscordImport
+  nameWithType: ApplicationWindow.CanStartDiscordImport
+  fullName: Slackord.Classes.ApplicationWindow.CanStartDiscordImport
+- uid: Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_UpdateProgressBarWithCustomText_System_Int32_System_Int32_System_String_
+  name: UpdateProgressBarWithCustomText
+  nameWithType: ApplicationWindow.UpdateProgressBarWithCustomText
+  fullName: Slackord.Classes.ApplicationWindow.UpdateProgressBarWithCustomText
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Slackord.Classes.ApplicationWindow.UpdateProgressBar*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.UpdateProgressBar
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_UpdateProgressBar_System_Int32_System_Int32_System_String_
+  name: UpdateProgressBar
+  nameWithType: ApplicationWindow.UpdateProgressBar
+  fullName: Slackord.Classes.ApplicationWindow.UpdateProgressBar
+- uid: Slackord.Classes.ApplicationWindow.ResetProgressBar*
+  commentId: Overload:Slackord.Classes.ApplicationWindow.ResetProgressBar
+  href: Slackord.Classes.ApplicationWindow.html#Slackord_Classes_ApplicationWindow_ResetProgressBar
+  name: ResetProgressBar
+  nameWithType: ApplicationWindow.ResetProgressBar
+  fullName: Slackord.Classes.ApplicationWindow.ResetProgressBar

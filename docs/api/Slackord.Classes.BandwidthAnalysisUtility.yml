@@ -1,0 +1,717 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.BandwidthAnalysisUtility
+  commentId: T:Slackord.Classes.BandwidthAnalysisUtility
+  id: BandwidthAnalysisUtility
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(System.String,System.Collections.Generic.List{Slackord.Classes.DownloadRequest},System.Threading.CancellationToken)
+  - Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(System.Collections.Generic.List{Slackord.Classes.DownloadRequest})
+  - Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis(Slackord.Classes.BandwidthAnalysis)
+  langs:
+  - csharp
+  - vb
+  name: BandwidthAnalysisUtility
+  nameWithType: BandwidthAnalysisUtility
+  fullName: Slackord.Classes.BandwidthAnalysisUtility
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/BandwidthAnalysisUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: BandwidthAnalysisUtility
+    path: Slackord/Classes/BandwidthAnalysisUtility.cs
+    startLine: 5
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Utility to analyze potential bandwidth savings from smart downloading
+  example: []
+  syntax:
+    content: public static class BandwidthAnalysisUtility
+    content.vb: Public Module BandwidthAnalysisUtility
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(System.Collections.Generic.List{Slackord.Classes.DownloadRequest})
+  commentId: M:Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(System.Collections.Generic.List{Slackord.Classes.DownloadRequest})
+  id: AnalyzePotentialDownloadsAsync(System.Collections.Generic.List{Slackord.Classes.DownloadRequest})
+  parent: Slackord.Classes.BandwidthAnalysisUtility
+  langs:
+  - csharp
+  - vb
+  name: AnalyzePotentialDownloadsAsync(List<DownloadRequest>)
+  nameWithType: BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(List<DownloadRequest>)
+  fullName: Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(System.Collections.Generic.List<Slackord.Classes.DownloadRequest>)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/BandwidthAnalysisUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: AnalyzePotentialDownloadsAsync
+    path: Slackord/Classes/BandwidthAnalysisUtility.cs
+    startLine: 12
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Analyzes what files would be downloaded vs skipped before actually downloading
+  example: []
+  syntax:
+    content: public static Task<BandwidthAnalysis> AnalyzePotentialDownloadsAsync(List<DownloadRequest> downloadRequests)
+    parameters:
+    - id: downloadRequests
+      type: System.Collections.Generic.List{Slackord.Classes.DownloadRequest}
+      description: List of files that would be downloaded
+    return:
+      type: System.Threading.Tasks.Task{Slackord.Classes.BandwidthAnalysis}
+      description: Analysis of potential bandwidth usage
+    content.vb: Public Shared Function AnalyzePotentialDownloadsAsync(downloadRequests As List(Of DownloadRequest)) As Task(Of BandwidthAnalysis)
+  overload: Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync*
+  nameWithType.vb: BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(List(Of DownloadRequest))
+  fullName.vb: Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync(System.Collections.Generic.List(Of Slackord.Classes.DownloadRequest))
+  name.vb: AnalyzePotentialDownloadsAsync(List(Of DownloadRequest))
+- uid: Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis(Slackord.Classes.BandwidthAnalysis)
+  commentId: M:Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis(Slackord.Classes.BandwidthAnalysis)
+  id: ShowBandwidthAnalysis(Slackord.Classes.BandwidthAnalysis)
+  parent: Slackord.Classes.BandwidthAnalysisUtility
+  langs:
+  - csharp
+  - vb
+  name: ShowBandwidthAnalysis(BandwidthAnalysis)
+  nameWithType: BandwidthAnalysisUtility.ShowBandwidthAnalysis(BandwidthAnalysis)
+  fullName: Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis(Slackord.Classes.BandwidthAnalysis)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/BandwidthAnalysisUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ShowBandwidthAnalysis
+    path: Slackord/Classes/BandwidthAnalysisUtility.cs
+    startLine: 95
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Shows bandwidth analysis to user before starting downloads
+  example: []
+  syntax:
+    content: public static void ShowBandwidthAnalysis(BandwidthAnalysis analysis)
+    parameters:
+    - id: analysis
+      type: Slackord.Classes.BandwidthAnalysis
+      description: The bandwidth analysis results
+    content.vb: Public Shared Sub ShowBandwidthAnalysis(analysis As BandwidthAnalysis)
+  overload: Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis*
+- uid: Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(System.String,System.Collections.Generic.List{Slackord.Classes.DownloadRequest},System.Threading.CancellationToken)
+  commentId: M:Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(System.String,System.Collections.Generic.List{Slackord.Classes.DownloadRequest},System.Threading.CancellationToken)
+  id: AnalyzeAndDownloadAsync(System.String,System.Collections.Generic.List{Slackord.Classes.DownloadRequest},System.Threading.CancellationToken)
+  parent: Slackord.Classes.BandwidthAnalysisUtility
+  langs:
+  - csharp
+  - vb
+  name: AnalyzeAndDownloadAsync(string, List<DownloadRequest>, CancellationToken)
+  nameWithType: BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(string, List<DownloadRequest>, CancellationToken)
+  fullName: Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(string, System.Collections.Generic.List<Slackord.Classes.DownloadRequest>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/BandwidthAnalysisUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: AnalyzeAndDownloadAsync
+    path: Slackord/Classes/BandwidthAnalysisUtility.cs
+    startLine: 137
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Example method showing how to use analysis before downloading
+  example: []
+  syntax:
+    content: public static Task<DownloadSummary> AnalyzeAndDownloadAsync(string channelName, List<DownloadRequest> downloadRequests, CancellationToken cancellationToken)
+    parameters:
+    - id: channelName
+      type: System.String
+      description: Channel name
+    - id: downloadRequests
+      type: System.Collections.Generic.List{Slackord.Classes.DownloadRequest}
+      description: Files to potentially download
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+      description: Cancellation token
+    return:
+      type: System.Threading.Tasks.Task{Slackord.Classes.DownloadSummary}
+      description: Download summary
+    content.vb: Public Shared Function AnalyzeAndDownloadAsync(channelName As String, downloadRequests As List(Of DownloadRequest), cancellationToken As CancellationToken) As Task(Of DownloadSummary)
+  overload: Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync*
+  nameWithType.vb: BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(String, List(Of DownloadRequest), CancellationToken)
+  fullName.vb: Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync(String, System.Collections.Generic.List(Of Slackord.Classes.DownloadRequest), System.Threading.CancellationToken)
+  name.vb: AnalyzeAndDownloadAsync(String, List(Of DownloadRequest), CancellationToken)
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync*
+  commentId: Overload:Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync
+  href: Slackord.Classes.BandwidthAnalysisUtility.html#Slackord_Classes_BandwidthAnalysisUtility_AnalyzePotentialDownloadsAsync_System_Collections_Generic_List_Slackord_Classes_DownloadRequest__
+  name: AnalyzePotentialDownloadsAsync
+  nameWithType: BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync
+  fullName: Slackord.Classes.BandwidthAnalysisUtility.AnalyzePotentialDownloadsAsync
+- uid: System.Collections.Generic.List{Slackord.Classes.DownloadRequest}
+  commentId: T:System.Collections.Generic.List{Slackord.Classes.DownloadRequest}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<DownloadRequest>
+  nameWithType: List<DownloadRequest>
+  fullName: System.Collections.Generic.List<Slackord.Classes.DownloadRequest>
+  nameWithType.vb: List(Of DownloadRequest)
+  fullName.vb: System.Collections.Generic.List(Of Slackord.Classes.DownloadRequest)
+  name.vb: List(Of DownloadRequest)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: Slackord.Classes.DownloadRequest
+    name: DownloadRequest
+    href: Slackord.Classes.DownloadRequest.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.DownloadRequest
+    name: DownloadRequest
+    href: Slackord.Classes.DownloadRequest.html
+  - name: )
+- uid: System.Threading.Tasks.Task{Slackord.Classes.BandwidthAnalysis}
+  commentId: T:System.Threading.Tasks.Task{Slackord.Classes.BandwidthAnalysis}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<BandwidthAnalysis>
+  nameWithType: Task<BandwidthAnalysis>
+  fullName: System.Threading.Tasks.Task<Slackord.Classes.BandwidthAnalysis>
+  nameWithType.vb: Task(Of BandwidthAnalysis)
+  fullName.vb: System.Threading.Tasks.Task(Of Slackord.Classes.BandwidthAnalysis)
+  name.vb: Task(Of BandwidthAnalysis)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: Slackord.Classes.BandwidthAnalysis
+    name: BandwidthAnalysis
+    href: Slackord.Classes.BandwidthAnalysis.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.BandwidthAnalysis
+    name: BandwidthAnalysis
+    href: Slackord.Classes.BandwidthAnalysis.html
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: TResult
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TResult
+  - name: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis*
+  commentId: Overload:Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis
+  href: Slackord.Classes.BandwidthAnalysisUtility.html#Slackord_Classes_BandwidthAnalysisUtility_ShowBandwidthAnalysis_Slackord_Classes_BandwidthAnalysis_
+  name: ShowBandwidthAnalysis
+  nameWithType: BandwidthAnalysisUtility.ShowBandwidthAnalysis
+  fullName: Slackord.Classes.BandwidthAnalysisUtility.ShowBandwidthAnalysis
+- uid: Slackord.Classes.BandwidthAnalysis
+  commentId: T:Slackord.Classes.BandwidthAnalysis
+  parent: Slackord.Classes
+  href: Slackord.Classes.BandwidthAnalysis.html
+  name: BandwidthAnalysis
+  nameWithType: BandwidthAnalysis
+  fullName: Slackord.Classes.BandwidthAnalysis
+- uid: Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync*
+  commentId: Overload:Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync
+  href: Slackord.Classes.BandwidthAnalysisUtility.html#Slackord_Classes_BandwidthAnalysisUtility_AnalyzeAndDownloadAsync_System_String_System_Collections_Generic_List_Slackord_Classes_DownloadRequest__System_Threading_CancellationToken_
+  name: AnalyzeAndDownloadAsync
+  nameWithType: BandwidthAnalysisUtility.AnalyzeAndDownloadAsync
+  fullName: Slackord.Classes.BandwidthAnalysisUtility.AnalyzeAndDownloadAsync
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Threading.Tasks.Task{Slackord.Classes.DownloadSummary}
+  commentId: T:System.Threading.Tasks.Task{Slackord.Classes.DownloadSummary}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<DownloadSummary>
+  nameWithType: Task<DownloadSummary>
+  fullName: System.Threading.Tasks.Task<Slackord.Classes.DownloadSummary>
+  nameWithType.vb: Task(Of DownloadSummary)
+  fullName.vb: System.Threading.Tasks.Task(Of Slackord.Classes.DownloadSummary)
+  name.vb: Task(Of DownloadSummary)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: Slackord.Classes.DownloadSummary
+    name: DownloadSummary
+    href: Slackord.Classes.DownloadSummary.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.DownloadSummary
+    name: DownloadSummary
+    href: Slackord.Classes.DownloadSummary.html
+  - name: )
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading

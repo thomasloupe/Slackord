@@ -1,0 +1,292 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ProcessingState
+  commentId: T:Slackord.Classes.ProcessingState
+  id: ProcessingState
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ProcessingState.Completed
+  - Slackord.Classes.ProcessingState.DeconstructingMessages
+  - Slackord.Classes.ProcessingState.Error
+  - Slackord.Classes.ProcessingState.Idle
+  - Slackord.Classes.ProcessingState.ImportingFiles
+  - Slackord.Classes.ProcessingState.ImportingToDiscord
+  - Slackord.Classes.ProcessingState.ReadyForDiscordImport
+  - Slackord.Classes.ProcessingState.ReconstructingMessages
+  langs:
+  - csharp
+  - vb
+  name: ProcessingState
+  nameWithType: ProcessingState
+  fullName: Slackord.Classes.ProcessingState
+  type: Enum
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ProcessingState
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 5
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Defines the various states of the application's processing workflow
+  example: []
+  syntax:
+    content: public enum ProcessingState
+    content.vb: Public Enum ProcessingState
+- uid: Slackord.Classes.ProcessingState.Idle
+  commentId: F:Slackord.Classes.ProcessingState.Idle
+  id: Idle
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: Idle
+  nameWithType: ProcessingState.Idle
+  fullName: Slackord.Classes.ProcessingState.Idle
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Idle
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 10
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Application is idle and ready for user input
+  example: []
+  syntax:
+    content: Idle = 0
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.ImportingFiles
+  commentId: F:Slackord.Classes.ProcessingState.ImportingFiles
+  id: ImportingFiles
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: ImportingFiles
+  nameWithType: ProcessingState.ImportingFiles
+  fullName: Slackord.Classes.ProcessingState.ImportingFiles
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportingFiles
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 14
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Currently importing JSON files from Slack export
+  example: []
+  syntax:
+    content: ImportingFiles = 1
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.DeconstructingMessages
+  commentId: F:Slackord.Classes.ProcessingState.DeconstructingMessages
+  id: DeconstructingMessages
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: DeconstructingMessages
+  nameWithType: ProcessingState.DeconstructingMessages
+  fullName: Slackord.Classes.ProcessingState.DeconstructingMessages
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DeconstructingMessages
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 18
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Processing and deconstructing Slack messages
+  example: []
+  syntax:
+    content: DeconstructingMessages = 2
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.ReconstructingMessages
+  commentId: F:Slackord.Classes.ProcessingState.ReconstructingMessages
+  id: ReconstructingMessages
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: ReconstructingMessages
+  nameWithType: ProcessingState.ReconstructingMessages
+  fullName: Slackord.Classes.ProcessingState.ReconstructingMessages
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ReconstructingMessages
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 22
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Converting messages for Discord compatibility
+  example: []
+  syntax:
+    content: ReconstructingMessages = 3
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.ReadyForDiscordImport
+  commentId: F:Slackord.Classes.ProcessingState.ReadyForDiscordImport
+  id: ReadyForDiscordImport
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: ReadyForDiscordImport
+  nameWithType: ProcessingState.ReadyForDiscordImport
+  fullName: Slackord.Classes.ProcessingState.ReadyForDiscordImport
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ReadyForDiscordImport
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 26
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Ready to begin Discord import process
+  example: []
+  syntax:
+    content: ReadyForDiscordImport = 4
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.ImportingToDiscord
+  commentId: F:Slackord.Classes.ProcessingState.ImportingToDiscord
+  id: ImportingToDiscord
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: ImportingToDiscord
+  nameWithType: ProcessingState.ImportingToDiscord
+  fullName: Slackord.Classes.ProcessingState.ImportingToDiscord
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportingToDiscord
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 30
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Currently posting messages to Discord
+  example: []
+  syntax:
+    content: ImportingToDiscord = 5
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.Completed
+  commentId: F:Slackord.Classes.ProcessingState.Completed
+  id: Completed
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: Completed
+  nameWithType: ProcessingState.Completed
+  fullName: Slackord.Classes.ProcessingState.Completed
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Completed
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 34
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: All operations completed successfully
+  example: []
+  syntax:
+    content: Completed = 6
+    return:
+      type: Slackord.Classes.ProcessingState
+- uid: Slackord.Classes.ProcessingState.Error
+  commentId: F:Slackord.Classes.ProcessingState.Error
+  id: Error
+  parent: Slackord.Classes.ProcessingState
+  langs:
+  - csharp
+  - vb
+  name: Error
+  nameWithType: ProcessingState.Error
+  fullName: Slackord.Classes.ProcessingState.Error
+  type: Field
+  source:
+    remote:
+      path: Slackord/Classes/ProcessingManager.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Error
+    path: Slackord/Classes/ProcessingManager.cs
+    startLine: 38
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: An error occurred during processing
+  example: []
+  syntax:
+    content: Error = 7
+    return:
+      type: Slackord.Classes.ProcessingState
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: Slackord.Classes.ProcessingState
+  commentId: T:Slackord.Classes.ProcessingState
+  parent: Slackord.Classes
+  href: Slackord.Classes.ProcessingState.html
+  name: ProcessingState
+  nameWithType: ProcessingState
+  fullName: Slackord.Classes.ProcessingState

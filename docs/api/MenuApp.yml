@@ -1,0 +1,37 @@
+### YamlMime:ManagedReference
+items:
+- uid: MenuApp
+  commentId: N:MenuApp
+  id: MenuApp
+  children:
+  - MenuApp.AppShell
+  - MenuApp.MainPage
+  langs:
+  - csharp
+  - vb
+  name: MenuApp
+  nameWithType: MenuApp
+  fullName: MenuApp
+  type: Namespace
+  assemblies:
+  - Slackord
+references:
+- uid: MenuApp.AppShell
+  commentId: T:MenuApp.AppShell
+  href: MenuApp.AppShell.html
+  name: AppShell
+  nameWithType: AppShell
+  fullName: MenuApp.AppShell
+- uid: MenuApp.MainPage
+  commentId: T:MenuApp.MainPage
+  parent: MenuApp
+  href: MenuApp.MainPage.html
+  name: MainPage
+  nameWithType: MainPage
+  fullName: MenuApp.MainPage
+- uid: MenuApp
+  commentId: N:MenuApp
+  href: MenuApp.html
+  name: MenuApp
+  nameWithType: MenuApp
+  fullName: MenuApp

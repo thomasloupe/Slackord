@@ -1,0 +1,821 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.Reconstruct
+  commentId: T:Slackord.Classes.Reconstruct
+  id: Reconstruct
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.Reconstruct.InitializeUsersDict(System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser})
+  - Slackord.Classes.Reconstruct.ReconstructAsync(System.Collections.Generic.List{Slackord.Classes.Channel},System.Threading.CancellationToken)
+  - Slackord.Classes.Reconstruct.ReconstructMessage(Slackord.Classes.DeconstructedMessage,Slackord.Classes.Channel)
+  - Slackord.Classes.Reconstruct.ThreadDictionary
+  langs:
+  - csharp
+  - vb
+  name: Reconstruct
+  nameWithType: Reconstruct
+  fullName: Slackord.Classes.Reconstruct
+  type: Class
+  source:
+    remote:
+      path: Slackord/obj/Release/net10.0-windows10.0.19041.0/win-x64/System.Text.RegularExpressions.Generator/System.Text.RegularExpressions.Generator.RegexGenerator/RegexGenerator.g.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Reconstruct
+    path: Slackord/obj/Release/net10.0-windows10.0.19041.0/win-x64/System.Text.RegularExpressions.Generator/System.Text.RegularExpressions.Generator.RegexGenerator/RegexGenerator.g.cs
+    startLine: 159
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Handles the reconstruction of Slack messages into Discord-compatible format
+  example: []
+  syntax:
+    content: public class Reconstruct
+    content.vb: Public Class Reconstruct
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.Reconstruct.ThreadDictionary
+  commentId: P:Slackord.Classes.Reconstruct.ThreadDictionary
+  id: ThreadDictionary
+  parent: Slackord.Classes.Reconstruct
+  langs:
+  - csharp
+  - vb
+  name: ThreadDictionary
+  nameWithType: Reconstruct.ThreadDictionary
+  fullName: Slackord.Classes.Reconstruct.ThreadDictionary
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/Reconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ThreadDictionary
+    path: Slackord/Classes/Reconstruct.cs
+    startLine: 26
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets a read-only view of the thread dictionary
+  example: []
+  syntax:
+    content: public static IReadOnlyDictionary<string, ThreadInfo> ThreadDictionary { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyDictionary{System.String,Slackord.Classes.ThreadInfo}
+    content.vb: Public Shared ReadOnly Property ThreadDictionary As IReadOnlyDictionary(Of String, ThreadInfo)
+  overload: Slackord.Classes.Reconstruct.ThreadDictionary*
+- uid: Slackord.Classes.Reconstruct.InitializeUsersDict(System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser})
+  commentId: M:Slackord.Classes.Reconstruct.InitializeUsersDict(System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser})
+  id: InitializeUsersDict(System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser})
+  parent: Slackord.Classes.Reconstruct
+  langs:
+  - csharp
+  - vb
+  name: InitializeUsersDict(Dictionary<string, DeconstructedUser>)
+  nameWithType: Reconstruct.InitializeUsersDict(Dictionary<string, DeconstructedUser>)
+  fullName: Slackord.Classes.Reconstruct.InitializeUsersDict(System.Collections.Generic.Dictionary<string, Slackord.Classes.DeconstructedUser>)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/Reconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: InitializeUsersDict
+    path: Slackord/Classes/Reconstruct.cs
+    startLine: 32
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Initializes the users dictionary with parsed user data
+  example: []
+  syntax:
+    content: public static void InitializeUsersDict(Dictionary<string, DeconstructedUser> usersDict)
+    parameters:
+    - id: usersDict
+      type: System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser}
+      description: Dictionary of user data from Slack export
+    content.vb: Public Shared Sub InitializeUsersDict(usersDict As Dictionary(Of String, DeconstructedUser))
+  overload: Slackord.Classes.Reconstruct.InitializeUsersDict*
+  nameWithType.vb: Reconstruct.InitializeUsersDict(Dictionary(Of String, DeconstructedUser))
+  fullName.vb: Slackord.Classes.Reconstruct.InitializeUsersDict(System.Collections.Generic.Dictionary(Of String, Slackord.Classes.DeconstructedUser))
+  name.vb: InitializeUsersDict(Dictionary(Of String, DeconstructedUser))
+- uid: Slackord.Classes.Reconstruct.ReconstructAsync(System.Collections.Generic.List{Slackord.Classes.Channel},System.Threading.CancellationToken)
+  commentId: M:Slackord.Classes.Reconstruct.ReconstructAsync(System.Collections.Generic.List{Slackord.Classes.Channel},System.Threading.CancellationToken)
+  id: ReconstructAsync(System.Collections.Generic.List{Slackord.Classes.Channel},System.Threading.CancellationToken)
+  parent: Slackord.Classes.Reconstruct
+  langs:
+  - csharp
+  - vb
+  name: ReconstructAsync(List<Channel>, CancellationToken)
+  nameWithType: Reconstruct.ReconstructAsync(List<Channel>, CancellationToken)
+  fullName: Slackord.Classes.Reconstruct.ReconstructAsync(System.Collections.Generic.List<Slackord.Classes.Channel>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/Reconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ReconstructAsync
+    path: Slackord/Classes/Reconstruct.cs
+    startLine: 81
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Reconstructs all messages across multiple channels with progress tracking
+  example: []
+  syntax:
+    content: public static Task ReconstructAsync(List<Channel> channels, CancellationToken cancellationToken)
+    parameters:
+    - id: channels
+      type: System.Collections.Generic.List{Slackord.Classes.Channel}
+      description: List of channels to reconstruct
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+      description: Token to cancel the operation
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function ReconstructAsync(channels As List(Of Channel), cancellationToken As CancellationToken) As Task
+  overload: Slackord.Classes.Reconstruct.ReconstructAsync*
+  nameWithType.vb: Reconstruct.ReconstructAsync(List(Of Channel), CancellationToken)
+  fullName.vb: Slackord.Classes.Reconstruct.ReconstructAsync(System.Collections.Generic.List(Of Slackord.Classes.Channel), System.Threading.CancellationToken)
+  name.vb: ReconstructAsync(List(Of Channel), CancellationToken)
+- uid: Slackord.Classes.Reconstruct.ReconstructMessage(Slackord.Classes.DeconstructedMessage,Slackord.Classes.Channel)
+  commentId: M:Slackord.Classes.Reconstruct.ReconstructMessage(Slackord.Classes.DeconstructedMessage,Slackord.Classes.Channel)
+  id: ReconstructMessage(Slackord.Classes.DeconstructedMessage,Slackord.Classes.Channel)
+  parent: Slackord.Classes.Reconstruct
+  langs:
+  - csharp
+  - vb
+  name: ReconstructMessage(DeconstructedMessage, Channel)
+  nameWithType: Reconstruct.ReconstructMessage(DeconstructedMessage, Channel)
+  fullName: Slackord.Classes.Reconstruct.ReconstructMessage(Slackord.Classes.DeconstructedMessage, Slackord.Classes.Channel)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/Reconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ReconstructMessage
+    path: Slackord/Classes/Reconstruct.cs
+    startLine: 223
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Reconstructs a Slack message for Discord, handling formatting and attachments
+  example: []
+  syntax:
+    content: public static Task ReconstructMessage(DeconstructedMessage deconstructedMessage, Channel channel)
+    parameters:
+    - id: deconstructedMessage
+      type: Slackord.Classes.DeconstructedMessage
+      description: The deconstructed Slack message to reconstruct
+    - id: channel
+      type: Slackord.Classes.Channel
+      description: The channel this message belongs to
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function ReconstructMessage(deconstructedMessage As DeconstructedMessage, channel As Channel) As Task
+  overload: Slackord.Classes.Reconstruct.ReconstructMessage*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.Reconstruct.ThreadDictionary*
+  commentId: Overload:Slackord.Classes.Reconstruct.ThreadDictionary
+  href: Slackord.Classes.Reconstruct.html#Slackord_Classes_Reconstruct_ThreadDictionary
+  name: ThreadDictionary
+  nameWithType: Reconstruct.ThreadDictionary
+  fullName: Slackord.Classes.Reconstruct.ThreadDictionary
+- uid: System.Collections.Generic.IReadOnlyDictionary{System.String,Slackord.Classes.ThreadInfo}
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary{System.String,Slackord.Classes.ThreadInfo}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyDictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<string, ThreadInfo>
+  nameWithType: IReadOnlyDictionary<string, ThreadInfo>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<string, Slackord.Classes.ThreadInfo>
+  nameWithType.vb: IReadOnlyDictionary(Of String, ThreadInfo)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of String, Slackord.Classes.ThreadInfo)
+  name.vb: IReadOnlyDictionary(Of String, ThreadInfo)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: Slackord.Classes.ThreadInfo
+    name: ThreadInfo
+    href: Slackord.Classes.ThreadInfo.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: Slackord.Classes.ThreadInfo
+    name: ThreadInfo
+    href: Slackord.Classes.ThreadInfo.html
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyDictionary`2
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary`2
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<TKey, TValue>
+  nameWithType: IReadOnlyDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>
+  nameWithType.vb: IReadOnlyDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of TKey, TValue)
+  name.vb: IReadOnlyDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: Slackord.Classes.Reconstruct.InitializeUsersDict*
+  commentId: Overload:Slackord.Classes.Reconstruct.InitializeUsersDict
+  href: Slackord.Classes.Reconstruct.html#Slackord_Classes_Reconstruct_InitializeUsersDict_System_Collections_Generic_Dictionary_System_String_Slackord_Classes_DeconstructedUser__
+  name: InitializeUsersDict
+  nameWithType: Reconstruct.InitializeUsersDict
+  fullName: Slackord.Classes.Reconstruct.InitializeUsersDict
+- uid: System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser}
+  commentId: T:System.Collections.Generic.Dictionary{System.String,Slackord.Classes.DeconstructedUser}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.Dictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2
+  name: Dictionary<string, DeconstructedUser>
+  nameWithType: Dictionary<string, DeconstructedUser>
+  fullName: System.Collections.Generic.Dictionary<string, Slackord.Classes.DeconstructedUser>
+  nameWithType.vb: Dictionary(Of String, DeconstructedUser)
+  fullName.vb: System.Collections.Generic.Dictionary(Of String, Slackord.Classes.DeconstructedUser)
+  name.vb: Dictionary(Of String, DeconstructedUser)
+  spec.csharp:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    href: Slackord.Classes.DeconstructedUser.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    href: Slackord.Classes.DeconstructedUser.html
+  - name: )
+- uid: System.Collections.Generic.Dictionary`2
+  commentId: T:System.Collections.Generic.Dictionary`2
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2
+  name: Dictionary<TKey, TValue>
+  nameWithType: Dictionary<TKey, TValue>
+  fullName: System.Collections.Generic.Dictionary<TKey, TValue>
+  nameWithType.vb: Dictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.Dictionary(Of TKey, TValue)
+  name.vb: Dictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2
+  - name: <
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: )
+- uid: Slackord.Classes.Reconstruct.ReconstructAsync*
+  commentId: Overload:Slackord.Classes.Reconstruct.ReconstructAsync
+  href: Slackord.Classes.Reconstruct.html#Slackord_Classes_Reconstruct_ReconstructAsync_System_Collections_Generic_List_Slackord_Classes_Channel__System_Threading_CancellationToken_
+  name: ReconstructAsync
+  nameWithType: Reconstruct.ReconstructAsync
+  fullName: Slackord.Classes.Reconstruct.ReconstructAsync
+- uid: System.Collections.Generic.List{Slackord.Classes.Channel}
+  commentId: T:System.Collections.Generic.List{Slackord.Classes.Channel}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<Channel>
+  nameWithType: List<Channel>
+  fullName: System.Collections.Generic.List<Slackord.Classes.Channel>
+  nameWithType.vb: List(Of Channel)
+  fullName.vb: System.Collections.Generic.List(Of Slackord.Classes.Channel)
+  name.vb: List(Of Channel)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: Slackord.Classes.Channel
+    name: Channel
+    href: Slackord.Classes.Channel.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Slackord.Classes.Channel
+    name: Channel
+    href: Slackord.Classes.Channel.html
+  - name: )
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.Reconstruct.ReconstructMessage*
+  commentId: Overload:Slackord.Classes.Reconstruct.ReconstructMessage
+  href: Slackord.Classes.Reconstruct.html#Slackord_Classes_Reconstruct_ReconstructMessage_Slackord_Classes_DeconstructedMessage_Slackord_Classes_Channel_
+  name: ReconstructMessage
+  nameWithType: Reconstruct.ReconstructMessage
+  fullName: Slackord.Classes.Reconstruct.ReconstructMessage
+- uid: Slackord.Classes.DeconstructedMessage
+  commentId: T:Slackord.Classes.DeconstructedMessage
+  parent: Slackord.Classes
+  href: Slackord.Classes.DeconstructedMessage.html
+  name: DeconstructedMessage
+  nameWithType: DeconstructedMessage
+  fullName: Slackord.Classes.DeconstructedMessage
+- uid: Slackord.Classes.Channel
+  commentId: T:Slackord.Classes.Channel
+  parent: Slackord.Classes
+  href: Slackord.Classes.Channel.html
+  name: Channel
+  nameWithType: Channel
+  fullName: Slackord.Classes.Channel

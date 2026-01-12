@@ -1,0 +1,163 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Pages.OptionsPage.CleanupBehavior
+  commentId: T:Slackord.Pages.OptionsPage.CleanupBehavior
+  id: OptionsPage.CleanupBehavior
+  parent: Slackord.Pages
+  children:
+  - Slackord.Pages.OptionsPage.CleanupBehavior.Automatically
+  - Slackord.Pages.OptionsPage.CleanupBehavior.Never
+  - Slackord.Pages.OptionsPage.CleanupBehavior.Prompt
+  langs:
+  - csharp
+  - vb
+  name: OptionsPage.CleanupBehavior
+  nameWithType: OptionsPage.CleanupBehavior
+  fullName: Slackord.Pages.OptionsPage.CleanupBehavior
+  type: Enum
+  source:
+    remote:
+      path: Slackord/Pages/OptionsPage.xaml.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: CleanupBehavior
+    path: Slackord/Pages/OptionsPage.xaml.cs
+    startLine: 15
+  assemblies:
+  - Slackord
+  namespace: Slackord.Pages
+  summary: Defines the cleanup behavior options for post-import cleanup
+  example: []
+  syntax:
+    content: public enum OptionsPage.CleanupBehavior
+    content.vb: Public Enum OptionsPage.CleanupBehavior
+- uid: Slackord.Pages.OptionsPage.CleanupBehavior.Prompt
+  commentId: F:Slackord.Pages.OptionsPage.CleanupBehavior.Prompt
+  id: Prompt
+  parent: Slackord.Pages.OptionsPage.CleanupBehavior
+  langs:
+  - csharp
+  - vb
+  name: Prompt
+  nameWithType: OptionsPage.CleanupBehavior.Prompt
+  fullName: Slackord.Pages.OptionsPage.CleanupBehavior.Prompt
+  type: Field
+  source:
+    remote:
+      path: Slackord/Pages/OptionsPage.xaml.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Prompt
+    path: Slackord/Pages/OptionsPage.xaml.cs
+    startLine: 20
+  assemblies:
+  - Slackord
+  namespace: Slackord.Pages
+  summary: Prompt the user before cleaning up files
+  example: []
+  syntax:
+    content: Prompt = 0
+    return:
+      type: Slackord.Pages.OptionsPage.CleanupBehavior
+- uid: Slackord.Pages.OptionsPage.CleanupBehavior.Automatically
+  commentId: F:Slackord.Pages.OptionsPage.CleanupBehavior.Automatically
+  id: Automatically
+  parent: Slackord.Pages.OptionsPage.CleanupBehavior
+  langs:
+  - csharp
+  - vb
+  name: Automatically
+  nameWithType: OptionsPage.CleanupBehavior.Automatically
+  fullName: Slackord.Pages.OptionsPage.CleanupBehavior.Automatically
+  type: Field
+  source:
+    remote:
+      path: Slackord/Pages/OptionsPage.xaml.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Automatically
+    path: Slackord/Pages/OptionsPage.xaml.cs
+    startLine: 25
+  assemblies:
+  - Slackord
+  namespace: Slackord.Pages
+  summary: Automatically clean up files without prompting
+  example: []
+  syntax:
+    content: Automatically = 1
+    return:
+      type: Slackord.Pages.OptionsPage.CleanupBehavior
+- uid: Slackord.Pages.OptionsPage.CleanupBehavior.Never
+  commentId: F:Slackord.Pages.OptionsPage.CleanupBehavior.Never
+  id: Never
+  parent: Slackord.Pages.OptionsPage.CleanupBehavior
+  langs:
+  - csharp
+  - vb
+  name: Never
+  nameWithType: OptionsPage.CleanupBehavior.Never
+  fullName: Slackord.Pages.OptionsPage.CleanupBehavior.Never
+  type: Field
+  source:
+    remote:
+      path: Slackord/Pages/OptionsPage.xaml.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Never
+    path: Slackord/Pages/OptionsPage.xaml.cs
+    startLine: 30
+  assemblies:
+  - Slackord
+  namespace: Slackord.Pages
+  summary: Never clean up files after import
+  example: []
+  syntax:
+    content: Never = 2
+    return:
+      type: Slackord.Pages.OptionsPage.CleanupBehavior
+references:
+- uid: Slackord.Pages
+  commentId: N:Slackord.Pages
+  href: Slackord.html
+  name: Slackord.Pages
+  nameWithType: Slackord.Pages
+  fullName: Slackord.Pages
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Pages
+    name: Pages
+    href: Slackord.Pages.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Pages
+    name: Pages
+    href: Slackord.Pages.html
+- uid: Slackord.Pages.OptionsPage.CleanupBehavior
+  commentId: T:Slackord.Pages.OptionsPage.CleanupBehavior
+  parent: Slackord.Pages
+  href: Slackord.Pages.OptionsPage.html
+  name: OptionsPage.CleanupBehavior
+  nameWithType: OptionsPage.CleanupBehavior
+  fullName: Slackord.Pages.OptionsPage.CleanupBehavior
+  spec.csharp:
+  - uid: Slackord.Pages.OptionsPage
+    name: OptionsPage
+    href: Slackord.Pages.OptionsPage.html
+  - name: .
+  - uid: Slackord.Pages.OptionsPage.CleanupBehavior
+    name: CleanupBehavior
+    href: Slackord.Pages.OptionsPage.CleanupBehavior.html
+  spec.vb:
+  - uid: Slackord.Pages.OptionsPage
+    name: OptionsPage
+    href: Slackord.Pages.OptionsPage.html
+  - name: .
+  - uid: Slackord.Pages.OptionsPage.CleanupBehavior
+    name: CleanupBehavior
+    href: Slackord.Pages.OptionsPage.CleanupBehavior.html

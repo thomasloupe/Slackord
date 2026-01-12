@@ -1,0 +1,504 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.ImportCleanupUtility
+  commentId: T:Slackord.Classes.ImportCleanupUtility
+  id: ImportCleanupUtility
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync(Slackord.Classes.ImportSession)
+  - Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup(Slackord.Classes.ImportSession)
+  langs:
+  - csharp
+  - vb
+  name: ImportCleanupUtility
+  nameWithType: ImportCleanupUtility
+  fullName: Slackord.Classes.ImportCleanupUtility
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/ImportCleanupUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: ImportCleanupUtility
+    path: Slackord/Classes/ImportCleanupUtility.cs
+    startLine: 8
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: >-
+    Utility class for handling cleanup of import and download files after successful Discord import
+
+    Optimized for thread safety and heavy I/O operations
+  example: []
+  syntax:
+    content: public static class ImportCleanupUtility
+    content.vb: Public Module ImportCleanupUtility
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup(Slackord.Classes.ImportSession)
+  commentId: M:Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup(Slackord.Classes.ImportSession)
+  id: HandlePostImportCleanup(Slackord.Classes.ImportSession)
+  parent: Slackord.Classes.ImportCleanupUtility
+  langs:
+  - csharp
+  - vb
+  name: HandlePostImportCleanup(ImportSession)
+  nameWithType: ImportCleanupUtility.HandlePostImportCleanup(ImportSession)
+  fullName: Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup(Slackord.Classes.ImportSession)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportCleanupUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: HandlePostImportCleanup
+    path: Slackord/Classes/ImportCleanupUtility.cs
+    startLine: 15
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: >-
+    Handles post-import cleanup based on user preferences for a completed session
+
+    This method properly handles thread marshalling for UI operations
+  example: []
+  syntax:
+    content: public static Task HandlePostImportCleanup(ImportSession completedSession)
+    parameters:
+    - id: completedSession
+      type: Slackord.Classes.ImportSession
+      description: The completed import session containing all channel information
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function HandlePostImportCleanup(completedSession As ImportSession) As Task
+  overload: Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup*
+- uid: Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync(Slackord.Classes.ImportSession)
+  commentId: M:Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync(Slackord.Classes.ImportSession)
+  id: GetCleanupSummaryAsync(Slackord.Classes.ImportSession)
+  parent: Slackord.Classes.ImportCleanupUtility
+  langs:
+  - csharp
+  - vb
+  name: GetCleanupSummaryAsync(ImportSession)
+  nameWithType: ImportCleanupUtility.GetCleanupSummaryAsync(ImportSession)
+  fullName: Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync(Slackord.Classes.ImportSession)
+  type: Method
+  source:
+    remote:
+      path: Slackord/Classes/ImportCleanupUtility.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: GetCleanupSummaryAsync
+    path: Slackord/Classes/ImportCleanupUtility.cs
+    startLine: 321
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets a summary of cleanup potential for display purposes
+  example: []
+  syntax:
+    content: public static Task<string> GetCleanupSummaryAsync(ImportSession session)
+    parameters:
+    - id: session
+      type: Slackord.Classes.ImportSession
+      description: The import session to analyze
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: A formatted string describing cleanup potential
+    content.vb: Public Shared Function GetCleanupSummaryAsync(session As ImportSession) As Task(Of String)
+  overload: Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync*
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup*
+  commentId: Overload:Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup
+  href: Slackord.Classes.ImportCleanupUtility.html#Slackord_Classes_ImportCleanupUtility_HandlePostImportCleanup_Slackord_Classes_ImportSession_
+  name: HandlePostImportCleanup
+  nameWithType: ImportCleanupUtility.HandlePostImportCleanup
+  fullName: Slackord.Classes.ImportCleanupUtility.HandlePostImportCleanup
+- uid: Slackord.Classes.ImportSession
+  commentId: T:Slackord.Classes.ImportSession
+  parent: Slackord.Classes
+  href: Slackord.Classes.ImportSession.html
+  name: ImportSession
+  nameWithType: ImportSession
+  fullName: Slackord.Classes.ImportSession
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync*
+  commentId: Overload:Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync
+  href: Slackord.Classes.ImportCleanupUtility.html#Slackord_Classes_ImportCleanupUtility_GetCleanupSummaryAsync_Slackord_Classes_ImportSession_
+  name: GetCleanupSummaryAsync
+  nameWithType: ImportCleanupUtility.GetCleanupSummaryAsync
+  fullName: Slackord.Classes.ImportCleanupUtility.GetCleanupSummaryAsync
+- uid: System.Threading.Tasks.Task{System.String}
+  commentId: T:System.Threading.Tasks.Task{System.String}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<string>
+  nameWithType: Task<string>
+  fullName: System.Threading.Tasks.Task<string>
+  nameWithType.vb: Task(Of String)
+  fullName.vb: System.Threading.Tasks.Task(Of String)
+  name.vb: Task(Of String)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: TResult
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TResult
+  - name: )

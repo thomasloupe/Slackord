@@ -1,0 +1,484 @@
+### YamlMime:ManagedReference
+items:
+- uid: Slackord.Classes.DeconstructedUser
+  commentId: T:Slackord.Classes.DeconstructedUser
+  id: DeconstructedUser
+  parent: Slackord.Classes
+  children:
+  - Slackord.Classes.DeconstructedUser.Id
+  - Slackord.Classes.DeconstructedUser.Name
+  - Slackord.Classes.DeconstructedUser.Profile
+  langs:
+  - csharp
+  - vb
+  name: DeconstructedUser
+  nameWithType: DeconstructedUser
+  fullName: Slackord.Classes.DeconstructedUser
+  type: Class
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: DeconstructedUser
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 252
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Represents a deconstructed Slack user with profile information
+  example: []
+  syntax:
+    content: public class DeconstructedUser
+    content.vb: Public Class DeconstructedUser
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Slackord.Classes.DeconstructedUser.Id
+  commentId: P:Slackord.Classes.DeconstructedUser.Id
+  id: Id
+  parent: Slackord.Classes.DeconstructedUser
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: DeconstructedUser.Id
+  fullName: Slackord.Classes.DeconstructedUser.Id
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Id
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 257
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the user ID
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("id")]
+
+      public string Id { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("id")>
+
+      Public Property Id As String
+  overload: Slackord.Classes.DeconstructedUser.Id*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: id
+- uid: Slackord.Classes.DeconstructedUser.Name
+  commentId: P:Slackord.Classes.DeconstructedUser.Name
+  id: Name
+  parent: Slackord.Classes.DeconstructedUser
+  langs:
+  - csharp
+  - vb
+  name: Name
+  nameWithType: DeconstructedUser.Name
+  fullName: Slackord.Classes.DeconstructedUser.Name
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Name
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 263
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the username
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("name")]
+
+      public string Name { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("name")>
+
+      Public Property Name As String
+  overload: Slackord.Classes.DeconstructedUser.Name*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: name
+- uid: Slackord.Classes.DeconstructedUser.Profile
+  commentId: P:Slackord.Classes.DeconstructedUser.Profile
+  id: Profile
+  parent: Slackord.Classes.DeconstructedUser
+  langs:
+  - csharp
+  - vb
+  name: Profile
+  nameWithType: DeconstructedUser.Profile
+  fullName: Slackord.Classes.DeconstructedUser.Profile
+  type: Property
+  source:
+    remote:
+      path: Slackord/Classes/Deconstruct.cs
+      branch: beta
+      repo: https://github.com/thomasloupe/Slackord.git
+    id: Profile
+    path: Slackord/Classes/Deconstruct.cs
+    startLine: 269
+  assemblies:
+  - Slackord
+  namespace: Slackord.Classes
+  summary: Gets or sets the user profile information
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("profile")]
+
+      public DeconstructedUser.UserProfile Profile { get; set; }
+    parameters: []
+    return:
+      type: Slackord.Classes.DeconstructedUser.UserProfile
+    content.vb: >-
+      <JsonProperty("profile")>
+
+      Public Property Profile As DeconstructedUser.UserProfile
+  overload: Slackord.Classes.DeconstructedUser.Profile*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: profile
+references:
+- uid: Slackord.Classes
+  commentId: N:Slackord.Classes
+  href: Slackord.html
+  name: Slackord.Classes
+  nameWithType: Slackord.Classes
+  fullName: Slackord.Classes
+  spec.csharp:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+  spec.vb:
+  - uid: Slackord
+    name: Slackord
+    href: Slackord.html
+  - name: .
+  - uid: Slackord.Classes
+    name: Classes
+    href: Slackord.Classes.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Slackord.Classes.DeconstructedUser.Id*
+  commentId: Overload:Slackord.Classes.DeconstructedUser.Id
+  href: Slackord.Classes.DeconstructedUser.html#Slackord_Classes_DeconstructedUser_Id
+  name: Id
+  nameWithType: DeconstructedUser.Id
+  fullName: Slackord.Classes.DeconstructedUser.Id
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Slackord.Classes.DeconstructedUser.Name*
+  commentId: Overload:Slackord.Classes.DeconstructedUser.Name
+  href: Slackord.Classes.DeconstructedUser.html#Slackord_Classes_DeconstructedUser_Name
+  name: Name
+  nameWithType: DeconstructedUser.Name
+  fullName: Slackord.Classes.DeconstructedUser.Name
+- uid: Slackord.Classes.DeconstructedUser.Profile*
+  commentId: Overload:Slackord.Classes.DeconstructedUser.Profile
+  href: Slackord.Classes.DeconstructedUser.html#Slackord_Classes_DeconstructedUser_Profile
+  name: Profile
+  nameWithType: DeconstructedUser.Profile
+  fullName: Slackord.Classes.DeconstructedUser.Profile
+- uid: Slackord.Classes.DeconstructedUser.UserProfile
+  commentId: T:Slackord.Classes.DeconstructedUser.UserProfile
+  parent: Slackord.Classes
+  href: Slackord.Classes.DeconstructedUser.html
+  name: DeconstructedUser.UserProfile
+  nameWithType: DeconstructedUser.UserProfile
+  fullName: Slackord.Classes.DeconstructedUser.UserProfile
+  spec.csharp:
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    href: Slackord.Classes.DeconstructedUser.html
+  - name: .
+  - uid: Slackord.Classes.DeconstructedUser.UserProfile
+    name: UserProfile
+    href: Slackord.Classes.DeconstructedUser.UserProfile.html
+  spec.vb:
+  - uid: Slackord.Classes.DeconstructedUser
+    name: DeconstructedUser
+    href: Slackord.Classes.DeconstructedUser.html
+  - name: .
+  - uid: Slackord.Classes.DeconstructedUser.UserProfile
+    name: UserProfile
+    href: Slackord.Classes.DeconstructedUser.UserProfile.html
