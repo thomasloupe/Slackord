@@ -29,9 +29,12 @@ jobs:
       - name: Cache MAUI workload
         uses: actions/cache@v4
         with:
-          path: /usr/local/share/dotnet/packs
-          key: ${{ runner.os }}-maui-windows-${{ hashFiles('.config/dotnet-tools.json') }}
-          restore-keys: ${{ runner.os }}-maui-windows-
+          path: |
+            /usr/share/dotnet/packs
+            /usr/share/dotnet/metadata
+            /usr/share/dotnet/workloads
+          key: ${{ runner.os }}-maui-windows-net10-${{ hashFiles('.config/dotnet-tools.json') }}
+          restore-keys: ${{ runner.os }}-maui-windows-net10-
 
       - run: dotnet tool restore
       - run: dotnet workload install maui-windows --skip-manifest-update
