@@ -17,8 +17,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
       - run: dotnet tool restore
+      - run: dotnet restore Slackord/Slackord.csproj -p:EnableWindowsTargeting=true -p:PublishTrimmed=false
       - run: dotnet docfx docfx.json
       - uses: actions/upload-pages-artifact@v3
         with:
