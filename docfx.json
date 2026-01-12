@@ -43,6 +43,7 @@
     "globalMetadata": {
       "_appTitle": "Slackord Documentation",
       "_appName": "Slackord",
+      "_appLogoUrl": "https://thomasloupe.github.io/Slackord/docs/",
       "_appFooter": "Slackord - Import Slack messages into Discord",
       "_enableSearch": true,
       "_enableNewTab": true
