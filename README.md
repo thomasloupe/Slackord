@@ -46,8 +46,9 @@ https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
 6. At any point, you can disconnect or close Slackord and later resume your import. To resume an import, use the `/slackord` or `/resume` slash command when prompted or if Slackord is still running, after reconnecting the bot to Discord.
 
 # Need Help?
-1. Please join the Discord community listed at the top of this page, or open a new issue if it doesn't already exist.
-2. If you'd like to donate, you can do so from within Slackord by opening the `Options` page and clicking the `Donate` button at the bottom of the page, sponsoring Slackord at the top of this repository by clicking the heart (sponsor) button, or donating directly to me via [PayPal](https://paypal.me/thomasloupe).
+1. Visit the [Documentation](https://thomasloupe.github.io/Slackord/docs/) which is updated automatically on main branch commits.
+2. Please join the Discord community listed at the top of this page, or open a new issue if it doesn't already exist.
+3. If you'd like to donate, you can do so from within Slackord by opening the `Options` page and clicking the `Donate` button at the bottom of the page, sponsoring Slackord at the top of this repository by clicking the heart (sponsor) button, or donating directly to me via [PayPal](https://paypal.me/thomasloupe).
 
 # Special Mentions
 While Slackord handles migrating your Slack, archiving your Slack history is something you might also want to do. Check out [Slackdump](https://github.com/rusq/slackdump) for archiving your entire Slack workspace! Slackord officially supports Slackdump exports.
