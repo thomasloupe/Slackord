@@ -14,8 +14,8 @@
 		<ApplicationTitle>Slackord</ApplicationTitle>
 		<ApplicationId>com.thomasloupe.slackord</ApplicationId>
 		<ApplicationIdGuid>9c3974ab-37d1-4859-8f7c-aa1c453b5b00</ApplicationIdGuid>
-		<ApplicationDisplayVersion>5.3.4</ApplicationDisplayVersion>
-		<ApplicationVersion>5</ApplicationVersion>
+		<ApplicationDisplayVersion>6.1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>6</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -30,8 +30,8 @@
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
-		<AssemblyVersion>5.3.4.0</AssemblyVersion>
-		<FileVersion>5.3.4.0</FileVersion>
+		<AssemblyVersion>6.1.0.0</AssemblyVersion>
+		<FileVersion>6.1.0.0</FileVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PublishAot>False</PublishAot>
 		<DelaySign>False</DelaySign>
@@ -40,15 +40,15 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>5.3.4</ApplicationDisplayVersion>
-		<ApplicationVersion>5</ApplicationVersion>
+		<ApplicationDisplayVersion>6.1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>6</ApplicationVersion>
 		<Optimize>True</Optimize>
 		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>5.3.4</ApplicationDisplayVersion>
-		<ApplicationVersion>5</ApplicationVersion>
+		<ApplicationDisplayVersion>6.1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>6</ApplicationVersion>
 		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
