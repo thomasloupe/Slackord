@@ -51,11 +51,6 @@
         public int RateLimitDelay { get; set; }
 
         /// <summary>
-        /// Gets or sets whether to skip channels that already exist
-        /// </summary>
-        public bool SkipExistingChannels { get; set; }
-
-        /// <summary>
         /// Gets or sets whether to import file attachments
         /// </summary>
         public bool ImportAttachments { get; set; }

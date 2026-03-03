@@ -1170,6 +1170,27 @@ namespace Slackord.Classes
                     return;
                 }
 
+                // Check if any channels needing creation already exist in the guild by name
+                bool? useExistingChannels = null;
+                var conflictingChannels = channelsNeedingCreation
+                    .Where(c => guild.TextChannels.Any(tc => tc.Name.Equals(c.Name.ToLower(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (conflictingChannels.Count > 0)
+                {
+                    string channelList = string.Join(", ", conflictingChannels.Select(c => $"#{c.Name}"));
+                    string message = $"The following channels already exist in this server:\n{channelList}\n\nWould you like to use the existing channels or create new ones?";
+
+                    useExistingChannels = await MainThread.InvokeOnMainThreadAsync(async () =>
+                    {
+                        return await MainPage.Current.DisplayAlertAsync(
+                            "Existing Channels Found",
+                            message,
+                            "Use Existing",
+                            "Create New");
+                    });
+                }
+
                 Application.Current.Dispatcher.Dispatch(() => {
                     ApplicationWindow.WriteToDebugWindow($"📁 Creating {channelsNeedingCreation.Count} new Discord channels...\n");
                 });
@@ -1218,6 +1239,23 @@ namespace Slackord.Classes
                     }
 
                     string channelName = channelProgress.Name.ToLower();
+
+                    // Check for existing channel with the same name anywhere in the guild
+                    var existingGuildChannel = guild.TextChannels.FirstOrDefault(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase));
+
+                    if (existingGuildChannel != null && useExistingChannels == true)
+                    {
+                        // Reuse the existing channel
+                        channelProgress.SetDiscordChannelId(existingGuildChannel.Id);
+                        CreatedChannels[existingGuildChannel.Id] = existingGuildChannel;
+
+                        Application.Current.Dispatcher.Dispatch(() => {
+                            ApplicationWindow.WriteToDebugWindow($"🔗 Reusing existing channel: #{existingGuildChannel.Name} (ID: {existingGuildChannel.Id})\n");
+                        });
+
+                        await Task.Delay(100, cancellationToken);
+                        continue;
+                    }
 
                     if (guild.TextChannels.Any(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId))
                     {
