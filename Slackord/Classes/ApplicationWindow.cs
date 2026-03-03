@@ -1,6 +1,8 @@
 ﻿using Discord;
 using MenuApp;
+#if WINDOWS
 using Microsoft.UI;
+#endif
 using System.Text;
 
 namespace Slackord.Classes
