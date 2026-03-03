@@ -162,6 +162,7 @@ namespace Slackord.Pages
             }
 
             Preferences.Default.Set("ReuseExistingChannels", ReuseExistingChannelsSwitch.IsToggled);
+            AppSettings.Instance.SkipExistingChannels = ReuseExistingChannelsSwitch.IsToggled;
 
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckUpdatesSwitch.IsToggled);
             await UpdateMainPageUISettings();

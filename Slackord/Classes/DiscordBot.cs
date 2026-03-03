@@ -1219,11 +1219,21 @@ namespace Slackord.Classes
 
                     string channelName = channelProgress.Name.ToLower();
 
-                    // When reuse is enabled, look for an existing channel by name anywhere in the guild
+                    // When reuse is enabled, look for an existing channel by name in Slackord Import categories
                     if (AppSettings.Instance.SkipExistingChannels)
                     {
-                        var existingChannel = guild.TextChannels.FirstOrDefault(
-                            c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase));
+                        var slackordCategories = guild.CategoryChannels
+                            .Where(c => c.Name.StartsWith(baseCategoryName, StringComparison.OrdinalIgnoreCase))
+                            .Select(c => c.Id)
+                            .ToHashSet();
+
+                        var matchingChannels = guild.TextChannels
+                            .Where(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase)
+                                        && c.CategoryId.HasValue
+                                        && slackordCategories.Contains(c.CategoryId.Value))
+                            .ToList();
+
+                        var existingChannel = matchingChannels.Count == 1 ? matchingChannels[0] : null;
                         if (existingChannel != null)
                         {
                             channelProgress.SetDiscordChannelId(existingChannel.Id);
