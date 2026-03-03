@@ -77,6 +77,13 @@
                     </Picker>
                     <Label Text="Cleanup removes import data files and channel downloads to reclaim disk space." 
                            FontSize="12" TextColor="Gray" Margin="0,5,0,0"/>
+
+                    <HorizontalStackLayout Margin="0,10,0,0">
+                        <Label Text="Reuse Existing Channels" VerticalOptions="Center" Margin="0,0,10,0"/>
+                        <Switch x:Name="ReuseExistingChannelsSwitch" IsToggled="False" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <Label Text="When enabled, Slackord will post into existing Discord channels with the same name instead of creating duplicates (e.g., #random-1). Useful for incremental imports." 
+                           FontSize="12" TextColor="Gray" Margin="0,5,0,0"/>
                 </VerticalStackLayout>
             </Border>
 

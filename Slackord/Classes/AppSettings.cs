@@ -118,6 +118,8 @@
 
             CheckForUpdatesOnStartup = Preferences.Default.Get("CheckForUpdatesOnStartup", true);
 
+            SkipExistingChannels = Preferences.Default.Get("ReuseExistingChannels", false);
+
             EnableResumeImport = Preferences.Default.Get("EnableResumeImport", true);
 
             LastImportType = Preferences.Default.Get("LastImportType", string.Empty);
@@ -140,6 +142,8 @@
             Preferences.Default.Set("DiscordLogLevel", DiscordLogLevel);
 
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckForUpdatesOnStartup);
+
+            Preferences.Default.Set("ReuseExistingChannels", SkipExistingChannels);
 
             Preferences.Default.Set("LastImportType", LastImportType);
             Preferences.Default.Set("LastImportChannel", LastImportChannel);
@@ -174,6 +178,8 @@
             DiscordLogLevel = 3;
 
             CheckForUpdatesOnStartup = true;
+
+            SkipExistingChannels = false;
         }
 
         /// <summary>

@@ -69,6 +69,9 @@ namespace Slackord.Pages
 
             int cleanupBehavior = Preferences.Default.Get("CleanupAfterImport", (int)CleanupBehavior.Prompt);
             CleanupAfterImportPicker.SelectedIndex = cleanupBehavior;
+
+            bool reuseExistingChannels = Preferences.Default.Get("ReuseExistingChannels", false);
+            ReuseExistingChannelsSwitch.IsToggled = reuseExistingChannels;
         }
 
         /// <summary>
@@ -158,6 +161,8 @@ namespace Slackord.Pages
                 Preferences.Default.Set("CleanupAfterImport", CleanupAfterImportPicker.SelectedIndex);
             }
 
+            Preferences.Default.Set("ReuseExistingChannels", ReuseExistingChannelsSwitch.IsToggled);
+
             Preferences.Default.Set("CheckForUpdatesOnStartup", CheckUpdatesSwitch.IsToggled);
             await UpdateMainPageUISettings();
 
@@ -186,6 +191,7 @@ namespace Slackord.Pages
                 BotTokenEntry.Text = string.Empty;
                 LogLevelPicker.SelectedIndex = 3;
                 CleanupAfterImportPicker.SelectedIndex = (int)CleanupBehavior.Prompt;
+                ReuseExistingChannelsSwitch.IsToggled = false;
                 CheckUpdatesSwitch.IsToggled = true;
 
                 await DisplayAlertAsync("Reset Complete", "All settings have been reset to default values.", "OK");

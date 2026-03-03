@@ -1219,6 +1219,25 @@ namespace Slackord.Classes
 
                     string channelName = channelProgress.Name.ToLower();
 
+                    // When reuse is enabled, look for an existing channel by name anywhere in the guild
+                    if (AppSettings.Instance.SkipExistingChannels)
+                    {
+                        var existingChannel = guild.TextChannels.FirstOrDefault(
+                            c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase));
+                        if (existingChannel != null)
+                        {
+                            channelProgress.SetDiscordChannelId(existingChannel.Id);
+                            CreatedChannels[existingChannel.Id] = existingChannel;
+
+                            Application.Current.Dispatcher.Dispatch(() => {
+                                ApplicationWindow.WriteToDebugWindow($"🔗 Reusing existing Discord channel: #{existingChannel.Name} (ID: {existingChannel.Id})\n");
+                            });
+
+                            await Task.Delay(100, cancellationToken);
+                            continue;
+                        }
+                    }
+
                     if (guild.TextChannels.Any(c => c.Name.Equals(channelName, StringComparison.OrdinalIgnoreCase) && c.CategoryId == currentCategoryId))
                     {
                         int suffix = 1;
