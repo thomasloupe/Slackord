@@ -358,11 +358,20 @@ namespace Slackord.Classes
 
                     foreach (JObject userObject in usersArray.Cast<JObject>())
                     {
+                        UserProfile profile = userObject["profile"] is JObject profileObject
+                            ? new UserProfile
+                            {
+                                DisplayName = profileObject["display_name"]?.ToString(),
+                                RealName = profileObject["real_name"]?.ToString(),
+                                Avatar = profileObject["image_192"]?.ToString(),
+                            }
+                            : null;
+
                         DeconstructedUser deconstructedUser = new()
                         {
                             Id = userObject["id"]?.ToString(),
                             Name = userObject["name"]?.ToString(),
-                            Profile = userObject["profile"]?.ToObject<UserProfile>(),
+                            Profile = profile,
                         };
 
                         if (deconstructedUser.Id != null)
@@ -384,7 +393,7 @@ namespace Slackord.Classes
             catch (Exception ex)
             {
                 Application.Current.Dispatcher.Dispatch(() => { ApplicationWindow.WriteToDebugWindow($"ParseUsersFile(): Parsing Users file failed with an exception: {ex.Message}\n"); });
-                return null;
+                return [];
             }
         }
     }

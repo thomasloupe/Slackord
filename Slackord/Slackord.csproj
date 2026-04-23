@@ -14,11 +14,11 @@
 		<ApplicationTitle>Slackord</ApplicationTitle>
 		<ApplicationId>com.thomasloupe.slackord</ApplicationId>
 		<ApplicationIdGuid>9c3974ab-37d1-4859-8f7c-aa1c453b5b00</ApplicationIdGuid>
-		<ApplicationDisplayVersion>6.1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>6.1.1</ApplicationDisplayVersion>
 		<ApplicationVersion>6</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<WindowsPackageType Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">None</WindowsPackageType>
 		<PlatformTarget>AnyCPU</PlatformTarget>
@@ -28,26 +28,27 @@
 		<UseNativeHttpHandler>false</UseNativeHttpHandler>
 
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-		<Trimming>none</Trimming>
 		<SignAssembly>False</SignAssembly>
-		<AssemblyVersion>6.1.0.0</AssemblyVersion>
-		<FileVersion>6.1.0.0</FileVersion>
+		<AssemblyVersion>6.1.1.0</AssemblyVersion>
+		<FileVersion>6.1.1.0</FileVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PublishAot>False</PublishAot>
 		<DelaySign>False</DelaySign>
 		<NeutralLanguage>en-US</NeutralLanguage>
-		<PublishTrimmed>True</PublishTrimmed>
+		<PublishTrimmed Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">True</PublishTrimmed>
+		<PublishTrimmed Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">False</PublishTrimmed>
+		<MtouchLink Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">None</MtouchLink>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<ApplicationDisplayVersion>6.1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>6.1.1</ApplicationDisplayVersion>
 		<ApplicationVersion>6</ApplicationVersion>
 		<Optimize>True</Optimize>
 		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ApplicationDisplayVersion>6.1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>6.1.1</ApplicationDisplayVersion>
 		<ApplicationVersion>6</ApplicationVersion>
 		<IsPublishable>True</IsPublishable>
 	</PropertyGroup>
@@ -70,26 +71,26 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
-		<PackageReference Include="Discord.Net.Core" Version="3.17.4" />
-		<PackageReference Include="Discord.Net.Interactions" Version="3.17.4" />
-		<PackageReference Include="Discord.Net.Rest" Version="3.17.4" />
-		<PackageReference Include="Discord.Net.Webhook" Version="3.17.4" />
-		<PackageReference Include="Discord.Net.WebSocket" Version="3.17.4" />
+		<PackageReference Include="Discord.Net.Core" Version="3.19.1" />
+		<PackageReference Include="Discord.Net.Interactions" Version="3.19.1" />
+		<PackageReference Include="Discord.Net.Rest" Version="3.19.1" />
+		<PackageReference Include="Discord.Net.Webhook" Version="3.19.1" />
+		<PackageReference Include="Discord.Net.WebSocket" Version="3.19.1" />
 		<PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.10" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.10" />
-		<PackageReference Include="Microsoft.Maui.Graphics" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.51" />
+		<PackageReference Include="Microsoft.Maui.Graphics" Version="10.0.51" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250909003" />
-		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="10.0.10" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260416003" />
+		<PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" Version="10.0.51" />
 	</ItemGroup>
 
 	<ItemGroup>
