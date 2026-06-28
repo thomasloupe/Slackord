@@ -3,6 +3,7 @@
 [Join the Slackord Discord!](https://discord.gg/yccMweYPN8)
 
 Slackord is an application that parses JSON chat history file exports from Slack and posts them into Discord instantly with a single command.
+Slackord is also listed on the official Slack [community-developed tools](https://docs.slack.dev/tools/community-developed-tools/#csharp) website.
 
 # Demo
 https://github.com/user-attachments/assets/afa63789-0904-4200-8bd8-6c5dd1970355
