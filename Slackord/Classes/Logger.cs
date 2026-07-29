@@ -9,9 +9,12 @@
     public class Logger
     {
         /// <summary>
-        /// The directory where log files are stored
+        /// The directory where log files are stored.
+        /// Uses the per-user writable app data directory (e.g. %LOCALAPPDATA% on Windows,
+        /// ~/Library/... on macOS) rather than the app install directory, which is read-only
+        /// when the app runs from a protected location such as /Applications on macOS.
         /// </summary>
-        private static readonly string logsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+        private static readonly string logsDirectory = Path.Combine(Microsoft.Maui.Storage.FileSystem.AppDataDirectory, "Logs");
 
         /// <summary>
         /// The filename for the current log file with timestamp

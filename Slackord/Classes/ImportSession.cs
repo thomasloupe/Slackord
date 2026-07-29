@@ -33,9 +33,12 @@ namespace Slackord.Classes
         public bool IsCompleted => Channels.All(c => c.IsCompleted);
 
         /// <summary>
-        /// The base folder path where all import sessions are stored
+        /// The base folder path where all import sessions are stored.
+        /// Uses the per-user writable app data directory (e.g. %LOCALAPPDATA% on Windows,
+        /// ~/Library/... on macOS) rather than the app install directory, which is read-only
+        /// when the app runs from a protected location such as /Applications on macOS.
         /// </summary>
-        private static readonly string ImportsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imports");
+        private static readonly string ImportsFolder = Path.Combine(FileSystem.AppDataDirectory, "Imports");
 
         /// <summary>
         /// Creates a new import session with timestamped folder
